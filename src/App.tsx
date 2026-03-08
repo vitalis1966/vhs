@@ -10,6 +10,7 @@ import Solutions from "./pages/Solutions";
 import Contact from "./pages/Contact";
 import ClinicAudit from "./pages/ClinicAudit";
 import Portfolio from "./pages/Portfolio";
+import Partners from "./pages/Partners";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
