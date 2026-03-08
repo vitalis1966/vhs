@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import vitalisLogo from "@/assets/vitalis-logo.png";
 
 const footerLinks = {
   Solutions: [
@@ -11,12 +12,12 @@ const footerLinks = {
     { label: "About", href: "/about" },
     { label: "How We Work", href: "/how-we-work" },
     { label: "Portfolio", href: "/portfolio" },
+    { label: "Partners", href: "/partners" },
     { label: "Contact", href: "/contact" },
   ],
   Resources: [
     { label: "Clinic Audit", href: "/clinic-audit" },
     { label: "Insights", href: "/insights" },
-    { label: "Partners", href: "/partners" },
   ],
 };
 
@@ -27,14 +28,15 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link to="/" className="font-display text-2xl font-bold tracking-tight">
-              Vitalis<span className="text-accent">.</span>
+            <Link to="/">
+              <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" />
             </Link>
             <p className="mt-4 text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
               Full-cycle inception-to-exit healthcare consulting. We partner with clinics and healthcare businesses through every stage of growth.
             </p>
             <div className="mt-6 text-sm text-primary-foreground/60">
               <p>Calgary, Alberta, Canada</p>
+              <p className="mt-1">info@vitalisstrategies.com</p>
             </div>
           </div>
 
