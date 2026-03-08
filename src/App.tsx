@@ -10,6 +10,7 @@ import Solutions from "./pages/Solutions";
 import Contact from "./pages/Contact";
 import ClinicAudit from "./pages/ClinicAudit";
 import Portfolio from "./pages/Portfolio";
+import Partners from "./pages/Partners";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/clinic-audit" element={<ClinicAudit />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/partners" element={<Partners />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

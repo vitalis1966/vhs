@@ -7,14 +7,14 @@ import {
 } from "lucide-react";
 
 const solutions = [
-  { icon: Building, title: "New Clinics & Builds", description: "From concept to doors open — full facility development support." },
-  { icon: BarChart3, title: "Strategic Analysis", description: "Assessments, gap identification, and actionable roadmaps." },
-  { icon: Settings, title: "Operational Excellence", description: "Workflow optimization, efficiency gains, and systems design." },
-  { icon: DollarSign, title: "Revenue & Finance", description: "Revenue cycle management, coding, and financial performance." },
-  { icon: Users, title: "Physician Recruitment", description: "Workforce strategy, recruitment, and succession planning." },
-  { icon: Laptop, title: "Digital Transformation", description: "Technology integration and digital workflow modernization." },
-  { icon: TrendingUp, title: "Growth Strategy", description: "Expansion planning, market analysis, and scaling support." },
-  { icon: Handshake, title: "M&A & Exit", description: "Mergers, acquisitions, transitions, and value-maximized exits." },
+  { icon: Building, title: "New Clinics & Builds", description: "Transform visionary concepts into state-of-the-art clinical environments. We combine innovative design, advanced technology, and data-driven insights to create efficient, NHSF-compliant, patient-centric facilities." },
+  { icon: BarChart3, title: "Assessment & Risk", description: "Comprehensive assessments evaluating clinic scopes, regulatory compliance, patient safety risks, and financial vulnerabilities — enabling informed decisions that minimize risk." },
+  { icon: Settings, title: "Workflow Optimization", description: "Streamline clinical and administrative processes using Lean Six Sigma methodologies. Reduce wait times, improve patient experience, and achieve significant cost savings." },
+  { icon: DollarSign, title: "Revenue Cycle Management", description: "Maximize financial performance from registration and coding to claims submission and denial management. Optimize reimbursement and improve cash flow." },
+  { icon: Users, title: "Physician Recruitment", description: "Comprehensive talent acquisition covering sourcing, interviewing, and onboarding. Strategic workforce planning to align physician resources with demand." },
+  { icon: Laptop, title: "Digital Transformation", description: "Technology integration, EHR optimization, and digital workflow modernization to reduce administrative burden and improve clinical outcomes." },
+  { icon: TrendingUp, title: "Strategic Growth", description: "Identify expansion opportunities, optimize existing operations, and align business strategies with market demands for long-term sustainable growth." },
+  { icon: Handshake, title: "M&A & Exit Strategy", description: "Expert transactional support including due diligence, post-merger integration, and strategic exit planning to maximize value and ensure successful outcomes." },
 ];
 
 export function SolutionsPreview() {
@@ -29,13 +29,13 @@ export function SolutionsPreview() {
           className="text-center max-w-2xl mx-auto mb-16"
         >
           <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Solutions, Not Just Services
+            Services? No. We Offer Solutions.
           </p>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             What we deliver
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Strategic consulting built around outcomes — not hours billed.
+            Explore how our tailored solutions can elevate your healthcare operations. Each is designed to produce measurable results — not just recommendations.
           </p>
         </motion.div>
 

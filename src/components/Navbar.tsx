@@ -3,12 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import vitalisLogo from "@/assets/vitalis-logo.png";
 
 const navLinks = [
   { label: "About", href: "/about" },
   { label: "How We Work", href: "/how-we-work" },
   { label: "Solutions", href: "/solutions" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "Partners", href: "/partners" },
   { label: "Clinic Audit", href: "/clinic-audit" },
   { label: "Contact", href: "/contact" },
 ];
@@ -20,12 +22,12 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4 lg:px-8">
-        <Link to="/" className="font-display text-xl lg:text-2xl font-bold text-primary tracking-tight">
-          Vitalis<span className="text-accent">.</span>
+        <Link to="/" className="flex items-center">
+          <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 lg:h-12 w-auto" />
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-7">
           {navLinks.map((link) => (
             <Link
               key={link.href}
