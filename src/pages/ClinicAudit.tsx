@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ClipboardCheck, Stethoscope, Building } from "lucide-react";
 
-const audits = [
+const assessments = [
   {
     icon: Building,
-    title: "New Clinic Build Audit",
-    description: "For those planning or in the early stages of a new healthcare facility. We assess your concept, feasibility, market opportunity, and readiness to build.",
+    title: "Clinic Build Readiness Assessment",
+    description: "Planning a new clinic involves dozens of interconnected decisions — from facility design and staffing models to technology infrastructure and long-term financial planning. Our clinic planning assessment helps physicians and healthcare entrepreneurs evaluate these factors before major commitments are made.",
     includes: [
       "Concept and market validation",
       "Facility planning readiness",
@@ -21,8 +21,8 @@ const audits = [
   },
   {
     icon: Stethoscope,
-    title: "Existing Clinic Audit",
-    description: "For operating clinics seeking clarity on performance, efficiency, growth potential, and compliance. A complete strategic diagnostic.",
+    title: "Practice Performance Assessment",
+    description: "Our practice performance assessment helps clinic leaders evaluate operational systems, patient flow, staffing structure, technology usage, and financial performance to identify opportunities for improvement.",
     includes: [
       "Operational efficiency review",
       "Revenue cycle assessment",
@@ -42,17 +42,17 @@ const ClinicAudit = () => {
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            Strategic Diagnostic
+            Strategic Planning Assessment
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Start with clarity.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Our clinic audit is a strategic diagnostic that gives you an actionable roadmap — whether you're building something new or strengthening what exists.
+            Our strategic assessment gives you an actionable roadmap — whether you're building something new or strengthening what exists.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-10 flex flex-col sm:flex-row gap-4">
             <Button variant="gold" size="xl" asChild>
-              <Link to="/contact">Request an Audit <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link to="/contact">Request an Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </motion.div>
         </div>
@@ -61,7 +61,7 @@ const ClinicAudit = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-8">
-            {audits.map((audit, i) => (
+            {assessments.map((audit, i) => (
               <motion.div
                 key={audit.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -87,7 +87,7 @@ const ClinicAudit = () => {
                   </ul>
                 </div>
                 <Button variant="hero-outline" size="default" asChild className="mt-8">
-                  <Link to="/contact">Request This Audit <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  <Link to="/contact">Request This Assessment <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
               </motion.div>
             ))}
@@ -98,7 +98,7 @@ const ClinicAudit = () => {
       {/* Process */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
-          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">How the audit works</h2>
+          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">How the assessment works</h2>
           <div className="mt-12 grid sm:grid-cols-3 gap-8">
             {[
               { step: "1", title: "Request", desc: "Tell us about your clinic and goals." },

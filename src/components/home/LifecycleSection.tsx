@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 
 const stages = [
-  { label: "Inception", description: "Concept & feasibility" },
-  { label: "Strategy", description: "Planning & analysis" },
-  { label: "Build", description: "Facility & launch" },
-  { label: "Optimize", description: "Operations & efficiency" },
-  { label: "Grow", description: "Revenue & expansion" },
-  { label: "Scale", description: "Recruitment & reach" },
-  { label: "Transition", description: "M&A & exit" },
+  { label: "Vision & Concept", description: "Exploring the opportunity" },
+  { label: "Strategy & Planning", description: "Operational & clinical strategy" },
+  { label: "Design & Build", description: "Facility & workflows" },
+  { label: "Launch", description: "Early operations readiness" },
+  { label: "Optimize & Improve", description: "Patient flow & efficiency" },
+  { label: "Grow & Expand", description: "Adding services & locations" },
+  { label: "Transition & Exit", description: "M&A & succession" },
 ];
 
 export function LifecycleSection() {
