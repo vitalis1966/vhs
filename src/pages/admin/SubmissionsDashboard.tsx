@@ -92,15 +92,19 @@ export default function SubmissionsDashboard() {
       // Get intake info
       let clientName = "Unknown";
       let organization = "—";
+      let lifecycleStatus: string | null = null;
+      let lastActivityAt: string | null = null;
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, organization_name")
+          .select("full_name, organization_name, lifecycle_status, last_activity_at")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
           clientName = intake.full_name || "Unknown";
           organization = intake.organization_name || "—";
+          lifecycleStatus = intake.lifecycle_status || null;
+          lastActivityAt = intake.last_activity_at || null;
         }
       }
 
@@ -110,6 +114,12 @@ export default function SubmissionsDashboard() {
         .select("id, analysis_status, overall_score, readiness_category")
         .eq("session_id", sess.id)
         .single() as any);
+
+      // Get email count
+      const { data: emails } = await (supabase
+        .from("email_events" as any)
+        .select("id")
+        .eq("session_id", sess.id) as any);
 
       rows.push({
         session_id: sess.id,
@@ -123,6 +133,9 @@ export default function SubmissionsDashboard() {
         analysis_status: report?.analysis_status || null,
         overall_score: report?.overall_score || null,
         readiness_category: report?.readiness_category || null,
+        lifecycle_status: lifecycleStatus,
+        email_count: emails?.length || 0,
+        last_activity_at: lastActivityAt,
       });
     }
 
