@@ -3,122 +3,56 @@ import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Building2, Briefcase, Scale, Laptop2, Users, Landmark } from "lucide-react";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  ArrowRight,
+  Building2,
+  Scale,
+  Laptop2,
+  Home,
+  Landmark,
+  Briefcase,
+  Clock,
+  MessageSquareOff,
+  Target,
+  TrendingDown,
+  DollarSign,
+  CheckCircle,
+} from "lucide-react";
 
-const partnerGroups = [
+const ecosystemPartners = [
+  { icon: Landmark, label: "Financial Institutions", angle: 0 },
+  { icon: Scale, label: "Legal Advisors", angle: 60 },
+  { icon: Building2, label: "Architecture & Design", angle: 120 },
+  { icon: Home, label: "Real Estate Advisors", angle: 180 },
+  { icon: Laptop2, label: "Technology Providers", angle: 240 },
+  { icon: Briefcase, label: "Operational Consultants", angle: 300 },
+];
+
+const benefits = [
   {
-    value: "financial",
-    icon: Landmark,
-    title: "Financial Partners",
-    summary: "Banking, lending, and private wealth relationships that support healthcare ventures.",
-    leadPartner: {
-      name: "ATB Financial — Healthcare & Private Wealth",
-      description:
-        "ATB Financial provides specialized banking and advisory services for healthcare professionals. Their healthcare and private wealth teams support physicians and clinic operators with clinic financing, capital planning, practice acquisition financing, and long-term financial strategy.",
-      collaboration:
-        "Vitalis works with ATB to support clients with clinic development financing, facility builds, financial restructuring, and growth planning.",
-    },
-    support: [
-      "Healthcare lenders and financing specialists",
-      "Private wealth advisors for physicians",
-      "Capital planning and debt structuring support",
-    ],
+    icon: Clock,
+    title: "Time Savings",
+    description: "Physicians often spend significant time coordinating advisors independently — time that could be spent on patient care or clinical leadership. A coordinated advisory structure helps reduce this burden, allowing healthcare leaders to focus on what matters most.",
   },
   {
-    value: "design",
-    icon: Building2,
-    title: "Design & Architecture Partners",
-    summary: "Facility planning and design expertise aligned with operational healthcare strategy.",
-    leadPartner: {
-      name: "Holland Design",
-      description:
-        "Holland Design specializes in healthcare environments and facility design, creating clinical spaces that support operational efficiency and patient experience.",
-      collaboration:
-        "Vitalis collaborates with Holland Design to ensure clinic layouts support operational workflows, patient flow, staffing models, and long-term practice growth.",
-    },
-    support: [
-      "Healthcare-focused architectural consultants",
-      "Clinical interior and patient flow planning",
-      "Construction and build coordination teams",
-    ],
+    icon: MessageSquareOff,
+    title: "Reduced Communication Breakdowns",
+    description: "When multiple advisors operate independently, misalignment often occurs. Facility design may conflict with workflows. Technology systems may not match operational needs. Financial structures may be misaligned with staffing models. Coordinated advisory reduces these risks.",
   },
   {
-    value: "legal",
-    icon: Scale,
-    title: "Legal Partners",
-    summary: "Legal and compliance specialists supporting healthcare structures and transactions.",
-    leadPartner: {
-      name: "Field Law",
-      description:
-        "Field Law provides legal advisory services relevant to healthcare ventures and organizations, including regulatory guidance, corporate structuring, and transaction support.",
-      collaboration:
-        "Vitalis works with legal partners to ensure that business structures, regulatory considerations, and agreements align with operational strategy throughout the lifecycle of healthcare ventures.",
-    },
-    support: [
-      "Healthcare regulatory and licensing guidance",
-      "Corporate and governance structuring",
-      "Transaction and partnership documentation",
-    ],
+    icon: Target,
+    title: "Better Strategic Alignment",
+    description: "Each advisor naturally focuses on their domain — architects optimize design, bankers focus on financing, lawyers focus on legal structure. Vitalis helps align these decisions across finance, operations, design, and technology to support the overall success of the practice.",
   },
   {
-    value: "technology",
-    icon: Laptop2,
-    title: "Technology Partners",
-    summary: "Digital health, EHR, and systems partners that support modern clinic operations.",
-    leadPartner: {
-      name: "Healthcare Technology Providers",
-      description:
-        "Vitalis works with leading technology providers to support EHR strategy, workflow-aligned system selection, and digital modernization for healthcare organizations.",
-      collaboration:
-        "We help ensure technology decisions align with staffing models, patient flow, and long-term operational goals.",
-    },
-    support: [
-      "EHR/EMR optimization specialists",
-      "Practice management platforms",
-      "Data and reporting system advisors",
-    ],
+    icon: TrendingDown,
+    title: "Lower Long-Term Costs",
+    description: "Poor coordination often leads to expensive corrections later — inefficient clinic layouts requiring renovation, technology replacements, or operational inefficiencies that persist for years. Strategic coordination early in a project prevents these costly issues.",
   },
   {
-    value: "workforce",
-    icon: Users,
-    title: "Workforce & Recruitment Partners",
-    summary: "Partners that support physician recruitment and sustainable workforce growth.",
-    leadPartner: {
-      name: "Recruitment & Workforce Network",
-      description:
-        "Our network includes physician recruitment specialists and workforce advisors that help clinics build resilient teams aligned with growth strategy.",
-      collaboration:
-        "Vitalis integrates recruitment planning with operational and financial strategy to support long-term practice sustainability.",
-    },
-    support: [
-      "Physician recruitment specialists",
-      "Workforce planning advisors",
-      "Leadership and retention strategy support",
-    ],
-  },
-  {
-    value: "advisory",
-    icon: Briefcase,
-    title: "Additional Advisory Partners",
-    summary: "Specialist advisors engaged as needed for complex healthcare projects.",
-    leadPartner: {
-      name: "Curated Specialist Advisors",
-      description:
-        "Depending on project scope, Vitalis can coordinate additional advisors in compliance, operations, financing, and implementation support.",
-      collaboration:
-        "This coordinated model helps physicians avoid managing disconnected specialists while maintaining strategic alignment across the project.",
-    },
-    support: [
-      "Regulatory and accreditation advisors",
-      "Operational improvement consultants",
-      "Project-specific specialist support",
-    ],
+    icon: DollarSign,
+    title: "Stronger Return on Investment",
+    description: "Healthcare facilities require major capital investment. Aligned decision-making across design, operations, technology, and finance improves long-term outcomes — protecting the investment and positioning the practice for sustainable success.",
   },
 ];
 
@@ -127,6 +61,7 @@ const Partners = () => {
     <div className="min-h-screen">
       <Navbar />
 
+      {/* Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.p
@@ -134,7 +69,7 @@ const Partners = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-accent font-medium tracking-widest uppercase text-sm mb-6"
           >
-            Partner Ecosystem
+            Strategic Ecosystem
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -142,7 +77,7 @@ const Partners = () => {
             transition={{ delay: 0.1 }}
             className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight"
           >
-            Coordinated Healthcare Advisory
+            Healthcare ventures require many specialists.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -150,86 +85,380 @@ const Partners = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Healthcare ventures often require multiple advisors — architects, lenders, legal counsel, technology vendors, and consultants. Vitalis works alongside clients to coordinate these relationships so physicians and healthcare leaders can focus on what matters most.
+            Physicians launching or growing clinics often need financing partners, architects, legal advisors, real estate specialists, technology vendors, and operational consultants. Vitalis helps coordinate these professionals — ensuring decisions are aligned and projects move forward efficiently.
           </motion.p>
         </div>
       </section>
 
-      {/* Why we collaborate */}
-      <section className="py-16 lg:py-20 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground mb-6">
-              Why Vitalis collaborates with partners
+      {/* Visual Ecosystem Diagram */}
+      <section className="py-20 lg:py-28 bg-background overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Vitalis Model</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+              Your strategic hub for healthcare advisory.
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
-              Healthcare projects rarely involve a single area of expertise. Rather than positioning ourselves as the expert in every domain, we work alongside trusted professionals who specialize in finance, architecture, legal, and technology — helping align their contributions with the overall strategy of the project.
+            <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+              Rather than managing multiple disconnected advisors, Vitalis serves as a central coordinator — ensuring all expertise aligns with your strategic goals.
             </p>
+          </div>
+
+          {/* Hub-and-Spoke Diagram */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="relative max-w-4xl mx-auto"
+          >
+            {/* Desktop: Circular Hub-and-Spoke */}
+            <div className="hidden lg:block relative h-[520px]">
+              {/* Connecting lines */}
+              <svg
+                className="absolute inset-0 w-full h-full"
+                viewBox="0 0 500 500"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                {ecosystemPartners.map((partner, i) => {
+                  const angleRad = (partner.angle - 90) * (Math.PI / 180);
+                  const x2 = 250 + Math.cos(angleRad) * 180;
+                  const y2 = 250 + Math.sin(angleRad) * 180;
+                  return (
+                    <motion.line
+                      key={i}
+                      x1="250"
+                      y1="250"
+                      x2={x2}
+                      y2={y2}
+                      stroke="hsl(var(--accent))"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      whileInView={{ pathLength: 1, opacity: 0.5 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: i * 0.1 }}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Center Hub - Vitalis */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+              >
+                <div className="w-40 h-40 rounded-full bg-gradient-forest flex flex-col items-center justify-center text-primary-foreground shadow-elevated">
+                  <span className="font-display text-2xl font-bold">Vitalis</span>
+                  <span className="text-xs uppercase tracking-wider opacity-80 mt-1">Strategic Hub</span>
+                </div>
+              </motion.div>
+
+              {/* Partner nodes */}
+              {ecosystemPartners.map((partner, i) => {
+                const angleRad = (partner.angle - 90) * (Math.PI / 180);
+                const x = 50 + Math.cos(angleRad) * 36;
+                const y = 50 + Math.sin(angleRad) * 36;
+                return (
+                  <motion.div
+                    key={partner.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.4 + i * 0.08 }}
+                    className="absolute z-10"
+                    style={{
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <div className="bg-card rounded-2xl p-5 shadow-card hover:shadow-elevated transition-all duration-300 border border-border/40 text-center min-w-[150px]">
+                      <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
+                        <partner.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-semibold text-foreground leading-tight block">
+                        {partner.label}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Mobile: Stacked layout */}
+            <div className="lg:hidden">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="bg-gradient-forest rounded-2xl p-8 text-primary-foreground text-center mb-8 shadow-elevated"
+              >
+                <span className="font-display text-2xl font-bold">Vitalis</span>
+                <span className="block text-xs uppercase tracking-wider opacity-80 mt-1 mb-3">
+                  Strategic Hub
+                </span>
+                <p className="text-sm leading-relaxed opacity-85">
+                  Coordinating trusted partners for your healthcare venture
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {ecosystemPartners.map((partner, i) => (
+                  <motion.div
+                    key={partner.label}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    className="bg-card rounded-xl p-4 shadow-soft border border-border/40 text-center"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-2">
+                      <partner.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground">{partner.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Partner categories */}
+      {/* Why Coordinated Advisory Works */}
       <section className="py-20 lg:py-28 bg-gradient-section">
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <div className="mb-10">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Explore Partner Categories</h2>
-            <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Click on each category to learn more about the role these partners play and how Vitalis collaborates with them.
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="text-center mb-16">
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Value of Coordination</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+              Why coordinated advisory works.
+            </h2>
+            <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+              Healthcare projects involve many specialists. Without coordination, decisions can conflict, timelines can slip, and costs can escalate. Vitalis helps align the work of every advisor toward your strategic goals.
             </p>
           </div>
 
-          <Accordion type="single" collapsible className="w-full rounded-2xl bg-card px-6 lg:px-8 py-2 shadow-card border border-border/40">
-            {partnerGroups.map((group) => (
-              <AccordionItem key={group.value} value={group.value} className="border-border/50">
-                <AccordionTrigger className="py-6 hover:no-underline">
-                  <div className="flex items-start gap-4 text-left">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <group.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-xl font-bold text-foreground">{group.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{group.summary}</p>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="pb-6 pl-14">
-                    <div className="bg-secondary/40 rounded-xl p-5 mb-5 border border-border/40">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">Featured Partner</p>
-                      <h4 className="font-display text-lg font-bold text-foreground mb-2">{group.leadPartner.name}</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-3">{group.leadPartner.description}</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed italic">{group.leadPartner.collaboration}</p>
-                    </div>
-
-                    <h5 className="text-sm font-semibold uppercase tracking-wider text-foreground mb-3">Additional Collaboration Areas</h5>
-                    <ul className="space-y-2">
-                      {group.support.map((item) => (
-                        <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <span className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {benefits.map((benefit, i) => (
+              <motion.div
+                key={benefit.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card rounded-2xl p-7 shadow-soft hover:shadow-card transition-all duration-300 border border-border/40"
+              >
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
+                  <benefit.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground mb-3">{benefit.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
+              </motion.div>
             ))}
-          </Accordion>
-
-          <div className="mt-12 text-center">
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">
-                Speak with Vitalis
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Strategic Partners */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="text-center mb-16">
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Featured Partners</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+              Trusted professionals we work with.
+            </h2>
+            <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+              Vitalis collaborates with established professionals who specialize in supporting healthcare ventures. Here are some of our key strategic partners.
+            </p>
+          </div>
+
+          {/* ATB Financial */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-card rounded-2xl p-8 lg:p-10 shadow-card border border-border/40 mb-8"
+          >
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-forest flex items-center justify-center mb-4">
+                  <Landmark className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">Financial Partner</p>
+                <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">ATB Financial</h3>
+                <p className="text-sm text-muted-foreground mt-2">Healthcare & Private Wealth</p>
+              </div>
+              <div className="lg:col-span-2">
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  ATB's Healthcare and Private Wealth teams support physicians and healthcare organizations with financing, capital planning, and financial strategy. They understand the unique financial needs of healthcare ventures — from clinic development financing to practice acquisition and long-term wealth planning.
+                </p>
+                <div className="bg-secondary/30 rounded-xl p-5">
+                  <h4 className="font-semibold text-foreground mb-3">Vitalis collaborates with ATB to support:</h4>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {["Clinic development financing", "Facility builds and expansion", "Financial restructuring", "Growth and acquisition planning"].map((item) => (
+                      <div key={item} className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Holland Design */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-card rounded-2xl p-8 lg:p-10 shadow-card border border-border/40 mb-8"
+          >
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1">
+                <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center mb-4">
+                  <Building2 className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">Architecture & Design</p>
+                <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">Holland Design</h3>
+                <p className="text-sm text-muted-foreground mt-2">Healthcare Environments</p>
+              </div>
+              <div className="lg:col-span-2">
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Holland Design specializes in healthcare facility planning and design. They create clinical environments that balance patient experience, operational efficiency, regulatory compliance, and long-term flexibility for growth.
+                </p>
+                <div className="bg-secondary/30 rounded-xl p-5">
+                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with Holland Design to ensure clinic layouts support:</h4>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {["Patient flow and experience", "Operational workflows", "Staffing models and efficiency", "Long-term practice growth"].map((item) => (
+                      <div key={item} className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Field Law */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-card rounded-2xl p-8 lg:p-10 shadow-card border border-border/40"
+          >
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1">
+                <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-4">
+                  <Scale className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">Legal Partner</p>
+                <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">Field Law</h3>
+                <p className="text-sm text-muted-foreground mt-2">Legal Advisory Services</p>
+              </div>
+              <div className="lg:col-span-2">
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Field Law provides legal advisory services relevant to healthcare ventures and organizations. Their expertise spans corporate structuring, regulatory guidance, partnership agreements, and transaction support for healthcare businesses.
+                </p>
+                <div className="bg-secondary/30 rounded-xl p-5">
+                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with legal partners to ensure alignment in:</h4>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {["Business structure and governance", "Regulatory and compliance considerations", "Partnership and shareholder agreements", "Transaction and acquisition support"].map((item) => (
+                      <div key={item} className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Additional Partner Categories */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+              Additional partner categories.
+            </h2>
+            <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+              Beyond our featured partners, Vitalis coordinates with trusted professionals across additional categories based on project needs.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Home,
+                title: "Real Estate Advisors",
+                description: "Site selection, lease negotiation, property acquisition, and location strategy for healthcare facilities.",
+              },
+              {
+                icon: Laptop2,
+                title: "Technology Providers",
+                description: "EHR systems, practice management software, IT infrastructure, and digital health solutions.",
+              },
+              {
+                icon: Briefcase,
+                title: "Operational Consultants",
+                description: "Workflow optimization, process improvement, and operational excellence specialists.",
+              },
+            ].map((category, i) => (
+              <motion.div
+                key={category.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40"
+              >
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
+                  <category.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground mb-3">{category.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{category.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
+              Ready to coordinate your healthcare venture?
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+              Whether you're planning a new clinic or optimizing an existing practice, Vitalis can help coordinate the right expertise for your project.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="xl" asChild>
+                <Link to="/contact">
+                  Book a Consultation
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="hero" size="xl" asChild>
+                <Link to="/clinic-audit">
+                  Strategic Assessment
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
