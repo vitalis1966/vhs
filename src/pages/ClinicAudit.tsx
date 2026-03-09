@@ -61,7 +61,7 @@ const ClinicAudit = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-8">
-            {audits.map((audit, i) => (
+            {assessments.map((audit, i) => (
               <motion.div
                 key={audit.title}
                 initial={{ opacity: 0, y: 20 }}
