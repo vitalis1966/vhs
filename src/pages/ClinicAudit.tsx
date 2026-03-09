@@ -48,11 +48,11 @@ const ClinicAudit = () => {
             Start with clarity.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Our clinic audit is a strategic diagnostic that gives you an actionable roadmap — whether you're building something new or strengthening what exists.
+            Our strategic assessment gives you an actionable roadmap — whether you're building something new or strengthening what exists.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-10 flex flex-col sm:flex-row gap-4">
             <Button variant="gold" size="xl" asChild>
-              <Link to="/contact">Request an Audit <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link to="/contact">Request an Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </motion.div>
         </div>
