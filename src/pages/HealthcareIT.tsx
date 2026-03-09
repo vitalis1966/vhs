@@ -22,65 +22,128 @@ import {
   RefreshCw,
   LineChart,
   PieChart,
-  ClipboardList,
   Workflow,
   Globe,
   Shield,
   Plug,
   Laptop,
+  Wifi,
+  HardDrive,
+  Lock,
+  Headphones,
+  CloudCog,
+  Router,
+  Settings,
+  AlertTriangle,
+  CheckCircle,
+  Wrench,
 } from "lucide-react";
 
 /* ── data ── */
 
 const healthcareITAreas = [
   { icon: FileText, label: "Electronic Medical Records (EMRs)" },
-  { icon: Calendar, label: "Scheduling & Billing Systems" },
-  { icon: ClipboardList, label: "Clinical Documentation Tools" },
-  { icon: MessageSquare, label: "Patient Communication Platforms" },
-  { icon: BarChart3, label: "Operational Dashboards" },
-  { icon: LineChart, label: "Analytics & Reporting Systems" },
+  { icon: Server, label: "Network Infrastructure" },
+  { icon: Laptop, label: "Clinic Hardware" },
+  { icon: Shield, label: "Cybersecurity" },
+  { icon: BarChart3, label: "Operational Reporting Systems" },
+  { icon: Calendar, label: "Scheduling & Billing Platforms" },
+  { icon: MessageSquare, label: "Patient Communication Tools" },
 ];
 
-const techImpact = [
-  { icon: Cog, label: "Operational Efficiency" },
-  { icon: Users, label: "Staffing Workflows" },
-  { icon: Activity, label: "Patient Experience" },
-  { icon: TrendingUp, label: "Financial Performance" },
-  { icon: Layers, label: "Clinic Scalability" },
+const managedITServices = [
+  {
+    icon: HardDrive,
+    title: "IT Infrastructure Procurement",
+    items: [
+      "Servers & workstations",
+      "Networking equipment & firewalls",
+      "Routers & secure Wi-Fi infrastructure",
+      "Backup systems",
+      "Provider laptops & tablets",
+    ],
+    note: "Hardware is selected to ensure compatibility with EMR systems, secure network infrastructure, and scalable clinic operations.",
+  },
+  {
+    icon: Router,
+    title: "Network Setup & Configuration",
+    items: [
+      "Secure internal networks",
+      "Firewall configuration",
+      "VPN access",
+      "Secure Wi-Fi",
+      "Segmented networks for clinical & administrative systems",
+    ],
+    note: "Healthcare environments require strong security and reliability.",
+  },
+  {
+    icon: Lock,
+    title: "Cybersecurity Protection",
+    items: [
+      "Firewall management",
+      "Network monitoring",
+      "Malware protection",
+      "Endpoint security",
+      "Data encryption",
+      "Security updates & vulnerability management",
+    ],
+    note: "Healthcare data requires strict security protection.",
+  },
+  {
+    icon: Settings,
+    title: "IT Monitoring & Maintenance",
+    items: [
+      "Server & network monitoring",
+      "Device monitoring",
+      "Automated alerts for system failures",
+      "Software updates",
+      "Patch management",
+    ],
+    note: "Proactive monitoring detects issues before they impact clinic operations.",
+  },
+  {
+    icon: Headphones,
+    title: "Helpdesk Support & Ticketing",
+    items: [
+      "IT support ticketing system",
+      "Remote troubleshooting",
+      "Device troubleshooting",
+      "Network issue resolution",
+      "System access support",
+      "Staff technical support",
+    ],
+    note: "Clinics can submit support requests quickly when issues arise.",
+  },
+  {
+    icon: CloudCog,
+    title: "Backup & Disaster Recovery",
+    items: [
+      "Automated backups",
+      "Secure data storage",
+      "Disaster recovery planning",
+      "Rapid system restoration",
+    ],
+    note: "Critical for protecting patient data and clinic operations.",
+  },
 ];
 
-const newClinicServices = [
-  "EMR selection & evaluation",
-  "Technology infrastructure planning",
-  "Workflow mapping & system design",
-  "Billing & scheduling integration",
-  "Reporting & analytics design",
-  "System integrations",
-  "Patient portal implementation",
+const newClinicITServices = [
+  "IT infrastructure design",
+  "Network architecture planning",
+  "Server environment setup",
+  "Workstation deployment",
+  "Secure wireless networks",
+  "Cybersecurity framework implementation",
+  "EMR system selection & installation",
 ];
 
-const newClinicAlignment = [
-  { icon: Workflow, label: "Clinical Workflows" },
-  { icon: Users, label: "Staffing Models" },
-  { icon: Target, label: "Facility Design" },
-  { icon: Cog, label: "Operational Goals" },
-];
-
-const existingClinicServices = [
-  { title: "EMR Usage Evaluation", desc: "Assess how effectively your clinic uses its current EMR system." },
-  { title: "Workflow Redesign", desc: "Restructure workflows within the EMR to match clinical operations." },
-  { title: "Documentation Automation", desc: "Automate repetitive documentation processes to save provider time." },
-  { title: "Billing Workflow Improvement", desc: "Streamline billing processes to reduce errors and improve collections." },
-  { title: "Administrative Overhead Reduction", desc: "Identify and eliminate unnecessary administrative steps." },
-  { title: "Digital Patient Tools", desc: "Integrate online booking, patient portals, and communication platforms." },
-  { title: "Reporting & Analytics Modernization", desc: "Build modern dashboards to replace outdated reporting methods." },
-];
-
-const optimizationOutcomes = [
-  { icon: Zap, label: "Clinic Efficiency", color: "bg-accent" },
-  { icon: Activity, label: "Provider Productivity", color: "bg-primary" },
-  { icon: BarChart3, label: "Reporting Visibility", color: "bg-accent" },
-  { icon: MessageSquare, label: "Patient Communication", color: "bg-primary" },
+const existingClinicITServices = [
+  { title: "IT Infrastructure Audits", desc: "Comprehensive review of current technology environment." },
+  { title: "Network Redesign", desc: "Optimize network architecture for performance and security." },
+  { title: "Hardware Upgrades", desc: "Replace aging equipment with modern, reliable systems." },
+  { title: "Cybersecurity Improvements", desc: "Strengthen security posture and compliance." },
+  { title: "Performance Optimization", desc: "Tune systems for better speed and reliability." },
+  { title: "Infrastructure Modernization", desc: "Transition to modern, scalable IT infrastructure." },
 ];
 
 const emrPlatforms = [
@@ -111,34 +174,28 @@ const emrPlatforms = [
   },
 ];
 
+const emrServices = [
+  "Select the right EMR platform",
+  "Configure workflows",
+  "Optimize scheduling and documentation",
+  "Integrate digital health tools",
+];
+
 const kpiExamples = [
-  "Patient Volume",
+  "Patient Volumes",
   "Provider Utilization",
   "Appointment Wait Times",
   "Revenue per Visit",
-  "Billing Efficiency",
-  "Procedure Volumes",
+  "Billing Performance",
   "No-Show Rates",
-  "Patient Retention",
-  "Referral Patterns",
 ];
 
-const digitalTools = [
-  { icon: Globe, label: "Patient Portals" },
-  { icon: Calendar, label: "Online Booking" },
-  { icon: Monitor, label: "Virtual Care Platforms" },
-  { icon: FileText, label: "Automated Forms" },
-  { icon: TrendingUp, label: "Billing Integrations" },
-  { icon: Plug, label: "Referral Management" },
-  { icon: LineChart, label: "Analytics Systems" },
-];
-
-const ongoingServices = [
-  "System optimization & tuning",
-  "Technology roadmap planning",
-  "Vendor evaluation & selection",
-  "Digital transformation strategy",
-  "Data & reporting improvements",
+const ongoingAdvisoryServices = [
+  { icon: Workflow, label: "IT roadmap planning" },
+  { icon: RefreshCw, label: "System upgrades" },
+  { icon: Target, label: "Technology vendor selection" },
+  { icon: Settings, label: "Infrastructure improvements" },
+  { icon: LineChart, label: "Reporting & analytics strategy" },
 ];
 
 /* ── helpers ── */
@@ -167,14 +224,14 @@ const HealthcareIT = () => {
             transition={{ delay: 0.1 }}
             className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight"
           >
-            Healthcare IT Strategy&nbsp;&amp;&nbsp;Systems
+            Healthcare IT Strategy &amp; Managed Technology Services
           </motion.h1>
           <motion.p
             {...fadeUp}
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Strategic technology planning, EMR optimization, and operational intelligence for modern healthcare practices.
+            Strategic technology planning, managed IT infrastructure, and operational intelligence for modern healthcare practices.
           </motion.p>
         </div>
       </section>
@@ -186,136 +243,141 @@ const HealthcareIT = () => {
             <motion.div {...fadeUp}>
               <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Foundation</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology is the backbone of every modern clinic.
+                Technology powers every modern clinic.
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to analytics dashboards, every technology decision impacts how a clinic delivers care, manages staff, and sustains growth.
+                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a clinic delivers care, manages staff, and sustains growth.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Vitalis supports healthcare organizations in making strategic technology decisions and ensuring systems work effectively together — across new builds, existing practices, and long-term operational intelligence.
+              <p className="text-muted-foreground leading-relaxed mb-8">
+                Vitalis supports clinics through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
               </p>
+
+              {/* Two pillars */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-card rounded-xl p-5 border border-border/40 shadow-soft">
+                  <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center mb-3">
+                    <Target className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-display text-base font-bold text-foreground mb-2">Technology Strategy</h3>
+                  <p className="text-sm text-muted-foreground">EMR selection, analytics, workflow optimization, and digital transformation.</p>
+                </div>
+                <div className="bg-card rounded-xl p-5 border border-border/40 shadow-soft">
+                  <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center mb-3">
+                    <Server className="h-5 w-5 text-accent" />
+                  </div>
+                  <h3 className="font-display text-base font-bold text-foreground mb-2">Managed IT Services</h3>
+                  <p className="text-sm text-muted-foreground">Hardware, networks, security, monitoring, helpdesk, and infrastructure support.</p>
+                </div>
+              </div>
             </motion.div>
 
-            <div className="space-y-8">
-              <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-                <h3 className="font-display text-lg font-bold text-foreground mb-4">Healthcare IT Includes</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {healthcareITAreas.map((item, i) => (
-                    <motion.div
-                      key={item.label}
-                      {...fadeUp}
-                      transition={{ delay: 0.05 * i }}
-                      className="flex items-center gap-3 bg-card rounded-xl px-4 py-3 shadow-soft border border-border/40"
-                    >
-                      <item.icon className="h-4 w-4 text-accent flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground">{item.label}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-                <h3 className="font-display text-lg font-bold text-foreground mb-4">Technology Decisions Affect</h3>
-                <div className="flex flex-wrap gap-3">
-                  {techImpact.map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2"
-                    >
-                      <item.icon className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-xs font-semibold text-secondary-foreground">{item.label}</span>
+            <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
+              <h3 className="font-display text-lg font-bold text-foreground mb-4">Healthcare IT Includes</h3>
+              <div className="space-y-3">
+                {healthcareITAreas.map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    {...fadeUp}
+                    transition={{ delay: 0.05 * i }}
+                    className="flex items-center gap-3 bg-card rounded-xl px-4 py-3 shadow-soft border border-border/40"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                      <item.icon className="h-4 w-4 text-primary" />
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
+                    <span className="text-sm font-medium text-foreground">{item.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── Section 2 — New Clinics ── */}
+      {/* ── Section 2 — Managed IT Services ── */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Clinic Builds</p>
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Managed IT</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Technology Strategy for New Clinics
+              Managed IT Services for Healthcare Practices
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Technology planning is one of the most important parts of launching a new healthcare facility. The systems chosen at launch shape every operational decision that follows.
+              Many clinics do not have internal IT teams and require reliable IT infrastructure and support. Vitalis provides managed IT services designed specifically for healthcare environments.
             </p>
+            <div className="mt-6 inline-flex items-center gap-3 bg-card rounded-xl px-5 py-3 border border-border/40 shadow-soft">
+              <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+              <span className="text-sm font-medium text-foreground">
+                <strong>Set-it-and-forget-it model:</strong> Focus on patient care while IT is managed professionally.
+              </span>
+            </div>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Services list */}
-            <motion.div {...fadeUp} className="space-y-3">
-              <h3 className="font-display text-xl font-bold text-foreground mb-4">Vitalis supports new clinics with:</h3>
-              {newClinicServices.map((s, i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {managedITServices.map((service, i) => (
+              <motion.div
+                key={service.title}
+                {...fadeUp}
+                transition={{ delay: i * 0.05 }}
+                className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300"
+              >
+                <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center mb-4">
+                  <service.icon className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-3">{service.title}</h3>
+                <ul className="space-y-2 mb-4">
+                  {service.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-muted-foreground/80 italic border-t border-border/40 pt-3">{service.note}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 3 — IT for New Clinic Builds ── */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div {...fadeUp}>
+              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Clinic Builds</p>
+              <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
+                Technology &amp; Infrastructure for New Clinics
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                When building a new clinic, technology infrastructure must be designed correctly from the beginning. Poor planning leads to costly changes later — and disrupts clinical operations.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Vitalis supports new clinic builds by planning complete IT infrastructure, ensuring the clinic launches with fully operational and secure technology systems.
+              </p>
+            </motion.div>
+
+            <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="space-y-3">
+              <h3 className="font-display text-lg font-bold text-foreground mb-4">Vitalis plans for new clinics:</h3>
+              {newClinicITServices.map((s, i) => (
                 <motion.div
                   key={s}
                   {...fadeUp}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: 0.04 * i }}
                   className="flex items-center gap-3 bg-card rounded-xl px-5 py-3.5 shadow-soft border border-border/40"
                 >
-                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-accent">{i + 1}</span>
+                  <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-bold text-primary">{i + 1}</span>
                   </div>
                   <span className="text-sm font-medium text-foreground">{s}</span>
                 </motion.div>
               ))}
             </motion.div>
-
-            {/* Alignment + diagram */}
-            <div className="space-y-8">
-              <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-                <h3 className="font-display text-xl font-bold text-foreground mb-4">Technology must align with:</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {newClinicAlignment.map((item) => (
-                    <div
-                      key={item.label}
-                      className="bg-card rounded-2xl p-5 shadow-soft border border-border/40 flex flex-col items-center text-center gap-3"
-                    >
-                      <div className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center">
-                        <item.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <span className="text-sm font-semibold text-foreground">{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Flow diagram */}
-              <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                <h4 className="font-display text-sm font-bold text-foreground mb-5 text-center uppercase tracking-wider">
-                  Technology Integration Flow
-                </h4>
-                <div className="flex flex-col items-center gap-0">
-                  {[
-                    { icon: Cog, label: "Clinic Operations", color: "bg-secondary" },
-                    { icon: Monitor, label: "EMR System", color: "bg-primary/15" },
-                    { icon: BarChart3, label: "Reporting & Analytics", color: "bg-accent/15" },
-                    { icon: TrendingUp, label: "Financial Performance", color: "bg-secondary" },
-                    { icon: Activity, label: "Patient Experience", color: "bg-primary/15" },
-                  ].map((step, i, arr) => (
-                    <div key={step.label} className="flex flex-col items-center">
-                      <div className={`${step.color} rounded-xl px-6 py-3 flex items-center gap-3 w-full max-w-xs`}>
-                        <step.icon className="h-5 w-5 text-foreground flex-shrink-0" />
-                        <span className="text-sm font-semibold text-foreground">{step.label}</span>
-                      </div>
-                      {i < arr.length - 1 && (
-                        <div className="w-px h-6 bg-border" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Section 3 — Existing Clinics ── */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* ── Section 4 — IT Optimization for Existing Clinics ── */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Existing Practices</p>
@@ -323,57 +385,43 @@ const HealthcareIT = () => {
               Technology Optimization for Existing Clinics
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Many clinics operate with technology that is not fully optimized. Most practices only use a small portion of their EMR capabilities — leaving significant efficiency gains unrealized.
+              Many clinics operate with outdated or poorly configured IT environments. Vitalis helps existing clinics improve their infrastructure for reliable systems and stronger operational performance.
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 xl:gap-6 mb-14">
-            {existingClinicServices.map((item, i) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {existingClinicITServices.map((item, i) => (
               <motion.div
                 key={item.title}
                 {...fadeUp}
                 transition={{ delay: i * 0.04 }}
                 className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300"
               >
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mb-4">
+                  <Wrench className="h-5 w-5 text-primary" />
+                </div>
                 <h3 className="font-display text-base font-bold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
-
-          {/* Outcomes */}
-          <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 shadow-card border border-border/40 max-w-3xl mx-auto">
-            <h3 className="font-display text-xl font-bold text-foreground mb-6 text-center">
-              Technology optimization improves
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {optimizationOutcomes.map((o) => (
-                <div key={o.label} className="flex flex-col items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl ${o.color}/15 flex items-center justify-center`}>
-                    <o.icon className="h-5 w-5 text-foreground" />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground text-center">{o.label}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </section>
 
-      {/* ── Section 4 — EMR Platforms ── */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
+      {/* ── Section 5 — EMR & Healthcare Software ── */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16">
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">EMR Expertise</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Electronic Medical Records (EMR) Platforms
+              Electronic Medical Records &amp; Clinical Software
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Vitalis works with clinics using many EMR platforms. Each system has different strengths and workflows — and the right choice depends on the clinic's specialty, size, and operational model.
+              In addition to IT infrastructure, Vitalis supports clinics in selecting and optimizing EMR platforms. Each system has different strengths — and the right choice depends on the clinic's specialty, size, and operational model.
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {emrPlatforms.map((emr, i) => (
               <motion.div
                 key={emr.name}
@@ -396,48 +444,45 @@ const HealthcareIT = () => {
               className="bg-card/50 rounded-2xl p-7 border border-dashed border-border flex flex-col items-center justify-center text-center"
             >
               <RefreshCw className="h-8 w-8 text-muted-foreground/50 mb-3" />
-              <span className="text-sm font-medium text-muted-foreground">More platforms added over time</span>
+              <span className="text-sm font-medium text-muted-foreground">More platforms supported as needed</span>
             </motion.div>
           </div>
 
-          <motion.div {...fadeUp} className="mt-12 bg-card rounded-2xl p-7 shadow-soft border border-border/40 max-w-3xl">
+          <motion.div {...fadeUp} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 max-w-3xl">
             <h3 className="font-display text-lg font-bold text-foreground mb-3">Vitalis helps clinics:</h3>
             <div className="grid sm:grid-cols-2 gap-3">
-              {["Choose the right EMR", "Configure workflows", "Integrate external tools", "Optimize system usage"].map(
-                (s) => (
-                  <div key={s} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{s}</span>
-                  </div>
-                )
-              )}
+              {emrServices.map((s) => (
+                <div key={s} className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground">{s}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 5 — Dashboards & KPIs ── */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* ── Section 6 — Operational Dashboards ── */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <motion.div {...fadeUp}>
               <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Clinic Intelligence</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Operational Dashboards &amp; KPI Reporting
+                Operational Dashboards &amp; Data Intelligence
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                One of the most powerful uses of healthcare technology is operational intelligence. Vitalis designs custom dashboards and KPI tracking systems built around clinic data, integrating with EMR systems to surface the metrics that matter.
+                Vitalis helps clinics leverage their data through operational dashboards and KPI tracking systems. Dashboards integrate with EMR data to surface the metrics that matter — providing clinic leaders with visibility into operational performance.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Dashboards help clinic leaders understand operational performance, identify bottlenecks, improve financial outcomes, and track growth — all in real time.
+                With proper dashboards, clinic leaders can understand performance, identify bottlenecks, improve financial outcomes, and track growth — all in real time.
               </p>
             </motion.div>
 
             <div className="space-y-6">
-              {/* KPI grid */}
               <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                <h3 className="font-display text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Key Performance Indicators</h3>
-                <div className="grid grid-cols-3 gap-2.5">
+                <h3 className="font-display text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Example KPIs</h3>
+                <div className="grid grid-cols-2 gap-2.5">
                   {kpiExamples.map((kpi) => (
                     <div key={kpi} className="bg-secondary rounded-lg px-3 py-2.5 text-center">
                       <span className="text-xs font-semibold text-secondary-foreground">{kpi}</span>
@@ -477,132 +522,35 @@ const HealthcareIT = () => {
         </div>
       </section>
 
-      {/* ── Section 6 — Data & Reporting ── */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <motion.div {...fadeUp} className="text-center mb-14">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Data Strategy</p>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Data &amp; Reporting Strategy
-            </h2>
-            <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
-              Healthcare data is often underutilized. Vitalis helps clinics extract value from the data they already collect — building reporting systems that drive strategic decisions.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              { icon: Database, title: "Build Reporting Systems", desc: "Structure data into actionable reports." },
-              { icon: Server, title: "Extract EMR Data", desc: "Surface insights from clinical records." },
-              { icon: LineChart, title: "Identify Trends", desc: "Spot operational and financial patterns." },
-              { icon: Target, title: "Strategic Decisions", desc: "Use data to guide planning and growth." },
-            ].map((item, i) => (
-              <motion.div
-                key={item.title}
-                {...fadeUp}
-                transition={{ delay: i * 0.06 }}
-                className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 text-center"
-              >
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-display text-base font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div {...fadeUp} className="mt-12 bg-card rounded-2xl p-7 shadow-soft border border-border/40 max-w-3xl mx-auto">
-            <h3 className="font-display text-lg font-bold text-foreground mb-3">Strong reporting systems help clinics:</h3>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {["Improve operational efficiency", "Plan staffing strategically", "Understand financial performance", "Support expansion decisions"].map(
-                (s) => (
-                  <div key={s} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{s}</span>
-                  </div>
-                )
-              )}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Section 7 — Digital Health Tools ── */}
+      {/* ── Section 7 — Ongoing Technology Advisory ── */}
       <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div {...fadeUp}>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Digital Ecosystem</p>
-              <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology Integration &amp; Digital Health Tools
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Modern clinics rely on multiple digital tools beyond the EMR. From patient portals to virtual care platforms, these tools must work as an integrated ecosystem — not in silos.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Vitalis supports integration planning to ensure every tool connects seamlessly, reducing redundancy and improving both the patient and provider experience.
-              </p>
-            </motion.div>
-
-            {/* Ecosystem visual */}
-            <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-              <div className="relative">
-                {/* Center hub */}
-                <div className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                  <div className="flex justify-center mb-6">
-                    <div className="w-16 h-16 rounded-2xl bg-accent/15 flex items-center justify-center">
-                      <Shield className="h-8 w-8 text-accent" />
-                    </div>
-                  </div>
-                  <p className="text-center text-sm font-bold text-foreground mb-6">Integrated Technology Ecosystem</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {digitalTools.map((tool) => (
-                      <div
-                        key={tool.label}
-                        className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2.5"
-                      >
-                        <tool.icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                        <span className="text-xs font-medium text-secondary-foreground">{tool.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 8 — Ongoing Advisory ── */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div {...fadeUp}>
               <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Long-Term Partnership</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Healthcare IT as an Ongoing Advisory Service
+                Ongoing Technology Advisory
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Technology evolves quickly. Vitalis provides ongoing advisory support for healthcare technology — ensuring clinics stay ahead of changes and continuously optimize their systems.
+                Many clinics retain Vitalis for ongoing technology advisory services. Technology evolves quickly — and having a trusted partner ensures clinics stay ahead of changes and continuously optimize their systems.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Technology advisory can be part of ongoing strategic advisory relationships, providing clinics with a trusted partner for every technology decision.
+                This ensures clinics continue improving their technology environment as they grow, without needing to manage IT strategy internally.
               </p>
             </motion.div>
 
             <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="space-y-3">
-              {ongoingServices.map((s, i) => (
+              {ongoingAdvisoryServices.map((s, i) => (
                 <motion.div
-                  key={s}
+                  key={s.label}
                   {...fadeUp}
                   transition={{ delay: 0.05 * i }}
                   className="bg-card rounded-xl px-6 py-4 shadow-soft border border-border/40 flex items-center gap-3"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center flex-shrink-0">
-                    <RefreshCw className="h-4 w-4 text-accent" />
+                  <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center flex-shrink-0">
+                    <s.icon className="h-5 w-5 text-accent" />
                   </div>
-                  <span className="text-sm font-medium text-foreground">{s}</span>
+                  <span className="text-sm font-medium text-foreground">{s.label}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -611,15 +559,22 @@ const HealthcareIT = () => {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-20 lg:py-28 bg-background">
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl text-center">
           <motion.div {...fadeUp}>
-            <Monitor className="h-12 w-12 text-accent mx-auto mb-6" />
+            <div className="flex justify-center gap-4 mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center">
+                <Target className="h-7 w-7 text-primary" />
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center">
+                <Server className="h-7 w-7 text-accent" />
+              </div>
+            </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              Strategic healthcare technology advisory.
+              Complete healthcare IT support.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              Whether you're launching a new clinic, optimizing an existing practice, or building operational intelligence — Vitalis brings the strategic technology expertise your organization needs.
+              From strategic technology planning to managed IT infrastructure — Vitalis provides the complete technology expertise your clinic needs to operate efficiently and securely.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
