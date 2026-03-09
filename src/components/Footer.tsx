@@ -64,9 +64,9 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <Link to="/admin/submissions" className="text-sm text-primary-foreground/50 hover:text-primary-foreground/70 transition-colors cursor-default">
+          <p className="text-sm text-primary-foreground/50">
             © {new Date().getFullYear()} Vitalis Health Strategies. All rights reserved.
-          </Link>
+          </p>
           <div className="flex gap-6 text-sm text-primary-foreground/50">
             <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms</Link>
