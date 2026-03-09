@@ -8,10 +8,11 @@ import vitalisLogo from "@/assets/vitalis-logo.png";
 const navLinks = [
   { label: "About", href: "/about" },
   { label: "How We Work", href: "/how-we-work" },
+  { label: "Engagement", href: "/engagement" },
   { label: "Solutions", href: "/solutions" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Partners", href: "/partners" },
-  { label: "Clinic Audit", href: "/clinic-audit" },
+  { label: "Strategic Assessment", href: "/clinic-audit" },
   { label: "Contact", href: "/contact" },
 ];
 
