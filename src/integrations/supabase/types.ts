@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessment_intakes: {
+        Row: {
+          additional_notes: string | null
+          approximate_timeline: string | null
+          assessment_purpose: string
+          assigned_track: string
+          city: string | null
+          country: string | null
+          created_at: string
+          currently_operating: boolean | null
+          email: string
+          full_name: string
+          id: string
+          lead_source: string
+          looking_for: string | null
+          organization_name: string | null
+          phone: string | null
+          planning_new_facility: boolean | null
+          practice_type: string | null
+          preferred_followup: string | null
+          province_state: string | null
+          specialty: string | null
+          status: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          approximate_timeline?: string | null
+          assessment_purpose: string
+          assigned_track?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currently_operating?: boolean | null
+          email: string
+          full_name: string
+          id?: string
+          lead_source?: string
+          looking_for?: string | null
+          organization_name?: string | null
+          phone?: string | null
+          planning_new_facility?: boolean | null
+          practice_type?: string | null
+          preferred_followup?: string | null
+          province_state?: string | null
+          specialty?: string | null
+          status?: string
+        }
+        Update: {
+          additional_notes?: string | null
+          approximate_timeline?: string | null
+          assessment_purpose?: string
+          assigned_track?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currently_operating?: boolean | null
+          email?: string
+          full_name?: string
+          id?: string
+          lead_source?: string
+          looking_for?: string | null
+          organization_name?: string | null
+          phone?: string | null
+          planning_new_facility?: boolean | null
+          practice_type?: string | null
+          preferred_followup?: string | null
+          province_state?: string | null
+          specialty?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
