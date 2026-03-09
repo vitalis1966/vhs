@@ -27,7 +27,6 @@ const navLinks = [
   },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Partners", href: "/partners" },
-  { label: "Strategic Assessment", href: "/clinic-audit" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -94,6 +93,9 @@ export function Navbar() {
             )
           )}
           <Button variant="hero" size="default" asChild>
+            <Link to="/clinic-audit">Strategic Assessment</Link>
+          </Button>
+          <Button variant="hero" size="default" asChild>
             <Link to="/contact">Book a Consultation</Link>
           </Button>
         </div>
@@ -143,6 +145,9 @@ export function Navbar() {
               )
             )}
             <Button variant="hero" size="lg" asChild className="mt-2">
+              <Link to="/clinic-audit" onClick={() => setMobileOpen(false)}>Strategic Assessment</Link>
+            </Button>
+            <Button variant="hero" size="lg" asChild>
               <Link to="/contact" onClick={() => setMobileOpen(false)}>Book a Consultation</Link>
             </Button>
           </div>
