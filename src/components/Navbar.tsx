@@ -27,7 +27,6 @@ const navLinks = [
   },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Partners", href: "/partners" },
-  { label: "Strategic Assessment", href: "/clinic-audit" },
   { label: "Contact", href: "/contact" },
 ];
 
