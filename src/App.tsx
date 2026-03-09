@@ -15,6 +15,7 @@ import StrategicAssessment from "./pages/StrategicAssessment";
 import StrategicAssessmentIntake from "./pages/StrategicAssessmentIntake";
 import StrategicAssessmentConfirmation from "./pages/StrategicAssessmentConfirmation";
 import AssessmentClient from "./pages/assessment/AssessmentClient";
+import AssessmentReport from "./pages/assessment/AssessmentReport";
 import AssessmentList from "./pages/admin/AssessmentList";
 import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import Portfolio from "./pages/Portfolio";
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/strategic-assessment/intake" element={<StrategicAssessmentIntake />} />
           <Route path="/strategic-assessment/confirmation" element={<StrategicAssessmentConfirmation />} />
           <Route path="/assessment/:token" element={<AssessmentClient />} />
+          <Route path="/assessment/:token/report" element={<AssessmentReport />} />
           <Route path="/admin/assessments" element={<AssessmentList />} />
           <Route path="/admin/assessments/:id" element={<AssessmentEditor />} />
           <Route path="/portfolio" element={<Portfolio />} />

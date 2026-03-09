@@ -251,12 +251,23 @@ export default function AssessmentClient() {
             <p className="text-lg text-muted-foreground mb-4">
               Thank you for completing the {assessment?.title || "Strategic Assessment"}.
             </p>
-            <p className="text-muted-foreground mb-8">
-              Our team will review your responses and follow up with strategic insights tailored to your situation.
+            <p className="text-muted-foreground mb-4">
+              Your responses have been received. You can view a formatted summary of your submission below.
             </p>
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/">Return to Website</Link>
-            </Button>
+            <p className="text-sm text-muted-foreground mb-10">
+              Our team will review your assessment and follow up with strategic insights tailored to your situation.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="lg" asChild>
+                <Link to={`/assessment/${token}/report`}>
+                  View Response Summary
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/">Return to Website</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
         <Footer />
