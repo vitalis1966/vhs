@@ -4,15 +4,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const heroStats = [
-  { value: "Full-Cycle", label: "Inception to Exit" },
+  { value: "Full-Cycle", label: "Inception to Growth" },
   { value: "3Ps", label: "Physician · Practice · Patient" },
-  { value: "Calgary-Based", label: "Serving Alberta" },
+  { value: "Calgary-Based", label: "Serving Canada" },
 ];
 
 export function HeroSection() {
   return (
     <section className="relative min-h-[95vh] flex items-center bg-gradient-hero overflow-hidden">
-      {/* Decorative elements */}
       <div className="absolute top-20 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
 
@@ -49,7 +48,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed"
           >
-            Based in Calgary, Vitalis Health Strategies works with physicians and healthcare organizations across Alberta to design, launch, and optimize successful medical practices. From concept to transition, we create stronger practices and lasting value.
+            Based in Calgary, Vitalis Health Strategies supports physicians and healthcare organizations across Canada — helping them design, launch, and grow successful medical practices with coordinated strategic advisory.
           </motion.p>
 
           <motion.div
@@ -61,7 +60,7 @@ export function HeroSection() {
             {[
               "Development & Build — Transform concepts into state-of-the-art healthcare environments",
               "Operational Growth — Optimize operations, boost patient care, fuel long-term growth",
-              "Transition & Exit — Navigate complex transitions with confidence",
+              "Ongoing Advisory — Sustained strategic partnership through every stage",
             ].map((item) => (
               <div key={item} className="flex items-start gap-2 text-muted-foreground">
                 <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-1" />
@@ -88,7 +87,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Stats bar */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

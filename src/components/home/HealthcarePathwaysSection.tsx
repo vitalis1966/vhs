@@ -44,7 +44,7 @@ const pathways = [
     eyebrow: "Long-Term Partnership",
     title: "Strategic Advisory & Growth",
     description:
-      "Some organizations benefit from an ongoing advisory relationship. Vitalis provides long-term strategic guidance to help healthcare organizations navigate growth, expansion, recruitment, and complex transitions — as a consistent partner throughout the journey.",
+      "Some organizations benefit from an ongoing advisory relationship. Vitalis provides long-term strategic guidance to help healthcare organizations navigate growth, expansion, recruitment, and complex transitions.",
     services: [
       "Practice expansion and multi-location strategy",
       "Physician recruitment and succession planning",
@@ -75,7 +75,7 @@ export function HealthcarePathwaysSection() {
             Where are you in your journey?
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Vitalis Health Strategies works with physicians and healthcare organizations at every stage — from planning a first clinic to navigating growth, expansion, and long-term transition across Calgary and Alberta.
+            Based in Calgary, Vitalis Health Strategies works with physicians and healthcare organizations across Canada at every stage — from planning a first clinic to navigating growth, expansion, and long-term advisory.
           </p>
         </motion.div>
 
@@ -110,22 +110,14 @@ export function HealthcarePathwaysSection() {
 
               <ul className="space-y-2.5 mb-8 flex-1">
                 {pathway.services.map((service) => (
-                  <li
-                    key={service}
-                    className="flex items-start gap-2.5 text-sm text-muted-foreground"
-                  >
+                  <li key={service} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0 mt-2" />
                     <span>{service}</span>
                   </li>
                 ))}
               </ul>
 
-              <Button
-                variant="hero-outline"
-                size="default"
-                asChild
-                className="w-full mt-auto"
-              >
+              <Button variant="hero-outline" size="default" asChild className="w-full mt-auto">
                 <Link to={pathway.href}>
                   {pathway.cta}
                   <ArrowRight className="ml-2 h-4 w-4" />

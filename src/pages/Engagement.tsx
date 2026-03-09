@@ -88,7 +88,7 @@ const Engagement = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Healthcare ventures often involve multiple advisors — architects, legal counsel, lenders, and technology specialists. Vitalis acts as a strategic coordination hub so decisions stay aligned and progress remains focused throughout the engagement.
+            Healthcare ventures often involve multiple advisors — architects, legal counsel, lenders, and technology specialists. We work alongside you to coordinate these relationships so decisions stay aligned and progress remains focused throughout the engagement.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-10">
             <Button variant="hero" size="xl" asChild>
@@ -147,7 +147,7 @@ const Engagement = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl text-center">
           <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-5">Built for long-term partnership</h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            While some clients engage for specific projects, many retain Vitalis for ongoing strategic advisory. This continuity helps maintain alignment as organizations scale, adapt, and pursue new opportunities.
+            While some clients engage for specific projects, many retain Vitalis for ongoing strategic advisory. This continuity helps maintain alignment as organizations scale, adapt, and pursue new opportunities across Calgary and Canada.
           </p>
         </div>
       </section>
