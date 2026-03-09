@@ -164,7 +164,7 @@ const StrategicAssessmentIntake = () => {
     if (!validate()) return;
 
     setSubmitting(true);
-    const track = determineTrack(form.assessment_purpose);
+    const { track, reason } = determineTrack(form);
 
     try {
       // Insert intake and get the id back
@@ -186,14 +186,15 @@ const StrategicAssessmentIntake = () => {
         preferred_followup: form.preferred_followup || null,
         additional_notes: form.additional_notes.trim() || null,
         assigned_track: track,
+        assignment_reason: reason,
       } as any).select().single() as any;
 
       if (error) throw error;
 
       // Create assessment session if track is known
       let accessToken = "";
-      if (track !== "unknown") {
-        const slug = track === "new_clinic" ? "new-clinic" : "existing-clinic";
+      if (track !== "needs_review") {
+        const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
         const { data: assessment } = await (supabase.from("assessments" as any)
           .select("id")
           .eq("slug", slug)

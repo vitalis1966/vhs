@@ -43,9 +43,9 @@ const trackContent = {
 
 const StrategicAssessmentConfirmation = () => {
   const [searchParams] = useSearchParams();
-  const track = (searchParams.get("track") || "unknown") as keyof typeof trackContent;
+  const track = (searchParams.get("track") || "needs_review") as keyof typeof trackContent;
   const token = searchParams.get("token");
-  const content = trackContent[track] || trackContent.unknown;
+  const content = trackContent[track] || trackContent.needs_review;
   const Icon = content.icon;
 
   return (
