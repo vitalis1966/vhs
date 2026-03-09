@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { LifecycleSection } from "@/components/home/LifecycleSection";
 import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { ThreePsSection } from "@/components/home/ThreePsSection";
-import { TrustedNetworkSection } from "@/components/home/TrustedNetworkSection";
+import { StrategicEcosystemSection } from "@/components/home/StrategicEcosystemSection";
 import { HealthcarePathwaysSection } from "@/components/home/HealthcarePathwaysSection";
 import { SolutionsPreview } from "@/components/home/SolutionsPreview";
 import { AuditCtaSection } from "@/components/home/AuditCtaSection";
@@ -20,7 +20,7 @@ const Index = () => {
       <LifecycleSection />
       <CredibilitySection />
       <ThreePsSection />
-      <TrustedNetworkSection />
+      <StrategicEcosystemSection />
       <HealthcarePathwaysSection />
       <SolutionsPreview />
       <AuditCtaSection />
