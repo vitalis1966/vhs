@@ -16,7 +16,15 @@ const navLinks = [
   },
   { label: "How We Work", href: "/how-we-work" },
   { label: "Engagement", href: "/engagement" },
-  { label: "Solutions", href: "/solutions" },
+  {
+    label: "Solutions",
+    href: "/solutions",
+    children: [
+      { label: "Overview", href: "/solutions" },
+      { label: "New Clinics", href: "/solutions/new-clinics" },
+      { label: "Existing Clinics", href: "/solutions/existing-clinics" },
+    ],
+  },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Partners", href: "/partners" },
   { label: "Strategic Assessment", href: "/clinic-audit" },
