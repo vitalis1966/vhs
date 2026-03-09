@@ -81,8 +81,11 @@ export function HeroSection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="hero-outline" size="xl" asChild>
-              <Link to="/clinic-audit">Explore Your Practice Strategy</Link>
+            <Button variant="hero" size="xl" asChild>
+              <Link to="/clinic-audit">
+                Strategic Assessment
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
           </motion.div>
         </div>

@@ -32,8 +32,8 @@ const stages = [
     isOngoing: false,
   },
   {
-    label: "Strategic Advisory",
-    description: "Ongoing advisory partnership for sustained excellence and long-term growth.",
+    label: "Strategic Advisory & Ongoing Improvement",
+    description: "Retained advisory partnership for sustained excellence and long-term strategic growth.",
     isOngoing: true,
   },
 ];
