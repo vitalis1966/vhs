@@ -5,7 +5,7 @@ import { LifecycleSection } from "@/components/home/LifecycleSection";
 import { ThreePsSection } from "@/components/home/ThreePsSection";
 import { SolutionsPreview } from "@/components/home/SolutionsPreview";
 import { CredibilitySection } from "@/components/home/CredibilitySection";
-import { PartnersSection } from "@/components/home/PartnersSection";
+import { TrustedNetworkSection } from "@/components/home/TrustedNetworkSection";
 import { AuditCtaSection } from "@/components/home/AuditCtaSection";
 import { MnASection } from "@/components/home/MnASection";
 import { ProcessSection } from "@/components/home/ProcessSection";
