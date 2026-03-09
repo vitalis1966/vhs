@@ -76,10 +76,36 @@ const provinceOptions = [
   "Northwest Territories", "Nunavut", "Yukon", "Other / Outside Canada",
 ];
 
-function determineTrack(purpose: string): string {
-  const match = assessmentPurposeOptions.find((o) => o.value === purpose);
-  if (!match) return "unknown";
-  return match.track === "new" ? "new_clinic" : match.track === "existing" ? "existing_clinic" : "unknown";
+function determineTrack(form: {
+  assessment_purpose: string;
+  currently_operating: string;
+  planning_new_facility: string;
+}): { track: string; reason: string } {
+  const match = assessmentPurposeOptions.find((o) => o.value === form.assessment_purpose);
+
+  // Primary signal: assessment purpose
+  if (match && match.track === "new") {
+    return { track: "new_clinic_build", reason: `assessment_for:${form.assessment_purpose}` };
+  }
+  if (match && match.track === "existing") {
+    return { track: "existing_clinic", reason: `assessment_for:${form.assessment_purpose}` };
+  }
+
+  // Fallback for "not_sure" or missing: use secondary signals
+  if (form.planning_new_facility === "yes") {
+    return { track: "new_clinic_build", reason: "planning_new_facility:yes" };
+  }
+  if (form.currently_operating === "yes") {
+    return { track: "existing_clinic", reason: "currently_operating:yes" };
+  }
+  if (form.planning_new_facility === "exploring") {
+    return { track: "new_clinic_build", reason: "planning_new_facility:exploring" };
+  }
+  if (form.currently_operating === "in_planning") {
+    return { track: "new_clinic_build", reason: "currently_operating:in_planning" };
+  }
+
+  return { track: "needs_review", reason: "fallback:not_sure" };
 }
 
 const fadeUp = {
