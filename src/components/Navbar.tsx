@@ -148,7 +148,7 @@ export function Navbar() {
               )
             )}
             <Button variant="hero" size="lg" asChild className="mt-2">
-              <Link to="/clinic-audit" onClick={() => setMobileOpen(false)}>Strategic Assessment</Link>
+              <Link to="/strategic-assessment" onClick={() => setMobileOpen(false)}>Strategic Assessment</Link>
             </Button>
             <Button variant="hero" size="lg" asChild>
               <Link to="/contact" onClick={() => setMobileOpen(false)}>Book a Consultation</Link>
