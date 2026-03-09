@@ -291,6 +291,66 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_assessment_reports: {
+        Row: {
+          analysis_data: Json | null
+          analysis_status: string
+          analysis_version: number
+          assessment_id: string
+          created_at: string
+          executive_summary: string | null
+          id: string
+          last_analysis_run: string | null
+          overall_score: number | null
+          readiness_category: string | null
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          analysis_data?: Json | null
+          analysis_status?: string
+          analysis_version?: number
+          assessment_id: string
+          created_at?: string
+          executive_summary?: string | null
+          id?: string
+          last_analysis_run?: string | null
+          overall_score?: number | null
+          readiness_category?: string | null
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          analysis_data?: Json | null
+          analysis_status?: string
+          analysis_version?: number
+          assessment_id?: string
+          created_at?: string
+          executive_summary?: string | null
+          id?: string
+          last_analysis_run?: string | null
+          overall_score?: number | null
+          readiness_category?: string | null
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_assessment_reports_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_assessment_reports_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
