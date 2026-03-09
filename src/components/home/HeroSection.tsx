@@ -6,7 +6,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 const heroStats = [
   { value: "Full-Cycle", label: "Inception to Exit" },
   { value: "3Ps", label: "Physician · Practice · Patient" },
-  { value: "Canada-Wide", label: "Healthcare Focus" },
+  { value: "Calgary-Based", label: "Serving Alberta" },
 ];
 
 export function HeroSection() {
