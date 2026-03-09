@@ -25,6 +25,7 @@ const navLinks = [
       { label: "Existing Clinics", href: "/solutions/existing-clinics" },
     ],
   },
+  { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Partners", href: "/partners" },
   { label: "Contact", href: "/contact" },
