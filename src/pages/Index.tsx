@@ -17,12 +17,12 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <LifecycleSection />
+      <CredibilitySection />
+      <TrustedNetworkSection />
       <ThreePsSection />
       <SolutionsPreview />
-      <CredibilitySection />
       <AuditCtaSection />
       <MnASection />
-      <PartnersSection />
       <ProcessSection />
       <FinalCtaSection />
       <Footer />
