@@ -95,7 +95,7 @@ export function Navbar() {
           )}
           <div className="flex items-center gap-2 ml-2">
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/clinic-audit">Strategic Assessment</Link>
+              <Link to="/strategic-assessment">Strategic Assessment</Link>
             </Button>
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
               <Link to="/contact">Book a Consultation</Link>
