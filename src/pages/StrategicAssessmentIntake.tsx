@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Compass, ArrowRight, Loader2 } from "lucide-react";
+import { EmailAutomationService } from "@/services/EmailAutomationService";
 
 const assessmentPurposeOptions = [
   { value: "building_new_clinic", label: "Building a new clinic", track: "new" },
