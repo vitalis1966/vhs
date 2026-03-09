@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import HowWeWork from "./pages/HowWeWork";
 import Solutions from "./pages/Solutions";
+import SolutionsNewClinics from "./pages/SolutionsNewClinics";
+import SolutionsExistingClinics from "./pages/SolutionsExistingClinics";
 import Contact from "./pages/Contact";
 import ClinicAudit from "./pages/ClinicAudit";
 import Portfolio from "./pages/Portfolio";
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/about/mission-vision" element={<MissionVision />} />
           <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/solutions" element={<Solutions />} />
+          <Route path="/solutions/new-clinics" element={<SolutionsNewClinics />} />
+          <Route path="/solutions/existing-clinics" element={<SolutionsExistingClinics />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/clinic-audit" element={<ClinicAudit />} />
           <Route path="/portfolio" element={<Portfolio />} />
