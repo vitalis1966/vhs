@@ -20,6 +20,7 @@ import AssessmentList from "./pages/admin/AssessmentList";
 import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import SubmissionsDashboard from "./pages/admin/SubmissionsDashboard";
 import InternalReport from "./pages/admin/InternalReport";
+import AssessmentImport from "./pages/admin/AssessmentImport";
 import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
