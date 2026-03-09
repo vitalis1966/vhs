@@ -49,7 +49,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed"
           >
-            Vitalis Health Strategies is your trusted partner in mastering the complete lifecycle of your healthcare facility. From initial development through operational growth to transition and exit — we craft innovative, customized solutions designed to drive sustainable growth and enhance patient care.
+            Based in Calgary, Vitalis Health Strategies works with physicians and healthcare organizations across Alberta to design, launch, and optimize successful medical practices. From concept to transition, we create stronger practices and lasting value.
           </motion.p>
 
           <motion.div
