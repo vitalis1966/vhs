@@ -14,6 +14,7 @@ const footerLinks = {
     { label: "Portfolio", href: "/portfolio" },
     { label: "Partners", href: "/partners" },
     { label: "Contact", href: "/contact" },
+    { label: "Admin Login", href: "/admin/login" },
   ],
   Resources: [
     { label: "Clinic Audit", href: "/clinic-audit" },
