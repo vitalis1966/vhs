@@ -87,7 +87,7 @@ const ClinicAudit = () => {
                   </ul>
                 </div>
                 <Button variant="hero-outline" size="default" asChild className="mt-8">
-                  <Link to="/contact">Request This Audit <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  <Link to="/contact">Request This Assessment <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
               </motion.div>
             ))}
