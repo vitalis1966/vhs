@@ -1,0 +1,1 @@
+ALTER TABLE public.assessment_intakes ADD COLUMN assignment_reason text;

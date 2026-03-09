@@ -20,6 +20,7 @@ export type Database = {
           approximate_timeline: string | null
           assessment_purpose: string
           assigned_track: string
+          assignment_reason: string | null
           city: string | null
           country: string | null
           created_at: string
@@ -43,6 +44,7 @@ export type Database = {
           approximate_timeline?: string | null
           assessment_purpose: string
           assigned_track?: string
+          assignment_reason?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -66,6 +68,7 @@ export type Database = {
           approximate_timeline?: string | null
           assessment_purpose?: string
           assigned_track?: string
+          assignment_reason?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
