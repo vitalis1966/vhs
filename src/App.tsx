@@ -31,6 +31,7 @@ const App = () => (
           <Route path="/clinic-audit" element={<ClinicAudit />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/partners" element={<Partners />} />
+          <Route path="/engagement" element={<Engagement />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
