@@ -15,6 +15,7 @@ import StrategicAssessment from "./pages/StrategicAssessment";
 import StrategicAssessmentIntake from "./pages/StrategicAssessmentIntake";
 import StrategicAssessmentConfirmation from "./pages/StrategicAssessmentConfirmation";
 import AssessmentClient from "./pages/assessment/AssessmentClient";
+import AssessmentReport from "./pages/assessment/AssessmentReport";
 import AssessmentList from "./pages/admin/AssessmentList";
 import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import Portfolio from "./pages/Portfolio";
