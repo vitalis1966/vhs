@@ -54,7 +54,7 @@ export function Navbar() {
               >
                 <button
                   className={cn(
-                    "text-sm font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1",
+                    "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap",
                     location.pathname.startsWith(link.href) ? "text-primary" : "text-muted-foreground"
                   )}
                 >
