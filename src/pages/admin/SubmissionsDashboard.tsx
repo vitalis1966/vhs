@@ -35,6 +35,9 @@ interface SubmissionRow {
   analysis_status: string | null;
   overall_score: number | null;
   readiness_category: string | null;
+  lifecycle_status: string | null;
+  email_count: number;
+  last_activity_at: string | null;
 }
 
 const fadeUp = {
@@ -89,15 +92,19 @@ export default function SubmissionsDashboard() {
       // Get intake info
       let clientName = "Unknown";
       let organization = "—";
+      let lifecycleStatus: string | null = null;
+      let lastActivityAt: string | null = null;
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, organization_name")
+          .select("full_name, organization_name, lifecycle_status, last_activity_at")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
           clientName = intake.full_name || "Unknown";
           organization = intake.organization_name || "—";
+          lifecycleStatus = intake.lifecycle_status || null;
+          lastActivityAt = intake.last_activity_at || null;
         }
       }
 
@@ -107,6 +114,12 @@ export default function SubmissionsDashboard() {
         .select("id, analysis_status, overall_score, readiness_category")
         .eq("session_id", sess.id)
         .single() as any);
+
+      // Get email count
+      const { data: emails } = await (supabase
+        .from("email_events" as any)
+        .select("id")
+        .eq("session_id", sess.id) as any);
 
       rows.push({
         session_id: sess.id,
@@ -120,6 +133,9 @@ export default function SubmissionsDashboard() {
         analysis_status: report?.analysis_status || null,
         overall_score: report?.overall_score || null,
         readiness_category: report?.readiness_category || null,
+        lifecycle_status: lifecycleStatus,
+        email_count: emails?.length || 0,
+        last_activity_at: lastActivityAt,
       });
     }
 
@@ -201,9 +217,11 @@ export default function SubmissionsDashboard() {
                     <TableHead>Client</TableHead>
                     <TableHead>Organization</TableHead>
                     <TableHead>Assessment</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Submitted</TableHead>
                     <TableHead>Analysis</TableHead>
                     <TableHead>Score</TableHead>
+                    <TableHead>Emails</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -216,6 +234,15 @@ export default function SubmissionsDashboard() {
                         <Badge variant="outline" className="text-xs">
                           {sub.assessment_slug === "new-clinic-build" ? "New Clinic" : "Existing Clinic"}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {sub.lifecycle_status ? (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {sub.lifecycle_status.replace(/_/g, " ")}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {formatDate(sub.submitted_at)}
@@ -250,6 +277,9 @@ export default function SubmissionsDashboard() {
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-muted-foreground">{sub.email_count}</span>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">

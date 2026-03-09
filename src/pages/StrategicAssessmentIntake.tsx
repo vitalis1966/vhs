@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Compass, ArrowRight, Loader2 } from "lucide-react";
+import { EmailAutomationService } from "@/services/EmailAutomationService";
 
 const assessmentPurposeOptions = [
   { value: "building_new_clinic", label: "Building a new clinic", track: "new" },
@@ -191,8 +192,18 @@ const StrategicAssessmentIntake = () => {
 
       if (error) throw error;
 
+      // Send intake confirmation email
+      if (intakeData?.id) {
+        EmailAutomationService.sendIntakeConfirmation(
+          intakeData.id,
+          form.full_name.trim(),
+          form.email.trim()
+        );
+      }
+
       // Create assessment session if track is known
       let accessToken = "";
+      let sessionId = "";
       if (track !== "needs_review") {
         const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
         const { data: assessment } = await (supabase.from("assessments" as any)
@@ -202,13 +213,42 @@ const StrategicAssessmentIntake = () => {
 
         if (assessment) {
           accessToken = crypto.randomUUID();
-          await (supabase.from("assessment_sessions" as any).insert({
+          const { data: sessionData } = await (supabase.from("assessment_sessions" as any).insert({
             intake_id: intakeData?.id || null,
             assessment_id: assessment.id,
             access_token: accessToken,
             status: "in_progress",
             current_section_index: 0,
-          }) as any);
+          }).select().single() as any);
+
+          sessionId = sessionData?.id || "";
+
+          // Update intake with session reference and lifecycle
+          if (intakeData?.id && sessionId) {
+            await (supabase.from("assessment_intakes" as any)
+              .update({
+                session_id: sessionId,
+                lifecycle_status: "assessment_assigned",
+                last_activity_at: new Date().toISOString(),
+              })
+              .eq("id", intakeData.id) as any);
+          }
+
+          // Send assessment access email
+          if (intakeData?.id) {
+            EmailAutomationService.sendAssessmentAccess(
+              intakeData.id,
+              sessionId,
+              form.full_name.trim(),
+              form.email.trim(),
+              accessToken
+            );
+          }
+
+          // Schedule reminders
+          if (sessionId) {
+            EmailAutomationService.scheduleReminders(sessionId);
+          }
         }
       }
 
