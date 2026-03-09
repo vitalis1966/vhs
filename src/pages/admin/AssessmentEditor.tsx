@@ -32,6 +32,7 @@ import {
   Save,
   GripVertical,
   X,
+  Upload,
 } from "lucide-react";
 
 interface SectionWithQuestions extends AssessmentSection {
