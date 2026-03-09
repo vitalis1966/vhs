@@ -141,7 +141,8 @@ const StrategicAssessmentIntake = () => {
     const track = determineTrack(form.assessment_purpose);
 
     try {
-      const { error } = await supabase.from("assessment_intakes").insert({
+      // Insert intake and get the id back
+      const { data: intakeData, error } = await supabase.from("assessment_intakes").insert({
         full_name: form.full_name.trim(),
         organization_name: form.organization_name.trim() || null,
         email: form.email.trim(),
@@ -159,11 +160,34 @@ const StrategicAssessmentIntake = () => {
         preferred_followup: form.preferred_followup || null,
         additional_notes: form.additional_notes.trim() || null,
         assigned_track: track,
-      } as any);
+      } as any).select().single() as any;
 
       if (error) throw error;
 
-      navigate(`/strategic-assessment/confirmation?track=${track}`);
+      // Create assessment session if track is known
+      let accessToken = "";
+      if (track !== "unknown") {
+        const slug = track === "new_clinic" ? "new-clinic" : "existing-clinic";
+        const { data: assessment } = await (supabase.from("assessments" as any)
+          .select("id")
+          .eq("slug", slug)
+          .single() as any);
+
+        if (assessment) {
+          accessToken = crypto.randomUUID();
+          await (supabase.from("assessment_sessions" as any).insert({
+            intake_id: intakeData?.id || null,
+            assessment_id: assessment.id,
+            access_token: accessToken,
+            status: "in_progress",
+            current_section_index: 0,
+          }) as any);
+        }
+      }
+
+      const params = new URLSearchParams({ track });
+      if (accessToken) params.set("token", accessToken);
+      navigate(`/strategic-assessment/confirmation?${params.toString()}`);
     } catch (err: any) {
       console.error("Intake submission error:", err);
       toast({

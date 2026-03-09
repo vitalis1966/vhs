@@ -86,6 +86,208 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_questions: {
+        Row: {
+          created_at: string | null
+          field_type: string
+          helper_text: string | null
+          id: string
+          is_required: boolean | null
+          options: Json | null
+          question_text: string
+          section_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string | null
+          field_type?: string
+          helper_text?: string | null
+          id?: string
+          is_required?: boolean | null
+          options?: Json | null
+          question_text: string
+          section_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string | null
+          field_type?: string
+          helper_text?: string | null
+          id?: string
+          is_required?: boolean | null
+          options?: Json | null
+          question_text?: string
+          section_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_responses: {
+        Row: {
+          id: string
+          question_id: string
+          response_json: Json | null
+          response_value: string | null
+          session_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          question_id: string
+          response_json?: Json | null
+          response_value?: string | null
+          session_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          question_id?: string
+          response_json?: Json | null
+          response_value?: string | null
+          session_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_sections: {
+        Row: {
+          assessment_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          assessment_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          assessment_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_sections_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_sessions: {
+        Row: {
+          access_token: string
+          assessment_id: string
+          created_at: string | null
+          current_section_index: number | null
+          id: string
+          intake_id: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_token: string
+          assessment_id: string
+          created_at?: string | null
+          current_section_index?: number | null
+          id?: string
+          intake_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          assessment_id?: string
+          created_at?: string | null
+          current_section_index?: number | null
+          id?: string
+          intake_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_sessions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_sessions_intake_id_fkey"
+            columns: ["intake_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_intakes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_published: boolean | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

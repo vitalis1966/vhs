@@ -14,6 +14,9 @@ import ClinicAudit from "./pages/ClinicAudit";
 import StrategicAssessment from "./pages/StrategicAssessment";
 import StrategicAssessmentIntake from "./pages/StrategicAssessmentIntake";
 import StrategicAssessmentConfirmation from "./pages/StrategicAssessmentConfirmation";
+import AssessmentClient from "./pages/assessment/AssessmentClient";
+import AssessmentList from "./pages/admin/AssessmentList";
+import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
@@ -42,6 +45,9 @@ const App = () => (
           <Route path="/strategic-assessment" element={<StrategicAssessment />} />
           <Route path="/strategic-assessment/intake" element={<StrategicAssessmentIntake />} />
           <Route path="/strategic-assessment/confirmation" element={<StrategicAssessmentConfirmation />} />
+          <Route path="/assessment/:token" element={<AssessmentClient />} />
+          <Route path="/admin/assessments" element={<AssessmentList />} />
+          <Route path="/admin/assessments/:id" element={<AssessmentEditor />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />
