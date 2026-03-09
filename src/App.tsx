@@ -53,6 +53,7 @@ const App = () => (
           <Route path="/assessment/:token/report" element={<AssessmentReport />} />
           <Route path="/admin/assessments" element={<AssessmentList />} />
           <Route path="/admin/assessments/:id" element={<AssessmentEditor />} />
+          <Route path="/admin/assessments/:id/import" element={<AssessmentImport />} />
           <Route path="/admin/submissions" element={<SubmissionsDashboard />} />
           <Route path="/admin/submissions/:sessionId" element={<InternalReport />} />
           <Route path="/portfolio" element={<Portfolio />} />
