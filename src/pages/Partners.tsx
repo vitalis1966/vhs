@@ -20,9 +20,9 @@ const partnerGroups = [
     leadPartner: {
       name: "ATB Financial — Healthcare & Private Wealth",
       description:
-        "ATB Financial provides specialized banking and advisory services for healthcare professionals. Their healthcare and private wealth teams support physicians and clinic operators with financing, capital planning, and long-term financial strategy.",
+        "ATB Financial provides specialized banking and advisory services for healthcare professionals. Their healthcare and private wealth teams support physicians and clinic operators with clinic financing, capital planning, practice acquisition financing, and long-term financial strategy.",
       collaboration:
-        "Vitalis works closely with ATB to support clients with clinic financing, facility builds, financial restructuring, and growth planning.",
+        "Vitalis works with ATB to support clients with clinic development financing, facility builds, financial restructuring, and growth planning.",
     },
     support: [
       "Healthcare lenders and financing specialists",
@@ -38,9 +38,9 @@ const partnerGroups = [
     leadPartner: {
       name: "Holland Design",
       description:
-        "Holland Design is an architectural and design firm with experience in healthcare facility planning and medical environments.",
+        "Holland Design specializes in healthcare environments and facility design, creating clinical spaces that support operational efficiency and patient experience.",
       collaboration:
-        "Vitalis collaborates with Holland Design to ensure clinic layouts support operational workflows, patient flow, and long-term practice growth.",
+        "Vitalis collaborates with Holland Design to ensure clinic layouts support operational workflows, patient flow, staffing models, and long-term practice growth.",
     },
     support: [
       "Healthcare-focused architectural consultants",
@@ -56,9 +56,9 @@ const partnerGroups = [
     leadPartner: {
       name: "Field Law",
       description:
-        "Field Law supports healthcare organizations with regulatory guidance, corporate structuring, transaction support, and legal risk management.",
+        "Field Law provides legal advisory services relevant to healthcare ventures and organizations, including regulatory guidance, corporate structuring, and transaction support.",
       collaboration:
-        "Vitalis collaborates with Field Law to align legal structure with operational and strategic decisions throughout the lifecycle of healthcare ventures.",
+        "Vitalis works with legal partners to ensure that business structures, regulatory considerations, and agreements align with operational strategy throughout the lifecycle of healthcare ventures.",
     },
     support: [
       "Healthcare regulatory and licensing guidance",
@@ -74,7 +74,7 @@ const partnerGroups = [
     leadPartner: {
       name: "Healthcare Technology Providers",
       description:
-        "Vitalis works with leading technology providers to support EHR strategy, workflow-aligned system selection, and digital modernization.",
+        "Vitalis works with leading technology providers to support EHR strategy, workflow-aligned system selection, and digital modernization for healthcare organizations.",
       collaboration:
         "We help ensure technology decisions align with staffing models, patient flow, and long-term operational goals.",
     },
@@ -92,7 +92,7 @@ const partnerGroups = [
     leadPartner: {
       name: "Recruitment & Workforce Network",
       description:
-        "Our network includes physician recruitment specialists and workforce advisors that help clinics build resilient teams.",
+        "Our network includes physician recruitment specialists and workforce advisors that help clinics build resilient teams aligned with growth strategy.",
       collaboration:
         "Vitalis integrates recruitment planning with operational and financial strategy to support long-term practice sustainability.",
     },
@@ -112,7 +112,7 @@ const partnerGroups = [
       description:
         "Depending on project scope, Vitalis can coordinate additional advisors in compliance, operations, financing, and implementation support.",
       collaboration:
-        "This coordinated model helps physicians avoid managing disconnected specialists while maintaining strategic alignment.",
+        "This coordinated model helps physicians avoid managing disconnected specialists while maintaining strategic alignment across the project.",
     },
     support: [
       "Regulatory and accreditation advisors",
@@ -150,17 +150,37 @@ const Partners = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Healthcare projects often involve architects, lenders, legal advisors, technology vendors, and consultants. Vitalis coordinates these relationships so physicians and healthcare leaders do not have to manage fragmented advisory structures alone.
+            Healthcare ventures often require multiple advisors — architects, lenders, legal counsel, technology vendors, and consultants. Vitalis works alongside clients to coordinate these relationships so physicians and healthcare leaders can focus on what matters most.
           </motion.p>
         </div>
       </section>
 
-      <section className="py-20 lg:py-28 bg-background">
+      {/* Why we collaborate */}
+      <section className="py-16 lg:py-20 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground mb-6">
+              Why Vitalis collaborates with partners
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
+              Healthcare projects rarely involve a single area of expertise. Rather than positioning ourselves as the expert in every domain, we work alongside trusted professionals who specialize in finance, architecture, legal, and technology — helping align their contributions with the overall strategy of the project.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Partner categories */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="mb-10">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Explore Partner Categories</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Each category is part of a coordinated model designed to align decisions across financing, design, legal structure, operations, and technology.
+              Click on each category to learn more about the role these partners play and how Vitalis collaborates with them.
             </p>
           </div>
 
