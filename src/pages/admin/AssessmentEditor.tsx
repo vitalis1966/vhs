@@ -284,6 +284,12 @@ export default function AssessmentEditor() {
               <p className="mt-2 text-muted-foreground">{assessment?.description}</p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
+              <Button variant="outline" size="sm" asChild>
+                <Link to={`/admin/assessments/${id}/import`}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Import from PDF
+                </Link>
+              </Button>
               <span className="text-sm text-muted-foreground">Published</span>
               <Switch checked={assessment?.is_published || false} onCheckedChange={togglePublished} />
             </div>
