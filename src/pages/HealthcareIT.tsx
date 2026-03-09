@@ -408,79 +408,50 @@ const HealthcareIT = () => {
         </div>
       </section>
 
-      {/* ── Section 5 — EMR & Healthcare Software ── */}
+      {/* ── Section 5 — Clinic Intelligence, Dashboards & Data Strategy ── */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div {...fadeUp} className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">EMR Expertise</p>
+          <motion.div {...fadeUp} className="mb-16 max-w-3xl">
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Clinic Intelligence</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Electronic Medical Records &amp; Clinical Software
+              Operational Dashboards &amp; EMR Data Intelligence
             </h2>
-            <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              In addition to IT infrastructure, Vitalis supports clinics in selecting and optimizing EMR platforms. Each system has different strengths — and the right choice depends on the clinic's specialty, size, and operational model.
+            <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
+              Healthcare clinics generate significant operational data through their EMR systems. When structured correctly, this data provides insight into clinic performance, provider productivity, patient access, and financial outcomes.
+            </p>
+            <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
+              Vitalis helps clinics transform their operational data into clear dashboards, KPIs, and decision-making tools.
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {emrPlatforms.map((emr, i) => (
-              <motion.div
-                key={emr.name}
-                {...fadeUp}
-                transition={{ delay: i * 0.06 }}
-                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300"
-              >
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
-                  <Laptop className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-display text-lg font-bold text-foreground mb-3">{emr.name}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{emr.description}</p>
-              </motion.div>
-            ))}
-
-            {/* More coming */}
-            <motion.div
-              {...fadeUp}
-              transition={{ delay: 0.35 }}
-              className="bg-card/50 rounded-2xl p-7 border border-dashed border-border flex flex-col items-center justify-center text-center"
-            >
-              <RefreshCw className="h-8 w-8 text-muted-foreground/50 mb-3" />
-              <span className="text-sm font-medium text-muted-foreground">More platforms supported as needed</span>
-            </motion.div>
-          </div>
-
-          <motion.div {...fadeUp} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 max-w-3xl">
-            <h3 className="font-display text-lg font-bold text-foreground mb-3">Vitalis helps clinics:</h3>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {emrServices.map((s) => (
-                <div key={s} className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground">{s}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Section 6 — Operational Dashboards ── */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Custom Clinic Dashboards */}
+          <div className="grid lg:grid-cols-2 gap-16 items-start mb-20">
             <motion.div {...fadeUp}>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Clinic Intelligence</p>
-              <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Operational Dashboards &amp; Data Intelligence
-              </h2>
+              <h3 className="font-display text-2xl font-bold text-foreground mb-4">Custom Clinic Dashboards</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Vitalis helps clinics leverage their data through operational dashboards and KPI tracking systems. Dashboards integrate with EMR data to surface the metrics that matter — providing clinic leaders with visibility into operational performance.
+                Vitalis helps clinics build custom operational dashboards tailored to their practice. Dashboards may use integrated EMR reporting, external reporting tools, or manual data integration when direct integrations are not available.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
-                With proper dashboards, clinic leaders can understand performance, identify bottlenecks, improve financial outcomes, and track growth — all in real time.
-              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-card rounded-xl p-5 border border-border/40 shadow-soft">
+                  <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center mb-3">
+                    <Plug className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-display text-sm font-bold text-foreground mb-1">Integrated Dashboards</h4>
+                  <p className="text-xs text-muted-foreground">Connected directly to EMR reporting and data feeds.</p>
+                </div>
+                <div className="bg-card rounded-xl p-5 border border-border/40 shadow-soft">
+                  <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center mb-3">
+                    <FileText className="h-5 w-5 text-accent" />
+                  </div>
+                  <h4 className="font-display text-sm font-bold text-foreground mb-1">Manual Frameworks</h4>
+                  <p className="text-xs text-muted-foreground">Structured reporting when direct integrations are not available.</p>
+                </div>
+              </div>
             </motion.div>
 
-            <div className="space-y-6">
-              <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
+            {/* KPI Grid */}
+            <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="space-y-6">
+              <div className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
                 <h3 className="font-display text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Example KPIs</h3>
                 <div className="grid grid-cols-2 gap-2.5">
                   {kpiExamples.map((kpi) => (
@@ -489,17 +460,17 @@ const HealthcareIT = () => {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Data flow diagram */}
-              <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
+              {/* Intelligence Pipeline */}
+              <div className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
                 <h4 className="font-display text-sm font-bold text-foreground mb-5 text-center uppercase tracking-wider">
-                  Intelligence Pipeline
+                  Data → Insight → Decision
                 </h4>
                 <div className="flex items-center justify-between gap-2">
                   {[
-                    { icon: Database, label: "EMR Data" },
-                    { icon: Cog, label: "Processing" },
+                    { icon: Database, label: "Clinic Data" },
+                    { icon: Cog, label: "Analysis" },
                     { icon: PieChart, label: "Dashboard" },
                     { icon: Target, label: "Decisions" },
                   ].map((step, i, arr) => (
@@ -516,13 +487,69 @@ const HealthcareIT = () => {
                     </div>
                   ))}
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
+
+          {/* Clinic Performance Analysis */}
+          <motion.div {...fadeUp} className="mb-20">
+            <h3 className="font-display text-2xl font-bold text-foreground mb-4">Clinic Performance Analysis</h3>
+            <p className="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+              Vitalis uses clinic data to analyze operational efficiency, provider productivity, scheduling capacity, patient access, and financial performance — helping clinics make strategic decisions.
+            </p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { icon: Users, title: "Staffing Adjustments", desc: "Align staffing models with patient demand patterns." },
+                { icon: Calendar, title: "Schedule Redesign", desc: "Optimize provider schedules for capacity and access." },
+                { icon: Cog, title: "Operational Improvements", desc: "Identify bottlenecks and streamline workflows." },
+                { icon: TrendingUp, title: "Growth Planning", desc: "Use performance data to support expansion decisions." },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  {...fadeUp}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 text-center"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-4">
+                    <item.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-display text-base font-bold text-foreground mb-2">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* EMR Advisory Clarification + Platform Examples */}
+          <motion.div {...fadeUp}>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-4">EMR Advisory</h3>
+            <p className="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+              Vitalis does not install or manage EMR systems directly. Instead, Vitalis helps clinics evaluate EMR platform options, advise on selection, assess system capabilities, configure workflows at a strategic level, and ensure reporting and analytics structures are effective.
+            </p>
+            <div className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 mb-8">
+              <h4 className="font-display text-sm font-bold text-foreground mb-4 uppercase tracking-wider">
+                Examples of EMR Platforms Used by Clinics
+              </h4>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {emrPlatforms.map((emr) => (
+                  <div key={emr.name} className="flex items-start gap-3 bg-secondary/50 rounded-xl px-4 py-3">
+                    <Laptop className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-sm font-bold text-foreground">{emr.name}</span>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{emr.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground italic max-w-2xl">
+              Vitalis advises clinics on selecting the right platform based on their operational model. EMR installation and technical support are handled by the respective vendors or IT providers.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* ── Section 7 — Ongoing Technology Advisory ── */}
+      {/* ── Section 6 — Ongoing Technology Advisory ── */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
