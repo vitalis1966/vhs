@@ -19,7 +19,7 @@ const trackContent = {
     title: "Clinic Build Readiness Assessment",
     description:
       "Based on your answers, we've identified the New Clinic Strategic Assessment as the most relevant path for you. This assessment is designed for physicians and healthcare organizations planning a new clinic, healthcare space, or practice launch.",
-    next: "You will receive secure access to the Clinic Build Readiness Assessment shortly. This will help you evaluate your planning, strategy, and readiness before making major commitments.",
+    next: "Click below to begin your assessment. Your progress will be saved automatically — you can complete it at your own pace.",
   },
   existing_clinic: {
     icon: TrendingUp,
@@ -28,7 +28,7 @@ const trackContent = {
     title: "Practice Performance Assessment",
     description:
       "Based on your answers, we've identified the Existing Clinic Strategic Assessment as the most relevant path for you. This assessment is designed for clinic owners looking to evaluate performance, optimize operations, or plan strategic growth.",
-    next: "You will receive secure access to the Practice Performance Assessment shortly. This will help you identify operational improvements, efficiency gains, and growth opportunities.",
+    next: "Click below to begin your assessment. Your progress will be saved automatically — you can complete it at your own pace.",
   },
   unknown: {
     icon: Compass,
@@ -44,6 +44,7 @@ const trackContent = {
 const StrategicAssessmentConfirmation = () => {
   const [searchParams] = useSearchParams();
   const track = (searchParams.get("track") || "unknown") as keyof typeof trackContent;
+  const token = searchParams.get("token");
   const content = trackContent[track] || trackContent.unknown;
   const Icon = content.icon;
 
@@ -90,18 +91,29 @@ const StrategicAssessmentConfirmation = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" disabled className="flex-1 opacity-70">
-                Continue to Your Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              {token ? (
+                <Button variant="hero" size="lg" asChild className="flex-1">
+                  <Link to={`/assessment/${token}`}>
+                    Continue to Your Assessment
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="hero" size="lg" disabled className="flex-1 opacity-70">
+                  Continue to Your Assessment
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              )}
               <Button variant="outline" size="lg" asChild className="flex-1">
                 <Link to="/">Return to Website</Link>
               </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground text-center mt-6 italic">
-              The assessment experience is being prepared. You will receive access via email or be redirected shortly.
-            </p>
+            {!token && (
+              <p className="text-xs text-muted-foreground text-center mt-6 italic">
+                Our team will provide access to your assessment shortly.
+              </p>
+            )}
           </motion.div>
         </div>
       </section>

@@ -45,6 +45,9 @@ const App = () => (
           <Route path="/strategic-assessment" element={<StrategicAssessment />} />
           <Route path="/strategic-assessment/intake" element={<StrategicAssessmentIntake />} />
           <Route path="/strategic-assessment/confirmation" element={<StrategicAssessmentConfirmation />} />
+          <Route path="/assessment/:token" element={<AssessmentClient />} />
+          <Route path="/admin/assessments" element={<AssessmentList />} />
+          <Route path="/admin/assessments/:id" element={<AssessmentEditor />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />
