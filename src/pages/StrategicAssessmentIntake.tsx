@@ -377,7 +377,7 @@ const StrategicAssessmentIntake = () => {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="font-semibold">Are you currently operating?</Label>
-                  <RadioGroup value={form.currently_operating} onValueChange={(v) => updateField("currently_operating", v)} className="flex gap-4">
+                  <RadioGroup value={form.currently_operating} onValueChange={(v) => updateField("currently_operating", v)} className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="yes" id="op_yes" />
                       <Label htmlFor="op_yes" className="cursor-pointer text-sm">Yes</Label>
@@ -386,12 +386,16 @@ const StrategicAssessmentIntake = () => {
                       <RadioGroupItem value="no" id="op_no" />
                       <Label htmlFor="op_no" className="cursor-pointer text-sm">No</Label>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="in_planning" id="op_planning" />
+                      <Label htmlFor="op_planning" className="cursor-pointer text-sm">In Planning</Label>
+                    </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
                   <Label className="font-semibold">Planning a new facility or expansion?</Label>
-                  <RadioGroup value={form.planning_new_facility} onValueChange={(v) => updateField("planning_new_facility", v)} className="flex gap-4">
+                  <RadioGroup value={form.planning_new_facility} onValueChange={(v) => updateField("planning_new_facility", v)} className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="yes" id="plan_yes" />
                       <Label htmlFor="plan_yes" className="cursor-pointer text-sm">Yes</Label>
@@ -399,6 +403,10 @@ const StrategicAssessmentIntake = () => {
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="no" id="plan_no" />
                       <Label htmlFor="plan_no" className="cursor-pointer text-sm">No</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="exploring" id="plan_exploring" />
+                      <Label htmlFor="plan_exploring" className="cursor-pointer text-sm">Exploring Options</Label>
                     </div>
                   </RadioGroup>
                 </div>
