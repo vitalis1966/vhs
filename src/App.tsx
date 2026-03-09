@@ -15,6 +15,7 @@ import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
 import MissionVision from "./pages/MissionVision";
+import HealthcareIT from "./pages/HealthcareIT";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
