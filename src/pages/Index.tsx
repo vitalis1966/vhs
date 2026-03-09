@@ -10,6 +10,7 @@ import { AuditCtaSection } from "@/components/home/AuditCtaSection";
 import { MnASection } from "@/components/home/MnASection";
 import { ProcessSection } from "@/components/home/ProcessSection";
 import { FinalCtaSection } from "@/components/home/FinalCtaSection";
+import { HealthcarePathwaysSection } from "@/components/home/HealthcarePathwaysSection";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
       <CredibilitySection />
       <TrustedNetworkSection />
       <ThreePsSection />
+      <HealthcarePathwaysSection />
       <SolutionsPreview />
       <AuditCtaSection />
       <MnASection />

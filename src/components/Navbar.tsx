@@ -7,6 +7,7 @@ import vitalisLogo from "@/assets/vitalis-logo.png";
 
 const navLinks = [
   { label: "About", href: "/about" },
+  { label: "Mission & Vision", href: "/about/mission-vision" },
   { label: "How We Work", href: "/how-we-work" },
   { label: "Engagement", href: "/engagement" },
   { label: "Solutions", href: "/solutions" },
@@ -27,8 +28,7 @@ export function Navbar() {
           <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 lg:h-12 w-auto" />
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-7">
+        <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -46,7 +46,6 @@ export function Navbar() {
           </Button>
         </div>
 
-        {/* Mobile toggle */}
         <button
           className="lg:hidden p-2 text-foreground"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -56,7 +55,6 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="lg:hidden bg-background border-b border-border">
           <div className="container mx-auto px-4 py-6 flex flex-col gap-4">

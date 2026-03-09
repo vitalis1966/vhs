@@ -12,6 +12,7 @@ import ClinicAudit from "./pages/ClinicAudit";
 import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
+import MissionVision from "./pages/MissionVision";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/about/mission-vision" element={<MissionVision />} />
           <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/solutions" element={<Solutions />} />
           <Route path="/contact" element={<Contact />} />
