@@ -278,6 +278,9 @@ export default function SubmissionsDashboard() {
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
                       </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-muted-foreground">{sub.email_count}</span>
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Button
