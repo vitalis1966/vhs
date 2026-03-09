@@ -12,7 +12,7 @@ const fadeUp = {
 };
 
 const trackContent = {
-  new_clinic: {
+  new_clinic_build: {
     icon: Building2,
     color: "bg-primary/15",
     iconColor: "text-primary",
@@ -30,22 +30,22 @@ const trackContent = {
       "Based on your answers, we've identified the Existing Clinic Strategic Assessment as the most relevant path for you. This assessment is designed for clinic owners looking to evaluate performance, optimize operations, or plan strategic growth.",
     next: "Click below to begin your assessment. Your progress will be saved automatically — you can complete it at your own pace.",
   },
-  unknown: {
+  needs_review: {
     icon: Compass,
     color: "bg-accent/15",
     iconColor: "text-accent",
-    title: "Strategic Assessment",
+    title: "Your Strategic Assessment Is Being Prepared",
     description:
-      "Thank you for completing the intake. Our team will review your responses and connect you with the most relevant assessment path for your situation.",
+      "We're finalizing the most relevant assessment path for your situation and will provide secure access shortly.",
     next: "A member of the Vitalis team will follow up with you to discuss your needs and guide you to the right assessment.",
   },
 };
 
 const StrategicAssessmentConfirmation = () => {
   const [searchParams] = useSearchParams();
-  const track = (searchParams.get("track") || "unknown") as keyof typeof trackContent;
+  const track = (searchParams.get("track") || "needs_review") as keyof typeof trackContent;
   const token = searchParams.get("token");
-  const content = trackContent[track] || trackContent.unknown;
+  const content = trackContent[track] || trackContent.needs_review;
   const Icon = content.icon;
 
   return (

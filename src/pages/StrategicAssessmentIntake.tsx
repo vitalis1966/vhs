@@ -76,10 +76,36 @@ const provinceOptions = [
   "Northwest Territories", "Nunavut", "Yukon", "Other / Outside Canada",
 ];
 
-function determineTrack(purpose: string): string {
-  const match = assessmentPurposeOptions.find((o) => o.value === purpose);
-  if (!match) return "unknown";
-  return match.track === "new" ? "new_clinic" : match.track === "existing" ? "existing_clinic" : "unknown";
+function determineTrack(form: {
+  assessment_purpose: string;
+  currently_operating: string;
+  planning_new_facility: string;
+}): { track: string; reason: string } {
+  const match = assessmentPurposeOptions.find((o) => o.value === form.assessment_purpose);
+
+  // Primary signal: assessment purpose
+  if (match && match.track === "new") {
+    return { track: "new_clinic_build", reason: `assessment_for:${form.assessment_purpose}` };
+  }
+  if (match && match.track === "existing") {
+    return { track: "existing_clinic", reason: `assessment_for:${form.assessment_purpose}` };
+  }
+
+  // Fallback for "not_sure" or missing: use secondary signals
+  if (form.planning_new_facility === "yes") {
+    return { track: "new_clinic_build", reason: "planning_new_facility:yes" };
+  }
+  if (form.currently_operating === "yes") {
+    return { track: "existing_clinic", reason: "currently_operating:yes" };
+  }
+  if (form.planning_new_facility === "exploring") {
+    return { track: "new_clinic_build", reason: "planning_new_facility:exploring" };
+  }
+  if (form.currently_operating === "in_planning") {
+    return { track: "new_clinic_build", reason: "currently_operating:in_planning" };
+  }
+
+  return { track: "needs_review", reason: "fallback:not_sure" };
 }
 
 const fadeUp = {
@@ -138,7 +164,7 @@ const StrategicAssessmentIntake = () => {
     if (!validate()) return;
 
     setSubmitting(true);
-    const track = determineTrack(form.assessment_purpose);
+    const { track, reason } = determineTrack(form);
 
     try {
       // Insert intake and get the id back
@@ -160,14 +186,15 @@ const StrategicAssessmentIntake = () => {
         preferred_followup: form.preferred_followup || null,
         additional_notes: form.additional_notes.trim() || null,
         assigned_track: track,
+        assignment_reason: reason,
       } as any).select().single() as any;
 
       if (error) throw error;
 
       // Create assessment session if track is known
       let accessToken = "";
-      if (track !== "unknown") {
-        const slug = track === "new_clinic" ? "new-clinic" : "existing-clinic";
+      if (track !== "needs_review") {
+        const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
         const { data: assessment } = await (supabase.from("assessments" as any)
           .select("id")
           .eq("slug", slug)
@@ -350,7 +377,7 @@ const StrategicAssessmentIntake = () => {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="font-semibold">Are you currently operating?</Label>
-                  <RadioGroup value={form.currently_operating} onValueChange={(v) => updateField("currently_operating", v)} className="flex gap-4">
+                  <RadioGroup value={form.currently_operating} onValueChange={(v) => updateField("currently_operating", v)} className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="yes" id="op_yes" />
                       <Label htmlFor="op_yes" className="cursor-pointer text-sm">Yes</Label>
@@ -359,12 +386,16 @@ const StrategicAssessmentIntake = () => {
                       <RadioGroupItem value="no" id="op_no" />
                       <Label htmlFor="op_no" className="cursor-pointer text-sm">No</Label>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="in_planning" id="op_planning" />
+                      <Label htmlFor="op_planning" className="cursor-pointer text-sm">In Planning</Label>
+                    </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
                   <Label className="font-semibold">Planning a new facility or expansion?</Label>
-                  <RadioGroup value={form.planning_new_facility} onValueChange={(v) => updateField("planning_new_facility", v)} className="flex gap-4">
+                  <RadioGroup value={form.planning_new_facility} onValueChange={(v) => updateField("planning_new_facility", v)} className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="yes" id="plan_yes" />
                       <Label htmlFor="plan_yes" className="cursor-pointer text-sm">Yes</Label>
@@ -372,6 +403,10 @@ const StrategicAssessmentIntake = () => {
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="no" id="plan_no" />
                       <Label htmlFor="plan_no" className="cursor-pointer text-sm">No</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="exploring" id="plan_exploring" />
+                      <Label htmlFor="plan_exploring" className="cursor-pointer text-sm">Exploring Options</Label>
                     </div>
                   </RadioGroup>
                 </div>
