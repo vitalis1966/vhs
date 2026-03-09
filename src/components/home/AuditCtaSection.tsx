@@ -27,17 +27,17 @@ export function AuditCtaSection() {
 
             <div className="text-center lg:text-left flex-1">
               <h2 className="font-display text-2xl lg:text-4xl font-bold text-primary-foreground tracking-tight">
-                Start with a Clinic Audit
+                Start with a Strategic Assessment
               </h2>
               <p className="mt-4 text-primary-foreground/75 text-lg leading-relaxed max-w-xl">
-                Whether you're building a new clinic or optimizing an existing one, our strategic audit gives you a clear, actionable roadmap for what comes next.
+                Whether you're building a new clinic or optimizing an existing one, our strategic assessment gives you a clear, actionable roadmap for what comes next.
               </p>
             </div>
 
             <div className="flex flex-col gap-3">
               <Button variant="gold" size="lg" asChild>
                 <Link to="/clinic-audit">
-                  Start Your Audit
+                  Explore Your Practice Strategy
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

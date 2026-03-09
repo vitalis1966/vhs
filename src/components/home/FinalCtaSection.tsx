@@ -31,7 +31,7 @@ export function FinalCtaSection() {
               </Link>
             </Button>
             <Button variant="hero-outline" size="xl" asChild>
-              <Link to="/clinic-audit">Start a Clinic Audit</Link>
+              <Link to="/clinic-audit">Explore Your Practice Strategy</Link>
             </Button>
           </div>
 

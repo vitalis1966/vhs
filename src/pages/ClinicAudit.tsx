@@ -98,7 +98,7 @@ const ClinicAudit = () => {
       {/* Process */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
-          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">How the audit works</h2>
+          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">How the assessment works</h2>
           <div className="mt-12 grid sm:grid-cols-3 gap-8">
             {[
               { step: "1", title: "Request", desc: "Tell us about your clinic and goals." },
