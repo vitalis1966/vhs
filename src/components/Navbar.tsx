@@ -93,6 +93,9 @@ export function Navbar() {
             )
           )}
           <Button variant="hero" size="default" asChild>
+            <Link to="/clinic-audit">Strategic Assessment</Link>
+          </Button>
+          <Button variant="hero" size="default" asChild>
             <Link to="/contact">Book a Consultation</Link>
           </Button>
         </div>
