@@ -35,6 +35,9 @@ interface SubmissionRow {
   analysis_status: string | null;
   overall_score: number | null;
   readiness_category: string | null;
+  lifecycle_status: string | null;
+  email_count: number;
+  last_activity_at: string | null;
 }
 
 const fadeUp = {
