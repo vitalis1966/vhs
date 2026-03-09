@@ -217,9 +217,11 @@ export default function SubmissionsDashboard() {
                     <TableHead>Client</TableHead>
                     <TableHead>Organization</TableHead>
                     <TableHead>Assessment</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Submitted</TableHead>
                     <TableHead>Analysis</TableHead>
                     <TableHead>Score</TableHead>
+                    <TableHead>Emails</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
