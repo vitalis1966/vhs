@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionRenderer } from "@/components/assessment/QuestionRenderer";
+import { EmailAutomationService } from "@/services/EmailAutomationService";
 import type {
   Assessment,
   AssessmentSession,
