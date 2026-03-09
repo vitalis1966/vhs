@@ -235,6 +235,15 @@ export default function SubmissionsDashboard() {
                           {sub.assessment_slug === "new-clinic-build" ? "New Clinic" : "Existing Clinic"}
                         </Badge>
                       </TableCell>
+                      <TableCell>
+                        {sub.lifecycle_status ? (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {sub.lifecycle_status.replace(/_/g, " ")}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {formatDate(sub.submitted_at)}
                       </TableCell>
