@@ -2,3 +2,6 @@ project_id = "ilbhphreyvaoomhpvaxi"
 
 [functions.analyze-assessment]
 verify_jwt = false
+
+[functions.parse-questionnaire]
+verify_jwt = false
