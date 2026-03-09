@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ClipboardCheck, Stethoscope, Building } from "lucide-react";
 
-const audits = [
+const assessments = [
   {
     icon: Building,
-    title: "New Clinic Build Audit",
-    description: "For those planning or in the early stages of a new healthcare facility. We assess your concept, feasibility, market opportunity, and readiness to build.",
+    title: "Clinic Build Readiness Assessment",
+    description: "Planning a new clinic involves dozens of interconnected decisions — from facility design and staffing models to technology infrastructure and long-term financial planning. Our clinic planning assessment helps physicians and healthcare entrepreneurs evaluate these factors before major commitments are made.",
     includes: [
       "Concept and market validation",
       "Facility planning readiness",
@@ -21,8 +21,8 @@ const audits = [
   },
   {
     icon: Stethoscope,
-    title: "Existing Clinic Audit",
-    description: "For operating clinics seeking clarity on performance, efficiency, growth potential, and compliance. A complete strategic diagnostic.",
+    title: "Practice Performance Assessment",
+    description: "Our practice performance assessment helps clinic leaders evaluate operational systems, patient flow, staffing structure, technology usage, and financial performance to identify opportunities for improvement.",
     includes: [
       "Operational efficiency review",
       "Revenue cycle assessment",
