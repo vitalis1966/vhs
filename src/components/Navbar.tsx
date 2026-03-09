@@ -49,19 +49,19 @@ export function Navbar() {
               <div
                 key={link.href}
                 className="relative group"
-                onMouseEnter={() => setAboutOpen(true)}
-                onMouseLeave={() => setAboutOpen(false)}
+                onMouseEnter={() => setOpenDropdown(link.href)}
+                onMouseLeave={() => setOpenDropdown(null)}
               >
                 <button
                   className={cn(
                     "text-sm font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1",
-                    location.pathname.startsWith("/about") ? "text-primary" : "text-muted-foreground"
+                    location.pathname.startsWith(link.href) ? "text-primary" : "text-muted-foreground"
                   )}
                 >
                   {link.label}
                   <ChevronDown className="h-3 w-3" />
                 </button>
-                {aboutOpen && (
+                {openDropdown === link.href && (
                   <div className="absolute top-full left-0 pt-2">
                     <div className="bg-card rounded-lg shadow-elevated border border-border/40 py-2 min-w-[180px]">
                       {link.children.map((child) => (
