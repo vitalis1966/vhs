@@ -7,21 +7,24 @@ Deno.serve(async (req) => {
 
   const { email, password } = await req.json();
 
-  if (!email || !password) {
-    return new Response(JSON.stringify({ error: "email and password required" }), { status: 400 });
+  // Find existing user
+  const { data: users } = await supabase.auth.admin.listUsers();
+  const existing = users?.users?.find(u => u.email === email);
+
+  if (existing) {
+    const { error } = await supabase.auth.admin.updateUserById(existing.id, { password });
+    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+    return new Response(JSON.stringify({ action: "password_updated", user_id: existing.id }), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const { data, error } = await supabase.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
+    email, password, email_confirm: true,
   });
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 400 });
-  }
-
-  return new Response(JSON.stringify({ user_id: data.user.id, email: data.user.email }), {
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+  return new Response(JSON.stringify({ action: "created", user_id: data.user.id }), {
     headers: { "Content-Type": "application/json" },
   });
 });
