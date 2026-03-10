@@ -12,8 +12,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,67 +21,67 @@ import { Compass, ArrowRight, Loader2 } from "lucide-react";
 import { EmailAutomationService } from "@/services/EmailAutomationService";
 
 const assessmentPurposeOptions = [
-  { value: "building_new_clinic", label: "Building a new clinic", track: "new" },
-  { value: "planning_healthcare_space", label: "Planning a new healthcare space", track: "new" },
-  { value: "improving_existing_clinic", label: "Improving an existing clinic", track: "existing" },
-  { value: "evaluating_operations", label: "Evaluating current operations", track: "existing" },
-  { value: "growth_expansion", label: "Growth and expansion planning", track: "existing" },
-  { value: "new_healthcare_venture", label: "Exploring a new healthcare venture", track: "new" },
-  { value: "not_sure", label: "Not sure yet", track: "unknown" },
-];
+{ value: "building_new_clinic", label: "Building a new clinic", track: "new" },
+{ value: "planning_healthcare_space", label: "Planning a new healthcare space", track: "new" },
+{ value: "improving_existing_clinic", label: "Improving an existing clinic", track: "existing" },
+{ value: "evaluating_operations", label: "Evaluating current operations", track: "existing" },
+{ value: "growth_expansion", label: "Growth and expansion planning", track: "existing" },
+{ value: "new_healthcare_venture", label: "Exploring a new healthcare venture", track: "new" },
+{ value: "not_sure", label: "Not sure yet", track: "unknown" }];
+
 
 const timelineOptions = [
-  "Immediately / ASAP",
-  "Within 3 months",
-  "3–6 months",
-  "6–12 months",
-  "12+ months",
-  "No specific timeline",
-];
+"Immediately / ASAP",
+"Within 3 months",
+"3–6 months",
+"6–12 months",
+"12+ months",
+"No specific timeline"];
+
 
 const specialtyOptions = [
-  "Family Medicine",
-  "Internal Medicine",
-  "Pediatrics",
-  "Dermatology",
-  "Orthopedics",
-  "Cardiology",
-  "Psychiatry",
-  "Obstetrics & Gynecology",
-  "General Surgery",
-  "Ophthalmology",
-  "Dental",
-  "Physiotherapy",
-  "Multidisciplinary",
-  "Walk-In / Urgent Care",
-  "Diagnostic / Imaging",
-  "Other",
-];
+"Family Medicine",
+"Internal Medicine",
+"Pediatrics",
+"Dermatology",
+"Orthopedics",
+"Cardiology",
+"Psychiatry",
+"Obstetrics & Gynecology",
+"General Surgery",
+"Ophthalmology",
+"Dental",
+"Physiotherapy",
+"Multidisciplinary",
+"Walk-In / Urgent Care",
+"Diagnostic / Imaging",
+"Other"];
+
 
 const practiceTypeOptions = [
-  "Solo practice",
-  "Group practice",
-  "Multi-physician clinic",
-  "Multidisciplinary clinic",
-  "Specialist practice",
-  "Walk-in clinic",
-  "Diagnostic / Imaging center",
-  "Virtual / Telehealth practice",
-  "Other",
-];
+"Solo practice",
+"Group practice",
+"Multi-physician clinic",
+"Multidisciplinary clinic",
+"Specialist practice",
+"Walk-in clinic",
+"Diagnostic / Imaging center",
+"Virtual / Telehealth practice",
+"Other"];
+
 
 const provinceOptions = [
-  "Alberta", "British Columbia", "Manitoba", "New Brunswick",
-  "Newfoundland and Labrador", "Nova Scotia", "Ontario",
-  "Prince Edward Island", "Quebec", "Saskatchewan",
-  "Northwest Territories", "Nunavut", "Yukon", "Other / Outside Canada",
-];
+"Alberta", "British Columbia", "Manitoba", "New Brunswick",
+"Newfoundland and Labrador", "Nova Scotia", "Ontario",
+"Prince Edward Island", "Quebec", "Saskatchewan",
+"Northwest Territories", "Nunavut", "Yukon", "Other / Outside Canada"];
+
 
 function determineTrack(form: {
   assessment_purpose: string;
   currently_operating: string;
   planning_new_facility: string;
-}): { track: string; reason: string } {
+}): {track: string;reason: string;} {
   const match = assessmentPurposeOptions.find((o) => o.value === form.assessment_purpose);
 
   // Primary signal: assessment purpose
@@ -112,7 +112,7 @@ function determineTrack(form: {
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
+  viewport: { once: true }
 };
 
 const StrategicAssessmentIntake = () => {
@@ -136,7 +136,7 @@ const StrategicAssessmentIntake = () => {
     approximate_timeline: "",
     looking_for: "",
     preferred_followup: "",
-    additional_notes: "",
+    additional_notes: ""
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -150,8 +150,8 @@ const StrategicAssessmentIntake = () => {
     const newErrors: Record<string, string> = {};
     if (!form.full_name.trim()) newErrors.full_name = "Full name is required.";
     if (form.full_name.trim().length > 100) newErrors.full_name = "Name must be under 100 characters.";
-    if (!form.email.trim()) newErrors.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) newErrors.email = "Please enter a valid email.";
+    if (!form.email.trim()) newErrors.email = "Email is required.";else
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) newErrors.email = "Please enter a valid email.";
     if (form.email.trim().length > 255) newErrors.email = "Email must be under 255 characters.";
     if (!form.assessment_purpose) newErrors.assessment_purpose = "Please select what this assessment is for.";
     if (form.phone && form.phone.length > 30) newErrors.phone = "Phone number is too long.";
@@ -169,7 +169,7 @@ const StrategicAssessmentIntake = () => {
 
     try {
       // Insert intake and get the id back
-      const { data: intakeData, error } = await supabase.from("assessment_intakes").insert({
+      const { data: intakeData, error } = (await supabase.from("assessment_intakes").insert({
         full_name: form.full_name.trim(),
         organization_name: form.organization_name.trim() || null,
         email: form.email.trim(),
@@ -187,8 +187,8 @@ const StrategicAssessmentIntake = () => {
         preferred_followup: form.preferred_followup || null,
         additional_notes: form.additional_notes.trim() || null,
         assigned_track: track,
-        assignment_reason: reason,
-      } as any).select().single() as any;
+        assignment_reason: reason
+      } as any).select().single()) as any;
 
       if (error) throw error;
 
@@ -206,10 +206,10 @@ const StrategicAssessmentIntake = () => {
       let sessionId = "";
       if (track !== "needs_review") {
         const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
-        const { data: assessment } = await (supabase.from("assessments" as any)
-          .select("id")
-          .eq("slug", slug)
-          .single() as any);
+        const { data: assessment } = await (supabase.from("assessments" as any).
+        select("id").
+        eq("slug", slug).
+        single() as any);
 
         if (assessment) {
           accessToken = crypto.randomUUID();
@@ -218,20 +218,20 @@ const StrategicAssessmentIntake = () => {
             assessment_id: assessment.id,
             access_token: accessToken,
             status: "in_progress",
-            current_section_index: 0,
+            current_section_index: 0
           }).select().single() as any);
 
           sessionId = sessionData?.id || "";
 
           // Update intake with session reference and lifecycle
           if (intakeData?.id && sessionId) {
-            await (supabase.from("assessment_intakes" as any)
-              .update({
-                session_id: sessionId,
-                lifecycle_status: "assessment_assigned",
-                last_activity_at: new Date().toISOString(),
-              })
-              .eq("id", intakeData.id) as any);
+            await (supabase.from("assessment_intakes" as any).
+            update({
+              session_id: sessionId,
+              lifecycle_status: "assessment_assigned",
+              last_activity_at: new Date().toISOString()
+            }).
+            eq("id", intakeData.id) as any);
           }
 
           // Send assessment access email
@@ -260,7 +260,7 @@ const StrategicAssessmentIntake = () => {
       toast({
         title: "Submission Error",
         description: "Something went wrong. Please try again or contact us directly.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setSubmitting(false);
@@ -268,7 +268,7 @@ const StrategicAssessmentIntake = () => {
   };
 
   const fieldClass = (field: string) =>
-    errors[field] ? "border-destructive focus-visible:ring-destructive" : "";
+  errors[field] ? "border-destructive focus-visible:ring-destructive" : "";
 
   return (
     <div className="min-h-screen">
@@ -377,8 +377,8 @@ const StrategicAssessmentIntake = () => {
                   onChange={(e) => updateField("looking_for", e.target.value)}
                   maxLength={1000}
                   placeholder="Briefly describe what you're looking to achieve..."
-                  rows={3}
-                />
+                  rows={3} />
+                
               </div>
 
               <div className="space-y-2">
@@ -402,14 +402,14 @@ const StrategicAssessmentIntake = () => {
               <div className="space-y-3">
                 <Label className="text-base font-semibold">What is this assessment for? *</Label>
                 <RadioGroup value={form.assessment_purpose} onValueChange={(v) => updateField("assessment_purpose", v)} className="space-y-2">
-                  {assessmentPurposeOptions.map((o) => (
-                    <div key={o.value} className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3 hover:bg-secondary/50 transition-colors cursor-pointer">
+                  {assessmentPurposeOptions.map((o) =>
+                  <div key={o.value} className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3 hover:bg-secondary/50 transition-colors cursor-pointer">
                       <RadioGroupItem value={o.value} id={o.value} />
                       <Label htmlFor={o.value} className="cursor-pointer text-sm font-medium text-foreground flex-1">
                         {o.label}
                       </Label>
                     </div>
-                  ))}
+                  )}
                 </RadioGroup>
                 {errors.assessment_purpose && <p className="text-xs text-destructive">{errors.assessment_purpose}</p>}
               </div>
@@ -433,23 +433,23 @@ const StrategicAssessmentIntake = () => {
                   </RadioGroup>
                 </div>
 
-                <div className="space-y-3">
-                  <Label className="font-semibold">Planning a new facility or expansion?</Label>
-                  <RadioGroup value={form.planning_new_facility} onValueChange={(v) => updateField("planning_new_facility", v)} className="flex flex-wrap gap-4">
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="yes" id="plan_yes" />
-                      <Label htmlFor="plan_yes" className="cursor-pointer text-sm">Yes</Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="no" id="plan_no" />
-                      <Label htmlFor="plan_no" className="cursor-pointer text-sm">No</Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="exploring" id="plan_exploring" />
-                      <Label htmlFor="plan_exploring" className="cursor-pointer text-sm">Exploring Options</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </div>
 
               <div className="space-y-2">
@@ -469,8 +469,8 @@ const StrategicAssessmentIntake = () => {
                   onChange={(e) => updateField("additional_notes", e.target.value)}
                   maxLength={2000}
                   placeholder="Any additional context that would help us prepare..."
-                  rows={4}
-                />
+                  rows={4} />
+                
                 {errors.additional_notes && <p className="text-xs text-destructive">{errors.additional_notes}</p>}
               </div>
             </div>
@@ -478,17 +478,17 @@ const StrategicAssessmentIntake = () => {
             {/* Submit */}
             <div className="text-center pt-2">
               <Button type="submit" variant="hero" size="xl" disabled={submitting} className="min-w-[280px]">
-                {submitting ? (
-                  <>
+                {submitting ?
+                <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Submitting...
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     Submit Assessment Intake
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </>
-                )}
+                }
               </Button>
               <p className="text-xs text-muted-foreground mt-4">
                 Your information is kept confidential and will only be used to prepare your Strategic Assessment.
@@ -499,8 +499,8 @@ const StrategicAssessmentIntake = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>);
+
 };
 
 export default StrategicAssessmentIntake;
