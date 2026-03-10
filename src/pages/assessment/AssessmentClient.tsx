@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionRenderer } from "@/components/assessment/QuestionRenderer";
+import { EmailAutomationService } from "@/services/EmailAutomationService";
 import type {
   Assessment,
   AssessmentSession,
@@ -198,6 +199,49 @@ export default function AssessmentClient() {
     await (supabase.from("assessment_sessions" as any)
       .update({ status: "submitted", submitted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq("id", session.id) as any);
+
+    // Cancel pending reminders
+    await EmailAutomationService.cancelPendingReminders(session.id);
+
+    // Send completion email and admin notification
+    if (session.intake_id) {
+      const { data: intake } = await (supabase.from("assessment_intakes" as any)
+        .select("full_name, email, organization_name")
+        .eq("id", session.intake_id)
+        .single() as any);
+
+      if (intake) {
+        // Client completion email
+        EmailAutomationService.sendCompletionConfirmation(
+          session.id,
+          session.intake_id,
+          intake.full_name || "",
+          intake.email,
+          token || ""
+        );
+
+        // Admin notification (logged for now — configure NOTIFICATION_EMAIL for delivery)
+        const assessmentType = assessment?.title || "Strategic Assessment";
+        EmailAutomationService.sendAdminNotification(
+          session.id,
+          intake.full_name || "Unknown",
+          intake.organization_name || "—",
+          assessmentType,
+          new Date().toISOString(),
+          "admin@vitalishealth.com" // Placeholder — configure via secrets
+        );
+
+        // Update lifecycle status
+        await (supabase.from("assessment_intakes" as any)
+          .update({
+            lifecycle_status: "assessment_completed",
+            assessment_completion_date: new Date().toISOString(),
+            last_activity_at: new Date().toISOString(),
+          })
+          .eq("id", session.intake_id) as any);
+      }
+    }
+
     setSaveStatus("saved");
     setScreen("submitted");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -251,12 +295,23 @@ export default function AssessmentClient() {
             <p className="text-lg text-muted-foreground mb-4">
               Thank you for completing the {assessment?.title || "Strategic Assessment"}.
             </p>
-            <p className="text-muted-foreground mb-8">
-              Our team will review your responses and follow up with strategic insights tailored to your situation.
+            <p className="text-muted-foreground mb-4">
+              Your responses have been received. You can view a formatted summary of your submission below.
             </p>
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/">Return to Website</Link>
-            </Button>
+            <p className="text-sm text-muted-foreground mb-10">
+              Our team will review your assessment and follow up with strategic insights tailored to your situation.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="lg" asChild>
+                <Link to={`/assessment/${token}/report`}>
+                  View Response Summary
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/">Return to Website</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
         <Footer />

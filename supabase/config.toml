@@ -1,1 +1,13 @@
 project_id = "ilbhphreyvaoomhpvaxi"
+
+[functions.analyze-assessment]
+verify_jwt = false
+
+[functions.parse-questionnaire]
+verify_jwt = false
+
+[functions.send-assessment-email]
+verify_jwt = false
+
+[functions.process-reminders]
+verify_jwt = false

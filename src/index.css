@@ -137,3 +137,34 @@
     box-shadow: var(--shadow-card);
   }
 }
+
+/* Print styles for assessment reports */
+@media print {
+  @page {
+    margin: 1.5cm 2cm;
+    size: A4;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 11pt;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .report-printable {
+    margin: 0;
+    padding: 0;
+  }
+
+  .report-cover-page {
+    page-break-after: always;
+  }
+
+  .report-section {
+    page-break-inside: avoid;
+  }
+}

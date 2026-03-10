@@ -18,8 +18,11 @@ export type Database = {
         Row: {
           additional_notes: string | null
           approximate_timeline: string | null
+          assessment_completion_date: string | null
           assessment_purpose: string
+          assessment_start_date: string | null
           assigned_track: string
+          assignment_reason: string | null
           city: string | null
           country: string | null
           created_at: string
@@ -27,7 +30,10 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          internal_report_id: string | null
+          last_activity_at: string | null
           lead_source: string
+          lifecycle_status: string
           looking_for: string | null
           organization_name: string | null
           phone: string | null
@@ -35,14 +41,18 @@ export type Database = {
           practice_type: string | null
           preferred_followup: string | null
           province_state: string | null
+          session_id: string | null
           specialty: string | null
           status: string
         }
         Insert: {
           additional_notes?: string | null
           approximate_timeline?: string | null
+          assessment_completion_date?: string | null
           assessment_purpose: string
+          assessment_start_date?: string | null
           assigned_track?: string
+          assignment_reason?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -50,7 +60,10 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          internal_report_id?: string | null
+          last_activity_at?: string | null
           lead_source?: string
+          lifecycle_status?: string
           looking_for?: string | null
           organization_name?: string | null
           phone?: string | null
@@ -58,14 +71,18 @@ export type Database = {
           practice_type?: string | null
           preferred_followup?: string | null
           province_state?: string | null
+          session_id?: string | null
           specialty?: string | null
           status?: string
         }
         Update: {
           additional_notes?: string | null
           approximate_timeline?: string | null
+          assessment_completion_date?: string | null
           assessment_purpose?: string
+          assessment_start_date?: string | null
           assigned_track?: string
+          assignment_reason?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -73,7 +90,10 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          internal_report_id?: string | null
+          last_activity_at?: string | null
           lead_source?: string
+          lifecycle_status?: string
           looking_for?: string | null
           organization_name?: string | null
           phone?: string | null
@@ -81,10 +101,26 @@ export type Database = {
           practice_type?: string | null
           preferred_followup?: string | null
           province_state?: string | null
+          session_id?: string | null
           specialty?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "assessment_intakes_internal_report_id_fkey"
+            columns: ["internal_report_id"]
+            isOneToOne: false
+            referencedRelation: "internal_assessment_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_intakes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       assessment_questions: {
         Row: {
@@ -126,6 +162,47 @@ export type Database = {
             columns: ["section_id"]
             isOneToOne: false
             referencedRelation: "assessment_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          reminder_number: number
+          reminder_type: string
+          scheduled_at: string
+          sent_at: string | null
+          session_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reminder_number?: number
+          reminder_type?: string
+          scheduled_at: string
+          sent_at?: string | null
+          session_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reminder_number?: number
+          reminder_type?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_reminders_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -287,6 +364,120 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      email_events: {
+        Row: {
+          created_at: string
+          email_type: string
+          id: string
+          intake_id: string | null
+          provider_response: Json | null
+          recipient_email: string
+          sent_at: string | null
+          session_id: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_type: string
+          id?: string
+          intake_id?: string | null
+          provider_response?: Json | null
+          recipient_email: string
+          sent_at?: string | null
+          session_id?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_type?: string
+          id?: string
+          intake_id?: string | null
+          provider_response?: Json | null
+          recipient_email?: string
+          sent_at?: string | null
+          session_id?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_events_intake_id_fkey"
+            columns: ["intake_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_intakes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      internal_assessment_reports: {
+        Row: {
+          analysis_data: Json | null
+          analysis_status: string
+          analysis_version: number
+          assessment_id: string
+          created_at: string
+          executive_summary: string | null
+          id: string
+          last_analysis_run: string | null
+          overall_score: number | null
+          readiness_category: string | null
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          analysis_data?: Json | null
+          analysis_status?: string
+          analysis_version?: number
+          assessment_id: string
+          created_at?: string
+          executive_summary?: string | null
+          id?: string
+          last_analysis_run?: string | null
+          overall_score?: number | null
+          readiness_category?: string | null
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          analysis_data?: Json | null
+          analysis_status?: string
+          analysis_version?: number
+          assessment_id?: string
+          created_at?: string
+          executive_summary?: string | null
+          id?: string
+          last_analysis_run?: string | null
+          overall_score?: number | null
+          readiness_category?: string | null
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_assessment_reports_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_assessment_reports_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

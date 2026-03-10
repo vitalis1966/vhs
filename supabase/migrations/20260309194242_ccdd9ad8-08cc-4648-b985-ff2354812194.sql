@@ -1,0 +1,1 @@
+CREATE POLICY "anon_select_intakes" ON public.assessment_intakes FOR SELECT TO anon USING (true);
