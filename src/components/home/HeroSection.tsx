@@ -82,7 +82,7 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
-              <Link to="/clinic-audit">
+              <Link to="/strategic-assessment/intake">
                 Strategic Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

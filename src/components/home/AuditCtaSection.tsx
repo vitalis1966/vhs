@@ -36,7 +36,7 @@ export function AuditCtaSection() {
 
             <div className="flex flex-col gap-3">
               <Button variant="gold" size="lg" asChild>
-                <Link to="/clinic-audit">
+                <Link to="/strategic-assessment/intake">
                   Explore Your Practice Strategy
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
