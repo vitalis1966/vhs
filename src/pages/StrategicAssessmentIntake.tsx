@@ -68,6 +68,7 @@ const practiceTypeOptions = [
 "Walk-in clinic",
 "Diagnostic / Imaging center",
 "Virtual / Telehealth practice",
+"Veterinary Clinic",
 "Other"];
 
 
