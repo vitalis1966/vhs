@@ -55,6 +55,7 @@ const specialtyOptions = [
 "Multidisciplinary",
 "Walk-In / Urgent Care",
 "Diagnostic / Imaging",
+"Veterinary Medicine",
 "Other"];
 
 
