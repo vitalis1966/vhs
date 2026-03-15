@@ -6,7 +6,6 @@ import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { ThreePsSection } from "@/components/home/ThreePsSection";
 import { StrategicEcosystemSection } from "@/components/home/StrategicEcosystemSection";
 import { HealthcarePathwaysSection } from "@/components/home/HealthcarePathwaysSection";
-import { SolutionsPreview } from "@/components/home/SolutionsPreview";
 import { AuditCtaSection } from "@/components/home/AuditCtaSection";
 import { MnASection } from "@/components/home/MnASection";
 import { ProcessSection } from "@/components/home/ProcessSection";
@@ -22,7 +21,7 @@ const Index = () => {
       <ThreePsSection />
       <StrategicEcosystemSection />
       <HealthcarePathwaysSection />
-      <SolutionsPreview />
+      
       <AuditCtaSection />
       <MnASection />
       <ProcessSection />
