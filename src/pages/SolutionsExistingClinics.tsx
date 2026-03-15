@@ -76,6 +76,10 @@ const outcomes = [
 ];
 
 const SolutionsExistingClinics = () => {
+  usePageMeta(
+    "Practice Operations Consulting & Workflow Optimization | Vitalis Health Strategies",
+    "Identify workflow bottlenecks, scheduling gaps, and operational costs with a structured practice operations review from Vitalis."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

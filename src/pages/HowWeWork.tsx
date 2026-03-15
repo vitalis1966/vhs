@@ -18,6 +18,10 @@ const phases = [
 ];
 
 const HowWeWork = () => {
+  usePageMeta(
+    "How We Work | Full-Lifecycle Healthcare Consulting | Vitalis Health Strategies",
+    "From vision through long-term advisory — Vitalis supports healthcare practices through every stage of growth with structured, accountable consulting."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

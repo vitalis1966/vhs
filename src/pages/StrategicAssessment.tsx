@@ -12,6 +12,7 @@ import {
   Compass,
   ClipboardList,
 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -20,6 +21,10 @@ const fadeUp = {
 };
 
 const StrategicAssessment = () => {
+  usePageMeta(
+    "Free Practice Assessment | Operational & Financial Analysis | Vitalis Health Strategies",
+    "A free structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

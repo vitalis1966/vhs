@@ -72,6 +72,10 @@ const partners = [
 ];
 
 const SolutionsNewClinics = () => {
+  usePageMeta(
+    "New Medical, Dental & Veterinary Facility Development | Practice Build Consulting | Vitalis",
+    "Opening a medical clinic, dental office, or veterinary facility? Vitalis guides new builds from feasibility to opening day across Alberta."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />
