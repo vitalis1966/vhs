@@ -93,7 +93,7 @@ const Engagement = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Healthcare ventures often involve multiple advisors — architects, legal counsel, lenders, and technology specialists. We work alongside you to coordinate these relationships so decisions stay aligned and progress remains focused throughout the engagement.
+            Healthcare ventures often involve multiple advisors — architects, legal counsel, lenders, and technology specialists. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> works alongside you to coordinate these relationships so decisions stay aligned and progress remains focused throughout the engagement. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">free practice assessment</Link> to identify your priorities.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-10">
             <Button variant="hero" size="xl" asChild>

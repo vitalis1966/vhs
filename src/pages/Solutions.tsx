@@ -124,7 +124,7 @@ const Solutions = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Based in Calgary, Vitalis Health Strategies supports practitioners and healthcare organizations across Canada through every stage of growth — from initial concept through long-term strategic advisory.
+            Based in Calgary, Vitalis Health Strategies supports practitioners and healthcare organizations across Canada through every stage of growth — from initial concept through long-term strategic advisory. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> brings operational experience to every engagement. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">free practice assessment</Link> to understand where your practice stands.
           </motion.p>
         </div>
       </section>

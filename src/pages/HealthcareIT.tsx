@@ -251,10 +251,10 @@ const HealthcareIT = () => {
                 Technology powers every modern practice.
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a practice delivers care, manages staff, and sustains growth.
+                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a practice delivers care, manages staff, and sustains growth. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">free practice assessment</Link> to identify where technology gaps may be affecting your operations.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-8">
-                Vitalis supports practices through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
+                Vitalis supports practices through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> understands how technology decisions impact clinical workflows.
               </p>
 
               {/* Two pillars */}
