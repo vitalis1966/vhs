@@ -8,8 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { usePageMeta } from "@/lib/seo";
 
 const Contact = () => {
+  usePageMeta(
+    "Contact Vitalis Health Strategies | Healthcare Consulting Calgary",
+    "Connect with Vitalis Health Strategies to discuss your practice goals, challenges, or opportunities. Calgary-based healthcare consulting."
+  );
   const [formData, setFormData] = useState({
     name: "", email: "", phone: "", company: "", interest: "", message: "",
   });

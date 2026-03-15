@@ -16,6 +16,10 @@ const values = [
 ];
 
 const MissionVision = () => {
+  usePageMeta(
+    "Mission & Vision | Vitalis Health Strategies | Calgary Healthcare Consulting",
+    "Why Vitalis exists — our mission to help healthcare organizations build, operate, and grow successful practices across Alberta and Canada."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

@@ -16,6 +16,10 @@ const projects = [
 ];
 
 const Portfolio = () => {
+  usePageMeta(
+    "Healthcare Consulting Portfolio & Case Studies | Vitalis Health Strategies",
+    "A selection of healthcare consulting engagements across practice builds, revenue optimization, M&A advisory, and digital transformation."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />
