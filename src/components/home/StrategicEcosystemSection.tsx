@@ -47,7 +47,7 @@ export function StrategicEcosystemSection() {
           className="text-center max-w-2xl mx-auto mb-20"
         >
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Physicians launching or growing clinics often need financing partners, architects, legal advisors, technology vendors, and operational consultants. Vitalis works alongside you to coordinate trusted partners — ensuring decisions are aligned and projects move forward efficiently.
+            Practitioners launching or growing practices often need financing partners, architects, legal advisors, technology vendors, and operational consultants. Vitalis works alongside you to coordinate trusted partners — ensuring decisions are aligned and projects move forward efficiently.
           </p>
         </motion.div>
 
@@ -107,7 +107,7 @@ export function StrategicEcosystemSection() {
             {/* Partner nodes */}
             {ecosystemPartners.map((partner, i) => {
               const angleRad = (partner.angle - 90) * (Math.PI / 180);
-              const x = 50 + Math.cos(angleRad) * 36; // percentage
+              const x = 50 + Math.cos(angleRad) * 36;
               const y = 50 + Math.sin(angleRad) * 36;
               return (
                 <motion.div

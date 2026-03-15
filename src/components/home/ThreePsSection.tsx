@@ -4,7 +4,7 @@ import { User, Building2, Heart } from "lucide-react";
 const pillars = [
   {
     icon: User,
-    title: "Physician",
+    title: "Practitioner",
     description: "Ownership, leadership, recruitment, succession, financial outcomes, and confident decision-making.",
     color: "bg-primary",
   },
