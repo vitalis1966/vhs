@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const projects = [
   { title: "Multi-Specialty Practice Launch", type: "New Practice Build", stage: "Inception → Launch", description: "Full lifecycle support for a 12,000 sq ft multi-specialty facility from concept through opening day." },
