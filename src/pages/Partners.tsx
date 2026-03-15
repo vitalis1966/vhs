@@ -330,7 +330,7 @@ const Partners = () => {
                   Holland Design specializes in healthcare facility planning and design. They create clinical environments that balance patient experience, operational efficiency, regulatory compliance, and long-term flexibility for growth.
                 </p>
                 <div className="bg-secondary/30 rounded-xl p-5">
-                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with Holland Design to ensure clinic layouts support:</h4>
+                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with Holland Design to ensure practice layouts support:</h4>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {["Patient flow and experience", "Operational workflows", "Staffing models and efficiency", "Long-term practice growth"].map((item) => (
                       <div key={item} className="flex items-center gap-2">
