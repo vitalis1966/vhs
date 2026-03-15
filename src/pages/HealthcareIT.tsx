@@ -38,6 +38,7 @@ import {
   CheckCircle,
   Wrench,
 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 /* ── data ── */
 
