@@ -357,7 +357,7 @@ const HealthcareIT = () => {
             </motion.div>
 
             <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="space-y-3">
-              <h3 className="font-display text-lg font-bold text-foreground mb-4">Vitalis plans for new clinics:</h3>
+              <h3 className="font-display text-lg font-bold text-foreground mb-4">Vitalis plans for new practices:</h3>
               {newClinicITServices.map((s, i) => (
                 <motion.div
                   key={s}
