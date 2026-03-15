@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ClipboardCheck, Stethoscope, Building } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const assessments = [
   {
