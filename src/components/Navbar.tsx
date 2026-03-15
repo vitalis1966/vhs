@@ -152,7 +152,7 @@ export function Navbar() {
           )}
           <div className="flex items-center gap-2 ml-2">
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/strategic-assessment/intake">Practice Assessment</Link>
+              <Link to="/strategic-assessment">Practice Assessment</Link>
             </Button>
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
               <Link to="/contact">Talk to Us</Link>
@@ -232,7 +232,7 @@ export function Navbar() {
               )
             )}
             <Button variant="hero" size="lg" asChild className="mt-2">
-              <Link to="/strategic-assessment/intake" onClick={() => setMobileOpen(false)}>Practice Assessment</Link>
+              <Link to="/strategic-assessment" onClick={() => setMobileOpen(false)}>Practice Assessment</Link>
             </Button>
             <Button variant="hero" size="lg" asChild>
               <Link to="/contact" onClick={() => setMobileOpen(false)}>Talk to Us</Link>
