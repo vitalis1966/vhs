@@ -33,9 +33,9 @@ const navLinks = [
         { label: "Technology & Software Setup", href: "/solutions/new-clinics" },
       ],
       "Operating, Growing & Advising": [
-        { label: "Strategic Practice Assessment", href: "/strategic-assessment/intake" },
+        { label: "Strategic Practice Assessment", href: "/strategic-assessment" },
         { label: "Operations & Workflow Optimization", href: "/solutions/existing-clinics" },
-        { label: "Billing & Revenue Review", href: "/solutions/existing-clinics" },
+        { label: "Billing & Revenue Review", href: "/clinic-audit" },
         { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics" },
         { label: "Digital Transformation", href: "/healthcare-it" },
         { label: "Fractional & Advisory Leadership", href: "/engagement" },
@@ -152,10 +152,10 @@ export function Navbar() {
           )}
           <div className="flex items-center gap-2 ml-2">
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/strategic-assessment">Practice Assessment</Link>
+              <Link to="/strategic-assessment">Strategic Assessment</Link>
             </Button>
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/contact">Talk to Us</Link>
+              <Link to="/contact">Speak With Our Team</Link>
             </Button>
           </div>
         </div>
@@ -232,10 +232,10 @@ export function Navbar() {
               )
             )}
             <Button variant="hero" size="lg" asChild className="mt-2">
-              <Link to="/strategic-assessment" onClick={() => setMobileOpen(false)}>Practice Assessment</Link>
+              <Link to="/strategic-assessment" onClick={() => setMobileOpen(false)}>Strategic Assessment</Link>
             </Button>
             <Button variant="hero" size="lg" asChild>
-              <Link to="/contact" onClick={() => setMobileOpen(false)}>Talk to Us</Link>
+              <Link to="/contact" onClick={() => setMobileOpen(false)}>Speak With Our Team</Link>
             </Button>
           </div>
         </div>

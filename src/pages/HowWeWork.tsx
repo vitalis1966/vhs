@@ -28,14 +28,12 @@ const HowWeWork = () => {
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            Our Method
-          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">Our Method</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             The full lifecycle,<br />one strategic partner.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Most advisory firms see a slice. We see the entire arc of a healthcare practice — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> brings operational experience to every phase. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">free practice assessment</Link> to find the right starting point.
+            Most advisory firms see a slice. We see the entire arc of a healthcare practice — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> brings operational experience to every phase. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">strategic assessment</Link> to find the right starting point.
           </motion.p>
         </div>
       </section>
@@ -44,14 +42,7 @@ const HowWeWork = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <div className="space-y-0">
             {phases.map((p, i) => (
-              <motion.div
-                key={p.phase}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="grid lg:grid-cols-[200px_1fr] gap-6 py-10 border-b border-border last:border-b-0"
-              >
+              <motion.div key={p.phase} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }} className="grid lg:grid-cols-[200px_1fr] gap-6 py-10 border-b border-border last:border-b-0">
                 <div>
                   <span className="font-display text-sm font-semibold text-accent uppercase tracking-wider">Phase {i + 1}</span>
                   <h3 className="font-display text-xl font-bold text-foreground mt-1">{p.phase}</h3>
@@ -72,10 +63,10 @@ const HowWeWork = () => {
           <p className="mt-4 text-muted-foreground text-lg">Let's find the right starting point — together.</p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">Talk to Us <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button variant="hero-outline" size="lg" asChild>
-              <Link to="/strategic-assessment/intake">Explore a Practice Assessment</Link>
+              <Link to="/strategic-assessment">Start Your Strategic Assessment</Link>
             </Button>
           </div>
         </div>

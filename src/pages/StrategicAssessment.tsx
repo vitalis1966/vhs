@@ -20,6 +20,9 @@ import {
   Rocket,
   ShieldCheck,
   Compass,
+  Building,
+  Stethoscope,
+  CheckCircle,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 
@@ -66,58 +69,19 @@ function SampleRadarChart() {
 
   return (
     <svg viewBox="0 0 300 300" className="w-full max-w-[280px] mx-auto">
-      {/* Grid rings */}
       {[0.25, 0.5, 0.75, 1].map((pct) => (
-        <polygon
-          key={pct}
-          points={pointsForRadius(maxR * pct)}
-          fill="none"
-          stroke="hsl(var(--border))"
-          strokeWidth="0.5"
-          opacity={0.6}
-        />
+        <polygon key={pct} points={pointsForRadius(maxR * pct)} fill="none" stroke="hsl(var(--border))" strokeWidth="0.5" opacity={0.6} />
       ))}
-      {/* Axes */}
       {Array.from({ length: n }, (_, i) => {
         const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-        return (
-          <line
-            key={i}
-            x1={cx}
-            y1={cy}
-            x2={cx + maxR * Math.cos(angle)}
-            y2={cy + maxR * Math.sin(angle)}
-            stroke="hsl(var(--border))"
-            strokeWidth="0.5"
-            opacity={0.4}
-          />
-        );
+        return <line key={i} x1={cx} y1={cy} x2={cx + maxR * Math.cos(angle)} y2={cy + maxR * Math.sin(angle)} stroke="hsl(var(--border))" strokeWidth="0.5" opacity={0.4} />;
       })}
-      {/* Data polygon */}
-      <polygon
-        points={dataPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-        fill="hsl(var(--accent) / 0.2)"
-        stroke="hsl(var(--accent))"
-        strokeWidth="2"
-      />
-      {/* Data dots */}
+      <polygon points={dataPoints.map((p) => `${p.x},${p.y}`).join(" ")} fill="hsl(var(--accent) / 0.2)" stroke="hsl(var(--accent))" strokeWidth="2" />
       {dataPoints.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="hsl(var(--accent))" />
       ))}
-      {/* Labels */}
       {labelPositions.map((p, i) => (
-        <text
-          key={i}
-          x={p.x}
-          y={p.y}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="fill-muted-foreground"
-          fontSize="8"
-          fontWeight="500"
-        >
-          {labels[i]}
-        </text>
+        <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" className="fill-muted-foreground" fontSize="8" fontWeight="500">{labels[i]}</text>
       ))}
     </svg>
   );
@@ -125,8 +89,8 @@ function SampleRadarChart() {
 
 const StrategicAssessment = () => {
   usePageMeta(
-    "Free Practice Assessment | Operational & Financial Analysis | Vitalis Health Strategies",
-    "A free structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first."
+    "Strategic Assessment | Operational & Financial Analysis | Vitalis Health Strategies",
+    "A structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first."
   );
 
   return (
@@ -138,10 +102,10 @@ const StrategicAssessment = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl text-center">
           <motion.div {...fadeUp}>
             <h1 className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
-              Find Out What Your Practice Assessment Reveals About Your Performance.
+              Find Out What Your Strategic Assessment Reveals About Your Performance.
             </h1>
             <p className="mt-8 text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              Most practice owners are too close to day-to-day operations to see clearly where revenue is being left uncollected, where workflows are adding unnecessary cost, or where growth is being blocked. The Vitalis Practice Assessment gives you an independent, structured view — across seven dimensions of practice performance — in about 15 minutes.
+              Most practice owners are too close to day-to-day operations to see clearly where revenue is being left uncollected, where workflows are adding unnecessary cost, or where growth is being blocked. The Vitalis Strategic Assessment gives you an independent, structured view — across seven dimensions of practice performance — in about 15 minutes.
             </p>
             <p className="mt-6 text-sm text-muted-foreground/70 tracking-wide">
               Completed by practices across medical, dental, and veterinary fields in Canada
@@ -149,12 +113,12 @@ const StrategicAssessment = () => {
             <div className="mt-10">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/strategic-assessment/intake">
-                  Begin the Free Assessment
+                  Begin Your Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <p className="mt-4 text-sm text-muted-foreground">
-                Free. Confidential. Takes approximately 15 minutes.
+                Complimentary. Confidential. Takes approximately 15 minutes.
               </p>
             </div>
           </motion.div>
@@ -171,28 +135,11 @@ const StrategicAssessment = () => {
           </motion.div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              {
-                icon: DollarSign,
-                label: "Billing Gaps",
-                text: "Assessments consistently identify fee collection gaps that are not visible from inside the practice — in coding, claim submission, and follow-up processes.",
-              },
-              {
-                icon: Clock,
-                label: "Workflow Costs",
-                text: "Scheduling inefficiencies and redundant administrative processes are among the most common sources of unnecessary overhead identified in practice assessments.",
-              },
-              {
-                icon: TrendingUp,
-                label: "Blocked Growth",
-                text: "Practices that want to expand often discover their current staffing structure, capacity model, or technology setup cannot support the next stage without significant rework.",
-              },
+              { icon: DollarSign, label: "Billing Gaps", text: "Assessments consistently identify fee collection gaps that are not visible from inside the practice — in coding, claim submission, and follow-up processes." },
+              { icon: Clock, label: "Workflow Costs", text: "Scheduling inefficiencies and redundant administrative processes are among the most common sources of unnecessary overhead identified in practice assessments." },
+              { icon: TrendingUp, label: "Blocked Growth", text: "Practices that want to expand often discover their current staffing structure, capacity model, or technology setup cannot support the next stage without significant rework." },
             ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                {...fadeUp}
-                transition={{ delay: i * 0.08 }}
-                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 text-center"
-              >
+              <motion.div key={item.label} {...fadeUp} transition={{ delay: i * 0.08 }} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40 text-center">
                 <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
                   <item.icon className="h-6 w-6 text-accent" />
                 </div>
@@ -204,25 +151,18 @@ const StrategicAssessment = () => {
         </div>
       </section>
 
-      {/* Section 3 — The Seven Dimensions (Card grid with icons) */}
+      {/* Section 3 — The Seven Dimensions */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              What the assessment examines.
-            </h2>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">What the assessment examines.</h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto">
-              The Vitalis Practice Assessment is structured around seven dimensions. Each one is designed to surface issues that are difficult to see without an external, structured review.
+              The Vitalis Strategic Assessment is structured around seven dimensions. Each one is designed to surface issues that are difficult to see without an external, structured review.
             </p>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {dimensions.map((d, i) => (
-              <motion.div
-                key={d.num}
-                {...fadeUp}
-                transition={{ delay: i * 0.05 }}
-                className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300"
-              >
+              <motion.div key={d.num} {...fadeUp} transition={{ delay: i * 0.05 }} className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center flex-shrink-0">
                     <d.icon className="h-5 w-5 text-accent" />
@@ -235,13 +175,104 @@ const StrategicAssessment = () => {
                 </div>
               </motion.div>
             ))}
-            {/* 7th card spans remaining space on large screens */}
           </div>
         </div>
       </section>
 
-      {/* Section 4 — What You Receive (with connecting arrows) */}
+      {/* Two-Path Section */}
       <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+          <motion.div {...fadeUp} className="text-center mb-16">
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+              Which assessment fits your situation?
+            </h2>
+          </motion.div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Card 1 — Build Strategy */}
+            <motion.div {...fadeUp} transition={{ delay: 0 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-primary/30 flex flex-col">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-primary/15 text-primary px-3 py-1 rounded-full self-start mb-4">
+                Planning a New Practice
+              </span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <Building className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground">Build Strategy Assessment</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                Designed for practitioners in the planning or early development phase. This assessment evaluates your readiness across feasibility, financial planning, regulatory requirements, facility design, staffing, and operational launch preparation.
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">What you will receive</p>
+              <ul className="space-y-2 mb-5">
+                {[
+                  "A readiness summary across six planning dimensions",
+                  "A prioritized list of decisions to address before committing resources",
+                  "Guidance on where specialist support is most likely to be needed",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted-foreground/70 italic mb-6">
+                Ideal for: Practitioners planning a new medical clinic, dental office, or veterinary facility.
+              </p>
+              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+                <Link to="/strategic-assessment/intake?path=new-build">
+                  Start Your Build Assessment →
+                </Link>
+              </Button>
+            </motion.div>
+
+            {/* Card 2 — Performance */}
+            <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-accent/30 flex flex-col">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-accent/15 text-accent px-3 py-1 rounded-full self-start mb-4">
+                Existing Practice
+              </span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center">
+                  <Stethoscope className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground">Performance Assessment</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                Designed for established practices seeking an independent view of performance. This assessment examines billing and revenue gaps, workflow efficiency, staffing structure, growth capacity, compliance exposure, and strategic direction.
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-2">What you will receive</p>
+              <ul className="space-y-2 mb-5">
+                {[
+                  "A scored summary across seven performance dimensions",
+                  "A priority list of the issues most affecting current performance",
+                  "An indication of where the clearest opportunities for improvement are",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted-foreground/70 italic mb-6">
+                Ideal for: Practice owners in medical, dental, or veterinary practices seeking an objective operational and financial review.
+              </p>
+              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+                <Link to="/strategic-assessment/intake?path=existing">
+                  Start Your Performance Assessment →
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+          <motion.p {...fadeUp} className="text-center mt-8 text-sm text-muted-foreground">
+            Not sure which applies?{" "}
+            <Link to="/strategic-assessment/intake" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">
+              Start the intake and we will guide you to the right path →
+            </Link>
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Section 4 — What You Receive */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <motion.div {...fadeUp} className="text-center mb-16">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
@@ -250,35 +281,18 @@ const StrategicAssessment = () => {
           </motion.div>
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-4 sm:gap-0">
             {[
-              {
-                icon: ClipboardList,
-                label: "Complete the Assessment",
-                text: "Answer 15 structured questions covering the seven dimensions. Takes approximately 15 minutes.",
-              },
-              {
-                icon: FileText,
-                label: "Receive Your Practice Health Summary",
-                text: "A summary of your responses mapped across the seven dimensions, with a note on where the assessment identified areas worth examining further.",
-              },
-              {
-                icon: MessageSquare,
-                label: "Optional: Review With a Vitalis Consultant",
-                text: "If you would like to discuss your results, you can book a free 45-minute consultation with a Vitalis advisor. There is no obligation to engage further.",
-              },
+              { icon: ClipboardList, label: "Complete the Assessment", text: "Answer 15 structured questions covering the seven dimensions. Takes approximately 15 minutes." },
+              { icon: FileText, label: "Receive Your Practice Health Summary", text: "A summary of your responses mapped across the seven dimensions, with a note on where the assessment identified areas worth examining further." },
+              { icon: MessageSquare, label: "Optional: Review With a Vitalis Consultant", text: "If you would like to discuss your results, you can book a complimentary 45-minute consultation with a Vitalis advisor. There is no obligation to engage further." },
             ].map((item, i) => (
               <div key={item.label} className="flex flex-col sm:flex-row items-center flex-1">
-                <motion.div
-                  {...fadeUp}
-                  transition={{ delay: i * 0.1 }}
-                  className="text-center px-4 max-w-[260px]"
-                >
+                <motion.div {...fadeUp} transition={{ delay: i * 0.1 }} className="text-center px-4 max-w-[260px]">
                   <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-5">
                     <item.icon className="h-7 w-7 text-primary" />
                   </div>
                   <h3 className="font-display text-base font-bold text-foreground mb-2">{item.label}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
                 </motion.div>
-                {/* Connecting arrow */}
                 {i < 2 && (
                   <div className="flex-shrink-0 my-3 sm:my-0 sm:mx-2">
                     <ChevronRight className="h-6 w-6 text-accent/50 hidden sm:block" />
@@ -295,24 +309,20 @@ const StrategicAssessment = () => {
       </section>
 
       {/* Sample Scorecard + Radar Chart */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Sample Practice Health Summary
-            </h2>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">Sample Practice Health Summary</h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto">
               Here's what a scored output looks like — a snapshot of where a practice stands across all seven dimensions.
             </p>
           </motion.div>
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Radar Chart */}
             <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 shadow-soft border border-border/40 flex flex-col items-center justify-center">
               <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-6">Dimension Radar</p>
               <SampleRadarChart />
               <p className="text-xs text-muted-foreground/60 mt-4 italic">Sample data — illustrative only</p>
             </motion.div>
-            {/* Scorecard */}
             <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-8 shadow-soft border border-border/40">
               <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-6">Dimension Scores</p>
               <div className="space-y-4">
@@ -323,9 +333,7 @@ const StrategicAssessment = () => {
                     <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
                       <motion.div
                         className="h-full rounded-full"
-                        style={{
-                          background: d.score >= 70 ? "hsl(var(--primary))" : d.score >= 50 ? "hsl(var(--accent))" : "hsl(var(--destructive))",
-                        }}
+                        style={{ background: d.score >= 70 ? "hsl(var(--primary))" : d.score >= 50 ? "hsl(var(--accent))" : "hsl(var(--destructive))" }}
                         initial={{ width: 0 }}
                         whileInView={{ width: `${d.score}%` }}
                         viewport={{ once: true }}
@@ -338,9 +346,7 @@ const StrategicAssessment = () => {
               </div>
               <div className="mt-6 pt-5 border-t border-border/40 flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Overall Score</span>
-                <span className="text-2xl font-bold text-foreground">
-                  {Math.round(dimensions.reduce((a, d) => a + d.score, 0) / dimensions.length)}%
-                </span>
+                <span className="text-2xl font-bold text-foreground">{Math.round(dimensions.reduce((a, d) => a + d.score, 0) / dimensions.length)}%</span>
               </div>
               <p className="text-xs text-muted-foreground/60 mt-3 italic">Sample data — illustrative only</p>
             </motion.div>
@@ -349,7 +355,7 @@ const StrategicAssessment = () => {
       </section>
 
       {/* Section 5 — Authority */}
-      <section className="py-20 lg:py-28 bg-background">
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.div {...fadeUp} className="text-center mb-12">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
@@ -357,7 +363,7 @@ const StrategicAssessment = () => {
             </h2>
           </motion.div>
           <motion.p {...fadeUp} className="text-muted-foreground text-lg leading-relaxed text-center max-w-3xl mx-auto mb-12">
-            The Vitalis Practice Assessment is built on the same framework our team uses in full Strategic Analysis engagements — across medical clinics, dental practices, and veterinary facilities. It reflects what we have consistently found matters most when evaluating how a practice is performing and where the clearest opportunities for improvement tend to be.
+            The Vitalis Strategic Assessment is built on the same framework our team uses in full Strategic Analysis engagements — across medical clinics, dental practices, and veterinary facilities. It reflects what we have consistently found matters most when evaluating how a practice is performing and where the clearest opportunities for improvement tend to be.
           </motion.p>
           <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 lg:p-10 shadow-soft border border-border/40 max-w-2xl mx-auto">
             <Quote className="h-8 w-8 text-accent/40 mb-4" />
@@ -369,8 +375,8 @@ const StrategicAssessment = () => {
         </div>
       </section>
 
-      {/* Section 6 — How It Works (with connecting arrows) */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
+      {/* Section 6 — How It Works */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.div {...fadeUp} className="text-center mb-14">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
@@ -381,7 +387,7 @@ const StrategicAssessment = () => {
             {[
               { icon: ClipboardList, text: "Complete 15 questions" },
               { icon: FileText, text: "Receive your summary" },
-              { icon: MessageSquare, text: "Optional consultation (free)" },
+              { icon: MessageSquare, text: "Optional consultation (complimentary)" },
             ].map((item, i) => (
               <div key={i} className="flex flex-col sm:flex-row items-center">
                 <motion.div {...fadeUp} transition={{ delay: i * 0.08 }} className="flex flex-col items-center gap-3">
@@ -403,24 +409,24 @@ const StrategicAssessment = () => {
       </section>
 
       {/* Section 7 — Final CTA */}
-      <section className="py-20 lg:py-28 bg-background">
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              The assessment is free. Your results are confidential.
+              The assessment is complimentary. Your results are confidential.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-10">
               If you have been wondering where your practice stands — on billing, operations, staffing, growth, or compliance — this is a practical starting point.
             </p>
             <Button variant="hero" size="xl" asChild>
               <Link to="/strategic-assessment/intake">
-                Begin the Free Assessment
+                Begin Your Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <p className="mt-6">
               <Link to="/contact" className="text-sm text-primary hover:text-foreground underline underline-offset-2 transition-colors">
-                Prefer to speak with someone first? Book a 20-minute call →
+                Prefer to speak with someone first? Schedule a call with our team →
               </Link>
             </p>
           </motion.div>

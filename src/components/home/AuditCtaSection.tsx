@@ -27,7 +27,7 @@ export function AuditCtaSection() {
 
             <div className="text-center lg:text-left flex-1">
               <h2 className="font-display text-2xl lg:text-4xl font-bold text-primary-foreground tracking-tight">
-                Explore a Strategic Practice Assessment
+                Explore a Strategic Assessment
               </h2>
               <p className="mt-4 text-primary-foreground/75 text-lg leading-relaxed max-w-xl">
                 Whether you are planning a new facility or looking for an objective view of an existing practice, our strategic assessment can help you see where to focus.
@@ -36,13 +36,13 @@ export function AuditCtaSection() {
 
             <div className="flex flex-col gap-3">
               <Button variant="gold" size="lg" asChild>
-                <Link to="/strategic-assessment/intake">
-                  Explore Your Practice Strategy
+                <Link to="/strategic-assessment">
+                  Start Your Strategic Assessment
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="hero-outline" size="lg" asChild className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                <Link to="/contact">Talk to Us</Link>
+                <Link to="/contact">Speak With Our Team</Link>
               </Button>
             </div>
           </div>

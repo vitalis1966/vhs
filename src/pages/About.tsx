@@ -68,32 +68,18 @@ const About = () => {
             Built by Clinicians. Focused on Practice Performance.
           </motion.h1>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-8 space-y-6 text-lg text-muted-foreground leading-relaxed max-w-3xl">
-            <p>
-              Vitalis Health Strategies was founded by clinicians and healthcare executives who spent years watching skilled practitioners struggle with the operational and financial side of running a practice.
-            </p>
-            <p>
-              The advice available to clinic, dental office, and veterinary practice owners was generic, expensive, and disconnected from day-to-day clinical reality. Vitalis was built to be different.
-            </p>
-            <p>
-              Every recommendation we make comes from a team that has operated practices, hired practitioners, navigated regulatory compliance, designed facilities, and built teams from the ground up. We do not produce reports that sit on shelves. Every engagement ends with an actionable plan and a team that stays accountable to outcomes.
-            </p>
+            <p>Vitalis Health Strategies was founded by clinicians and healthcare executives who spent years watching skilled practitioners struggle with the operational and financial side of running a practice.</p>
+            <p>The advice available to clinic, dental office, and veterinary practice owners was generic, expensive, and disconnected from day-to-day clinical reality. Vitalis was built to be different.</p>
+            <p>Every recommendation we make comes from a team that has operated practices, hired practitioners, navigated regulatory compliance, designed facilities, and built teams from the ground up. We do not produce reports that sit on shelves. Every engagement ends with an actionable plan and a team that stays accountable to outcomes.</p>
           </motion.div>
         </div>
       </section>
 
-      {/* Three Content Blocks */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-3 gap-8">
             {contentBlocks.map((block, i) => (
-              <motion.div
-                key={block.heading}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40"
-              >
+              <motion.div key={block.heading} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40">
                 <h2 className="font-display text-xl font-bold text-foreground mb-4">{block.heading}</h2>
                 <p className="text-muted-foreground leading-relaxed">{block.body}</p>
               </motion.div>
@@ -102,17 +88,13 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Our Team</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Experienced advisors with healthcare focus</h2>
-            <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Our team blends strategy, operations, and implementation expertise to support practitioners and healthcare leaders across Calgary and Canada.
-            </p>
+            <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Our team blends strategy, operations, and implementation expertise to support practitioners and healthcare leaders across Calgary and Canada.</p>
           </motion.div>
-
           <div className="grid md:grid-cols-3 gap-6">
             {team.map((member, i) => (
               <motion.div key={member.name} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40">
@@ -131,13 +113,9 @@ const About = () => {
               </motion.div>
             ))}
           </div>
-
           <div className="mt-10">
             <Button variant="hero-outline" size="lg" asChild>
-              <Link to="/about/mission-vision">
-                View Our Mission & Vision
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              <Link to="/about/mission-vision">View Our Mission & Vision <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </div>
         </div>
@@ -149,7 +127,7 @@ const About = () => {
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="hero" size="lg" asChild>
               <Link to="/contact">
-                Talk to a Vitalis Advisor <ArrowRight className="ml-2 h-4 w-4" />
+                Connect With Our Team <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>

@@ -5,8 +5,8 @@ const footerLinks = {
   Solutions: [
     { label: "New Practice Builds", href: "/solutions/new-clinics" },
     { label: "Operational Excellence", href: "/solutions/existing-clinics" },
-    { label: "Revenue & Growth", href: "/solutions" },
-    { label: "M&A Advisory", href: "/solutions" },
+    { label: "Revenue & Growth", href: "/clinic-audit" },
+    { label: "M&A Advisory", href: "/contact" },
   ],
   Company: [
     { label: "About", href: "/about" },
@@ -17,7 +17,7 @@ const footerLinks = {
     { label: "Admin Login", href: "/admin/login" },
   ],
   Resources: [
-    { label: "Practice Assessment", href: "/strategic-assessment/intake" },
+    { label: "Strategic Assessment", href: "/strategic-assessment" },
     { label: "Insights", href: "/insights" },
   ],
 };

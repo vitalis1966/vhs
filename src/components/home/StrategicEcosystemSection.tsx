@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -22,6 +23,42 @@ const ecosystemNodes = [
 ];
 
 export function StrategicEcosystemSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hubRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [lines, setLines] = useState<{ x1: number; y1: number; x2: number; y2: number }[]>([]);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  const recalcLines = useCallback(() => {
+    if (!containerRef.current || !hubRef.current) return;
+    const cRect = containerRef.current.getBoundingClientRect();
+    const hRect = hubRef.current.getBoundingClientRect();
+    const hubCenterX = hRect.left - cRect.left + hRect.width / 2;
+    const hubCenterY = hRect.top - cRect.top + hRect.height / 2;
+    setContainerSize({ width: cRect.width, height: cRect.height });
+
+    const newLines = nodeRefs.current.map((node) => {
+      if (!node) return { x1: hubCenterX, y1: hubCenterY, x2: hubCenterX, y2: hubCenterY };
+      const nRect = node.getBoundingClientRect();
+      return {
+        x1: hubCenterX,
+        y1: hubCenterY,
+        x2: nRect.left - cRect.left + nRect.width / 2,
+        y2: nRect.top - cRect.top + nRect.height / 2,
+      };
+    });
+    setLines(newLines);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(recalcLines, 100);
+    window.addEventListener("resize", recalcLines);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", recalcLines);
+    };
+  }, [recalcLines]);
+
   return (
     <section className="py-16 lg:py-20 bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
@@ -74,34 +111,28 @@ export function StrategicEcosystemSection() {
           className="relative max-w-4xl mx-auto mb-16"
         >
           {/* Desktop: Circular Hub-and-Spoke */}
-          <div className="hidden lg:block relative h-[550px]">
-            {/* Connecting lines */}
-            <svg
-              className="absolute inset-0 w-full h-full"
-              viewBox="0 0 500 500"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              {ecosystemNodes.map((node, i) => {
-                const angleRad = (node.angle - 90) * (Math.PI / 180);
-                const x2 = 250 + Math.cos(angleRad) * 190;
-                const y2 = 250 + Math.sin(angleRad) * 190;
-                return (
-                  <motion.line
+          <div className="hidden lg:block relative h-[550px]" ref={containerRef}>
+            {/* SVG lines using measured coordinates */}
+            {containerSize.width > 0 && (
+              <svg
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                viewBox={`0 0 ${containerSize.width} ${containerSize.height}`}
+                preserveAspectRatio="none"
+              >
+                {lines.map((line, i) => (
+                  <line
                     key={i}
-                    x1="250"
-                    y1="250"
-                    x2={x2}
-                    y2={y2}
+                    x1={line.x1}
+                    y1={line.y1}
+                    x2={line.x2}
+                    y2={line.y2}
                     stroke="hsl(var(--primary))"
                     strokeWidth="2"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    whileInView={{ pathLength: 1, opacity: 0.6 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.1 }}
+                    opacity="0.6"
                   />
-                );
-              })}
-            </svg>
+                ))}
+              </svg>
+            )}
 
             {/* Center Hub - Vitalis */}
             <motion.div
@@ -110,6 +141,7 @@ export function StrategicEcosystemSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+              ref={hubRef}
             >
               <div className="w-40 h-40 rounded-full bg-primary flex flex-col items-center justify-center text-primary-foreground shadow-elevated">
                 <span className="font-display text-lg font-bold leading-tight text-center px-2">Vitalis Health Strategies</span>
@@ -135,6 +167,7 @@ export function StrategicEcosystemSection() {
                     top: `${y}%`,
                     transform: "translate(-50%, -50%)",
                   }}
+                  ref={(el) => { nodeRefs.current[i] = el; }}
                 >
                   <div className="bg-card rounded-xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 border border-primary/30 text-center min-w-[160px]">
                     <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-2">
