@@ -11,6 +11,7 @@ import { MnASection } from "@/components/home/MnASection";
 import { ProcessSection } from "@/components/home/ProcessSection";
 import { FinalCtaSection } from "@/components/home/FinalCtaSection";
 
+// Homepage layout
 const Index = () => {
   return (
     <div className="min-h-screen">
