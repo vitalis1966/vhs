@@ -344,15 +344,15 @@ const HealthcareIT = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div {...fadeUp}>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Clinic Builds</p>
+              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Practice Builds</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology &amp; Infrastructure for New Clinics
+                Technology &amp; Infrastructure for New Practices
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                When building a new clinic, technology infrastructure must be designed correctly from the beginning. Poor planning leads to costly changes later — and disrupts clinical operations.
+                When building a new practice, technology infrastructure must be designed correctly from the beginning. Poor planning leads to costly changes later — and disrupts clinical operations.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Vitalis supports new clinic builds by planning complete IT infrastructure, ensuring the clinic launches with fully operational and secure technology systems.
+                Vitalis supports new practice builds by planning complete IT infrastructure, ensuring the practice launches with fully operational and secure technology systems.
               </p>
             </motion.div>
 
