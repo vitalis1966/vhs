@@ -19,7 +19,7 @@ import {
   Home,
   Laptop2,
 } from "lucide-react";
-
+import { usePageMeta } from "@/lib/seo";
 const developmentStages = [
   {
     icon: Lightbulb,
