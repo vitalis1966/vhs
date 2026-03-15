@@ -21,7 +21,7 @@ const Index = () => {
       <ThreePsSection />
       <StrategicEcosystemSection />
       <HealthcarePathwaysSection />
-      <SolutionsPreview />
+      
       <AuditCtaSection />
       <MnASection />
       <ProcessSection />
