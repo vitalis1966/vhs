@@ -243,13 +243,13 @@ const HealthcareIT = () => {
             <motion.div {...fadeUp}>
               <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Foundation</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology powers every modern clinic.
+                Technology powers every modern practice.
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a clinic delivers care, manages staff, and sustains growth.
+                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a practice delivers care, manages staff, and sustains growth.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-8">
-                Vitalis supports clinics through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
+                Vitalis supports practices through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
               </p>
 
               {/* Two pillars */}
@@ -344,20 +344,20 @@ const HealthcareIT = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div {...fadeUp}>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Clinic Builds</p>
+              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">New Practice Builds</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology &amp; Infrastructure for New Clinics
+                Technology &amp; Infrastructure for New Practices
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                When building a new clinic, technology infrastructure must be designed correctly from the beginning. Poor planning leads to costly changes later — and disrupts clinical operations.
+                When building a new practice, technology infrastructure must be designed correctly from the beginning. Poor planning leads to costly changes later — and disrupts clinical operations.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Vitalis supports new clinic builds by planning complete IT infrastructure, ensuring the clinic launches with fully operational and secure technology systems.
+                Vitalis supports new practice builds by planning complete IT infrastructure, ensuring the practice launches with fully operational and secure technology systems.
               </p>
             </motion.div>
 
             <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="space-y-3">
-              <h3 className="font-display text-lg font-bold text-foreground mb-4">Vitalis plans for new clinics:</h3>
+              <h3 className="font-display text-lg font-bold text-foreground mb-4">Vitalis plans for new practices:</h3>
               {newClinicITServices.map((s, i) => (
                 <motion.div
                   key={s}
@@ -382,10 +382,10 @@ const HealthcareIT = () => {
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Existing Practices</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Technology Optimization for Existing Clinics
+               Technology Optimization for Existing Practices
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Many clinics operate with outdated or poorly configured IT environments. Vitalis helps existing clinics improve their infrastructure for reliable systems and stronger operational performance.
+              Many practices operate with outdated or poorly configured IT environments. Vitalis helps existing practices improve their infrastructure for reliable systems and stronger operational performance.
             </p>
           </motion.div>
 
@@ -543,7 +543,7 @@ const HealthcareIT = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground italic max-w-2xl">
-              Vitalis advises clinics on selecting the right platform based on their operational model. EMR installation and technical support are handled by the respective vendors or IT providers.
+              Vitalis advises practices on selecting the right platform based on their operational model. EMR installation and technical support are handled by the respective vendors or IT providers.
             </p>
           </motion.div>
         </div>
@@ -559,10 +559,10 @@ const HealthcareIT = () => {
                 Ongoing Technology Advisory
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Many clinics retain Vitalis for ongoing technology advisory services. Technology evolves quickly — and having a trusted partner ensures clinics stay ahead of changes and continuously optimize their systems.
+                Many practices retain Vitalis for ongoing technology advisory services. Technology evolves quickly — and having a trusted partner ensures practices stay ahead of changes and continuously optimize their systems.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                This ensures clinics continue improving their technology environment as they grow, without needing to manage IT strategy internally.
+                This ensures practices continue improving their technology environment as they grow, without needing to manage IT strategy internally.
               </p>
             </motion.div>
 
@@ -601,18 +601,18 @@ const HealthcareIT = () => {
               Complete healthcare IT support.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              From strategic technology planning to managed IT infrastructure — Vitalis provides the complete technology expertise your clinic needs to operate efficiently and securely.
+              From strategic technology planning to managed IT infrastructure — Vitalis provides the complete technology expertise your practice needs to operate efficiently and securely.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Explore a Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

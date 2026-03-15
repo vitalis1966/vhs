@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const stages = [
   {
     label: "Vision & Concept",
-    description: "Exploring the opportunity for a new clinic or healthcare venture.",
+    description: "Exploring the opportunity for a new practice or healthcare venture.",
     isOngoing: false,
   },
   {
@@ -28,7 +28,7 @@ const stages = [
   },
   {
     label: "Grow & Expand",
-    description: "Adding services, physicians, or new locations.",
+    description: "Adding services, practitioners, or new locations.",
     isOngoing: false,
   },
   {
@@ -85,9 +85,7 @@ export function LifecycleSection() {
                   {stage.isOngoing ? "∞" : i + 1}
                 </div>
                 <h3
-                  className={`mt-4 font-display text-sm font-semibold ${
-                    stage.isOngoing ? "text-foreground" : "text-foreground"
-                  }`}
+                  className="mt-4 font-display text-sm font-semibold text-foreground"
                 >
                   {stage.label}
                 </h3>

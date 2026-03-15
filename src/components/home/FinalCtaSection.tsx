@@ -26,7 +26,7 @@ export function FinalCtaSection() {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">
-                Book a Consultation
+                Talk to Us
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

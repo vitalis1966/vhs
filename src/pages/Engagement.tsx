@@ -11,7 +11,7 @@ const phases = [
     phase: "Phase 1",
     title: "Initial Conversation",
     description:
-      "Physicians and clinic leaders connect with Vitalis to discuss goals, challenges, and opportunities. No commitment required.",
+      "Practitioners and practice leaders connect with Vitalis to discuss goals, challenges, and opportunities. No commitment required.",
     details: ["Consultation call", "Initial discovery", "Discussion of goals and priorities"],
   },
   {
@@ -21,8 +21,8 @@ const phases = [
     description:
       "Clients often begin with a structured assessment to identify strengths, risks, opportunities, and practical priorities.",
     details: [
-      "Clinic Build Readiness Assessment (new clinics)",
-      "Practice Performance Assessment (existing clinics)",
+      "Practice Build Readiness Assessment (new practices)",
+      "Practice Performance Assessment (existing practices)",
       "Gap analysis and strategic priorities",
     ],
   },
@@ -56,7 +56,7 @@ const phases = [
     title: "Growth & Ongoing Advisory",
     description:
       "Many engagements continue as long-term advisory relationships supporting expansion strategy, recruitment, and sustained performance.",
-    details: ["Expansion strategy", "Physician recruitment", "Strategic transactions", "Ongoing advisory support"],
+    details: ["Expansion strategy", "Practitioner recruitment", "Strategic transactions", "Ongoing advisory support"],
   },
 ];
 
@@ -167,12 +167,12 @@ const Engagement = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/clinic-audit">Explore Your Practice Strategy</Link>
+                <Link to="/strategic-assessment/intake">Explore Your Practice Strategy</Link>
               </Button>
             </div>
           </motion.div>

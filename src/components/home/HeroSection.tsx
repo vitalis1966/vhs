@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const heroStats = [
-  { value: "Full-Cycle", label: "Inception to Growth" },
-  { value: "3Ps", label: "Physician · Practice · Patient" },
-  { value: "Calgary-Based", label: "Serving Canada" },
+  { value: "200+", label: "Practices Supported Across Canada" },
+  { value: "$40M+", label: "Revenue Gaps Identified Across Client Assessments" },
+  { value: "15+", label: "New Facilities Guided from Concept to Opening" },
+  { value: "Med · Dent · Vet", label: "Every Stage, One Team" },
 ];
 
 export function HeroSection() {
@@ -35,11 +36,11 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.08] tracking-tight"
           >
-            Your practice is a
+            Practice Strategy for Medical,
             <br />
-            blank canvas.
+            Dental, and Veterinary
             <br />
-            <span className="text-gradient-primary italic">Let's paint it together.</span>
+            <span className="text-gradient-primary italic">Practices — at Every Stage.</span>
           </motion.h1>
 
           <motion.p
@@ -48,7 +49,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed"
           >
-            Based in Calgary, serving healthcare organizations across Canada. Vitalis Health Strategies helps physicians and healthcare ventures design, launch, and grow successful practices through coordinated strategic advisory.
+            Vitalis Health Strategies works with private medical, dental, and veterinary practices across Canada. Whether you are planning a new facility, running an established practice, or figuring out what is holding your current one back — our team has the operational and strategic experience to help you move forward with clarity.
           </motion.p>
 
           <motion.div
@@ -59,7 +60,7 @@ export function HeroSection() {
           >
             {[
               "Development & Build — Transform concepts into state-of-the-art healthcare environments",
-              "Operational Growth — Optimize operations, boost patient care, fuel long-term growth",
+              "Operational Growth — Optimize operations, strengthen patient care, fuel long-term growth",
               "Ongoing Advisory — Sustained strategic partnership through every stage",
             ].map((item) => (
               <div key={item} className="flex items-start gap-2 text-muted-foreground">
@@ -76,14 +77,14 @@ export function HeroSection() {
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <Button variant="hero" size="xl" asChild>
-              <Link to="/contact">
-                Book a Consultation
+              <Link to="/strategic-assessment/intake">
+                Explore a Free Practice Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
-              <Link to="/strategic-assessment/intake">
-                Strategic Assessment
+              <Link to="/solutions/new-clinics">
+                Planning a New Facility? Start Here
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -94,7 +95,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl"
+          className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl"
         >
           {heroStats.map((stat, i) => (
             <div key={i} className="flex items-center gap-4 border-l-2 border-accent/30 pl-4">

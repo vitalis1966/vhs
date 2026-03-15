@@ -39,13 +39,13 @@ const capabilities = [
   },
   {
     icon: Building2,
-    title: "Clinic Development",
-    description: "New clinic planning, facility design coordination, launch strategy, and development oversight.",
+    title: "Practice Development",
+    description: "New practice planning, facility design coordination, launch strategy, and development oversight.",
   },
   {
     icon: Monitor,
     title: "Technology & Digital",
-    description: "EHR optimization, technology planning, digital transformation, and systems integration.",
+    description: "EMR optimization, technology planning, digital transformation, and systems integration.",
   },
   {
     icon: Users,
@@ -54,8 +54,8 @@ const capabilities = [
   },
   {
     icon: Stethoscope,
-    title: "Physician Recruitment",
-    description: "Recruitment strategy, physician onboarding, partnership structures, and succession planning.",
+    title: "Practitioner Recruitment",
+    description: "Recruitment strategy, practitioner onboarding, partnership structures, and succession planning.",
   },
   {
     icon: Handshake,
@@ -64,19 +64,20 @@ const capabilities = [
   },
 ];
 
-const clinicTypes = [
-  "Family medicine clinics",
+const practiceTypes = [
+  "Family medicine practices",
   "Specialty practices",
-  "Multidisciplinary clinics",
-  "Diagnostic clinics",
+  "Multidisciplinary practices",
+  "Dental practices",
+  "Veterinary practices",
   "Non-hospital surgical facilities",
 ];
 
 const organizations = [
   {
     icon: Building2,
-    title: "Private Clinics",
-    description: "Independent physician practices, specialist groups, and multi-physician clinics requiring strategic planning, operational alignment, and growth support.",
+    title: "Private Practices",
+    description: "Independent practitioner practices, specialist groups, and multi-provider practices requiring strategic planning, operational alignment, and growth support.",
   },
   {
     icon: Hospital,
@@ -119,7 +120,7 @@ const Solutions = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Based in Calgary, Vitalis Health Strategies supports physicians and healthcare organizations across Canada through every stage of growth — from initial concept through long-term strategic advisory.
+            Based in Calgary, Vitalis Health Strategies supports practitioners and healthcare organizations across Canada through every stage of growth — from initial concept through long-term strategic advisory.
           </motion.p>
         </div>
       </section>
@@ -128,9 +129,9 @@ const Solutions = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Where are you in your journey?</h2>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Where is your practice right now?</h2>
             <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
-              Vitalis provides tailored solutions whether you're planning a new clinic or optimizing an existing practice.
+              Vitalis provides tailored solutions whether you're planning a new practice or looking for an objective view of an existing one.
             </p>
           </div>
 
@@ -145,14 +146,14 @@ const Solutions = () => {
                 <Building2 className="h-7 w-7 text-primary-foreground" />
               </div>
               <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Planning a New Clinic
+                Planning a New Practice
               </h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                For physicians and healthcare entrepreneurs planning a new clinic, expansion, or healthcare venture. We guide you from concept through launch.
+                For practitioners and healthcare entrepreneurs planning a new medical clinic, dental office, or veterinary facility. We guide you from concept through launch.
               </p>
               <Button variant="hero" size="lg" asChild>
                 <Link to="/solutions/new-clinics">
-                  Explore New Clinic Solutions
+                  Explore New Practice Solutions
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -172,11 +173,11 @@ const Solutions = () => {
                 Growing an Existing Practice
               </h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                For clinic leaders looking to optimize operations, improve performance, modernize systems, and position their practice for sustainable growth.
+                For practice leaders looking to gain an objective view of operations, improve performance, modernize systems, and position their practice for sustainable growth.
               </p>
               <Button variant="hero" size="lg" asChild>
                 <Link to="/solutions/existing-clinics">
-                  Explore Existing Clinic Solutions
+                  Explore Existing Practice Solutions
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -219,21 +220,21 @@ const Solutions = () => {
         </div>
       </section>
 
-      {/* Clinic Types */}
+      {/* Practice Types */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Types of Clinics We Work With</p>
+              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Types of Practices We Work With</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">
                 Healthcare practices of all types.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Vitalis supports physicians and organizations across a range of practice types and clinical specialties throughout Calgary and across Canada.
+                Vitalis supports practitioners and organizations across a range of practice types and clinical specialties throughout Calgary and across Canada.
               </p>
             </div>
             <div className="space-y-3">
-              {clinicTypes.map((type, i) => (
+              {practiceTypes.map((type, i) => (
                 <motion.div
                   key={type}
                   initial={{ opacity: 0, x: 15 }}
@@ -302,13 +303,13 @@ const Solutions = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Explore a Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

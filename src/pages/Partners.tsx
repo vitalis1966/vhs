@@ -85,7 +85,7 @@ const Partners = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Physicians launching or growing clinics often need financing partners, architects, legal advisors, real estate specialists, technology vendors, and operational consultants. Vitalis helps coordinate these professionals — ensuring decisions are aligned and projects move forward efficiently.
+            Practitioners launching or growing practices often need financing partners, architects, legal advisors, real estate specialists, technology vendors, and operational consultants. Vitalis helps coordinate these professionals — ensuring decisions are aligned and projects move forward efficiently.
           </motion.p>
         </div>
       </section>
@@ -330,7 +330,7 @@ const Partners = () => {
                   Holland Design specializes in healthcare facility planning and design. They create clinical environments that balance patient experience, operational efficiency, regulatory compliance, and long-term flexibility for growth.
                 </p>
                 <div className="bg-secondary/30 rounded-xl p-5">
-                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with Holland Design to ensure clinic layouts support:</h4>
+                  <h4 className="font-semibold text-foreground mb-3">Vitalis works with Holland Design to ensure practice layouts support:</h4>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {["Patient flow and experience", "Operational workflows", "Staffing models and efficiency", "Long-term practice growth"].map((item) => (
                       <div key={item} className="flex items-center gap-2">
@@ -442,18 +442,18 @@ const Partners = () => {
               Ready to coordinate your healthcare venture?
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              Whether you're planning a new clinic or optimizing an existing practice, Vitalis can help coordinate the right expertise for your project.
+              Whether you're planning a new practice or looking for an objective view of an existing one, Vitalis can help coordinate the right expertise for your project.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Explore a Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

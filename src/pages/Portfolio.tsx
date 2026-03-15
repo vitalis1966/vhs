@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 const projects = [
-  { title: "Multi-Specialty Clinic Launch", type: "New Clinic Build", stage: "Inception → Launch", description: "Full lifecycle support for a 12,000 sq ft multi-specialty facility from concept through opening day." },
+  { title: "Multi-Specialty Practice Launch", type: "New Practice Build", stage: "Inception → Launch", description: "Full lifecycle support for a 12,000 sq ft multi-specialty facility from concept through opening day." },
   { title: "Primary Care Revenue Optimization", type: "Revenue & Operations", stage: "Optimize → Grow", description: "Revenue cycle overhaul resulting in 28% improvement in net collections within 6 months." },
-  { title: "Physician Group M&A Advisory", type: "Mergers & Acquisitions", stage: "Transition → Exit", description: "Strategic advisory for a 5-physician group through successful acquisition by a regional health system." },
+  { title: "Practitioner Group M&A Advisory", type: "Mergers & Acquisitions", stage: "Transition", description: "Strategic advisory for a 5-practitioner group through successful acquisition by a regional health system." },
   { title: "Urgent Care Network Expansion", type: "Growth Strategy", stage: "Scale → Expand", description: "Market analysis and operational playbook for expanding from 2 to 7 locations across two provinces." },
-  { title: "Surgical Center Operational Audit", type: "Strategic Assessment", stage: "Optimize", description: "Comprehensive operational and compliance audit identifying $1.2M in annual efficiency opportunities." },
-  { title: "Digital Transformation Program", type: "Digital & Technology", stage: "Optimize → Grow", description: "EHR optimization and digital workflow redesign reducing administrative burden by 35%." },
+  { title: "Surgical Center Operational Assessment", type: "Strategic Assessment", stage: "Optimize", description: "Comprehensive operational and compliance assessment identifying $1.2M in annual efficiency opportunities." },
+  { title: "Digital Transformation Program", type: "Digital & Technology", stage: "Optimize → Grow", description: "EMR optimization and digital workflow redesign reducing administrative burden by 35%." },
 ];
 
 const Portfolio = () => {
@@ -58,7 +58,7 @@ const Portfolio = () => {
           <div className="mt-16 text-center">
             <p className="text-muted-foreground mb-6">Want to discuss how we can help your organization?</p>
             <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">Book a Consultation <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/contact">Talk to Us <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </div>
         </div>

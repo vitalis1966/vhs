@@ -8,7 +8,7 @@ import { ArrowRight, Target, Eye, Heart } from "lucide-react";
 const values = [
   { title: "Strategic Depth", description: "We bring full-lifecycle perspective to every engagement. Advice grounded in an understanding of how early decisions shape long-term outcomes." },
   { title: "Coordinated Advisory", description: "Healthcare projects succeed when decisions are aligned. We help coordinate the advisors, partners, and specialists involved in complex healthcare ventures." },
-  { title: "Physician-Centered", description: "Physicians carry the clinical, operational, and financial responsibilities of practice ownership. Our work is designed to reduce that burden, not add to it." },
+  { title: "Practitioner-Centered", description: "Practitioners carry the clinical, operational, and financial responsibilities of practice ownership. Our work is designed to reduce that burden, not add to it." },
   { title: "Operational Integrity", description: "Strategy without execution is incomplete. We focus on recommendations that are realistic, actionable, and built around the specific context of each organization." },
   { title: "Long-Term Relationships", description: "We build lasting partnerships with our clients — not transactional engagements. The goal is to become a trusted advisor that organizations turn to as they grow and evolve." },
   { title: "Honest Counsel", description: "Healthcare leaders need candid advice, not confirmation of prior decisions. We provide honest strategic guidance even when it involves difficult conversations." },
@@ -45,10 +45,10 @@ const MissionVision = () => {
                 To help healthcare organizations build, operate, and grow successful practices.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Through thoughtful strategy, operational excellence, and coordinated advisory support — we help physicians and healthcare organizations turn complex challenges into lasting achievements.
+                Through thoughtful strategy, operational excellence, and coordinated advisory support — we help practitioners and healthcare organizations turn complex challenges into lasting achievements.
               </p>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                Based in Calgary, Vitalis Health Strategies works with physicians and healthcare organizations across Alberta to design, launch, and optimize successful medical practices.
+                Based in Calgary, Vitalis Health Strategies works with practitioners and healthcare organizations across Alberta to design, launch, and optimize successful practices.
               </p>
             </motion.div>
 
@@ -61,7 +61,7 @@ const MissionVision = () => {
                 To be the definitive strategic partner for healthcare organizations across Alberta.
               </h2>
               <p className="text-primary-foreground/85 leading-relaxed">
-                We envision a healthcare landscape where physicians and clinic leaders have access to coordinated, high-quality strategic guidance at every stage of their journey — reducing the friction of building and growing healthcare organizations.
+                We envision a healthcare landscape where practitioners and practice leaders have access to coordinated, high-quality strategic guidance at every stage of their journey — reducing the friction of building and growing healthcare organizations.
               </p>
             </motion.div>
           </div>
@@ -99,7 +99,7 @@ const MissionVision = () => {
             <p className="text-muted-foreground text-lg leading-relaxed mb-10">Every long-term advisory relationship begins with an initial conversation. No commitment required.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/contact">Book a Consultation <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link to="/contact">Talk to Us <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
                 <Link to="/about">Learn About Vitalis</Link>

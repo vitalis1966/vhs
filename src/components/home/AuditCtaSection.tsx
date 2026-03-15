@@ -27,10 +27,10 @@ export function AuditCtaSection() {
 
             <div className="text-center lg:text-left flex-1">
               <h2 className="font-display text-2xl lg:text-4xl font-bold text-primary-foreground tracking-tight">
-                Start with a Strategic Assessment
+                Explore a Strategic Practice Assessment
               </h2>
               <p className="mt-4 text-primary-foreground/75 text-lg leading-relaxed max-w-xl">
-                Whether you're building a new clinic or optimizing an existing one, our strategic assessment gives you a clear, actionable roadmap for what comes next.
+                Whether you are planning a new facility or looking for an objective view of an existing practice, our strategic assessment can help you see where to focus.
               </p>
             </div>
 
@@ -42,7 +42,7 @@ export function AuditCtaSection() {
                 </Link>
               </Button>
               <Button variant="hero-outline" size="lg" asChild className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                <Link to="/contact">Book a Consultation</Link>
+                <Link to="/contact">Talk to Us</Link>
               </Button>
             </div>
           </div>

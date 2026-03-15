@@ -7,52 +7,52 @@ const pathways = [
   {
     icon: Building,
     number: "01",
-    eyebrow: "New Clinic Development",
-    title: "Building a New Clinic",
+    eyebrow: "Planning & Building",
+    title: "Planning & Building",
     description:
-      "Planning a new clinic involves dozens of interconnected decisions — from facility design and staffing models to technology infrastructure and regulatory requirements. We help physicians and healthcare entrepreneurs evaluate these factors before major commitments are made.",
+      "You are preparing to open a new medical clinic, dental office, or veterinary facility. You want experienced guidance on the operational, regulatory, and financial decisions that come before opening day — so you are set up for a strong start, not an expensive learning curve.",
     services: [
-      "Clinic development and feasibility strategy",
-      "Facility planning and design coordination",
-      "Technology and infrastructure planning",
-      "Staffing models and workforce strategy",
-      "Launch readiness and operational setup",
+      "Practice feasibility analysis and financial planning",
+      "Regulatory and compliance navigation for your practice type",
+      "Facility design input and equipment procurement guidance",
+      "Recruitment support and staffing structure planning",
+      "Operational setup and pre-opening staff preparation",
     ],
-    cta: "Plan Your Clinic",
-    href: "/clinic-audit",
+    cta: "See How We Support New Builds →",
+    href: "/solutions/new-clinics",
   },
   {
     icon: TrendingUp,
     number: "02",
-    eyebrow: "Practice Performance",
-    title: "Improving an Existing Practice",
+    eyebrow: "Operating & Growing",
+    title: "Operating & Growing",
     description:
-      "Our practice performance assessment helps clinic leaders evaluate operational systems, patient flow, staffing structure, technology usage, and financial performance — and identify specific opportunities for improvement.",
+      "You have an established practice and want an objective view of how it is performing. Whether it is a billing gap, an operational bottleneck, or a growth opportunity you have not been able to act on yet — a structured assessment can help you see where to focus.",
     services: [
-      "Workflow and operational redesign",
-      "Revenue cycle performance improvement",
-      "Staff structure and culture development",
-      "Technology and EHR modernization",
-      "Patient experience optimization",
+      "Billing and fee collection review",
+      "Workflow and scheduling analysis",
+      "Staffing structure and cost review",
+      "Growth planning: new service lines, additional practitioners, additional locations",
+      "Practice management technology and digital tools review",
     ],
-    cta: "Assess Your Practice",
-    href: "/clinic-audit",
+    cta: "Learn About Our Practice Assessment →",
+    href: "/strategic-assessment/intake",
   },
   {
     icon: Handshake,
     number: "03",
-    eyebrow: "Long-Term Partnership",
-    title: "Strategic Advisory & Growth",
+    eyebrow: "Scaling or Transitioning",
+    title: "Scaling or Transitioning",
     description:
-      "Some organizations benefit from an ongoing advisory relationship. Vitalis provides long-term strategic guidance to help healthcare organizations navigate growth, expansion, recruitment, and complex transitions.",
+      "You are thinking about adding a location, restructuring a partnership, bringing in new leadership, or navigating a significant operational change. You want a consulting team that understands how these decisions play out inside a real practice.",
     services: [
       "Practice expansion and multi-location strategy",
-      "Physician recruitment and succession planning",
+      "Practitioner recruitment and succession planning",
       "Financial restructuring and long-term planning",
       "Mergers, acquisitions, and partnership strategy",
       "Ongoing strategic advisory support",
     ],
-    cta: "Speak with Vitalis",
+    cta: "Explore Advisory Services →",
     href: "/contact",
   },
 ];
@@ -72,10 +72,10 @@ export function HealthcarePathwaysSection() {
             Your Healthcare Journey
           </p>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
-            Where are you in your journey?
+            Where is your practice right now?
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Based in Calgary, Vitalis Health Strategies works with physicians and healthcare organizations across Canada at every stage — from planning a first clinic to navigating growth, expansion, and long-term advisory.
+            Based in Calgary, Vitalis Health Strategies works with practitioners and healthcare organizations across Canada at every stage — from planning a first practice to navigating growth, expansion, and long-term advisory.
           </p>
         </motion.div>
 
@@ -120,7 +120,6 @@ export function HealthcarePathwaysSection() {
               <Button variant="hero-outline" size="default" asChild className="w-full mt-auto">
                 <Link to={pathway.href}>
                   {pathway.cta}
-                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </motion.div>
