@@ -14,7 +14,7 @@ import {
   Target,
   CheckCircle,
 } from "lucide-react";
-
+import { usePageMeta } from "@/lib/seo";
 const optimizationAreas = [
   {
     icon: Search,
