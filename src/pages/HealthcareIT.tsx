@@ -559,10 +559,10 @@ const HealthcareIT = () => {
                 Ongoing Technology Advisory
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Many clinics retain Vitalis for ongoing technology advisory services. Technology evolves quickly — and having a trusted partner ensures clinics stay ahead of changes and continuously optimize their systems.
+                Many practices retain Vitalis for ongoing technology advisory services. Technology evolves quickly — and having a trusted partner ensures practices stay ahead of changes and continuously optimize their systems.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                This ensures clinics continue improving their technology environment as they grow, without needing to manage IT strategy internally.
+                This ensures practices continue improving their technology environment as they grow, without needing to manage IT strategy internally.
               </p>
             </motion.div>
 
