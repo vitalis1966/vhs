@@ -601,18 +601,18 @@ const HealthcareIT = () => {
               Complete healthcare IT support.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              From strategic technology planning to managed IT infrastructure — Vitalis provides the complete technology expertise your clinic needs to operate efficiently and securely.
+              From strategic technology planning to managed IT infrastructure — Vitalis provides the complete technology expertise your practice needs to operate efficiently and securely.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Explore a Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
