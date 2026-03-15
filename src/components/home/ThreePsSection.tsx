@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Building2, Heart } from "lucide-react";
+import { User, Building2, Heart, Users } from "lucide-react";
 
 const pillars = [
   {
@@ -20,6 +20,12 @@ const pillars = [
     description: "Experience, access, quality of care, safety, service flow, and long-term clinical excellence.",
     color: "bg-accent",
   },
+  {
+    icon: Users,
+    title: "People",
+    description: "The right practitioners, staff, and leadership structure are as important as any operational system. We help practices build the human infrastructure — recruitment, role design, and team alignment — that supports long-term performance.",
+    color: "bg-primary",
+  },
 ];
 
 export function ThreePsSection() {
@@ -35,14 +41,14 @@ export function ThreePsSection() {
         >
           <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Our Philosophy</p>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
-            The 3Ps Framework
+            The 4Ps Framework
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Everything we do is designed to create stronger outcomes across three interconnected pillars.
+            Everything we do is designed to create stronger outcomes across four interconnected pillars.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {pillars.map((pillar, i) => (
             <motion.div
               key={pillar.title}
@@ -50,7 +56,7 @@ export function ThreePsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-card rounded-2xl p-8 lg:p-10 shadow-card hover:shadow-elevated transition-shadow duration-300 text-center"
+              className="bg-card rounded-2xl p-6 lg:p-8 shadow-card hover:shadow-elevated transition-shadow duration-300 text-center"
             >
               <div className={`w-16 h-16 rounded-2xl ${pillar.color} flex items-center justify-center mx-auto`}>
                 <pillar.icon className="h-8 w-8 text-primary-foreground" />
