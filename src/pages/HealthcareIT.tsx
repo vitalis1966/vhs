@@ -382,10 +382,10 @@ const HealthcareIT = () => {
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Existing Practices</p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Technology Optimization for Existing Clinics
+               Technology Optimization for Existing Practices
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-              Many clinics operate with outdated or poorly configured IT environments. Vitalis helps existing clinics improve their infrastructure for reliable systems and stronger operational performance.
+              Many practices operate with outdated or poorly configured IT environments. Vitalis helps existing practices improve their infrastructure for reliable systems and stronger operational performance.
             </p>
           </motion.div>
 
