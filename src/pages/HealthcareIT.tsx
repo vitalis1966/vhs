@@ -243,13 +243,13 @@ const HealthcareIT = () => {
             <motion.div {...fadeUp}>
               <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Foundation</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                Technology powers every modern clinic.
+                Technology powers every modern practice.
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a clinic delivers care, manages staff, and sustains growth.
+                Healthcare organizations rely heavily on technology systems to operate effectively. From electronic medical records to network infrastructure and cybersecurity, every technology decision impacts how a practice delivers care, manages staff, and sustains growth.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-8">
-                Vitalis supports clinics through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
+                Vitalis supports practices through both <strong>technology strategy</strong> and <strong>managed IT infrastructure and services</strong> — providing complete healthcare IT support.
               </p>
 
               {/* Two pillars */}
