@@ -20,7 +20,7 @@ import {
   Stethoscope,
   Target,
 } from "lucide-react";
-
+import { usePageMeta } from "@/lib/seo";
 const capabilities = [
   {
     icon: Brain,
