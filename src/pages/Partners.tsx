@@ -85,7 +85,7 @@ const Partners = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Physicians launching or growing clinics often need financing partners, architects, legal advisors, real estate specialists, technology vendors, and operational consultants. Vitalis helps coordinate these professionals — ensuring decisions are aligned and projects move forward efficiently.
+            Practitioners launching or growing practices often need financing partners, architects, legal advisors, real estate specialists, technology vendors, and operational consultants. Vitalis helps coordinate these professionals — ensuring decisions are aligned and projects move forward efficiently.
           </motion.p>
         </div>
       </section>
