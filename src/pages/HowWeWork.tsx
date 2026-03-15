@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const phases = [
   { phase: "Vision & Concept", description: "We help you shape the idea — validating feasibility, defining the model, and aligning vision with market opportunity.", when: "Starting from scratch or pivoting direction." },
