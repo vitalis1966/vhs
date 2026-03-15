@@ -11,9 +11,9 @@ const phases = [
   { phase: "Build & Launch", description: "Facility planning, team assembly, operational setup, and go-to-market execution to bring the vision to life.", when: "Ready to build or about to open doors." },
   { phase: "Operations & Optimization", description: "Workflow refinement, systems integration, efficiency gains, and compliance to run at peak performance.", when: "Open and seeking operational excellence." },
   { phase: "Revenue & Growth", description: "Revenue cycle optimization, pricing strategy, market expansion, and sustainable growth acceleration.", when: "Established and ready to scale." },
-  { phase: "Team & Recruitment", description: "Physician and staff recruitment, culture building, succession planning, and workforce strategy.", when: "Growing the team or planning transitions." },
+  { phase: "Team & Recruitment", description: "Practitioner and staff recruitment, culture building, succession planning, and workforce strategy.", when: "Growing the team or planning transitions." },
   { phase: "Scale & Expand", description: "Multi-location strategy, partnerships, geographic expansion, and portfolio development.", when: "Proven model ready for replication." },
-  { phase: "Transition & Exit", description: "M&A preparation, valuation optimization, deal structuring, buyer/partner identification, and clean exits.", when: "Planning a sale, merger, or leadership transition." },
+  { phase: "Transition & Advisory", description: "M&A preparation, valuation support, deal structuring, buyer/partner identification, and leadership transitions.", when: "Planning a merger, acquisition, or leadership transition." },
 ];
 
 const HowWeWork = () => {
@@ -30,7 +30,7 @@ const HowWeWork = () => {
             The full lifecycle,<br />one strategic partner.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Most advisory firms see a slice. We see the entire arc of a healthcare business — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable.
+            Most advisory firms see a slice. We see the entire arc of a healthcare practice — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable.
           </motion.p>
         </div>
       </section>
@@ -63,14 +63,14 @@ const HowWeWork = () => {
 
       <section className="py-20 lg:py-28 bg-gradient-section text-center">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Where are you in your journey?</h2>
+          <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Where is your practice right now?</h2>
           <p className="mt-4 text-muted-foreground text-lg">Let's find the right starting point — together.</p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">Book a Consultation <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/contact">Talk to Us <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button variant="hero-outline" size="lg" asChild>
-              <Link to="/clinic-audit">Start a Clinic Audit</Link>
+              <Link to="/strategic-assessment/intake">Explore a Practice Assessment</Link>
             </Button>
           </div>
         </div>

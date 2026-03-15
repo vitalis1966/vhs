@@ -24,7 +24,7 @@ const developmentStages = [
   {
     icon: Lightbulb,
     title: "Vision & Concept Development",
-    description: "Clarify your vision for the clinic. Define the patient population, service lines, competitive positioning, and long-term goals. Assess market opportunity and feasibility.",
+    description: "Clarify your vision for the practice. Define the patient population, service lines, competitive positioning, and long-term goals. Assess market opportunity and feasibility.",
   },
   {
     icon: Target,
@@ -44,7 +44,7 @@ const developmentStages = [
   {
     icon: Monitor,
     title: "Technology Infrastructure",
-    description: "Plan technology systems including EHR selection, practice management software, diagnostic equipment integration, and IT infrastructure.",
+    description: "Plan technology systems including EMR selection, practice management software, diagnostic equipment integration, and IT infrastructure.",
   },
   {
     icon: Cog,
@@ -64,11 +64,11 @@ const developmentStages = [
 ];
 
 const partners = [
-  { icon: Landmark, label: "Financial Institutions", description: "Capital planning, clinic financing, and financial structuring" },
+  { icon: Landmark, label: "Financial Institutions", description: "Capital planning, practice financing, and financial structuring" },
   { icon: Building2, label: "Architects & Designers", description: "Healthcare facility planning and design coordination" },
   { icon: Scale, label: "Legal Advisors", description: "Business structure, contracts, and regulatory compliance" },
   { icon: Home, label: "Real Estate Advisors", description: "Site selection, lease negotiation, and property acquisition" },
-  { icon: Laptop2, label: "Technology Providers", description: "EHR systems, practice management, and IT infrastructure" },
+  { icon: Laptop2, label: "Technology Providers", description: "EMR systems, practice management, and IT infrastructure" },
 ];
 
 const SolutionsNewClinics = () => {
@@ -84,7 +84,7 @@ const SolutionsNewClinics = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-accent font-medium tracking-widest uppercase text-sm mb-6"
           >
-            Solutions for New Clinics
+            Solutions for New Practices
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -92,7 +92,7 @@ const SolutionsNewClinics = () => {
             transition={{ delay: 0.1 }}
             className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight"
           >
-            Planning a new clinic? Start here.
+            Opening a new practice involves a lot of moving parts. We help you plan, structure, and prepare for each one.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -100,7 +100,7 @@ const SolutionsNewClinics = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Vitalis guides physicians and healthcare entrepreneurs through every stage of clinic development — from initial concept through successful launch and early operations.
+            Opening a medical clinic, dental practice, or veterinary facility in Alberta involves regulatory requirements, financial planning, and operational decisions that most practitioners have not navigated before. Our team has supported more than 15 facility builds — and across those engagements, we have developed a clear picture of where early decisions tend to have the greatest long-term impact. We work alongside you through the planning process, helping you avoid common pitfalls and build a structure that supports how you want to practice.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -109,14 +109,14 @@ const SolutionsNewClinics = () => {
             className="mt-8 flex flex-col sm:flex-row gap-4"
           >
             <Button variant="hero" size="xl" asChild>
-              <Link to="/clinic-audit">
-                Strategic Assessment
+              <Link to="/strategic-assessment/intake">
+                Explore a Practice Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">
-                Book a Consultation
+                Talk to Us About Your Build
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -133,7 +133,7 @@ const SolutionsNewClinics = () => {
               From concept to opening day.
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Clinic development involves many interconnected decisions. Vitalis helps coordinate these elements to ensure your clinic is positioned for success from day one.
+              Practice development involves many interconnected decisions. Vitalis helps coordinate these elements so your practice is positioned for a strong start from day one.
             </p>
           </div>
 
@@ -170,7 +170,7 @@ const SolutionsNewClinics = () => {
               Working with trusted partners.
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Clinic development requires expertise across many domains. Vitalis works alongside you to coordinate strategic partners who specialize in critical areas.
+              Practice development requires expertise across many domains. Vitalis works alongside you to coordinate strategic partners who specialize in critical areas.
             </p>
           </div>
 
@@ -224,7 +224,7 @@ const SolutionsNewClinics = () => {
                   Non-Hospital Surgical Facilities
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  NHSF development requires specialized planning that differs from traditional clinic development. These facilities face unique regulatory, operational, and design requirements.
+                  NHSF development requires specialized planning that differs from traditional practice development. These facilities face unique regulatory, operational, and design requirements.
                 </p>
               </div>
               <div className="space-y-4">
@@ -259,21 +259,21 @@ const SolutionsNewClinics = () => {
             viewport={{ once: true }}
           >
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              Ready to plan your clinic?
+              Thinking about opening a new practice?
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              Start with a strategic assessment to understand your opportunity, identify key considerations, and outline the path forward.
+              Explore a strategic assessment to understand your opportunity, identify key considerations, and outline the path forward.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Explore a Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us About Your Build
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

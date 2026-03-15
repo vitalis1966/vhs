@@ -21,9 +21,27 @@ const navLinks = [
     href: "/solutions",
     children: [
       { label: "Overview", href: "/solutions" },
-      { label: "New Clinics", href: "/solutions/new-clinics" },
-      { label: "Existing Clinics", href: "/solutions/existing-clinics" },
+      { label: "New Practices", href: "/solutions/new-clinics" },
+      { label: "Existing Practices", href: "/solutions/existing-clinics" },
     ],
+    tracks: {
+      "Planning & Building a Practice": [
+        { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics" },
+        { label: "Facility Development Support", href: "/solutions/new-clinics" },
+        { label: "Regulatory & Compliance Guidance", href: "/solutions/new-clinics" },
+        { label: "Recruitment & Staffing Design", href: "/solutions/new-clinics" },
+        { label: "Technology & Software Setup", href: "/solutions/new-clinics" },
+      ],
+      "Operating, Growing & Advising": [
+        { label: "Strategic Practice Assessment", href: "/strategic-assessment/intake" },
+        { label: "Operations & Workflow Optimization", href: "/solutions/existing-clinics" },
+        { label: "Billing & Revenue Review", href: "/solutions/existing-clinics" },
+        { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics" },
+        { label: "Digital Transformation", href: "/healthcare-it" },
+        { label: "Fractional & Advisory Leadership", href: "/engagement" },
+        { label: "Mergers, Acquisitions & Transitions", href: "/contact" },
+      ],
+    },
   },
   { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
@@ -45,7 +63,46 @@ export function Navbar() {
 
         <div className="hidden xl:flex items-center gap-2 2xl:gap-4">
           {navLinks.map((link) =>
-            link.children ? (
+            link.tracks ? (
+              <div
+                key={link.href}
+                className="relative group"
+                onMouseEnter={() => setOpenDropdown(link.href)}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  className={cn(
+                    "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap py-2",
+                    location.pathname.startsWith(link.href) ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  {link.label}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+                {openDropdown === link.href && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2">
+                    <div className="bg-card rounded-lg shadow-elevated border border-border/40 py-4 px-2 min-w-[520px] grid grid-cols-2 gap-4">
+                      {Object.entries(link.tracks).map(([trackName, items]) => (
+                        <div key={trackName}>
+                          <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+                            {trackName}
+                          </p>
+                          {items.map((child) => (
+                            <Link
+                              key={child.label}
+                              to={child.href}
+                              className="block px-3 py-1.5 text-sm transition-colors hover:bg-secondary/50 rounded text-muted-foreground hover:text-foreground"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : link.children ? (
               <div
                 key={link.href}
                 className="relative group"
@@ -95,10 +152,10 @@ export function Navbar() {
           )}
           <div className="flex items-center gap-2 ml-2">
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/strategic-assessment">Strategic Assessment</Link>
+              <Link to="/strategic-assessment/intake">Practice Assessment</Link>
             </Button>
             <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/contact">Book a Consultation</Link>
+              <Link to="/contact">Talk to Us</Link>
             </Button>
           </div>
         </div>
@@ -116,7 +173,34 @@ export function Navbar() {
         <div className="xl:hidden bg-background border-b border-border">
           <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
             {navLinks.map((link) =>
-              link.children ? (
+              link.tracks ? (
+                <div key={link.href} className="flex flex-col gap-3">
+                  <Link
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-base font-medium text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                  {Object.entries(link.tracks).map(([trackName, items]) => (
+                    <div key={trackName} className="pl-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">
+                        {trackName}
+                      </p>
+                      {items.map((child) => (
+                        <Link
+                          key={child.label}
+                          to={child.href}
+                          onClick={() => setMobileOpen(false)}
+                          className="block text-sm text-muted-foreground py-1 pl-2"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : link.children ? (
                 <div key={link.href} className="flex flex-col gap-2">
                   <span className="text-base font-medium text-foreground">{link.label}</span>
                   {link.children.map((child) => (
@@ -148,10 +232,10 @@ export function Navbar() {
               )
             )}
             <Button variant="hero" size="lg" asChild className="mt-2">
-              <Link to="/strategic-assessment" onClick={() => setMobileOpen(false)}>Strategic Assessment</Link>
+              <Link to="/strategic-assessment/intake" onClick={() => setMobileOpen(false)}>Practice Assessment</Link>
             </Button>
             <Button variant="hero" size="lg" asChild>
-              <Link to="/contact" onClick={() => setMobileOpen(false)}>Book a Consultation</Link>
+              <Link to="/contact" onClick={() => setMobileOpen(false)}>Talk to Us</Link>
             </Button>
           </div>
         </div>

@@ -34,7 +34,7 @@ const optimizationAreas = [
   {
     icon: Monitor,
     title: "Technology Modernization",
-    description: "Assess current technology systems and plan strategic upgrades. Optimize EHR usage, improve system integration, and enable better data-driven decision making.",
+    description: "Assess current technology systems and plan strategic upgrades. Optimize EMR usage, improve system integration, and enable better data-driven decision making.",
   },
   {
     icon: DollarSign,
@@ -44,7 +44,7 @@ const optimizationAreas = [
   {
     icon: TrendingUp,
     title: "Growth Strategy",
-    description: "Develop expansion plans including new service lines, additional locations, physician recruitment, and market positioning for sustainable long-term growth.",
+    description: "Develop expansion plans including new service lines, additional locations, practitioner recruitment, and market positioning for sustainable long-term growth.",
   },
 ];
 
@@ -88,7 +88,7 @@ const SolutionsExistingClinics = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-accent font-medium tracking-widest uppercase text-sm mb-6"
           >
-            Solutions for Existing Clinics
+            Solutions for Existing Practices
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -96,7 +96,7 @@ const SolutionsExistingClinics = () => {
             transition={{ delay: 0.1 }}
             className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight"
           >
-            Optimize and grow your practice.
+            Most practices are running well. There is almost always room to run better.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -104,7 +104,7 @@ const SolutionsExistingClinics = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            For clinic leaders looking to improve operations, strengthen performance, modernize systems, and position their practice for sustainable growth.
+            Assessments across a range of practices have identified billing gaps, scheduling inefficiencies, and staffing misalignments that were not visible from inside the operation. The Vitalis Strategic Assessment is designed to give practice owners an independent, structured view of how their practice is performing — and where the clearest opportunities for improvement tend to be.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -113,14 +113,14 @@ const SolutionsExistingClinics = () => {
             className="mt-8 flex flex-col sm:flex-row gap-4"
           >
             <Button variant="hero" size="xl" asChild>
-              <Link to="/clinic-audit">
-                Strategic Assessment
+              <Link to="/strategic-assessment/intake">
+                Learn About the Practice Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">
-                Book a Consultation
+                Talk to Us
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -137,7 +137,7 @@ const SolutionsExistingClinics = () => {
               Comprehensive practice improvement.
             </h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">
-              Vitalis works with clinic leaders to assess operations, identify opportunities, and implement improvements that drive measurable results.
+              Vitalis works with practice leaders to assess operations, identify opportunities, and implement improvements that drive measurable results.
             </p>
           </div>
 
@@ -204,12 +204,12 @@ const SolutionsExistingClinics = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Expected Outcomes</p>
+              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Common Outcomes</p>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Results that matter.
+                What assessments have found.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Vitalis engagements are designed to deliver measurable improvements in operations, patient experience, staff satisfaction, and financial performance.
+                Across engagements, Vitalis assessments have consistently identified opportunities in these areas.
               </p>
             </div>
             <div className="space-y-3">
@@ -245,7 +245,7 @@ const SolutionsExistingClinics = () => {
               Long-term strategic partnership.
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto mb-8">
-              Many clinic leaders retain Vitalis as an ongoing strategic advisor — providing guidance on major decisions, growth initiatives, and organizational challenges as they arise.
+              Many practice leaders retain Vitalis as an ongoing strategic advisor — providing guidance on major decisions, growth initiatives, and organizational challenges as they arise.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
@@ -268,21 +268,21 @@ const SolutionsExistingClinics = () => {
             viewport={{ once: true }}
           >
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              Ready to improve your practice?
+              Curious about where there may be room to improve?
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-              Start with a strategic assessment to understand your current state, identify improvement opportunities, and develop a roadmap for success.
+              If you are curious about how your practice compares or where there may be room to improve, the assessment is a good place to start.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/clinic-audit">
-                  Strategic Assessment
+                <Link to="/strategic-assessment/intake">
+                  Learn About the Practice Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Book a Consultation
+                  Talk to Us
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
