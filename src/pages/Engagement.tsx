@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageSquare, ClipboardList, Map, FileText, Wrench, TrendingUp } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const phases = [
   {
