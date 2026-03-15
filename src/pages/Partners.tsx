@@ -18,6 +18,7 @@ import {
   DollarSign,
   CheckCircle,
 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const ecosystemPartners = [
   { icon: Landmark, label: "Financial Institutions", angle: 0 },
@@ -57,6 +58,10 @@ const benefits = [
 ];
 
 const Partners = () => {
+  usePageMeta(
+    "Strategic Healthcare Partners & Coordinated Advisory | Vitalis Health Strategies",
+    "Vitalis coordinates trusted professionals — financial, legal, architecture, and technology partners — for healthcare ventures across Alberta."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

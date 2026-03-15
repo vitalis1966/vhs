@@ -12,6 +12,7 @@ import {
   Compass,
   ClipboardList,
 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -20,6 +21,10 @@ const fadeUp = {
 };
 
 const StrategicAssessment = () => {
+  usePageMeta(
+    "Free Practice Assessment | Operational & Financial Analysis | Vitalis Health Strategies",
+    "A free structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -187,6 +192,14 @@ const StrategicAssessment = () => {
               </Link>
             </Button>
           </motion.div>
+
+          <motion.p {...fadeUp} className="text-center mt-10 text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto">
+            Your assessment results may point toward{" "}
+            <Link to="/solutions/existing-clinics" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">Operations & Workflow Optimization</Link>,{" "}
+            <Link to="/solutions/existing-clinics" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">Billing & Revenue Review</Link>,{" "}
+            <Link to="/solutions/new-clinics" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">Growth Strategy & Expansion Planning</Link>, or{" "}
+            <Link to="/engagement" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">Fractional & Advisory Leadership</Link>.
+          </motion.p>
         </div>
       </section>
 

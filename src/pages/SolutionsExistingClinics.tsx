@@ -14,7 +14,7 @@ import {
   Target,
   CheckCircle,
 } from "lucide-react";
-
+import { usePageMeta } from "@/lib/seo";
 const optimizationAreas = [
   {
     icon: Search,
@@ -76,6 +76,10 @@ const outcomes = [
 ];
 
 const SolutionsExistingClinics = () => {
+  usePageMeta(
+    "Practice Operations Consulting & Workflow Optimization | Vitalis Health Strategies",
+    "Identify workflow bottlenecks, scheduling gaps, and operational costs with a structured practice operations review from Vitalis."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -104,7 +108,7 @@ const SolutionsExistingClinics = () => {
             transition={{ delay: 0.2 }}
             className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-3xl"
           >
-            Assessments across a range of practices have identified billing gaps, scheduling inefficiencies, and staffing misalignments that were not visible from inside the operation. The Vitalis Strategic Assessment is designed to give practice owners an independent, structured view of how their practice is performing — and where the clearest opportunities for improvement tend to be.
+            Assessments across a range of practices have identified billing gaps, scheduling inefficiencies, and staffing misalignments that were not visible from inside the operation. The <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">Vitalis Practice Assessment</Link> is designed to give practice owners an independent, structured view of how their practice is performing — and where the clearest opportunities for improvement tend to be. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> brings operational experience to every engagement.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, Eye, Heart } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const values = [
   { title: "Strategic Depth", description: "We bring full-lifecycle perspective to every engagement. Advice grounded in an understanding of how early decisions shape long-term outcomes." },
@@ -15,6 +16,10 @@ const values = [
 ];
 
 const MissionVision = () => {
+  usePageMeta(
+    "Mission & Vision | Vitalis Health Strategies | Calgary Healthcare Consulting",
+    "Why Vitalis exists — our mission to help healthcare organizations build, operate, and grow successful practices across Alberta and Canada."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

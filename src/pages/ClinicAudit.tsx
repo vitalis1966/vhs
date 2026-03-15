@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ClipboardCheck, Stethoscope, Building } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const assessments = [
   {
@@ -35,6 +36,10 @@ const assessments = [
 ];
 
 const ClinicAudit = () => {
+  usePageMeta(
+    "Strategic Practice Assessment | Healthcare Consulting | Vitalis Health Strategies",
+    "Start with clarity. Our strategic assessment gives you an actionable roadmap for your medical, dental, or veterinary practice."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />

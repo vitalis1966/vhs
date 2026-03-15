@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const phases = [
   { phase: "Vision & Concept", description: "We help you shape the idea — validating feasibility, defining the model, and aligning vision with market opportunity.", when: "Starting from scratch or pivoting direction." },
@@ -17,6 +18,10 @@ const phases = [
 ];
 
 const HowWeWork = () => {
+  usePageMeta(
+    "How We Work | Full-Lifecycle Healthcare Consulting | Vitalis Health Strategies",
+    "From vision through long-term advisory — Vitalis supports healthcare practices through every stage of growth with structured, accountable consulting."
+  );
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -30,7 +35,7 @@ const HowWeWork = () => {
             The full lifecycle,<br />one strategic partner.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Most advisory firms see a slice. We see the entire arc of a healthcare practice — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable.
+            Most advisory firms see a slice. We see the entire arc of a healthcare practice — and that perspective makes every recommendation sharper, every decision better informed, and every outcome more valuable. Our <Link to="/about" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">clinician-led team</Link> brings operational experience to every phase. Start with a <Link to="/strategic-assessment" className="text-primary hover:text-foreground underline underline-offset-2 transition-colors">free practice assessment</Link> to find the right starting point.
           </motion.p>
         </div>
       </section>
