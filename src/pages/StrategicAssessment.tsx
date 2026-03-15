@@ -12,6 +12,14 @@ import {
   FileText,
   MessageSquare,
   Quote,
+  ChevronRight,
+  Receipt,
+  Settings,
+  Users,
+  PiggyBank,
+  Rocket,
+  ShieldCheck,
+  Compass,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 
@@ -22,14 +30,98 @@ const fadeUp = {
 };
 
 const dimensions = [
-  { num: "1", name: "Billing & Revenue Integrity", detail: "Fee collection rates, claim accuracy, denial patterns, uncaptured charges" },
-  { num: "2", name: "Operational Efficiency", detail: "Patient flow, scheduling utilization, appointment throughput, bottlenecks" },
-  { num: "3", name: "Staffing & Workforce", detail: "Role alignment, recruitment gaps, retention risk, cost per staff member" },
-  { num: "4", name: "Financial Health", detail: "Overhead ratios, profitability by service line, cash flow patterns" },
-  { num: "5", name: "Growth Readiness", detail: "Capacity utilization, market positioning, expansion feasibility" },
-  { num: "6", name: "Compliance & Risk", detail: "Regulatory exposure, documentation gaps, liability considerations" },
-  { num: "7", name: "Strategic Direction", detail: "Leadership bandwidth, growth trajectory, long-term planning infrastructure" },
+  { num: "1", name: "Billing & Revenue Integrity", detail: "Fee collection rates, claim accuracy, denial patterns, uncaptured charges", icon: Receipt, score: 62 },
+  { num: "2", name: "Operational Efficiency", detail: "Patient flow, scheduling utilization, appointment throughput, bottlenecks", icon: Settings, score: 74 },
+  { num: "3", name: "Staffing & Workforce", detail: "Role alignment, recruitment gaps, retention risk, cost per staff member", icon: Users, score: 58 },
+  { num: "4", name: "Financial Health", detail: "Overhead ratios, profitability by service line, cash flow patterns", icon: PiggyBank, score: 70 },
+  { num: "5", name: "Growth Readiness", detail: "Capacity utilization, market positioning, expansion feasibility", icon: Rocket, score: 45 },
+  { num: "6", name: "Compliance & Risk", detail: "Regulatory exposure, documentation gaps, liability considerations", icon: ShieldCheck, score: 82 },
+  { num: "7", name: "Strategic Direction", detail: "Leadership bandwidth, growth trajectory, long-term planning infrastructure", icon: Compass, score: 53 },
 ];
+
+// Radar chart SVG helper
+function SampleRadarChart() {
+  const labels = dimensions.map((d) => d.name.split(" ")[0]);
+  const scores = dimensions.map((d) => d.score);
+  const cx = 150, cy = 150, maxR = 110;
+  const n = scores.length;
+
+  const pointsForRadius = (r: number) =>
+    Array.from({ length: n }, (_, i) => {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+    }).join(" ");
+
+  const dataPoints = scores.map((s, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const r = (s / 100) * maxR;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  });
+
+  const labelPositions = labels.map((_, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const r = maxR + 22;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  });
+
+  return (
+    <svg viewBox="0 0 300 300" className="w-full max-w-[280px] mx-auto">
+      {/* Grid rings */}
+      {[0.25, 0.5, 0.75, 1].map((pct) => (
+        <polygon
+          key={pct}
+          points={pointsForRadius(maxR * pct)}
+          fill="none"
+          stroke="hsl(var(--border))"
+          strokeWidth="0.5"
+          opacity={0.6}
+        />
+      ))}
+      {/* Axes */}
+      {Array.from({ length: n }, (_, i) => {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        return (
+          <line
+            key={i}
+            x1={cx}
+            y1={cy}
+            x2={cx + maxR * Math.cos(angle)}
+            y2={cy + maxR * Math.sin(angle)}
+            stroke="hsl(var(--border))"
+            strokeWidth="0.5"
+            opacity={0.4}
+          />
+        );
+      })}
+      {/* Data polygon */}
+      <polygon
+        points={dataPoints.map((p) => `${p.x},${p.y}`).join(" ")}
+        fill="hsl(var(--accent) / 0.2)"
+        stroke="hsl(var(--accent))"
+        strokeWidth="2"
+      />
+      {/* Data dots */}
+      {dataPoints.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="hsl(var(--accent))" />
+      ))}
+      {/* Labels */}
+      {labelPositions.map((p, i) => (
+        <text
+          key={i}
+          x={p.x}
+          y={p.y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="fill-muted-foreground"
+          fontSize="8"
+          fontWeight="500"
+        >
+          {labels[i]}
+        </text>
+      ))}
+    </svg>
+  );
+}
 
 const StrategicAssessment = () => {
   usePageMeta(
@@ -112,7 +204,7 @@ const StrategicAssessment = () => {
         </div>
       </section>
 
-      {/* Section 3 — The Seven Dimensions */}
+      {/* Section 3 — The Seven Dimensions (Card grid with icons) */}
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <motion.div {...fadeUp} className="text-center mb-16">
@@ -123,29 +215,32 @@ const StrategicAssessment = () => {
               The Vitalis Practice Assessment is structured around seven dimensions. Each one is designed to surface issues that are difficult to see without an external, structured review.
             </p>
           </motion.div>
-          <motion.div {...fadeUp} className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
-            <div className="hidden sm:grid sm:grid-cols-[60px_1fr_1.5fr] bg-secondary/50 px-6 py-4 text-sm font-bold text-foreground border-b border-border/40">
-              <span>#</span>
-              <span>Dimension</span>
-              <span>What We Look At</span>
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {dimensions.map((d, i) => (
-              <div
+              <motion.div
                 key={d.num}
-                className={`grid sm:grid-cols-[60px_1fr_1.5fr] gap-2 sm:gap-0 px-6 py-5 ${
-                  i < dimensions.length - 1 ? "border-b border-border/30" : ""
-                }`}
+                {...fadeUp}
+                transition={{ delay: i * 0.05 }}
+                className="bg-card rounded-2xl p-6 shadow-soft border border-border/40 hover:shadow-card transition-shadow duration-300"
               >
-                <span className="font-bold text-accent text-sm">{d.num}</span>
-                <span className="font-display font-semibold text-foreground text-sm">{d.name}</span>
-                <span className="text-sm text-muted-foreground leading-relaxed">{d.detail}</span>
-              </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center flex-shrink-0">
+                    <d.icon className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-accent/70 tracking-wider">0{d.num}</span>
+                    <h3 className="font-display text-base font-bold text-foreground mt-0.5 mb-2">{d.name}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{d.detail}</p>
+                  </div>
+                </div>
+              </motion.div>
             ))}
-          </motion.div>
+            {/* 7th card spans remaining space on large screens */}
+          </div>
         </div>
       </section>
 
-      {/* Section 4 — What You Receive */}
+      {/* Section 4 — What You Receive (with connecting arrows) */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <motion.div {...fadeUp} className="text-center mb-16">
@@ -153,7 +248,7 @@ const StrategicAssessment = () => {
               What happens after you complete the assessment.
             </h2>
           </motion.div>
-          <div className="grid sm:grid-cols-3 gap-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-4 sm:gap-0">
             {[
               {
                 icon: ClipboardList,
@@ -171,18 +266,26 @@ const StrategicAssessment = () => {
                 text: "If you would like to discuss your results, you can book a free 45-minute consultation with a Vitalis advisor. There is no obligation to engage further.",
               },
             ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                {...fadeUp}
-                transition={{ delay: i * 0.08 }}
-                className="text-center"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-5">
-                  <item.icon className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="font-display text-lg font-bold text-foreground mb-2">{item.label}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
-              </motion.div>
+              <div key={item.label} className="flex flex-col sm:flex-row items-center flex-1">
+                <motion.div
+                  {...fadeUp}
+                  transition={{ delay: i * 0.1 }}
+                  className="text-center px-4 max-w-[260px]"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-5">
+                    <item.icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="font-display text-base font-bold text-foreground mb-2">{item.label}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+                </motion.div>
+                {/* Connecting arrow */}
+                {i < 2 && (
+                  <div className="flex-shrink-0 my-3 sm:my-0 sm:mx-2">
+                    <ChevronRight className="h-6 w-6 text-accent/50 hidden sm:block" />
+                    <ChevronRight className="h-6 w-6 text-accent/50 rotate-90 sm:hidden" />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
           <motion.p {...fadeUp} className="text-center mt-12 text-xs text-muted-foreground/70 italic">
@@ -191,8 +294,62 @@ const StrategicAssessment = () => {
         </div>
       </section>
 
-      {/* Section 5 — Authority */}
+      {/* Sample Scorecard + Radar Chart */}
       <section className="py-20 lg:py-28 bg-gradient-section">
+        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+          <motion.div {...fadeUp} className="text-center mb-16">
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">
+              Sample Practice Health Summary
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto">
+              Here's what a scored output looks like — a snapshot of where a practice stands across all seven dimensions.
+            </p>
+          </motion.div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Radar Chart */}
+            <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 shadow-soft border border-border/40 flex flex-col items-center justify-center">
+              <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-6">Dimension Radar</p>
+              <SampleRadarChart />
+              <p className="text-xs text-muted-foreground/60 mt-4 italic">Sample data — illustrative only</p>
+            </motion.div>
+            {/* Scorecard */}
+            <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-8 shadow-soft border border-border/40">
+              <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-6">Dimension Scores</p>
+              <div className="space-y-4">
+                {dimensions.map((d) => (
+                  <div key={d.num} className="flex items-center gap-3">
+                    <d.icon className="h-4 w-4 text-accent flex-shrink-0" />
+                    <span className="text-sm font-medium text-foreground w-40 flex-shrink-0 truncate">{d.name}</span>
+                    <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{
+                          background: d.score >= 70 ? "hsl(var(--primary))" : d.score >= 50 ? "hsl(var(--accent))" : "hsl(var(--destructive))",
+                        }}
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${d.score}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                      />
+                    </div>
+                    <span className="text-sm font-bold text-foreground w-10 text-right">{d.score}%</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 pt-5 border-t border-border/40 flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Overall Score</span>
+                <span className="text-2xl font-bold text-foreground">
+                  {Math.round(dimensions.reduce((a, d) => a + d.score, 0) / dimensions.length)}%
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground/60 mt-3 italic">Sample data — illustrative only</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5 — Authority */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.div {...fadeUp} className="text-center mb-12">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
@@ -212,33 +369,41 @@ const StrategicAssessment = () => {
         </div>
       </section>
 
-      {/* Section 6 — How It Works */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* Section 6 — How It Works (with connecting arrows) */}
+      <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.div {...fadeUp} className="text-center mb-14">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
               Three steps. About 15 minutes.
             </h2>
           </motion.div>
-          <div className="grid sm:grid-cols-3 gap-8 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
             {[
               { icon: ClipboardList, text: "Complete 15 questions" },
               { icon: FileText, text: "Receive your summary" },
               { icon: MessageSquare, text: "Optional consultation (free)" },
             ].map((item, i) => (
-              <motion.div key={i} {...fadeUp} transition={{ delay: i * 0.08 }} className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
-                  <item.icon className="h-6 w-6 text-primary" />
-                </div>
-                <p className="text-sm font-medium text-foreground">{item.text}</p>
-              </motion.div>
+              <div key={i} className="flex flex-col sm:flex-row items-center">
+                <motion.div {...fadeUp} transition={{ delay: i * 0.08 }} className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+                    <item.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground">{item.text}</p>
+                </motion.div>
+                {i < 2 && (
+                  <div className="flex-shrink-0 my-2 sm:my-0 sm:ml-6">
+                    <ArrowRight className="h-5 w-5 text-accent/40 hidden sm:block" />
+                    <ArrowRight className="h-5 w-5 text-accent/40 rotate-90 sm:hidden" />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Section 7 — Final CTA */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
