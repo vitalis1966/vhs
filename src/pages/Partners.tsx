@@ -18,6 +18,7 @@ import {
   DollarSign,
   CheckCircle,
 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 const ecosystemPartners = [
   { icon: Landmark, label: "Financial Institutions", angle: 0 },
