@@ -543,7 +543,7 @@ const HealthcareIT = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground italic max-w-2xl">
-              Vitalis advises clinics on selecting the right platform based on their operational model. EMR installation and technical support are handled by the respective vendors or IT providers.
+              Vitalis advises practices on selecting the right platform based on their operational model. EMR installation and technical support are handled by the respective vendors or IT providers.
             </p>
           </motion.div>
         </div>
