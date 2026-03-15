@@ -77,8 +77,8 @@ export function HeroSection() {
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <Button variant="hero" size="xl" asChild>
-              <Link to="/strategic-assessment/intake">
-                Explore a Free Practice Assessment
+              <Link to="/strategic-assessment">
+                Start Your Strategic Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

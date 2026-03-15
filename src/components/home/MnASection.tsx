@@ -30,12 +30,12 @@ export function MnASection() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/contact">
-                  Discuss a Transition
+                  Talk to a Transition Advisor
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="hero-outline" size="lg" asChild>
-                <Link to="/solutions">Explore M&A Services</Link>
+                <Link to="/contact">Learn About Our M&A Advisory</Link>
               </Button>
             </div>
           </motion.div>

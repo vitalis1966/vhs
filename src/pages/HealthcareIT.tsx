@@ -611,13 +611,13 @@ const HealthcareIT = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">
-                  Talk to Us
+                  Speak With Our Team
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
-                <Link to="/strategic-assessment/intake">
-                  Explore a Practice Assessment
+                <Link to="/strategic-assessment">
+                  Start Your Strategic Assessment
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

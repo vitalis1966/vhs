@@ -35,8 +35,8 @@ const pathways = [
       "Growth planning: new service lines, additional practitioners, additional locations",
       "Practice management technology and digital tools review",
     ],
-    cta: "Learn About Our Practice Assessment →",
-    href: "/strategic-assessment/intake",
+    cta: "Start Your Performance Assessment →",
+    href: "/strategic-assessment",
   },
   {
     icon: Handshake,
@@ -52,7 +52,7 @@ const pathways = [
       "Mergers, acquisitions, and partnership strategy",
       "Ongoing strategic advisory support",
     ],
-    cta: "Explore Advisory Services →",
+    cta: "Connect With an Advisor →",
     href: "/contact",
   },
 ];
