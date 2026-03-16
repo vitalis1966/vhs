@@ -293,7 +293,7 @@ const StrategicAssessment = () => {
               <p className="text-xs text-muted-foreground/70 italic mb-6">
                 Ideal for: Practices needing IT infrastructure planning, cybersecurity review, or EMR advisory.
               </p>
-              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+              <Button variant="hero" size="default" asChild className="w-full mt-auto h-12 whitespace-normal text-center">
                 <Link to="/strategic-assessment/intake?path=healthcare-it">
                   Start Your Healthcare IT Assessment →
                 </Link>
