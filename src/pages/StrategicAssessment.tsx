@@ -264,7 +264,7 @@ const StrategicAssessment = () => {
             </motion.div>
 
             {/* Card 3 — Healthcare IT */}
-            <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-sky-400/30 flex flex-col">
+            <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="bg-card rounded-2xl p-6 lg:p-8 shadow-card border-2 border-sky-400/30 flex flex-col">
               <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-sky-500/15 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full self-start mb-4">
                 New or Existing Practice
               </span>
