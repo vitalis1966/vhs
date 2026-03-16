@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import vitalisLogo from "@/assets/vitalis-logo.png";
@@ -33,24 +33,19 @@ const nhsfItem = {
   href: "/solutions/nhsf",
 };
 
-const planningItems = [
-  { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics#feasibility" },
-  { label: "Facility Development Support", href: "/solutions/new-clinics#facility-design" },
-  { label: "Regulatory & Compliance Guidance", href: "/solutions/new-clinics#regulatory" },
-  { label: "Recruitment & Staffing Design", href: "/solutions/new-clinics#people" },
-  { label: "Technology & Software Setup", href: "/solutions/new-clinics#technology" },
-];
+const planningItem = {
+  icon: Building2,
+  label: "Planning & Building",
+  description: "Full practice development — feasibility, facility design, compliance, people, and technology",
+  href: "/solutions/new-clinics",
+};
 
-const operatingItems = [
-  { label: "Strategic Practice Assessment", href: "/strategic-assessment" },
-  { label: "Operations & Workflow Optimization", href: "/solutions/existing-clinics#operations" },
-  { label: "Billing & Revenue Review", href: "/solutions/existing-clinics#billing" },
-  { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics#growth" },
-  { label: "Digital Transformation", href: "/healthcare-it" },
-  { label: "Non-Hospital Surgical Facilities", href: "/solutions/nhsf" },
-  { label: "Fractional & Advisory Leadership", href: "/engagement" },
-  { label: "Mergers, Acquisitions & Transitions", href: "/solutions/existing-clinics#transitions" },
-];
+const operatingItem = {
+  icon: TrendingUp,
+  label: "Operating, Growing & Advising",
+  description: "Operations, revenue, people, growth strategy, and ownership transitions",
+  href: "/solutions/existing-clinics",
+};
 
 const simpleNavLinks = [
   {
@@ -203,15 +198,18 @@ export function Navbar() {
                       <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-accent">
                         Planning & Building
                       </p>
-                      {planningItems.map((child) => (
-                        <Link
-                          key={child.label}
-                          to={child.href}
-                          className="block px-2 py-1.5 text-sm transition-colors hover:bg-secondary/50 rounded text-muted-foreground hover:text-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      <Link
+                        to={planningItem.href}
+                        className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                          <planningItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{planningItem.label}</p>
+                          <p className="text-xs text-muted-foreground leading-snug">{planningItem.description}</p>
+                        </div>
+                      </Link>
                     </div>
 
                     {/* Column 3 — Operating, Growing & Advising */}
@@ -219,15 +217,18 @@ export function Navbar() {
                       <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-accent">
                         Operating, Growing & Advising
                       </p>
-                      {operatingItems.map((child) => (
-                        <Link
-                          key={child.label}
-                          to={child.href}
-                          className="block px-2 py-1.5 text-sm transition-colors hover:bg-secondary/50 rounded text-muted-foreground hover:text-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      <Link
+                        to={operatingItem.href}
+                        className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                          <operatingItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{operatingItem.label}</p>
+                          <p className="text-xs text-muted-foreground leading-snug">{operatingItem.description}</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
 
@@ -342,30 +343,24 @@ export function Navbar() {
 
               <div className="pl-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Planning & Building</p>
-                {planningItems.map((child) => (
-                  <Link
-                    key={child.label}
-                    to={child.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block text-sm text-muted-foreground py-1 pl-2"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                <Link
+                  to={planningItem.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-muted-foreground py-1 pl-2"
+                >
+                  {planningItem.label}
+                </Link>
               </div>
 
               <div className="pl-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Operating, Growing & Advising</p>
-                {operatingItems.map((child) => (
-                  <Link
-                    key={child.label}
-                    to={child.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block text-sm text-muted-foreground py-1 pl-2"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                <Link
+                  to={operatingItem.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-muted-foreground py-1 pl-2"
+                >
+                  {operatingItem.label}
+                </Link>
               </div>
 
               <div className="pl-4 pt-2 flex flex-col gap-2">
