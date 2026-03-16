@@ -53,6 +53,11 @@ export default function AssessmentEditor() {
   const [newSectionTitle, setNewSectionTitle] = useState("");
   const [newSectionDesc, setNewSectionDesc] = useState("");
 
+  // Editing section name state
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const [editSectionTitle, setEditSectionTitle] = useState("");
+  const [editSectionDesc, setEditSectionDesc] = useState("");
+
   // Editing question state
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [addingToSection, setAddingToSection] = useState<string | null>(null);
