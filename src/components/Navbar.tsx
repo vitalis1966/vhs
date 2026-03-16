@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import vitalisLogo from "@/assets/vitalis-logo.png";
@@ -25,6 +25,13 @@ const practiceTypes = [
     href: "/solutions/veterinary",
   },
 ];
+
+const nhsfItem = {
+  icon: Building2,
+  label: "Non-Hospital Surgical Facilities",
+  description: "Build, accredit, and operate surgical facilities across Canada",
+  href: "/solutions/nhsf",
+};
 
 const planningItems = [
   { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics" },
@@ -172,6 +179,23 @@ export function Navbar() {
                           </Link>
                         ))}
                       </div>
+                      <div className="border-t border-border/30 mt-3 pt-3">
+                        <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+                          Surgical Facilities
+                        </p>
+                        <Link
+                          to={nhsfItem.href}
+                          className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                            <nhsfItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{nhsfItem.label}</p>
+                            <p className="text-xs text-muted-foreground leading-snug">{nhsfItem.description}</p>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
 
                     {/* Column 2 — Planning & Building */}
@@ -304,6 +328,16 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
+                <div className="border-t border-border/30 mt-2 pt-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Surgical Facilities</p>
+                  <Link
+                    to={nhsfItem.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block text-sm text-muted-foreground py-1 pl-2"
+                  >
+                    {nhsfItem.label}
+                  </Link>
+                </div>
               </div>
 
               <div className="pl-4">

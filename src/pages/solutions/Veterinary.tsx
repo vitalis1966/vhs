@@ -20,9 +20,9 @@ const stats = [
 ];
 
 const problems = [
-  { icon: TrendingUp, heading: "Corporate Consolidation Is Reshaping the Market", body: "National veterinary consolidators — VCA, BluePearl, National Veterinary Associates, and others — have been actively acquiring independent practices across Alberta and BC. Independent practice owners who don't understand their practice's current valuation, what would improve it, or what their alternatives are, are entering ownership conversations unprepared." },
+  { icon: TrendingUp, heading: "Corporate Consolidation Is Reshaping the Market", body: "National veterinary consolidators have been acquiring independent practices across Canada — Alberta and BC have seen particularly active acquisition activity. Independent practice owners who don't understand their practice's current valuation, what would improve it, or what their alternatives are, are entering ownership conversations unprepared." },
   { icon: DollarSign, heading: "Revenue Is More Complex Than the Invoice", body: "Veterinary revenue models have expanded — pet insurance, wellness plans, multi-service bundles, specialist referral fees, and pharmacy revenue all require deliberate systems to capture and manage. Most independent practices collect what they invoice. They don't systematically optimize what they invoice, when, or how." },
-  { icon: Users, heading: "Veterinarian Shortage Is Real and Structural", body: "Alberta has a well-documented shortage of veterinarians — particularly in rural and mixed-practice settings. The competitive market for associate veterinarians means retention, compensation structure, and workplace culture are now practice management issues, not just HR issues. Practices that lose their associates to corporate groups typically can't hire back at the same cost." },
+  { icon: Users, heading: "Veterinarian Shortage Is Real and Structural", body: "Canada has a well-documented shortage of veterinarians, particularly in rural and mixed-practice settings — Alberta is among the most severely affected provinces. The competitive market for associate veterinarians means retention, compensation structure, and workplace culture are now practice management issues, not just HR issues. Practices that lose their associates to corporate groups typically can't hire back at the same cost." },
   { icon: Settings, heading: "Operational Growth Without a Structure Breaks the Practice", body: "The jump from a solo-practitioner practice to a multi-veterinarian clinic involves management, scheduling, compensation, and quality control systems that weren't needed at smaller scale. Most veterinary practices attempt this transition organically — and discover the problems only after they have accumulated." },
 ];
 
@@ -48,16 +48,16 @@ const practiceTypes = [
 ];
 
 const corporateCards = [
-  { icon: Shield, heading: "Know Your Practice Value Before They Do", body: "Corporate buyers use EBITDA multiples to value veterinary practices. Understanding your practice's current valuation — and what would improve it — before a buyer approaches changes the conversation entirely." },
-  { icon: TrendingUp, heading: "Build Operational Strength Regardless", body: "Practices with strong revenue systems, clean documentation, and structured staffing command higher multiples and are more defensible competitively — whether you intend to sell or not." },
-  { icon: Users, heading: "Your Team Is Your Asset", body: "Associate retention and culture are central to practice value. Compensation structures and working environments that retain your team protect the asset — and the patients." },
-  { icon: DollarSign, heading: "You Have More Options Than a Full Sale", body: "Associate buy-ins, partial sales, management service arrangements, and partnership structures are alternatives to full corporate acquisition. Vitalis helps you understand the financial implications of each." },
+  { icon: Shield, heading: "Know Your Practice Value Before They Do", body: "Corporate buyers use EBITDA multiples to value veterinary practices. Understanding your practice's current valuation — and what would improve it — before a buyer approaches changes the conversation entirely.", borderColor: 'hsl(var(--primary))' },
+  { icon: TrendingUp, heading: "Build Operational Strength Regardless", body: "Practices with strong revenue systems, clean documentation, and structured staffing command higher multiples and are more defensible competitively — whether you intend to sell or not.", borderColor: 'hsl(var(--accent))' },
+  { icon: Users, heading: "Your Team Is Your Asset", body: "Associate retention and culture are central to practice value. Compensation structures and working environments that retain your team protect the asset — and the patients.", borderColor: 'hsl(var(--sage))' },
+  { icon: DollarSign, heading: "You Have More Options Than a Full Sale", body: "Associate buy-ins, partial sales, management service arrangements, and partnership structures are alternatives to full corporate acquisition. Vitalis helps you understand the financial implications of each.", borderColor: 'hsl(var(--forest))' },
 ];
 
 const locations = [
   { heading: "Calgary", body: "Calgary's high pet ownership rate and strong household income create above-average veterinary spending. Growth corridors in SE, SW, and NW Calgary have underpenetrated veterinary supply relative to companion animal population density." },
   { heading: "Edmonton & Northern Alberta", body: "Edmonton's veterinary market is supported by large suburban communities and proximity to agricultural regions with mixed-practice demand. South Edmonton, Sherwood Park, and St. Albert remain strong companion animal markets. Northern Alberta has significant veterinary shortage areas." },
-  { heading: "Alberta & Beyond", body: "Vitalis also works with veterinary practices in BC, Saskatchewan, and Ontario — understanding the specific regulatory and market conditions of each province." },
+  { heading: "Alberta & Beyond", body: "Vitalis works with veterinary practices in BC (under CVBC), Saskatchewan (SVMA), Manitoba (MVMA), and Ontario (CVO) — with understanding of the specific regulatory and market context of each province. The western Canadian veterinary market is our primary focus, with growing engagement across Ontario." },
 ];
 
 const cases = [
@@ -66,10 +66,30 @@ const cases = [
   { tag: "Acquisition Advisory · Western Canada", headline: "Independent practice retained; valuation increased 40%", body: "A practice owner approached by a corporate acquirer engaged Vitalis to understand the offer. A 12-month operational improvement program increased EBITDA by 40% — improving both practice value and the owner's options." },
 ];
 
+const newPracticeItems = [
+  "Veterinary practice feasibility and Alberta/western Canada market analysis",
+  "Financial modeling: equipment, buildout, staffing, startup losses, break-even",
+  "Facility planning specific to veterinary requirements: surgical suite, isolation ward, imaging, kennel",
+  "ABVMA facility classification and standards compliance planning",
+  "Site selection for Calgary, Edmonton, and regional Alberta veterinary spaces",
+  "Practice management software selection and setup",
+  "Associate veterinarian recruitment strategy",
+];
+
+const existingPracticeItems = [
+  "Revenue per client visit and average invoice benchmarks",
+  "Wellness plan structure, pricing, and client adoption rates",
+  "Scheduling utilization by appointment type and veterinarian",
+  "RVT and assistant-to-revenue ratios",
+  "Inventory and pharmaceutical cost controls",
+  "Associate productivity and compensation alignment",
+  "Valuation positioning for practices considering future ownership change",
+];
+
 export default function Veterinary() {
   usePageMeta(
-    "Veterinary Practice Consulting Alberta | Full-Cycle Vet Practice Strategy | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides comprehensive consulting for veterinary practices across Alberta and Canada — new clinic builds, practice optimization, revenue, staffing, technology, expansion planning, and M&A advisory."
+    "Veterinary Practice Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
+    "Vitalis Health Strategies provides comprehensive consulting for veterinary practices across Canada — with deep focus on Calgary, Edmonton, and Alberta. New clinic builds, practice optimization, revenue, staffing, technology, expansion, and M&A advisory."
   );
 
   return (
@@ -103,43 +123,76 @@ export default function Veterinary() {
           </div>
         </section>
 
-        {/* S2 — Problems */}
-        <section className="py-24 lg:py-32 bg-background">
-          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
-              What veterinary practice owners in Alberta are navigating right now.
+        {/* S2 — Problems — Alternating full-width rows */}
+        <section className="py-24 lg:py-32">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14 px-4">
+              What veterinary practice owners across Canada are navigating right now.
             </motion.h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {problems.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="bg-card rounded-2xl p-6 border-l-4 border-accent shadow-card">
-                    <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-accent" /></div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">{p.heading}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{p.body}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
+            {problems.map((p, i) => {
+              const Icon = p.icon;
+              const isEven = i % 2 === 1;
+              return (
+                <motion.div
+                  key={i}
+                  {...fadeUp}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                  className={`py-12 border-b border-border/30 ${i % 2 === 0 ? 'bg-background' : 'bg-gradient-section'}`}
+                >
+                  <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+                    {/* Mobile: stacked */}
+                    <div className="lg:hidden flex flex-col items-center text-center gap-4">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="font-display text-lg font-bold text-foreground">{p.heading}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{p.body}</p>
+                    </div>
+                    {/* Desktop: alternating */}
+                    <div className={`hidden lg:flex items-start gap-10 ${isEven ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-[20%] flex flex-col items-center text-center shrink-0">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Icon className="h-8 w-8 text-primary" />
+                        </div>
+                        <h3 className="font-display text-sm font-bold text-foreground mt-3">{p.heading}</h3>
+                      </div>
+                      <div className="w-[80%]">
+                        <p className="text-muted-foreground leading-relaxed">{p.body}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </section>
 
-        {/* S3 — All Services */}
+        {/* S3 — Services — Numbered rows */}
         <section className="py-24 lg:py-32 bg-gradient-section">
-          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
             <motion.div {...fadeUp} className="text-center mb-14">
               <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">What Vitalis does for veterinary practices.</h2>
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">The full range of advisory services — each one framed for the specific realities of veterinary practice.</p>
             </motion.div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="divide-y divide-border/30">
               {services.map((s, i) => {
                 const Icon = s.icon;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40 flex flex-col">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">{s.label}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed flex-1">{s.desc}</p>
-                    {s.link && <Link to={s.link} className="text-primary text-sm font-medium mt-4 inline-flex items-center hover:underline">Learn More <ArrowRight className="ml-1 h-3 w-3" /></Link>}
+                  <motion.div
+                    key={i}
+                    {...fadeUp}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    className="flex items-start gap-4 lg:gap-6 py-6 transition-colors hover:bg-primary/[0.03] px-2 rounded"
+                  >
+                    <span className="text-4xl font-bold text-primary/20 font-display shrink-0 w-16 leading-none">{String(i + 1).padStart(2, '0')}</span>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display text-base font-bold text-foreground mb-1">{s.label}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                      {s.link && <Link to={s.link} className="text-primary text-sm font-medium mt-2 inline-flex items-center hover:underline">Learn More <ArrowRight className="ml-1 h-3 w-3" /></Link>}
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0 hidden lg:flex">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </div>
                   </motion.div>
                 );
               })}
@@ -147,75 +200,109 @@ export default function Veterinary() {
           </div>
         </section>
 
-        {/* S4 — New vs Existing */}
+        {/* S4 — New vs Existing — Stacked editorial panels */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Where is your practice right now?</motion.h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 shadow-card border border-primary/20 flex flex-col">
-                <span className="inline-block text-xs font-semibold uppercase tracking-wider text-primary bg-secondary rounded-full px-3 py-1 w-fit mb-4">Opening a New Practice</span>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">The financial and operational decisions made before opening day determine the ceiling of your practice for years.</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">A new small animal clinic in Calgary or Edmonton typically requires $500,000 to $1.5M in capital before opening, depending on service scope and equipment specification. Emergency and specialty facilities are considerably higher. Understanding exactly what you are building, what it will cost, and what revenue model will support it — before you commit — is what separates a strong launch from a financial strain.</p>
-                <ul className="space-y-2 mb-8 flex-1">
-                  {["Veterinary practice feasibility and Alberta/western Canada market analysis","Financial modeling: equipment, buildout, staffing, startup losses, break-even","Facility planning specific to veterinary requirements: surgical suite, isolation ward, imaging, kennel","ABVMA facility classification and standards compliance planning","Site selection for Calgary, Edmonton, and regional Alberta veterinary spaces","Practice management software selection and setup","Associate veterinarian recruitment strategy"].map((t, i) => (
+
+            {/* Panel 1 — New */}
+            <motion.div {...fadeUp} className="grid lg:grid-cols-[40%_60%] overflow-hidden mb-2">
+              <div className="p-8 lg:p-10 flex flex-col justify-center" style={{ backgroundColor: 'hsl(155, 35%, 14%)' }}>
+                <span className="inline-block text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 w-fit mb-4" style={{ color: 'hsl(40, 40%, 96%)', backgroundColor: 'hsla(40, 40%, 96%, 0.1)' }}>Opening a New Practice</span>
+                <h3 className="font-display text-xl font-bold mb-3" style={{ color: 'hsl(40, 40%, 96%)' }}>The financial and operational decisions made before opening day determine the ceiling of your practice for years.</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'hsla(40, 40%, 96%, 0.7)' }}>A new small animal clinic in Calgary or Edmonton typically requires $500,000 to $1.5M in capital before opening.</p>
+              </div>
+              <div className="p-8 lg:p-10" style={{ backgroundColor: 'hsl(40, 33%, 97%)' }}>
+                <ul className="space-y-2">
+                  {newPracticeItems.map((t, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />{t}</li>
                   ))}
                 </ul>
-                <Button variant="hero" size="default" asChild className="w-full"><Link to="/strategic-assessment">Start Your Build Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
-              </motion.div>
+                <Button variant="hero" size="default" asChild className="w-full mt-6"><Link to="/strategic-assessment">Start Your Build Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+              </div>
+            </motion.div>
 
-              <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border border-accent/30 flex flex-col">
-                <span className="inline-block text-xs font-semibold uppercase tracking-wider text-accent bg-accent/10 rounded-full px-3 py-1 w-fit mb-4">Optimizing an Established Practice</span>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">Strong clinical reputation and strong financial performance are not the same thing. Both are achievable.</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">Revenue per visit, wellness plan penetration, scheduling utilization, associate productivity, and inventory cost control are the operational metrics that determine whether a veterinary practice is capturing its potential — or leaving it behind. Most practice owners know one or two of these numbers. Very few have a complete, independent view of all of them.</p>
-                <ul className="space-y-2 mb-8 flex-1">
-                  {["Revenue per client visit and average invoice benchmarks","Wellness plan structure, pricing, and client adoption rates","Scheduling utilization by appointment type and veterinarian","RVT and assistant-to-revenue ratios","Inventory and pharmaceutical cost controls","Associate productivity and compensation alignment","Valuation positioning for practices considering future ownership change"].map((t, i) => (
+            {/* Panel 2 — Existing */}
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="grid lg:grid-cols-[40%_60%] overflow-hidden">
+              <div className="p-8 lg:p-10 flex flex-col justify-center" style={{ backgroundColor: 'hsl(148, 15%, 55%)' }}>
+                <span className="inline-block text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 w-fit mb-4" style={{ color: 'hsl(40, 40%, 96%)', backgroundColor: 'hsla(40, 40%, 96%, 0.15)' }}>Optimizing an Established Practice</span>
+                <h3 className="font-display text-xl font-bold mb-3" style={{ color: 'hsl(40, 40%, 96%)' }}>Strong clinical reputation and strong financial performance are not the same thing. Both are achievable.</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'hsla(40, 40%, 96%, 0.7)' }}>Most practice owners know one or two key metrics. Very few have a complete, independent view of all of them.</p>
+              </div>
+              <div className="p-8 lg:p-10" style={{ backgroundColor: 'hsl(40, 33%, 97%)' }}>
+                <ul className="space-y-2">
+                  {existingPracticeItems.map((t, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-accent mt-0.5 shrink-0" />{t}</li>
                   ))}
                 </ul>
-                <Button variant="gold" size="default" asChild className="w-full"><Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
-              </motion.div>
-            </div>
+                <Button variant="gold" size="default" asChild className="w-full mt-6"><Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* S5 — Practice Types */}
-        <section className="py-24 lg:py-32 bg-gradient-section">
-          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Veterinary practice types Vitalis works with.</motion.h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {practiceTypes.map((s, i) => {
-                const Icon = s.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-sm font-bold text-foreground mb-1">{s.label}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{s.desc}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
+        {/* S5 — Practice Types — Alternating large rows */}
+        <section className="py-24 lg:py-32">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14 px-4">
+              Veterinary practices we work with — across Canada.
+            </motion.h2>
+            {practiceTypes.map((s, i) => {
+              const Icon = s.icon;
+              const isEven = i % 2 === 1;
+              return (
+                <motion.div
+                  key={i}
+                  {...fadeUp}
+                  transition={{ duration: 0.6, delay: i * 0.06 }}
+                  className={`py-10 ${i % 2 === 0 ? 'bg-background' : 'bg-gradient-section'}`}
+                >
+                  <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+                    {/* Mobile */}
+                    <div className="lg:hidden flex flex-col items-center text-center gap-4">
+                      <div className="w-[72px] h-[72px] rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon className="h-9 w-9 text-primary" />
+                      </div>
+                      <h3 className="font-display text-xl font-bold text-foreground">{s.label}</h3>
+                      <p className="text-muted-foreground text-[15px] leading-relaxed">{s.desc}</p>
+                    </div>
+                    {/* Desktop */}
+                    <div className={`hidden lg:flex items-center gap-12 ${isEven ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-[72px] h-[72px] rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon className="h-9 w-9 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-display text-xl font-bold text-foreground mb-2">{s.label}</h3>
+                        <p className="text-muted-foreground text-[15px] leading-relaxed">{s.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </section>
 
-        {/* S6 — Corporate Acquisition Context */}
+        {/* S6 — Corporate Acquisition — Colored left-border cards */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.div {...fadeUp} className="text-center mb-6">
               <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">The corporate acquisition wave — what independent veterinary practice owners need to know.</h2>
             </motion.div>
             <motion.p {...fadeUp} className="text-muted-foreground text-center max-w-3xl mx-auto mb-14">Corporate veterinary consolidators have acquired a significant share of independent practices across Canada over the past decade. Alberta and BC have seen particularly active acquisition activity. For independent practice owners, this creates both risk and opportunity — depending on how your practice is positioned.</motion.p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {corporateCards.map((c, i) => {
-                const Icon = c.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-sm font-bold text-foreground mb-2">{c.heading}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{c.body}</p>
-                  </motion.div>
-                );
-              })}
+            <div className="grid sm:grid-cols-2 gap-6">
+              {corporateCards.map((c, i) => (
+                <motion.div
+                  key={i}
+                  {...fadeUp}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                  className="bg-card p-6 rounded-r-lg"
+                  style={{ borderLeft: `4px solid ${c.borderColor}` }}
+                >
+                  <h3 className="font-display text-sm font-bold text-foreground mb-2">{c.heading}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{c.body}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
