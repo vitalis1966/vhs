@@ -400,6 +400,9 @@ export default function AssessmentEditor() {
                         </>
                       )}
                     </div>
+                    {editingSectionId !== section.id && (
+                      expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </div>
 
                   {/* Expanded content */}
