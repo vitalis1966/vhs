@@ -93,6 +93,9 @@ function determineTrack(form: {
   const match = assessmentPurposeOptions.find((o) => o.value === form.assessment_purpose);
 
   // Primary signal: assessment purpose
+  if (match && match.track === "healthcare_it") {
+    return { track: "healthcare_it", reason: `assessment_for:${form.assessment_purpose}` };
+  }
   if (match && match.track === "new") {
     return { track: "new_clinic_build", reason: `assessment_for:${form.assessment_purpose}` };
   }
