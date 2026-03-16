@@ -35,7 +35,7 @@ const pathways = [
       "Growth planning: new service lines, additional practitioners, additional locations",
       "Practice management technology and digital tools review",
     ],
-    cta: "Start Your Performance Assessment →",
+    cta: "Start Performance Assessment →",
     href: "/strategic-assessment",
   },
   {
