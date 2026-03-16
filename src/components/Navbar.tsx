@@ -34,22 +34,22 @@ const nhsfItem = {
 };
 
 const planningItems = [
-  { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics" },
-  { label: "Facility Development Support", href: "/solutions/new-clinics" },
-  { label: "Regulatory & Compliance Guidance", href: "/solutions/new-clinics" },
-  { label: "Recruitment & Staffing Design", href: "/solutions/new-clinics" },
-  { label: "Technology & Software Setup", href: "/solutions/new-clinics" },
+  { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics#feasibility" },
+  { label: "Facility Development Support", href: "/solutions/new-clinics#facility-design" },
+  { label: "Regulatory & Compliance Guidance", href: "/solutions/new-clinics#regulatory" },
+  { label: "Recruitment & Staffing Design", href: "/solutions/new-clinics#people" },
+  { label: "Technology & Software Setup", href: "/solutions/new-clinics#technology" },
 ];
 
 const operatingItems = [
   { label: "Strategic Practice Assessment", href: "/strategic-assessment" },
-  { label: "Operations & Workflow Optimization", href: "/solutions/existing-clinics" },
-  { label: "Billing & Revenue Review", href: "/solutions/existing-clinics" },
-  { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics" },
+  { label: "Operations & Workflow Optimization", href: "/solutions/existing-clinics#operations" },
+  { label: "Billing & Revenue Review", href: "/solutions/existing-clinics#billing" },
+  { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics#growth" },
   { label: "Digital Transformation", href: "/healthcare-it" },
   { label: "Non-Hospital Surgical Facilities", href: "/solutions/nhsf" },
   { label: "Fractional & Advisory Leadership", href: "/engagement" },
-  { label: "Mergers, Acquisitions & Transitions", href: "/contact" },
+  { label: "Mergers, Acquisitions & Transitions", href: "/solutions/existing-clinics#transitions" },
 ];
 
 const simpleNavLinks = [
