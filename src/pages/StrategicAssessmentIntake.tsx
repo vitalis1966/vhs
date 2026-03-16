@@ -19,8 +19,8 @@ const assessmentPurposeOptions = [
   { value: "planning_healthcare_space", label: "Planning a new healthcare space", track: "new" },
   { value: "improving_existing_clinic", label: "Improving an existing clinic", track: "existing" },
   { value: "evaluating_operations", label: "Evaluating current operations", track: "existing" },
-  { value: "healthcare_it_new", label: "Establishing New Healthcare IT", track: "new" },
-  { value: "healthcare_it_existing", label: "Improving Existing Healthcare IT", track: "existing" },
+  { value: "healthcare_it_new", label: "Establishing New Healthcare IT", track: "healthcare_it" },
+  { value: "healthcare_it_existing", label: "Improving Existing Healthcare IT", track: "healthcare_it" },
   { value: "growth_expansion", label: "Growth and expansion planning", track: "existing" },
   { value: "new_healthcare_venture", label: "Exploring a new healthcare venture", track: "new" },
   { value: "not_sure", label: "Not sure yet", track: "unknown" },
@@ -93,6 +93,9 @@ function determineTrack(form: {
   const match = assessmentPurposeOptions.find((o) => o.value === form.assessment_purpose);
 
   // Primary signal: assessment purpose
+  if (match && match.track === "healthcare_it") {
+    return { track: "healthcare_it", reason: `assessment_for:${form.assessment_purpose}` };
+  }
   if (match && match.track === "new") {
     return { track: "new_clinic_build", reason: `assessment_for:${form.assessment_purpose}` };
   }
@@ -215,7 +218,12 @@ const StrategicAssessmentIntake = () => {
       let accessToken = "";
       let sessionId = "";
       if (track !== "needs_review") {
-        const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
+        const slugMap: Record<string, string> = {
+          new_clinic_build: "new-clinic",
+          existing_clinic: "existing-clinic",
+          healthcare_it: "healthcare-it-assessment",
+        };
+        const slug = slugMap[track] || "existing-clinic";
         const { data: assessment } = await (supabase
           .from("assessments" as any)
           .select("id")

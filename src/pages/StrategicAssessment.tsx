@@ -23,6 +23,7 @@ import {
   Building,
   Stethoscope,
   CheckCircle,
+  Monitor,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 
@@ -187,7 +188,7 @@ const StrategicAssessment = () => {
               Which assessment fits your situation?
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Card 1 — Build Strategy */}
             <motion.div {...fadeUp} transition={{ delay: 0 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-primary/30 flex flex-col">
               <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-primary/15 text-primary px-3 py-1 rounded-full self-start mb-4">
@@ -258,6 +259,43 @@ const StrategicAssessment = () => {
               <Button variant="hero" size="lg" asChild className="w-full mt-auto">
                 <Link to="/strategic-assessment/intake?path=existing">
                   Start Your Performance Assessment →
+                </Link>
+              </Button>
+            </motion.div>
+
+            {/* Card 3 — Healthcare IT */}
+            <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-sky-400/30 flex flex-col">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-sky-500/15 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full self-start mb-4">
+                New or Existing Practice
+              </span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-sky-500/15 flex items-center justify-center">
+                  <Monitor className="h-6 w-6 text-sky-600 dark:text-sky-400" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground">Healthcare IT Assessment</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                Focused on IT infrastructure, cybersecurity, EMR systems, and technology operations for healthcare practices — whether you are establishing new systems or improving existing ones.
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">What you will receive</p>
+              <ul className="space-y-2 mb-5">
+                {[
+                  "An IT infrastructure and readiness review",
+                  "A cybersecurity posture assessment",
+                  "EMR and software optimization guidance",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted-foreground/70 italic mb-6">
+                Ideal for: Practices needing IT infrastructure planning, cybersecurity review, or EMR advisory.
+              </p>
+              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+                <Link to="/strategic-assessment/intake?path=healthcare-it">
+                  Start Your Healthcare IT Assessment →
                 </Link>
               </Button>
             </motion.div>
