@@ -179,6 +179,23 @@ export function Navbar() {
                           </Link>
                         ))}
                       </div>
+                      <div className="border-t border-border/30 mt-3 pt-3">
+                        <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+                          Surgical Facilities
+                        </p>
+                        <Link
+                          to={nhsfItem.href}
+                          className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                            <nhsfItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{nhsfItem.label}</p>
+                            <p className="text-xs text-muted-foreground leading-snug">{nhsfItem.description}</p>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
 
                     {/* Column 2 — Planning & Building */}
