@@ -334,41 +334,93 @@ export default function AssessmentEditor() {
                   {expanded && (
                     <div className="border-t border-border/40 p-5 space-y-3">
                       {section.questions.map((q, qIdx) => (
-                        <div key={q.id} className="bg-secondary/30 rounded-xl p-4 flex items-start gap-3">
-                          <div className="flex flex-col gap-1 flex-shrink-0 pt-1">
-                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionUp(section.id, qIdx)} disabled={qIdx === 0}>
-                              <ArrowUp className="h-2.5 w-2.5" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionDown(section.id, qIdx)} disabled={qIdx === section.questions.length - 1}>
-                              <ArrowDown className="h-2.5 w-2.5" />
-                            </Button>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-bold text-muted-foreground">Q{qIdx + 1}</span>
-                              <Badge variant="outline" className="text-[10px]">{q.field_type}</Badge>
-                              {q.is_required && <Badge variant="destructive" className="text-[10px]">Required</Badge>}
+                        <div key={q.id}>
+                          <div className="bg-secondary/30 rounded-xl p-4 flex items-start gap-3">
+                            <div className="flex flex-col gap-1 flex-shrink-0 pt-1">
+                              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionUp(section.id, qIdx)} disabled={qIdx === 0}>
+                                <ArrowUp className="h-2.5 w-2.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionDown(section.id, qIdx)} disabled={qIdx === section.questions.length - 1}>
+                                <ArrowDown className="h-2.5 w-2.5" />
+                              </Button>
                             </div>
-                            <p className="text-sm font-medium text-foreground">{q.question_text}</p>
-                            {q.helper_text && <p className="text-xs text-muted-foreground mt-0.5">{q.helper_text}</p>}
-                            {q.options && <p className="text-xs text-muted-foreground/60 mt-1">Options: {q.options.join(", ")}</p>}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-bold text-muted-foreground">Q{qIdx + 1}</span>
+                                <Badge variant="outline" className="text-[10px]">{q.field_type}</Badge>
+                                {q.is_required && <Badge variant="destructive" className="text-[10px]">Required</Badge>}
+                              </div>
+                              <p className="text-sm font-medium text-foreground">{q.question_text}</p>
+                              {q.helper_text && <p className="text-xs text-muted-foreground mt-0.5">{q.helper_text}</p>}
+                              {q.options && <p className="text-xs text-muted-foreground/60 mt-1">Options: {(q.options as string[]).join(", ")}</p>}
+                            </div>
+                            <div className="flex gap-1 flex-shrink-0">
+                              <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => startEditQuestion(q)}>Edit</Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteQuestion(section.id, q.id)}>
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => startEditQuestion(q)}>Edit</Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteQuestion(section.id, q.id)}>
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+
+                          {/* Inline edit form for this question */}
+                          {editingQuestion === q.id && (
+                            <div className="bg-accent/5 rounded-xl p-5 border border-accent/20 space-y-4 mt-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-display text-sm font-bold text-foreground">Update Question</h4>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetQForm}>
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Question Text *</Label>
+                                <Input value={qForm.question_text} onChange={(e) => setQForm({ ...qForm, question_text: e.target.value })} maxLength={500} />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Helper Text</Label>
+                                <Input value={qForm.helper_text} onChange={(e) => setQForm({ ...qForm, helper_text: e.target.value })} maxLength={500} placeholder="Optional guidance text" />
+                              </div>
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label>Field Type</Label>
+                                  <Select value={qForm.field_type} onValueChange={(v) => setQForm({ ...qForm, field_type: v })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                      {FIELD_TYPES.map((ft) => (
+                                        <SelectItem key={ft.value} value={ft.value}>{ft.label}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Switch checked={qForm.is_required} onCheckedChange={(v) => setQForm({ ...qForm, is_required: v })} />
+                                  <Label>Required</Label>
+                                </div>
+                              </div>
+                              {needsOptions && (
+                                <div className="space-y-2">
+                                  <Label>Options (one per line)</Label>
+                                  <Textarea
+                                    value={qForm.options}
+                                    onChange={(e) => setQForm({ ...qForm, options: e.target.value })}
+                                    rows={4}
+                                    placeholder={"Option 1\nOption 2\nOption 3"}
+                                  />
+                                </div>
+                              )}
+                              <Button variant="hero" size="sm" onClick={() => saveQuestion(section.id)}>
+                                <Save className="mr-2 h-4 w-4" />
+                                Update Question
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
 
-                      {/* Editing / Adding question form */}
-                      {(editingQuestion && section.questions.some((q) => q.id === editingQuestion)) || addingToSection === section.id ? (
+                      {/* Add new question form */}
+                      {addingToSection === section.id ? (
                         <div className="bg-accent/5 rounded-xl p-5 border border-accent/20 space-y-4">
                           <div className="flex items-center justify-between">
-                            <h4 className="font-display text-sm font-bold text-foreground">
-                              {editingQuestion ? "Edit Question" : "New Question"}
-                            </h4>
+                            <h4 className="font-display text-sm font-bold text-foreground">New Question</h4>
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetQForm}>
                               <X className="h-4 w-4" />
                             </Button>
@@ -411,14 +463,16 @@ export default function AssessmentEditor() {
                           )}
                           <Button variant="hero" size="sm" onClick={() => saveQuestion(section.id)}>
                             <Save className="mr-2 h-4 w-4" />
-                            {editingQuestion ? "Update Question" : "Add Question"}
+                            Add Question
                           </Button>
                         </div>
                       ) : (
-                        <Button variant="outline" size="sm" onClick={() => startAddQuestion(section.id)} className="w-full">
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add Question
-                        </Button>
+                        !editingQuestion && (
+                          <Button variant="outline" size="sm" onClick={() => startAddQuestion(section.id)} className="w-full">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Question
+                          </Button>
+                        )
                       )}
                     </div>
                   )}
