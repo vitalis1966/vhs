@@ -32,6 +32,7 @@ import HealthcareIT from "./pages/HealthcareIT";
 import Medical from "./pages/solutions/Medical";
 import Dental from "./pages/solutions/Dental";
 import Veterinary from "./pages/solutions/Veterinary";
+import NHSF from "./pages/solutions/NHSF";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
