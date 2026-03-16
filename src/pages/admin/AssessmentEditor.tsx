@@ -132,6 +132,32 @@ export default function AssessmentEditor() {
     toast({ title: "Section deleted" });
   };
 
+  const startEditSection = (section: SectionWithQuestions, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSectionId(section.id);
+    setEditSectionTitle(section.title);
+    setEditSectionDesc(section.description || "");
+  };
+
+  const cancelEditSection = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSectionId(null);
+  };
+
+  const saveSection = async (sId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!editSectionTitle.trim()) return;
+    await (supabase.from("assessment_sections" as any).update({
+      title: editSectionTitle.trim(),
+      description: editSectionDesc.trim() || null,
+    }).eq("id", sId) as any);
+    setSections(sections.map((s) =>
+      s.id === sId ? { ...s, title: editSectionTitle.trim(), description: editSectionDesc.trim() || null } : s
+    ));
+    setEditingSectionId(null);
+    toast({ title: "Section updated" });
+  };
+
   const moveSectionUp = async (idx: number) => {
     if (idx <= 0) return;
     const updated = [...sections];
