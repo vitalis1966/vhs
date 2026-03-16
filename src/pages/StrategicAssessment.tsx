@@ -188,7 +188,7 @@ const StrategicAssessment = () => {
               Which assessment fits your situation?
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Card 1 — Build Strategy */}
             <motion.div {...fadeUp} transition={{ delay: 0 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-primary/30 flex flex-col">
               <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-primary/15 text-primary px-3 py-1 rounded-full self-start mb-4">
