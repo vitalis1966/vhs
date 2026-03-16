@@ -219,7 +219,7 @@ const StrategicAssessment = () => {
               <p className="text-xs text-muted-foreground/70 italic mb-6">
                 Ideal for: Practitioners planning a new medical clinic, dental office, or veterinary facility.
               </p>
-              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+              <Button variant="hero" size="default" asChild className="w-full mt-auto h-12 whitespace-normal text-center">
                 <Link to="/strategic-assessment/intake?path=new-build">
                   Start Your Build Assessment →
                 </Link>
