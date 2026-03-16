@@ -40,6 +40,7 @@ const operatingItems = [
   { label: "Billing & Revenue Review", href: "/solutions/existing-clinics" },
   { label: "Growth Strategy & Expansion Planning", href: "/solutions/existing-clinics" },
   { label: "Digital Transformation", href: "/healthcare-it" },
+  { label: "Non-Hospital Surgical Facilities", href: "/solutions/nhsf" },
   { label: "Fractional & Advisory Leadership", href: "/engagement" },
   { label: "Mergers, Acquisitions & Transitions", href: "/contact" },
 ];
