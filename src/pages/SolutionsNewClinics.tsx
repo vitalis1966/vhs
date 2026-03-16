@@ -447,7 +447,7 @@ const SolutionsNewClinics = () => {
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">Start with a structured build assessment — a clear-eyed review of your plans, your assumptions, and the gaps that could cost you time and capital if left unaddressed.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/strategic-assessment">Start Your Build Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link to="/strategic-assessment">Start Your Build Strategy Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-5 w-5" /></Link>
