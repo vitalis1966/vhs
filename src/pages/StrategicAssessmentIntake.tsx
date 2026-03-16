@@ -218,7 +218,12 @@ const StrategicAssessmentIntake = () => {
       let accessToken = "";
       let sessionId = "";
       if (track !== "needs_review") {
-        const slug = track === "new_clinic_build" ? "new-clinic" : "existing-clinic";
+        const slugMap: Record<string, string> = {
+          new_clinic_build: "new-clinic",
+          existing_clinic: "existing-clinic",
+          healthcare_it: "healthcare-it-assessment",
+        };
+        const slug = slugMap[track] || "existing-clinic";
         const { data: assessment } = await (supabase
           .from("assessments" as any)
           .select("id")
