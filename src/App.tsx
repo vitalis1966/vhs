@@ -29,6 +29,9 @@ import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
 import MissionVision from "./pages/MissionVision";
 import HealthcareIT from "./pages/HealthcareIT";
+import Medical from "./pages/solutions/Medical";
+import Dental from "./pages/solutions/Dental";
+import Veterinary from "./pages/solutions/Veterinary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
