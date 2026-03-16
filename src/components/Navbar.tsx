@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import vitalisLogo from "@/assets/vitalis-logo.png";
