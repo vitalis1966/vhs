@@ -341,26 +341,65 @@ export default function AssessmentEditor() {
                   {/* Section header */}
                   <div className="flex items-center gap-3 p-5 cursor-pointer" onClick={() => toggleSection(section.id)}>
                     <GripVertical className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-accent">Section {sIdx + 1}</span>
-                        <h3 className="font-display text-base font-bold text-foreground">{section.title}</h3>
-                        <Badge variant="secondary" className="text-[10px]">{section.questions.length} Q</Badge>
-                      </div>
-                      {section.description && <p className="text-xs text-muted-foreground mt-1">{section.description}</p>}
+                    <div className="flex-1 min-w-0">
+                      {editingSectionId === section.id ? (
+                        <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                          <Input
+                            value={editSectionTitle}
+                            onChange={(e) => setEditSectionTitle(e.target.value)}
+                            placeholder="Section title"
+                            className="h-8 text-sm font-bold"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveSection(section.id, e as any);
+                              if (e.key === "Escape") setEditingSectionId(null);
+                            }}
+                          />
+                          <Input
+                            value={editSectionDesc}
+                            onChange={(e) => setEditSectionDesc(e.target.value)}
+                            placeholder="Optional description"
+                            className="h-7 text-xs"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-accent">Section {sIdx + 1}</span>
+                            <h3 className="font-display text-base font-bold text-foreground">{section.title}</h3>
+                            <Badge variant="secondary" className="text-[10px]">{section.questions.length} Q</Badge>
+                          </div>
+                          {section.description && <p className="text-xs text-muted-foreground mt-1">{section.description}</p>}
+                        </>
+                      )}
                     </div>
                     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionUp(sIdx)} disabled={sIdx === 0}>
-                        <ArrowUp className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionDown(sIdx)} disabled={sIdx === sections.length - 1}>
-                        <ArrowDown className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteSection(section.id)}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                      {editingSectionId === section.id ? (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary" onClick={(e) => saveSection(section.id, e)}>
+                            <Check className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={cancelEditSection}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => startEditSection(section, e)}>
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionUp(sIdx)} disabled={sIdx === 0}>
+                            <ArrowUp className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionDown(sIdx)} disabled={sIdx === sections.length - 1}>
+                            <ArrowDown className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteSection(section.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
                     </div>
-                    {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
 
                   {/* Expanded content */}
