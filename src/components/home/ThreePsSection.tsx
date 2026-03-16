@@ -48,7 +48,7 @@ export function ThreePsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto items-stretch">
           {pillars.map((pillar, i) => (
             <motion.div
               key={pillar.title}
@@ -56,7 +56,7 @@ export function ThreePsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-card rounded-2xl p-6 lg:p-8 shadow-card hover:shadow-elevated transition-shadow duration-300 text-center"
+              className="bg-card rounded-2xl p-6 lg:p-8 shadow-card hover:shadow-elevated transition-shadow duration-300 text-center h-full flex flex-col"
             >
               <div className={`w-16 h-16 rounded-2xl ${pillar.color} flex items-center justify-center mx-auto`}>
                 <pillar.icon className="h-8 w-8 text-primary-foreground" />
