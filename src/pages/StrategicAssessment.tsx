@@ -23,6 +23,7 @@ import {
   Building,
   Stethoscope,
   CheckCircle,
+  Monitor,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 
