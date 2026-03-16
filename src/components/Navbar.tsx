@@ -328,6 +328,16 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
+                <div className="border-t border-border/30 mt-2 pt-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Surgical Facilities</p>
+                  <Link
+                    to={nhsfItem.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block text-sm text-muted-foreground py-1 pl-2"
+                  >
+                    {nhsfItem.label}
+                  </Link>
+                </div>
               </div>
 
               <div className="pl-4">
