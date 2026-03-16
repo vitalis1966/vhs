@@ -26,6 +26,13 @@ const practiceTypes = [
   },
 ];
 
+const nhsfItem = {
+  icon: Building2,
+  label: "Non-Hospital Surgical Facilities",
+  description: "Build, accredit, and operate surgical facilities across Canada",
+  href: "/solutions/nhsf",
+};
+
 const planningItems = [
   { label: "Practice Feasibility & Financial Planning", href: "/solutions/new-clinics" },
   { label: "Facility Development Support", href: "/solutions/new-clinics" },
