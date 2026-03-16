@@ -29,6 +29,9 @@ import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
 import MissionVision from "./pages/MissionVision";
 import HealthcareIT from "./pages/HealthcareIT";
+import Medical from "./pages/solutions/Medical";
+import Dental from "./pages/solutions/Dental";
+import Veterinary from "./pages/solutions/Veterinary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +50,9 @@ const App = () => (
           <Route path="/solutions" element={<Solutions />} />
           <Route path="/solutions/new-clinics" element={<SolutionsNewClinics />} />
           <Route path="/solutions/existing-clinics" element={<SolutionsExistingClinics />} />
+          <Route path="/solutions/medical" element={<Medical />} />
+          <Route path="/solutions/dental" element={<Dental />} />
+          <Route path="/solutions/veterinary" element={<Veterinary />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/clinic-audit" element={<ClinicAudit />} />
           <Route path="/strategic-assessment" element={<StrategicAssessment />} />

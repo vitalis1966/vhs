@@ -35,7 +35,7 @@ const pathways = [
       "Growth planning: new service lines, additional practitioners, additional locations",
       "Practice management technology and digital tools review",
     ],
-    cta: "Start Your Performance Assessment →",
+    cta: "Start Performance Assessment →",
     href: "/strategic-assessment",
   },
   {
@@ -117,7 +117,7 @@ export function HealthcarePathwaysSection() {
                 ))}
               </ul>
 
-              <Button variant="hero-outline" size="default" asChild className="w-full mt-auto">
+              <Button variant="hero-outline" size="default" asChild className="w-full mt-auto whitespace-normal text-center">
                 <Link to={pathway.href}>
                   {pathway.cta}
                 </Link>
