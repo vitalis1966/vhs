@@ -20,10 +20,10 @@ const stats = [
 ];
 
 const problems = [
-  { icon: DollarSign, heading: "Fee Collection Gaps Are Systematic", body: "Alberta dental practices routinely under-collect across insurance claims, pre-authorization processes, and patient billing. Alberta Blue Cross, Sun Life, Manulife, and other carriers each have different claim requirements — and most practices have billing gaps across at least two of them. Vitalis assessments consistently identify 8–15% of collectable revenue not being captured." },
-  { icon: Building2, heading: "Corporate Consolidation Is Accelerating", body: "DSOs and corporate dental groups are acquiring independent practices across Alberta with increasing speed. Independent dentists who don't understand what drives their practice's valuation — or what would increase it — are negotiating from a position of incomplete information. Whether you plan to sell or stay independent, knowing your practice's financial position matters." },
-  { icon: TrendingUp, heading: "Growth Without a Plan Costs More Than It Earns", body: "Adding an operatory, an associate, or a second location without proper financial modeling and operational preparation is one of the most common ways dental practices create financial strain. Each expansion decision has infrastructure, staffing, and cash flow implications that must be modeled before commitment." },
-  { icon: Users, heading: "Associate Recruitment Is a Market Problem", body: "Alberta's dental associate market has become competitive. New dental graduates have more options than previous generations — including associate positions in corporate groups with guaranteed pay. Independent practices that cannot clearly articulate their value proposition and compensation structure lose recruiting competitions they could have won." },
+  { stat: "8–15%", heading: "Fee Collection Gaps Are Systematic", body: "Dental practices across Canada routinely under-collect — and in Alberta this runs across Alberta Blue Cross, Sun Life, Manulife, and other carriers whose claim requirements each differ. Vitalis assessments consistently identify 8–15% of collectable revenue not being captured." },
+  { stat: "Rising", heading: "Corporate Consolidation Is Accelerating", body: "DSOs and corporate dental groups are acquiring independent practices across Canada — Alberta, BC, and Ontario have seen the most active acquisition activity. Independent dentists who don't understand what drives their practice's valuation — or what would increase it — are negotiating from a position of incomplete information." },
+  { stat: "Plan First", heading: "Growth Without a Plan Costs More Than It Earns", body: "Adding an operatory, an associate, or a second location without proper financial modeling and operational preparation is one of the most common ways dental practices create financial strain. Each expansion decision has infrastructure, staffing, and cash flow implications that must be modeled before commitment." },
+  { stat: "Competitive", heading: "Associate Recruitment Is a Market Problem", body: "Alberta's dental associate market has become competitive. New dental graduates have more options than previous generations — including associate positions in corporate groups with guaranteed pay. Independent practices that cannot clearly articulate their value proposition and compensation structure lose recruiting competitions they could have won." },
 ];
 
 const services = [
@@ -38,13 +38,19 @@ const services = [
   { icon: TrendingUp, label: "Mergers, Acquisitions & Transitions", desc: "Dental practice valuation, acquisition advisory, DSO negotiation support, partner buyout structuring, associate buy-in planning, and transition preparation — for dental practice owners considering any change in ownership." },
 ];
 
+const topBorderColors = [
+  'hsl(var(--primary))', 'hsl(var(--sage))', 'hsl(var(--accent))',
+  'hsl(var(--primary))', 'hsl(var(--sage))', 'hsl(var(--accent))',
+  'hsl(var(--primary))', 'hsl(var(--sage))', 'hsl(var(--accent))',
+];
+
 const practiceTypes = [
-  { icon: Smile, label: "General Family Dentistry", desc: "Solo and group family dental practices in Calgary, Edmonton, Red Deer, Lethbridge, and across Alberta — the largest segment of the Canadian dental market and the most active for both new builds and corporate acquisition" },
-  { icon: Scissors, label: "Oral Surgery & OMS", desc: "Oral maxillofacial surgery practices with surgical and sedation capabilities — including practices considering CPSA-accredited surgical facility development for publicly funded OMS procedures" },
-  { icon: Baby, label: "Pediatric Dentistry", desc: "Pediatric dental practices with specialized facility design, staffing, and patient experience requirements distinct from general dental" },
-  { icon: Building2, label: "Multi-Location Dental Groups", desc: "Two-to-ten location dental organizations navigating the operational, financial, and quality control complexity that comes with scale — including practice management system migrations and multi-site financial visibility" },
-  { icon: Zap, label: "Orthodontics & Specialty Dental", desc: "Orthodontic, endodontic, periodontic, and prosthodontic specialty practices with distinct patient flow, fee structures, and referral relationship management requirements" },
-  { icon: TrendingUp, label: "Dental Corporations & DSO-Track Practices", desc: "Dental organizations positioning for corporate structure, investor entry, or acquisition — including EBITDA improvement programs, valuation readiness, and deal structure advisory" },
+  { icon: Smile, label: "General Family Dentistry" },
+  { icon: Scissors, label: "Oral Surgery & OMS" },
+  { icon: Baby, label: "Pediatric Dentistry" },
+  { icon: Building2, label: "Multi-Location Dental Groups" },
+  { icon: Zap, label: "Orthodontics & Specialty Dental" },
+  { icon: TrendingUp, label: "Dental Corporations & DSO-Track" },
 ];
 
 const regulatoryFeatures = [
@@ -67,8 +73,8 @@ const cases = [
 
 export default function Dental() {
   usePageMeta(
-    "Dental Practice Consulting Alberta | Full-Service Dental Advisory | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides comprehensive consulting for dental practices across Alberta and Canada — new office planning, revenue optimization, operations, technology, recruitment, expansion, and M&A advisory."
+    "Dental Practice Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
+    "Vitalis Health Strategies provides comprehensive consulting for dental practices across Canada — with deep focus on Calgary and Edmonton. New office planning, revenue optimization, operations, technology, recruitment, expansion, and M&A advisory."
   );
 
   return (
@@ -102,28 +108,25 @@ export default function Dental() {
           </div>
         </section>
 
-        {/* S2 — Problems */}
+        {/* S2 — Problems — Large stat callout cards */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
-              The real challenges facing dental practices in Alberta right now.
+              The real challenges facing dental practices across Canada right now.
             </motion.h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {problems.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="bg-card rounded-2xl p-6 border-l-4 border-accent shadow-card">
-                    <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-accent" /></div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">{p.heading}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{p.body}</p>
-                  </motion.div>
-                );
-              })}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+              {problems.map((p, i) => (
+                <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="bg-card rounded-2xl p-6 shadow-md flex flex-col">
+                  <p className="text-[56px] font-bold text-accent leading-none font-display mb-4">{p.stat}</p>
+                  <h3 className="font-display text-base font-bold text-foreground mb-2">{p.heading}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed flex-1">{p.body}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* S3 — All Services */}
+        {/* S3 — Services — Editorial top-border cards */}
         <section className="py-24 lg:py-32 bg-gradient-section">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.div {...fadeUp} className="text-center mb-14">
@@ -134,11 +137,23 @@ export default function Dental() {
               {services.map((s, i) => {
                 const Icon = s.icon;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40 flex flex-col">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
+                  <motion.div
+                    key={i}
+                    {...fadeUp}
+                    transition={{ duration: 0.6, delay: i * 0.06 }}
+                    className="bg-card rounded-xl p-6 shadow-sm flex flex-col text-center"
+                    style={{ borderTop: `3px solid ${topBorderColors[i]}` }}
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center mb-4 mx-auto">
+                      <Icon className="h-[18px] w-[18px] text-primary" />
+                    </div>
                     <h3 className="font-display text-base font-bold text-foreground mb-2">{s.label}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed flex-1">{s.desc}</p>
-                    {s.link && <Link to={s.link} className="text-primary text-sm font-medium mt-4 inline-flex items-center hover:underline">Learn More <ArrowRight className="ml-1 h-3 w-3" /></Link>}
+                    {s.link ? (
+                      <Link to={s.link} className="text-primary text-sm font-medium mt-4 inline-flex items-center justify-center hover:underline">→ Learn More</Link>
+                    ) : (
+                      <span className="text-primary text-sm font-medium mt-4">→</span>
+                    )}
                   </motion.div>
                 );
               })}
@@ -146,7 +161,7 @@ export default function Dental() {
           </div>
         </section>
 
-        {/* S4 — New vs Existing */}
+        {/* S4 — New vs Existing (unchanged) */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Where does your practice sit right now?</motion.h2>
@@ -156,9 +171,15 @@ export default function Dental() {
                 <h3 className="font-display text-xl font-bold text-foreground mb-3">A dental office is one of the most capital-intensive businesses a dentist will ever open. The financial model determines whether it succeeds.</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">A 10-operatory general dental office in Calgary or Edmonton typically requires $600,000 to $1.2M in leasehold improvements and equipment before the first patient arrives. The site you choose, the lease terms you sign, and the financial structure you build around that investment set the ceiling for the practice's financial performance for years.</p>
                 <ul className="space-y-2 mb-8 flex-1">
-                  {["Dental practice feasibility analysis and Calgary/Edmonton market assessment","Financial modeling: buildout costs, equipment procurement, staffing, and break-even timeline","Site selection and lease negotiation for Alberta dental spaces","Dental-specific facility planning: operatory count, sterilization, X-ray, mechanical requirements","ADA+C regulatory awareness and compliance planning","Practice management software selection and setup","Associate dentist recruitment for new practices"].map((t, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />{t}</li>
-                  ))}
+                  {["Dental practice feasibility analysis and Calgary/Edmonton market assessment",
+                    "Financial modeling: buildout costs, equipment procurement, staffing, and break-even timeline",
+                    "Site selection and lease negotiation for Alberta dental spaces",
+                    "Dental-specific facility planning: operatory count, sterilization, X-ray, mechanical requirements",
+                    "ADA+C regulatory awareness and compliance planning",
+                    "Practice management software selection and setup",
+                    "Associate dentist recruitment for new practices"].map((t, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />{t}</li>
+                    ))}
                 </ul>
                 <Button variant="hero" size="default" asChild className="w-full"><Link to="/strategic-assessment">Start Your Build Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
               </motion.div>
@@ -168,9 +189,15 @@ export default function Dental() {
                 <h3 className="font-display text-xl font-bold text-foreground mb-3">Revenue per chair. Hygiene utilization. Fee schedule alignment. These are the numbers that tell the real story of your practice.</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">Most established dental practices have at least one systematic revenue or operational gap that compounds quietly. An independent performance review identifies exactly where that gap is and what it would take to close it — without disrupting clinical operations or patient relationships.</p>
                 <ul className="space-y-2 mb-8 flex-1">
-                  {["Insurance claim accuracy across all carriers","ADA fee schedule alignment and above-guide billing opportunities","Hygiene chair utilization and re-appointment rates","Operatory and dentist productivity analysis","Overhead ratios across labour, lab, and supply costs","Associate compensation model review","Expansion readiness: additional operatories or second location"].map((t, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-accent mt-0.5 shrink-0" />{t}</li>
-                  ))}
+                  {["Insurance claim accuracy across all carriers",
+                    "ADA fee schedule alignment and above-guide billing opportunities",
+                    "Hygiene chair utilization and re-appointment rates",
+                    "Operatory and dentist productivity analysis",
+                    "Overhead ratios across labour, lab, and supply costs",
+                    "Associate compensation model review",
+                    "Expansion readiness: additional operatories or second location"].map((t, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle className="h-4 w-4 text-accent mt-0.5 shrink-0" />{t}</li>
+                    ))}
                 </ul>
                 <Button variant="gold" size="default" asChild className="w-full"><Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
               </motion.div>
@@ -178,44 +205,84 @@ export default function Dental() {
           </div>
         </section>
 
-        {/* S5 — Practice Types */}
+        {/* S5 — Practice Types — Pill/tag row */}
         <section className="py-24 lg:py-32 bg-gradient-section">
-          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Dental practices Vitalis works with across the spectrum.</motion.h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
+              Dental practices we work with — from Calgary and Edmonton to Vancouver, Toronto, and beyond.
+            </motion.h2>
+            {/* Desktop: wrapped pills */}
+            <motion.div {...fadeUp} className="hidden md:flex flex-wrap justify-center gap-4">
               {practiceTypes.map((s, i) => {
                 const Icon = s.icon;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-sm font-bold text-foreground mb-1">{s.label}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{s.desc}</p>
-                  </motion.div>
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 rounded-full border border-border px-6 py-3 transition-colors hover:bg-primary hover:text-primary-foreground hover:border-primary group cursor-default"
+                  >
+                    <Icon className="h-[18px] w-[18px] text-primary group-hover:text-primary-foreground transition-colors" />
+                    <span className="text-sm font-medium text-foreground group-hover:text-primary-foreground transition-colors">{s.label}</span>
+                  </div>
                 );
               })}
-            </div>
+            </motion.div>
+            {/* Mobile: horizontal scroll */}
+            <motion.div {...fadeUp} className="md:hidden flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+              {practiceTypes.map((s, i) => {
+                const Icon = s.icon;
+                return (
+                  <div key={i} className="flex items-center gap-2 rounded-full border border-border px-5 py-2.5 shrink-0">
+                    <Icon className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground whitespace-nowrap">{s.label}</span>
+                  </div>
+                );
+              })}
+            </motion.div>
           </div>
         </section>
 
-        {/* S6 — Alberta Regulatory */}
+        {/* S6 — Regulatory — 2-column split */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <div className="grid md:grid-cols-3 gap-8">
-              {regulatoryFeatures.map((f, i) => {
-                const Icon = f.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border border-border/40">
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6"><Icon className="h-6 w-6 text-primary" /></div>
-                    <h3 className="font-display text-lg font-bold text-foreground mb-3">{f.heading}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{f.body}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
+              Billing and regulatory context — Alberta, BC, Ontario, and across Canada.
+            </motion.h2>
+            <motion.div {...fadeUp} className="grid lg:grid-cols-[55%_45%] gap-0 bg-card rounded-2xl shadow-card border border-border/40 overflow-hidden">
+              {/* Left — prose */}
+              <div className="p-8 lg:p-10">
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                  {regulatoryFeatures[0].body}
+                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                  {regulatoryFeatures[1].body}
+                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {regulatoryFeatures[2].body}
+                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed mt-5 italic">
+                  In BC, the College of Dental Surgeons of BC (CDSBC) and the BC Dental Fee Guide apply. In Ontario, the Royal College of Dental Surgeons of Ontario (RCDSO) governs practice standards. Vitalis brings regulatory awareness across all major provincial frameworks.
+                </p>
+              </div>
+              {/* Right — info strips */}
+              <div className="bg-primary/[0.04] p-8 lg:p-10 flex flex-col justify-center divide-y divide-border/40">
+                {regulatoryFeatures.map((f, i) => {
+                  const Icon = f.icon;
+                  return (
+                    <div key={i} className={`flex items-start gap-4 ${i > 0 ? 'pt-5' : ''} ${i < regulatoryFeatures.length - 1 ? 'pb-5' : ''}`}>
+                      <Icon className="h-6 w-6 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-bold text-foreground">{f.heading}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Key regulatory framework</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* S7 — NHSF Callout */}
+        {/* S7 — NHSF Callout (unchanged) */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
             <motion.div {...fadeUp} className="bg-primary/5 border border-primary/20 rounded-2xl p-8 lg:p-10">
@@ -226,26 +293,26 @@ export default function Dental() {
           </div>
         </section>
 
-        {/* S8 — Financial Snapshot */}
-        <section className="py-24 lg:py-32 bg-gradient-section">
+        {/* S8 — Financial Snapshot — Full-width tinted strip */}
+        <section className="py-20 lg:py-28" style={{ backgroundColor: 'hsl(38, 45%, 96%)' }}>
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-            <motion.div {...fadeUp} className="text-center mb-14">
+            <motion.div {...fadeUp} className="text-center mb-4">
               <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">Understanding the numbers behind a dental practice.</h2>
               <p className="text-muted-foreground text-sm mt-2">Illustrative figures only. Individual results vary significantly.</p>
             </motion.div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <motion.div {...fadeUp} className="flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20 mt-14">
               {financialStats.map((s, i) => (
-                <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border border-border/40 text-center">
-                  <p className="text-3xl font-bold text-primary font-display">{s.value}</p>
-                  <p className="text-foreground font-medium text-sm mt-3">{s.label}</p>
-                  <p className="text-muted-foreground text-xs mt-2">{s.note}</p>
-                </motion.div>
+                <div key={i} className="text-center">
+                  <p className="text-[52px] font-bold text-accent font-display leading-none">{s.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-foreground mt-3">{s.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1 max-w-[220px] mx-auto">{s.note}</p>
+                </div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* S9 — Case Reference */}
+        {/* S9 — Case Reference (unchanged) */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.div {...fadeUp} className="text-center mb-14">
@@ -264,7 +331,7 @@ export default function Dental() {
           </div>
         </section>
 
-        {/* S10 — Final CTA */}
+        {/* S10 — Final CTA (unchanged) */}
         <section className="py-20 lg:py-28 bg-forest-dark">
           <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
             <motion.div {...fadeUp}>

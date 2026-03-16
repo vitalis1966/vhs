@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -7,7 +8,7 @@ import { usePageMeta } from "@/lib/seo";
 import {
   ClipboardList, Building2, DollarSign, Settings, Users, Laptop, BarChart2,
   Activity, TrendingUp, ArrowRight, Shield, FileText, MapPin, Heart,
-  Stethoscope, Microscope, Bone, Eye, Baby, Brain, Zap, CheckCircle
+  Stethoscope, Microscope, Bone, Eye, Baby, Brain, Zap, CheckCircle, ChevronDown
 } from "lucide-react";
 
 const fadeUp = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.6 } };
@@ -20,9 +21,9 @@ const stats = [
 ];
 
 const problems = [
-  { icon: DollarSign, heading: "AHS Billing Is More Complex Than It Should Be", body: "Alberta Health Care Insurance Plan billing, shadow billing, uninsured service fee schedules, and third-party billing for WCB, MVA, and occupational health create a revenue cycle that is unusually complex for a private practice. Most medical clinics in Alberta are under-collecting — often without knowing it." },
-  { icon: Users, heading: "Physician Recruitment Is a Persistent Problem", body: "Alberta faces a documented physician shortage, particularly in rural and semi-rural communities. Even Calgary and Edmonton practices struggle to recruit and retain associates who fit their clinical model and compensation structure. The recruitment problem is partly operational — how the practice is structured, what it offers, and how it onboards new physicians." },
-  { icon: Settings, heading: "Operations Run on Informal Systems", body: "Most medical clinics in Alberta were built around a physician's clinical expertise, not an operational blueprint. Scheduling systems, patient flow protocols, staff roles, and administrative workflows are typically informal — functional, but not optimized. When patient volume grows or a physician leaves, those informal systems break." },
+  { icon: DollarSign, heading: "AHS Billing Is More Complex Than It Should Be", body: "Medical practices across Canada face billing complexity — and in Alberta this runs through AHCIP, shadow billing, WCB, MVA, and uninsured service fee schedules, creating a revenue cycle that is unusually intricate for a private practice. Most medical clinics in Alberta are under-collecting — often without knowing it." },
+  { icon: Users, heading: "Physician Recruitment Is a Persistent Problem", body: "Canada faces a documented physician shortage — and Alberta is among the most acutely affected provinces, particularly in rural and semi-rural communities. Even Calgary and Edmonton practices struggle to recruit and retain associates who fit their clinical model and compensation structure. The recruitment problem is partly operational — how the practice is structured, what it offers, and how it onboards new physicians." },
+  { icon: Settings, heading: "Operations Run on Informal Systems", body: "Most medical clinics in Canada were built around a physician's clinical expertise, not an operational blueprint. Scheduling systems, patient flow protocols, staff roles, and administrative workflows are typically informal — functional, but not optimized. When patient volume grows or a physician leaves, those informal systems break." },
   { icon: TrendingUp, heading: "Growth Is Harder Than It Looks", body: "Adding a second physician, a new service line, or a second location requires more than clinical capacity. Financial modeling, space planning, regulatory navigation, and operational redesign are all prerequisites for growth that holds. Practices that grow without this foundation often discover the costs faster than the revenue." },
 ];
 
@@ -68,17 +69,22 @@ const cases = [
 ];
 
 const processSteps = [
-  { num: "01", label: "Assessment", desc: "We begin with a structured review of your practice — where it stands, what you are trying to achieve, and the specific operational or financial challenges in your way. For new builds: feasibility and readiness. For existing practices: independent performance review." },
-  { num: "02", label: "Strategic Plan", desc: "You receive a clear, prioritized plan — not a generic report. Specific recommendations, a sequenced timeline, and accountability for outcomes. For new builds: a phased development roadmap. For existing practices: the 3–5 interventions with the greatest performance impact." },
-  { num: "03", label: "Implementation", desc: "Vitalis works alongside you through execution. Revenue cycle changes, recruitment processes, technology implementations, facility design, and AHS billing — we are in it with you, not handing off a document." },
-  { num: "04", label: "Ongoing Advisory", desc: "Many medical practices retain Vitalis as a long-term strategic partner. CPSA standards evolve, AHS billing rules change, the market shifts, and your practice grows. Having the right advisory relationship means your practice stays ahead of changes rather than reacting to them." },
+  { num: "01", label: "Assessment", desc: "We begin with a structured review of your practice — where it stands, what you are trying to achieve, and the specific operational or financial challenges in your way." },
+  { num: "02", label: "Strategic Plan", desc: "You receive a clear, prioritized plan — not a generic report. Specific recommendations, a sequenced timeline, and accountability for outcomes." },
+  { num: "03", label: "Implementation", desc: "Vitalis works alongside you through execution. Revenue cycle changes, recruitment processes, technology implementations, and AHS billing — we are in it with you." },
+  { num: "04", label: "Ongoing Advisory", desc: "Many medical practices retain Vitalis as a long-term strategic partner. CPSA standards evolve, AHS billing rules change, and your practice grows." },
 ];
 
 export default function Medical() {
+  const [selectedService, setSelectedService] = useState(0);
+  const [expandedProblem, setExpandedProblem] = useState<number | null>(null);
+
   usePageMeta(
-    "Medical Clinic & Practice Consulting Alberta | Full-Cycle Healthcare Strategy | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides end-to-end consulting for medical clinics, specialist practices, and surgical groups across Alberta and Canada — from new builds to performance optimization, revenue cycle, technology, recruitment, and M&A advisory."
+    "Medical Clinic Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
+    "Vitalis Health Strategies provides end-to-end consulting for medical clinics across Canada — with deep focus on Calgary, Edmonton, and Alberta. New builds, revenue cycle, operations, recruitment, technology, and M&A advisory."
   );
+
+  const SelectedIcon = services[selectedService].icon;
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,56 +117,115 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S2 — Problems */}
+        {/* S2 — Problems — Numbered accordion */}
         <section className="py-24 lg:py-32 bg-background">
-          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
-              The challenges medical practice owners in Alberta face — and what actually causes them.
+              The challenges medical practice owners face across Canada — and what actually causes them.
             </motion.h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {problems.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="bg-card rounded-2xl p-6 border-l-4 border-accent shadow-card">
-                    <div className="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-accent" /></div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">{p.heading}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{p.body}</p>
-                  </motion.div>
-                );
-              })}
+            <div className="divide-y divide-border/30">
+              {problems.map((p, i) => (
+                <motion.div
+                  key={i}
+                  {...fadeUp}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                  className="py-6 cursor-pointer group"
+                  onClick={() => setExpandedProblem(expandedProblem === i ? null : i)}
+                >
+                  <div className="flex items-center gap-6">
+                    <span className="text-4xl font-bold text-primary/30 font-display shrink-0 w-14">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="font-display text-lg font-bold text-foreground flex-1">{p.heading}</h3>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-300 shrink-0 ${expandedProblem === i ? 'rotate-180' : ''}`} />
+                  </div>
+                  <div
+                    className="overflow-hidden transition-all duration-300 ease-in-out"
+                    style={{ maxHeight: expandedProblem === i ? '300px' : '0px', opacity: expandedProblem === i ? 1 : 0 }}
+                  >
+                    <p className="text-muted-foreground text-sm leading-relaxed mt-4 pl-20">{p.body}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* S3 — All Services */}
+        {/* S3 — Services — 2-column interactive explorer */}
         <section className="py-24 lg:py-32 bg-gradient-section">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.div {...fadeUp} className="text-center mb-14">
               <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">What Vitalis does for medical practices.</h2>
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">Every service below is available as a standalone engagement or as part of a broader advisory relationship.</p>
             </motion.div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {/* Desktop: 2-column explorer */}
+            <motion.div {...fadeUp} className="hidden lg:grid grid-cols-[35%_65%] gap-0 bg-card rounded-2xl shadow-card border border-border/40 overflow-hidden">
+              {/* Left — service list */}
+              <div className="border-r border-border/40 py-4">
+                {services.map((s, i) => {
+                  const Icon = s.icon;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedService(i)}
+                      className={`w-full flex items-center gap-3 px-6 py-3.5 text-left transition-all ${selectedService === i ? 'border-l-2 border-primary bg-secondary/30 font-semibold' : 'border-l-2 border-transparent hover:bg-secondary/20'}`}
+                    >
+                      <Icon className={`h-[18px] w-[18px] shrink-0 ${selectedService === i ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className={`text-sm ${selectedService === i ? 'text-foreground' : 'text-muted-foreground'}`}>{s.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Right — service detail */}
+              <div className="p-10">
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6">
+                  <SelectedIcon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-foreground mb-4">{services[selectedService].label}</h3>
+                <p className="text-muted-foreground leading-relaxed">{services[selectedService].desc}</p>
+                {services[selectedService].link && (
+                  <Link to={services[selectedService].link!} className="text-primary font-medium mt-6 inline-flex items-center hover:underline">
+                    Learn More <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Mobile: accordion */}
+            <div className="lg:hidden divide-y divide-border/30 bg-card rounded-2xl shadow-card border border-border/40 overflow-hidden">
               {services.map((s, i) => {
                 const Icon = s.icon;
+                const isOpen = selectedService === i;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40 flex flex-col">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-base font-bold text-foreground mb-2">{s.label}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed flex-1">{s.desc}</p>
-                    {s.link && <Link to={s.link} className="text-primary text-sm font-medium mt-4 inline-flex items-center hover:underline">Learn More <ArrowRight className="ml-1 h-3 w-3" /></Link>}
-                  </motion.div>
+                  <div key={i}>
+                    <button
+                      onClick={() => setSelectedService(isOpen ? -1 : i)}
+                      className="w-full flex items-center gap-3 px-5 py-4 text-left"
+                    >
+                      <Icon className="h-[18px] w-[18px] shrink-0 text-primary" />
+                      <span className="text-sm font-medium text-foreground flex-1">{s.label}</span>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <div
+                      className="overflow-hidden transition-all duration-300"
+                      style={{ maxHeight: isOpen ? '400px' : '0px', opacity: isOpen ? 1 : 0 }}
+                    >
+                      <div className="px-5 pb-4">
+                        <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                        {s.link && <Link to={s.link} className="text-primary text-sm font-medium mt-3 inline-flex items-center hover:underline">Learn More <ArrowRight className="ml-1 h-3 w-3" /></Link>}
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </div>
           </div>
         </section>
 
-        {/* S4 — New vs Existing */}
+        {/* S4 — New vs Existing (unchanged) */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Where are you in your practice's lifecycle?</motion.h2>
             <div className="grid md:grid-cols-2 gap-8">
-              {/* New */}
               <motion.div {...fadeUp} className="bg-card rounded-2xl p-8 shadow-card border border-primary/20 flex flex-col">
                 <span className="inline-block text-xs font-semibold uppercase tracking-wider text-primary bg-secondary rounded-full px-3 py-1 w-fit mb-4">Opening a New Practice</span>
                 <h3 className="font-display text-xl font-bold text-foreground mb-3">Get the foundation right. It's harder to fix once you've opened.</h3>
@@ -172,7 +237,6 @@ export default function Medical() {
                 </ul>
                 <Button variant="hero" size="default" asChild className="w-full"><Link to="/strategic-assessment">Start Your Build Assessment <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
               </motion.div>
-              {/* Existing */}
               <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border border-accent/30 flex flex-col">
                 <span className="inline-block text-xs font-semibold uppercase tracking-wider text-accent bg-accent/10 rounded-full px-3 py-1 w-fit mb-4">Optimizing an Established Practice</span>
                 <h3 className="font-display text-xl font-bold text-foreground mb-3">Running well and running at your potential are not the same thing.</h3>
@@ -188,18 +252,26 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S5 — Specialties */}
-        <section className="py-24 lg:py-32 bg-gradient-section">
+        {/* S5 — Specialties — Dark tiled grid */}
+        <section className="py-24 lg:py-32" style={{ backgroundColor: 'hsl(155, 35%, 14%)' }}>
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">Medical practice types across Alberta and Canada.</motion.h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-center mb-14" style={{ color: 'hsl(40, 40%, 96%)' }}>
+              Medical practices we work with — across Canada.
+            </motion.h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4">
               {specialties.map((s, i) => {
                 const Icon = s.icon;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.06 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4"><Icon className="h-5 w-5 text-primary" /></div>
-                    <h3 className="font-display text-sm font-bold text-foreground mb-1">{s.label}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{s.desc}</p>
+                  <motion.div
+                    key={i}
+                    {...fadeUp}
+                    transition={{ duration: 0.6, delay: i * 0.06 }}
+                    className="p-8 text-center"
+                    style={{ borderColor: 'hsla(40, 40%, 96%, 0.1)', borderWidth: '1px', borderStyle: 'solid' }}
+                  >
+                    <Icon className="h-8 w-8 mx-auto mb-4" style={{ color: 'hsl(148, 15%, 75%)' }} />
+                    <h3 className="font-display text-[15px] font-bold mb-2" style={{ color: 'hsl(40, 40%, 96%)' }}>{s.label}</h3>
+                    <p className="text-[13px] leading-relaxed" style={{ color: 'hsla(40, 40%, 96%, 0.6)' }}>{s.desc}</p>
                   </motion.div>
                 );
               })}
@@ -207,22 +279,29 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S6 — Alberta Regulatory */}
+        {/* S6 — Regulatory — Icon-centered, no cards */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">What makes Alberta medical practice operations distinct.</motion.h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">
+              Billing and regulatory context — Alberta, BC, Ontario, and across Canada.
+            </motion.h2>
+            <div className="grid md:grid-cols-3 gap-16">
               {regulatoryFeatures.map((f, i) => {
                 const Icon = f.icon;
                 return (
-                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="bg-card rounded-2xl p-8 shadow-card border border-border/40">
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6"><Icon className="h-6 w-6 text-primary" /></div>
+                  <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 mx-auto">
+                      <Icon className="h-8 w-8 text-primary" />
+                    </div>
                     <h3 className="font-display text-lg font-bold text-foreground mb-3">{f.heading}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{f.body}</p>
                   </motion.div>
                 );
               })}
             </div>
+            <motion.p {...fadeUp} className="text-center text-muted-foreground text-sm italic mt-14 max-w-3xl mx-auto">
+              Vitalis also works with medical practices in British Columbia (under CPSBC registration), Ontario (CPSO), Saskatchewan, and Manitoba — applying the same structured approach to each province's specific billing, regulatory, and market environment.
+            </motion.p>
           </div>
         </section>
 
@@ -242,7 +321,7 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S8 — NHSF Callout */}
+        {/* S8 — NHSF Callout (unchanged) */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
             <motion.div {...fadeUp} className="bg-primary/5 border border-primary/20 rounded-2xl p-8 lg:p-10">
@@ -253,24 +332,45 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S9 — How Engagement Works */}
+        {/* S9 — Process — Horizontal connected step strip */}
         <section className="py-24 lg:py-32 bg-gradient-section">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
             <motion.h2 {...fadeUp} className="font-display text-2xl lg:text-3xl font-bold text-foreground text-center mb-14">What working with Vitalis looks like.</motion.h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            {/* Desktop: horizontal */}
+            <motion.div {...fadeUp} className="hidden lg:flex items-start relative">
+              {/* Connector line */}
+              <div className="absolute top-6 left-[calc(12.5%+24px)] right-[calc(12.5%+24px)] h-[2px] bg-primary/20" />
               {processSteps.map((s, i) => (
-                <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="bg-card rounded-2xl p-6 shadow-card border border-border/40 relative">
-                  <span className="text-3xl font-bold text-primary/20 font-display">{s.num}</span>
-                  <h3 className="font-display text-base font-bold text-foreground mt-2 mb-2">{s.label}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
-                  {i < processSteps.length - 1 && <ArrowRight className="hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30 z-10" />}
+                <div key={i} className="flex-1 flex flex-col items-center text-center relative px-4">
+                  <div className="w-12 h-12 rounded-full bg-card border-2 border-primary flex items-center justify-center z-10">
+                    <span className="text-sm font-bold text-primary font-display">{s.num}</span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold text-foreground mt-4 mb-2">{s.label}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Mobile: vertical */}
+            <div className="lg:hidden relative pl-8">
+              <div className="absolute left-[22px] top-0 bottom-0 w-[2px] bg-primary/20" />
+              {processSteps.map((s, i) => (
+                <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} className="relative mb-10 last:mb-0">
+                  <div className="absolute -left-8 top-0 w-10 h-10 rounded-full bg-card border-2 border-primary flex items-center justify-center z-10">
+                    <span className="text-xs font-bold text-primary font-display">{s.num}</span>
+                  </div>
+                  <div className="pl-6">
+                    <h3 className="font-display text-base font-bold text-foreground mb-2">{s.label}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* S10 — Case Reference */}
+        {/* S10 — Case Reference (unchanged) */}
         <section className="py-24 lg:py-32 bg-background">
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <motion.div {...fadeUp} className="text-center mb-14">
@@ -289,7 +389,7 @@ export default function Medical() {
           </div>
         </section>
 
-        {/* S11 — Final CTA */}
+        {/* S11 — Final CTA (unchanged) */}
         <section className="py-20 lg:py-28 bg-forest-dark">
           <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
             <motion.div {...fadeUp}>
