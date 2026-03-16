@@ -182,15 +182,15 @@ const StrategicAssessment = () => {
 
       {/* Two-Path Section */}
       <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="text-center mb-16">
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
               Which assessment fits your situation?
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {/* Card 1 — Build Strategy */}
-            <motion.div {...fadeUp} transition={{ delay: 0 }} className="bg-card rounded-2xl p-8 shadow-card border-2 border-primary/30 flex flex-col py-[32px] px-0">
+            <motion.div {...fadeUp} transition={{ delay: 0 }} className="bg-card rounded-2xl p-6 lg:p-8 shadow-card border-2 border-primary/30 flex flex-col">
               <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-primary/15 text-primary px-3 py-1 rounded-full self-start mb-4">
                 Planning a New Practice
               </span>
