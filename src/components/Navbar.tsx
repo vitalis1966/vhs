@@ -343,30 +343,24 @@ export function Navbar() {
 
               <div className="pl-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Planning & Building</p>
-                {planningItems.map((child) => (
-                  <Link
-                    key={child.label}
-                    to={child.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block text-sm text-muted-foreground py-1 pl-2"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                <Link
+                  to={planningItem.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-muted-foreground py-1 pl-2"
+                >
+                  {planningItem.label}
+                </Link>
               </div>
 
               <div className="pl-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-1">Operating, Growing & Advising</p>
-                {operatingItems.map((child) => (
-                  <Link
-                    key={child.label}
-                    to={child.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block text-sm text-muted-foreground py-1 pl-2"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                <Link
+                  to={operatingItem.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-muted-foreground py-1 pl-2"
+                >
+                  {operatingItem.label}
+                </Link>
               </div>
 
               <div className="pl-4 pt-2 flex flex-col gap-2">
