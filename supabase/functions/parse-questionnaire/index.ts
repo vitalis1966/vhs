@@ -20,9 +20,18 @@ serve(async (req) => {
 
     if (!file) throw new Error("No file provided");
 
-    // Read file content as base64 for AI processing
+    // Read file content as base64 for AI processing (chunked to avoid stack overflow)
     const arrayBuffer = await file.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const bytes = new Uint8Array(arrayBuffer);
+    const chunkSize = 8192;
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      for (let j = 0; j < chunk.length; j++) {
+        binary += String.fromCharCode(chunk[j]);
+      }
+    }
+    const base64 = btoa(binary);
 
     const systemPrompt = `You are an expert at extracting structured questionnaire data from PDF documents.
 
