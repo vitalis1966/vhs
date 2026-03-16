@@ -160,7 +160,7 @@ const SolutionsNewClinics = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button variant="hero" size="xl" asChild>
-              <Link to="/strategic-assessment">Start Your Build Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link to="/strategic-assessment">Start Your Build Strategy Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-5 w-5" /></Link>
