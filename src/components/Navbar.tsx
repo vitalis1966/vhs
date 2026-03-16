@@ -198,15 +198,18 @@ export function Navbar() {
                       <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-accent">
                         Planning & Building
                       </p>
-                      {planningItems.map((child) => (
-                        <Link
-                          key={child.label}
-                          to={child.href}
-                          className="block px-2 py-1.5 text-sm transition-colors hover:bg-secondary/50 rounded text-muted-foreground hover:text-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      <Link
+                        to={planningItem.href}
+                        className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                          <planningItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{planningItem.label}</p>
+                          <p className="text-xs text-muted-foreground leading-snug">{planningItem.description}</p>
+                        </div>
+                      </Link>
                     </div>
 
                     {/* Column 3 — Operating, Growing & Advising */}
@@ -214,15 +217,18 @@ export function Navbar() {
                       <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-accent">
                         Operating, Growing & Advising
                       </p>
-                      {operatingItems.map((child) => (
-                        <Link
-                          key={child.label}
-                          to={child.href}
-                          className="block px-2 py-1.5 text-sm transition-colors hover:bg-secondary/50 rounded text-muted-foreground hover:text-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      <Link
+                        to={operatingItem.href}
+                        className="flex items-start gap-3 px-2 py-2.5 rounded-lg transition-colors hover:bg-secondary/50 group/item"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary transition-colors">
+                          <operatingItem.icon className="h-4 w-4 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{operatingItem.label}</p>
+                          <p className="text-xs text-muted-foreground leading-snug">{operatingItem.description}</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
 
