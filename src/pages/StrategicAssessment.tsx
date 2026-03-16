@@ -256,7 +256,7 @@ const StrategicAssessment = () => {
               <p className="text-xs text-muted-foreground/70 italic mb-6">
                 Ideal for: Practice owners in medical, dental, or veterinary practices seeking an objective operational and financial review.
               </p>
-              <Button variant="hero" size="lg" asChild className="w-full mt-auto">
+              <Button variant="hero" size="default" asChild className="w-full mt-auto h-12 whitespace-normal text-center">
                 <Link to="/strategic-assessment/intake?path=existing">
                   Start Your Performance Assessment →
                 </Link>
