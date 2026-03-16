@@ -221,7 +221,7 @@ const StrategicAssessment = () => {
               </p>
               <Button variant="hero" size="default" asChild className="w-full mt-auto h-12 whitespace-normal text-center">
                 <Link to="/strategic-assessment/intake?path=new-build">
-                  Start Your Build Assessment →
+                  Start Your Build Strategy Assessment →
                 </Link>
               </Button>
             </motion.div>

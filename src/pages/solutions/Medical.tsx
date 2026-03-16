@@ -244,7 +244,7 @@ export default function Medical() {
                 ))}
               </ul>
               <Button variant="hero" size="lg" className="w-full" asChild>
-                <Link to="/strategic-assessment">Start Your Build Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link to="/strategic-assessment">Start Your Build Strategy Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
             </motion.div>
 
