@@ -264,9 +264,9 @@ export default function SubmissionsDashboard() {
                     <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Meeting</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Internal</TableHead>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Analysis</TableHead>
-                    <TableHead className={headClass} style={{ width: "4%" }}></TableHead>
+                    <TableHead className={`${headClass} pl-6`} style={{ width: "8%" }}>Client</TableHead>
+                    <TableHead className={`${headClass} pl-4`} style={{ width: "8%" }}>Analysis</TableHead>
+                    <TableHead className={`${headClass} pl-4`} style={{ width: "4%" }}></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
