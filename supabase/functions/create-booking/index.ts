@@ -92,10 +92,14 @@ serve(async (req) => {
       serviceId,
       start: { dateTime: `${date}T${time}:00`, timeZone: "America/Toronto" },
       end: { dateTime: `${date}T${endTime}:00`, timeZone: "America/Toronto" },
-      customerName: name,
-      customerEmailAddress: email,
-      customerNotes,
-      sendConfirmationToCustomer: true,
+      customers: [
+        {
+          name,
+          emailAddress: email,
+          notes: customerNotes,
+        },
+      ],
+      isLocationOnline: true,
     };
 
     // Permissions required: BookingsAppointment.ReadWrite.All
