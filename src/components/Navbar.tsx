@@ -113,7 +113,7 @@ export function Navbar() {
         key={link.href}
         to={link.href}
         className={cn(
-          "text-[13px] font-medium tracking-wide transition-colors hover:text-primary whitespace-nowrap py-2",
+          "text-[13px] font-medium tracking-wide transition-colors hover:text-primary whitespace-nowrap py-2 px-1",
           location.pathname === link.href ? "text-primary" : "text-muted-foreground"
         )}
       >
