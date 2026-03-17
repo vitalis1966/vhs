@@ -53,6 +53,13 @@ const severityColors: Record<string, string> = {
   critical: "bg-red-100 text-red-800 border-red-200",
 };
 
+const assessmentLabel: Record<string, string> = {
+  "new-clinic": "New Clinic",
+  "new-clinic-build": "New Clinic",
+  "existing-clinic": "Existing Clinic",
+  "healthcare-it-assessment": "Healthcare IT",
+};
+
 export default function SubmissionsDashboard() {
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
