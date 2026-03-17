@@ -67,7 +67,7 @@ function getStatusLabel(practiceType: string | null, lifecycleStatus: string | n
     if (/exist/i.test(practiceType)) return "Existing Practice";
     if (/new/i.test(practiceType)) return "New Practice";
   }
-  return lifecycleStatus?.replace(/_/g, " ") || "—";
+  return "Assessment";
 }
 
 export default function SubmissionsDashboard() {
@@ -232,7 +232,7 @@ export default function SubmissionsDashboard() {
       </section>
 
       <section className="py-10 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-xl font-bold text-foreground">
               Submitted Assessments
@@ -257,23 +257,23 @@ export default function SubmissionsDashboard() {
               <Table style={{ tableLayout: "fixed", width: "100%" }}>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className={headClass} style={{ width: "9%" }}>Client</TableHead>
-                    <TableHead className={headClass} style={{ width: "16%" }}>Email</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
+                    <TableHead className={headClass} style={{ width: "15%" }}>Email</TableHead>
                     <TableHead className={headClass} style={{ width: "12%" }}>Organization</TableHead>
-                    <TableHead className={headClass} style={{ width: "7%" }}>Submitted</TableHead>
-                    <TableHead className={headClass} style={{ width: "9%" }}>Status</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Submitted</TableHead>
+                    <TableHead className={headClass} style={{ width: "10%" }}>Status</TableHead>
                     <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
-                    <TableHead className={headClass} style={{ width: "9%" }}>Engagement</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Meeting</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Internal</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
-                    <TableHead className={headClass} style={{ width: "7%" }}>Analysis</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Analysis</TableHead>
                     <TableHead className={headClass} style={{ width: "4%" }}></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {submissions.map((sub) => (
                     <TableRow key={sub.session_id}>
-                      <TableCell className={`${cellClass} font-medium`}>
+                      <TableCell className={`${cellClass} font-medium whitespace-nowrap`}>
                         {sub.client_name}
                       </TableCell>
 
@@ -281,7 +281,7 @@ export default function SubmissionsDashboard() {
                         {sub.client_email ? (
                           <a
                             href={`mailto:${sub.client_email}`}
-                            className="text-accent hover:underline break-all"
+                            className="text-accent hover:underline"
                           >
                             {sub.client_email}
                           </a>
@@ -306,11 +306,11 @@ export default function SubmissionsDashboard() {
 
                       <TableCell className={`${cellClass} text-center`}>
                         {sub.client_report_sent ? (
-                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100 whitespace-nowrap">
+                          <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100 whitespace-nowrap">
                             Sent Out
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-muted-foreground whitespace-nowrap">
+                          <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100 whitespace-nowrap">
                             Not Sent
                           </Badge>
                         )}
@@ -318,19 +318,21 @@ export default function SubmissionsDashboard() {
 
                       <TableCell className={`${cellClass} text-center`}>
                         {sub.meeting_booked ? (
-                          <Badge className="bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-100 whitespace-nowrap">
-                            Meeting Booked
+                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100 whitespace-nowrap">
+                            Booked
                           </Badge>
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100 whitespace-nowrap">
+                            Not Booked
+                          </Badge>
                         )}
                       </TableCell>
 
                       <TableCell className={cellClass}>
                         {sub.analysis_status === "complete" ? (
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2" asChild>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2 whitespace-nowrap" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}`}>
-                              Report
+                              Internal Report
                             </Link>
                           </Button>
                         ) : (
@@ -340,9 +342,9 @@ export default function SubmissionsDashboard() {
 
                       <TableCell className={cellClass}>
                         {sub.has_client_report ? (
-                          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2" asChild>
+                          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2 whitespace-nowrap" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}/client-report`}>
-                              Report
+                              Client Report
                             </Link>
                           </Button>
                         ) : (
@@ -354,7 +356,7 @@ export default function SubmissionsDashboard() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs h-8 px-2"
+                          className="text-xs h-8 px-2 whitespace-nowrap"
                           onClick={() => runAnalysis(sub.session_id)}
                           disabled={runningAnalysis === sub.session_id}
                         >
