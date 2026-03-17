@@ -130,7 +130,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden xl:flex items-center gap-2 2xl:gap-4">
+        <div className="hidden xl:flex items-center gap-6 2xl:gap-8">
           {simpleNavLinks.slice(0, 3).map(renderDesktopLink)}
 
           {/* Solutions Mega-Menu */}
