@@ -239,7 +239,7 @@ export default function SubmissionsDashboard() {
                       <TableCell className="text-muted-foreground">{sub.organization}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs">
-                          {sub.assessment_slug === "new-clinic-build" ? "New Clinic" : "Existing Clinic"}
+                          {assessmentLabel[sub.assessment_slug] || sub.assessment_title}
                         </Badge>
                       </TableCell>
                       <TableCell>
