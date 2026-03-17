@@ -68,14 +68,6 @@ const Contact = () => {
         </div>
       </section>
 
-      <iframe
-        src="https://outlook.office.com/book/VitalisHealthServices@vitalisstrategies.com/?ismsaljsauthenabled"
-        width="100%"
-        height="100%"
-        scrolling="yes"
-        style="border:0"
-      ></iframe>
-
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-[1fr_360px] gap-16">
