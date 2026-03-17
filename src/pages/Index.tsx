@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
-import { JourneyFinderSection } from "@/components/home/JourneyFinderSection";
+import { PracticePathFinder } from "@/components/home/PracticePathFinder";
 import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { ThreePsSection } from "@/components/home/ThreePsSection";
 import { StrategicEcosystemSection } from "@/components/home/StrategicEcosystemSection";
