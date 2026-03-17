@@ -117,7 +117,7 @@ export function HealthcarePathwaysSection() {
                 ))}
               </ul>
 
-              <Button variant="hero-outline" size="default" asChild className="w-full mt-auto whitespace-normal text-center">
+              <Button variant="hero-outline" size="lg" asChild className="w-full mt-auto whitespace-normal text-center h-auto py-3">
                 <Link to={pathway.href}>
                   {pathway.cta}
                 </Link>
