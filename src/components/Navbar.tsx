@@ -60,7 +60,7 @@ const simpleNavLinks = [
   { label: "Engagement", href: "/engagement" },
   { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Partners", href: "/partners" },
+  { label: "Ecosystem", href: "/partners" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -80,7 +80,7 @@ export function Navbar() {
         >
           <button
             className={cn(
-              "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap py-2",
+              "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap py-2 px-1",
               location.pathname.startsWith(link.href) ? "text-primary" : "text-muted-foreground"
             )}
           >
@@ -113,7 +113,7 @@ export function Navbar() {
         key={link.href}
         to={link.href}
         className={cn(
-          "text-[13px] font-medium tracking-wide transition-colors hover:text-primary whitespace-nowrap py-2",
+          "text-[13px] font-medium tracking-wide transition-colors hover:text-primary whitespace-nowrap py-2 px-1",
           location.pathname === link.href ? "text-primary" : "text-muted-foreground"
         )}
       >
@@ -130,7 +130,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden xl:flex items-center gap-2 2xl:gap-4">
+        <div className="hidden xl:flex items-center gap-6 2xl:gap-8">
           {simpleNavLinks.slice(0, 3).map(renderDesktopLink)}
 
           {/* Solutions Mega-Menu */}
@@ -141,7 +141,7 @@ export function Navbar() {
           >
             <button
               className={cn(
-                "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap py-2",
+                "text-[13px] font-medium tracking-wide transition-colors hover:text-primary flex items-center gap-1 whitespace-nowrap py-2 px-1",
                 location.pathname.startsWith("/solutions") ? "text-primary" : "text-muted-foreground"
               )}
             >

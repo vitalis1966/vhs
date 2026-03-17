@@ -12,7 +12,7 @@ const footerLinks = {
     { label: "About", href: "/about" },
     { label: "How We Work", href: "/how-we-work" },
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Partners", href: "/partners" },
+    { label: "Ecosystem", href: "/partners" },
     { label: "Contact", href: "/contact" },
     { label: "Admin Login", href: "/admin/login" },
   ],
