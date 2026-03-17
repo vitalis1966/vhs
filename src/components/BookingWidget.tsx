@@ -20,7 +20,12 @@ interface DaySlots {
   slots: Slot[];
 }
 
-export default function BookingWidget() {
+interface BookingWidgetProps {
+  sessionId?: string;
+  bookedBy?: "client" | "admin";
+}
+
+export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProps) {
   const { toast } = useToast();
 
   const [days, setDays] = useState<DaySlots[]>([]);

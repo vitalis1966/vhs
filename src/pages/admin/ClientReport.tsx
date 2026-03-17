@@ -578,7 +578,7 @@ export default function ClientReport() {
             <h3 className="font-display text-xl font-bold text-foreground text-center">
               Ready to get started? Book a discovery call
             </h3>
-            <BookingWidget />
+            <BookingWidget sessionId={sessionId} bookedBy="admin" />
           </div>
 
           {/* Bottom Send button */}
