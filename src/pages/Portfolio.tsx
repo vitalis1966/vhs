@@ -40,24 +40,24 @@ interface CaseStudy {
 
 const caseStudies: CaseStudy[] = [
   {
-    id: "calgary-dermatology-nhsf",
-    title: "A Calgary dermatology group builds Alberta's newest CPSA-accredited surgical facility.",
-    tagline: "Three dermatologists. A shared vision for a procedural centre. Two years of planning compressed into a successful opening.",
+    id: "calgary-ent-surgical-build",
+    title: "A Calgary ENT and facial plastic surgery group builds a CPSA-accredited surgical centre — and opens ahead of projection.",
+    tagline: "Two surgeons. Twelve years of hospital-based practice. One shared facility they had been talking about for years.",
     location: "Calgary, Alberta",
-    type: ["New Build", "Technology"],
-    specialty: "Dermatology · NHSF",
-    size: "8,400 sq ft · 3 physicians · CPSA-accredited NHSF",
-    duration: "22 months — concept through opening",
-    gradient: "linear-gradient(135deg, hsl(155 35% 14%) 0%, hsl(152 32% 22%) 50%, hsl(150 25% 35%) 100%)",
-    overview: "Three Calgary dermatologists — two medical, one cosmetic — had been operating out of separate practices for years before deciding to build a shared procedural centre that could accommodate Mohs micrographic surgery, laser procedures, and cosmetic services under one roof. The vision was clear. The path to execution was not.\n\nThe proposed facility qualified as a Non-Hospital Surgical Facility under CPSA's framework — triggering a full accreditation requirement before a single patient could be seen. The group had no prior experience with NHSF development, had not worked together operationally, and had a combined lease expiry timeline that created real pressure on the development schedule.\n\nVitalis engaged at the feasibility stage — before any capital was committed — and coordinated the full development process from site selection through CPSA accreditation and opening day operations.",
-    challenge: "The group's initial financial model underestimated capital requirements by approximately 35%. Their preferred SE Calgary location required specific mechanical infrastructure that the proposed space could not accommodate. And the three physicians had not agreed on the governance structure, compensation model, or operational ownership model that would govern the practice once open — decisions that needed to be made before the lease was signed, not after.",
-    approach: "Vitalis rebuilt the financial model from scratch, incorporating NHSF-specific equipment costs, CPSA registration fees, accreditation preparation timelines, and working capital requirements through the pre-revenue period. A parallel site selection process identified an alternative location in the SW with the mechanical capacity needed for laser and surgical infrastructure.\n\nThe governance and compensation model was designed before the partnership agreement was drafted — giving the group's legal advisors a clear operational framework to translate into legal documentation. CPSA accreditation preparation ran concurrently with construction: policies, procedures, credentialing frameworks, and incident reporting protocols were all built and functional before the facility was physically complete.\n\nThe accreditation inspection was scheduled the week after construction handover.",
-    outcome: "The facility received CPSA accreditation on first assessment — no requirements list, no re-assessment. It opened six weeks ahead of the original projected timeline. All three physicians were operational within the first month. The facility's first-year patient volume exceeded the base-case financial model by 22%.",
-    services: ["Practice Feasibility & Financial Modeling", "NHSF Accreditation Preparation", "Site Selection & Lease Advisory", "Governance & Partnership Structure Design", "Technology & EMR Selection", "CPSA Compliance Documentation", "Operational Systems Design"],
+    type: ["New Build"],
+    specialty: "ENT · Facial Plastic Surgery",
+    size: "6,200 sq ft · 2 surgeons · CPSA-accredited NHSF",
+    duration: "19 months — concept through opening",
+    gradient: "linear-gradient(135deg, hsl(195 45% 15%) 0%, hsl(190 40% 22%) 50%, hsl(195 35% 18%) 100%)",
+    overview: "An ENT surgeon and a facial plastic surgeon — both with established hospital privileges in Calgary — had been discussing a shared procedural centre for years. The clinical rationale was clear: both practiced overlapping procedure types, shared a patient referral base, and operated under similar OR requirements. The financial case was equally clear once modelled. The operational path forward was not.\n\nNeither surgeon had developed an independent facility before. Both had full clinical schedules. And the facility they envisioned — a CPSA-accredited NHSF capable of performing functional endoscopic sinus surgery, septoplasty, rhinoplasty, and facial reconstruction procedures — required specific OR design, sterilization infrastructure, and documentation that neither had navigated before.\n\nVitalis engaged at the feasibility stage and coordinated the development process from the first market analysis through to CPSA accreditation and opening day.",
+    challenge: "The two surgeons had independently identified a space in the Beltline area of Calgary that both wanted to proceed with. The space had a structural limitation: the floor plate on the proposed level had insufficient ceiling height for the surgical lighting required for ENT and facial procedures. This was not identified in the initial walkthrough — it surfaced during Vitalis's facility specification review. Proceeding with that space would have required a costly variance that the building owner was not willing to accommodate.\n\nA second issue: the ownership and governance structure had not been defined. The two surgeons had discussed a 50/50 arrangement informally, but no legal or operational framework had been established — including how decisions about scheduling, expenses, and future service additions would be made.",
+    approach: "An alternative location in the Mission/17th Ave corridor was identified within three weeks — a medical-dental building with appropriate ceiling height, existing medical gas rough-in, and a landlord with experience accommodating healthcare tenants. Lease terms included a tenant improvement allowance that covered a significant portion of the specialized infrastructure costs.\n\nThe governance framework was built before the lease was signed: a cost-sharing agreement, a scheduling protocol, and a decision-making structure for shared expenses and service additions. The ownership structure was designed in coordination with the surgeons' legal counsel.\n\nCPSA accreditation preparation ran in parallel with construction — policies, procedures, credentialing frameworks, and incident reporting protocols were complete before the build was finished. The accreditation inspection was scheduled for the week of construction handover.",
+    outcome: "First-attempt CPSA accreditation — no requirements list. The facility opened four weeks ahead of the revised projection. In the first six months of operation, combined procedure volume exceeded the base-case financial model by 19%. Both surgeons reduced their hospital OR bookings within the first year.",
+    services: ["Practice Feasibility & Financial Modeling", "NHSF Accreditation Preparation", "Site Selection & Lease Advisory", "Governance & Partnership Structure Design", "Facility Design Input", "CPSA Compliance Documentation", "Operational Systems Design"],
     metrics: [
       { label: "First-attempt CPSA accreditation", value: "No requirements list", sublabel: "Passed on first assessment" },
-      { label: "6 weeks ahead of schedule", value: "Early opening", sublabel: "Original opening target exceeded" },
-      { label: "22% above base-case volume", value: "+22%", sublabel: "First full year of operations" },
+      { label: "4 weeks ahead of schedule", value: "Ahead of projection", sublabel: "Revised opening projection" },
+      { label: "19% above base-case volume", value: "+19%", sublabel: "First 6 months of operations" },
     ],
   },
   {
@@ -187,45 +187,45 @@ const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    id: "toronto-dental-specialty-revenue",
-    title: "A Toronto dental specialty group recovers lost revenue and opens a second location.",
-    tagline: "Strong clinical reputation. An insurance billing system that had been set up wrong in year one and never corrected.",
-    location: "Toronto, Ontario",
-    type: ["Revenue & Billing", "Growth"],
-    specialty: "Orthodontics · General Dentistry",
-    size: "2-location group · 3 dentists",
-    duration: "16 months",
-    gradient: "linear-gradient(135deg, hsl(25 55% 30%) 0%, hsl(28 50% 38%) 50%, hsl(35 50% 45%) 100%)",
-    overview: "A Toronto dental practice combining general dentistry and orthodontics had grown steadily over eight years to a two-dentist, one-orthodontist group operating from a single Etobicoke location. The practice had a loyal patient base and strong orthodontic patient volume. The owner-dentist had been considering a second location for three years but had not been able to build a financial case that satisfied him.\n\nThe revenue assessment changed that calculation entirely.",
-    challenge: "The practice's insurance billing workflow had been established by the founding dentist's spouse — who had no dental billing training — and had never been audited. Over eight years, a systematic error in how coordination of benefits was being processed had resulted in consistent underclaiming on patients with dual insurance coverage. A secondary issue: the orthodontic fee schedule had not been updated since 2019 and was running approximately 12% below current RCDSO-aligned market rates.\n\nThe financial model for a second location had been built on the practice's reported net collections — which were themselves understated due to the billing errors.",
-    approach: "Vitalis conducted a billing audit across 24 months of claims data, identifying the coordination of benefits error pattern and calculating the annualized impact. The billing workflow was restructured and the administrative team was trained on correct dual-insurance submission sequences. The orthodontic fee schedule was reviewed against current Ontario market benchmarks and updated.\n\nWith corrected revenue figures, the financial model for a second location was rebuilt. The economics supported expansion. Vitalis supported site selection for a second Etobicoke-area location and advised on the lease negotiation.",
-    outcome: "The billing corrections resulted in a 14% improvement in net monthly collections within 90 days — without any change to patient volume or clinical operations. The second location opened 11 months after the engagement began, using the corrected financial model as its planning basis. In its first six months, the second location performed within 8% of the financial projections.",
-    services: ["Revenue Cycle & Billing Audit", "Coordination of Benefits Correction", "Fee Schedule Review & Update", "Multi-Location Financial Modeling", "Site Selection Advisory", "Lease Negotiation Support"],
+    id: "calgary-allergy-immunology-build",
+    title: "A Calgary allergy and immunology clinic opens with the operational infrastructure that most new clinics build over years.",
+    tagline: "A single allergist. A clear clinical vision. And a financial model that almost didn't get built.",
+    location: "Calgary, Alberta",
+    type: ["New Build", "Revenue & Billing"],
+    specialty: "Allergy & Immunology",
+    size: "2,800 sq ft · 1 physician · CPSA-registered clinic",
+    duration: "13 months",
+    gradient: "linear-gradient(135deg, hsl(35 60% 22%) 0%, hsl(80 30% 28%) 50%, hsl(155 30% 25%) 100%)",
+    overview: "An allergist completing a fellowship in Calgary had a clear plan: open an independent allergy and immunology clinic serving both adult and pediatric patients, with on-site allergen immunotherapy, skin testing, and a structured asthma management program. The clinical model was well-defined. The business model required significant development.\n\nAllergy and immunology practices in Alberta have a specific billing profile — a mix of AHS fee-for-service for clinical visits, uninsured services for certain testing panels, and the operational complexity of managing immunotherapy programs that require regular patient attendance over 3–5 year periods. Most allergists entering private practice for the first time underestimate the revenue cycle complexity of this billing structure.",
+    challenge: "The physician's initial financial model projected first-year revenue based on a full panel of patients from month three onward. It did not account for the ramp-up period required to build a referral network from referring family physicians and pediatricians — who typically take 6–9 months to begin consistently sending patients to a new specialist. The projected break-even timeline was therefore approximately 8 months shorter than a realistic model would produce.\n\nThe clinic design also had an efficiency gap: the proposed layout placed the immunotherapy waiting and observation area on the opposite side of the space from the nursing station, creating a staffing model that required a second clinical staff member earlier than financially feasible.",
+    approach: "The financial model was rebuilt with realistic referral ramp assumptions based on comparable allergy practices in the Calgary market. A GP outreach and referral development strategy was built into the pre-opening operational plan — creating the referral pipeline before opening day rather than after.\n\nThe facility layout was redesigned to consolidate the immunotherapy observation area adjacent to the nursing station, reducing the clinical staffing requirement during the practice's first two years. The billing structure was mapped in full before opening: AHS billing codes, uninsured service fee schedules for testing panels, and a structured approach to managing immunotherapy billing over multi-year patient courses.",
+    outcome: "The clinic reached billing break-even one month ahead of the revised (realistic) financial model. Referral volume from GP partners was measurably higher than comparable solo specialist openings in the same market — attributed to the pre-opening outreach program. The immunotherapy program reached 40 active patients within the first year, providing a recurring revenue base that stabilized the practice's cash flow profile significantly earlier than the initial financial projections.",
+    services: ["New Practice Feasibility & Financial Modeling", "Facility Design Input", "Billing Structure Setup", "Referral Development Strategy", "Operational Systems Design", "Staff Recruitment Planning"],
     metrics: [
-      { label: "14% increase in net monthly collections", value: "+14%", sublabel: "Within 90 days of billing corrections" },
-      { label: "Second location opened in 11 months", value: "11 months", sublabel: "From engagement start" },
-      { label: "Within 8% of financial projections", value: "±8%", sublabel: "Second location first 6 months" },
+      { label: "Break-even on revised timeline", value: "1 month ahead", sublabel: "Realistic financial model" },
+      { label: "40 active immunotherapy patients", value: "40 patients", sublabel: "Within first year" },
+      { label: "Above-average referral volume", value: "Above market", sublabel: "GP outreach program outcome" },
     ],
   },
   {
-    id: "edmonton-surgical-centre-operations",
-    title: "An Edmonton surgical centre improves OR utilization by 23 percentage points without adding capacity.",
-    tagline: "A well-accredited NHSF with a utilization problem. The OR was there. The cases were not filling it.",
-    location: "Edmonton, Alberta",
+    id: "calgary-facial-plastics-expense",
+    title: "A Calgary facial plastic surgery practice reduces overhead by 31% and rebuilds its financial model for sustainable growth.",
+    tagline: "Strong clinical reputation. Revenue that looked good until the costs were modelled properly.",
+    location: "Calgary, Alberta",
     type: ["Operations", "Revenue & Billing"],
-    specialty: "General Surgery · Dermatology",
-    size: "NHSF · 2 ORs · AHS-contracted CSF",
-    duration: "9 months",
-    gradient: "linear-gradient(135deg, hsl(175 40% 28%) 0%, hsl(185 40% 35%) 50%, hsl(170 35% 38%) 100%)",
-    overview: "An Edmonton NHSF with two operating rooms and an AHS Chartered Surgical Facility contract for general surgery and dermatology procedures had been operating for three years. CPSA accreditation was current. The AHS contract was performing — but at 61% of contracted procedure volume. The facility was leaving AHS contract capacity unfilled while the physicians were citing scheduling and staffing constraints as the limiting factors.\n\nThe facility's leadership brought in Vitalis after an internal review failed to identify the root cause of the utilization gap.",
-    challenge: "The assessment identified three distinct problems compounding each other. First, the OR booking process was physician-driven and informal — each surgeon called the booking coordinator directly, with no standardized lead time requirements or block booking structure. This resulted in fragmented scheduling with significant gaps between cases that were visible in the schedule but not being used for add-on bookings.\n\nSecond, the case mix was skewed toward longer, lower-volume procedures that consumed OR time without generating proportionate AHS facility fees. The facility had been selecting cases based on physician preference rather than economic optimization.\n\nThird, anesthesia coverage had a single-provider dependency — when the primary anesthesiologist was unavailable, cases were cancelled rather than rescheduled to a backup provider, because no formal backup arrangement existed.",
-    approach: "A block booking structure was designed and implemented — replacing the ad hoc booking system with defined booking windows, standardized lead times by procedure type, and a structured add-on list managed by the booking coordinator. Case mix analysis produced an optimized procedure schedule that improved revenue per OR hour without reducing physician access.\n\nAn anesthesia backup agreement was negotiated with a second provider. Cancellation rates dropped immediately.",
-    outcome: "OR utilization increased from 61% to 84% over six months. AHS contract procedure volume reached 91% of the contracted maximum in month seven. Annual facility fee revenue increased by approximately $340,000 from the same physical infrastructure and physician complement.",
-    services: ["OR Utilization Assessment", "Block Booking System Design", "Case Mix Optimization", "Anesthesia Coverage Planning", "AHS Contract Performance Optimization", "Operational Systems Redesign"],
+    specialty: "Facial Plastic Surgery",
+    size: "Solo practitioner · mixed public and private-pay",
+    duration: "10 months",
+    gradient: "linear-gradient(135deg, hsl(270 30% 18%) 0%, hsl(265 25% 22%) 50%, hsl(225 25% 20%) 100%)",
+    overview: "A Calgary facial plastic surgeon had operated a well-regarded independent practice for seven years. Clinical outcomes were strong. Patient volume was above average. The practice had a mix of publicly insured reconstructive procedures and private-pay cosmetic surgeries — a billing structure that should have produced excellent financial performance.\n\nThe reality was a practice operating on thin margins despite strong revenue, with no clear picture of where the money was going or which services were actually profitable.",
+    challenge: "The practice had accumulated overhead across seven years of organic growth — staff who had been hired for specific tasks that were no longer the highest priority, a facility lease that had rolled to market rate without renegotiation, supply costs that had never been benchmarked against alternatives, and a cosmetic service pricing structure that had not been updated since the practice opened.\n\nThe publicly insured reconstructive side of the practice was also billing below what the AHS schedule permitted for several procedure codes — a systematic gap that had never been identified because the physician had no independent revenue cycle review.",
+    approach: "Vitalis conducted a full operational and financial assessment: staff role analysis, facility cost benchmarking, supply cost review, and a complete AHS billing audit across 18 months of claims. The billing audit identified four procedure codes being consistently under-billed, representing approximately $67,000 in recoverable annual revenue.\n\nThe cosmetic service fee schedule was rebuilt against current Calgary market rates for the same procedures. Three supply vendors were replaced with better-priced alternatives without compromising clinical specification. The staffing model was restructured — two part-time roles were consolidated into one full-time role with a broader scope — reducing labour cost while improving administrative coverage.",
+    outcome: "Total overhead reduction across the engagement: 31%. AHS billing corrections implemented within 60 days added $67,000 in annual revenue. The cosmetic fee schedule update increased average revenue per cosmetic case by 18%. The practice's net margin improved from 22% to 41% over the engagement period — a 19-point improvement without adding a single patient.",
+    services: ["Operational & Financial Assessment", "AHS Billing Revenue Cycle Review", "Cost Structure Analysis & Vendor Benchmarking", "Fee Schedule Review & Update", "Staffing Model Optimization", "Operations & Workflow Redesign"],
     metrics: [
-      { label: "61% → 84% OR utilization", value: "61→84%", sublabel: "Six months post-implementation" },
-      { label: "91% of AHS contract maximum", value: "91%", sublabel: "Month 7 procedure volume" },
-      { label: "~$340K additional annual revenue", value: "$340K", sublabel: "Same infrastructure, no new capacity" },
+      { label: "31% overhead reduction", value: "-31%", sublabel: "Total across all cost categories" },
+      { label: "$67K annual revenue recovered", value: "$67K", sublabel: "AHS billing corrections" },
+      { label: "22% → 41% net margin", value: "+19 pts", sublabel: "19-point improvement" },
     ],
   },
 ];
@@ -335,7 +335,7 @@ const Portfolio = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                   {/* Content overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 z-10">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-7 z-10">
                     <div className="flex gap-2 mb-3 flex-wrap">
                       {cs.type.map(t => (
                         <span key={t} className="text-xs font-medium bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur-sm">
@@ -346,7 +346,7 @@ const Portfolio = () => {
                         {cs.specialty}
                       </span>
                     </div>
-                    <h3 className="font-display text-lg lg:text-xl xl:text-2xl font-bold text-white leading-snug">
+                    <h3 className="font-display text-lg lg:text-xl xl:text-2xl font-bold text-white leading-snug mb-2">
                       {cs.title}
                     </h3>
                     <p className="mt-2 text-white/70 text-sm flex items-center gap-1.5">
