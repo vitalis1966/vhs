@@ -114,40 +114,30 @@ serve(async (req) => {
     const endTime = addMinutes(time, durationMinutes);
     const customerNotes = [organization, note].filter(Boolean).join(" — ");
 
+    // Use minimal payload — the Graph API v1.0 with app permissions
+    // is very strict about the shape. Use the legacy flat customer fields
+    // which are more reliable with application permissions.
     const appointmentBody = {
-      "@odata.type": "#microsoft.graph.bookingAppointment",
       serviceId,
       staffMemberIds,
       start: {
-        "@odata.type": "#microsoft.graph.dateTimeTimeZone",
-        dateTime: `${date}T${time}:00`,
+        dateTime: `${date}T${time}:00.0000000`,
         timeZone: "UTC",
       },
       end: {
-        "@odata.type": "#microsoft.graph.dateTimeTimeZone",
-        dateTime: `${date}T${endTime}:00`,
+        dateTime: `${date}T${endTime}:00.0000000`,
         timeZone: "UTC",
       },
-      customerEmailAddress: email,
       customerName: name,
+      customerEmailAddress: email,
       customerNotes,
-      customers: [
-        {
-          "@odata.type": "#microsoft.graph.bookingCustomerInformation",
-          name,
-          emailAddress: email,
-          notes: customerNotes,
-          timeZone: "UTC",
-        },
-      ],
       isLocationOnline: true,
-      optOutOfCustomerEmail: false,
     };
 
     console.log("Creating appointment:", JSON.stringify(appointmentBody));
 
     const apptRes = await fetch(
-      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/appointments`,
+      `https://graph.microsoft.com/beta/solutions/bookingBusinesses/${businessId}/appointments`,
       {
         method: "POST",
         headers: {
