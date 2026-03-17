@@ -20,10 +20,8 @@ import {
   Check,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
-
-// ATB logo: Upload to replace src="" on img#atb-logo — expected format: PNG or SVG, white or dark background version
-// Holland logo: Upload to replace src="" on img#holland-logo — expected format: PNG or SVG, white or dark background version
-// Alternatively, logos can be placed in /public/logos/ and referenced as src="/logos/atb.png" and src="/logos/holland.png"
+import atbLogo from "@/assets/atb-logo.png";
+import hollandLogo from "@/assets/holland-logo.svg";
 
 const ecosystemPartners = [
   { icon: Landmark, label: "Financial Institutions", angle: 0 },
@@ -273,9 +271,8 @@ const Partners = () => {
             <div className="grid lg:grid-cols-12 gap-0">
               <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-border/30">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-3">FINANCIAL PARTNER</p>
-                <div id="atb-logo-container" className="w-40 h-16 bg-background rounded-lg p-3 border border-border/30 flex items-center justify-center mb-4">
-                  <img id="atb-logo" src="" alt="ATB Financial" className="max-w-full max-h-full object-contain" />
-                  <span className="text-xs text-muted-foreground/50">Logo to be uploaded</span>
+                <div id="atb-logo-container" className="w-40 h-14 bg-background rounded-lg p-2 border border-border/30 flex items-center justify-center mb-4">
+                  <img id="atb-logo" src={atbLogo} alt="ATB Financial" className="max-w-full max-h-full object-contain" />
                 </div>
                 <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">ATB Financial</h3>
                 <p className="text-sm text-muted-foreground mt-2">Healthcare & Private Wealth</p>
@@ -299,9 +296,8 @@ const Partners = () => {
             <div className="grid lg:grid-cols-12 gap-0">
               <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-border/30">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-3">ARCHITECTURE & DESIGN</p>
-                <div id="holland-logo-container" className="w-40 h-16 bg-background rounded-lg p-3 border border-border/30 flex items-center justify-center mb-4">
-                  <img id="holland-logo" src="" alt="Holland Design" className="max-w-full max-h-full object-contain" />
-                  <span className="text-xs text-muted-foreground/50">Logo to be uploaded</span>
+                <div id="holland-logo-container" className="w-40 h-14 bg-background rounded-lg p-2 border border-border/30 flex items-center justify-center mb-4">
+                  <img id="holland-logo" src={hollandLogo} alt="Holland Design" className="max-w-full max-h-full object-contain" />
                 </div>
                 <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">Holland Design</h3>
                 <p className="text-sm text-muted-foreground mt-2">Healthcare Environments</p>
