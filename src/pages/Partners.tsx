@@ -33,42 +33,27 @@ const ecosystemPartners = [
   { icon: Briefcase, label: "Operational Consultants", angle: 300 },
 ];
 
-const coordinationProblems = [
+const ecosystemBenefits = [
   {
-    heading: "Facility design that doesn't match operations",
-    body: "Architects optimise for aesthetics and code compliance. They rarely know how a specific clinical model runs day-to-day. Without operational input during design, practices frequently open with layouts that create workflow problems they spend years trying to work around.",
+    icon: Users,
+    title: "One conversation",
+    body: "You speak to Vitalis. We bring in who you need, brief them on your goals, and keep everyone aligned. You do not manage a team of advisors — you have one strategic relationship.",
   },
   {
-    heading: "Technology selected after the building is built",
-    body: "EMR selection, network infrastructure, and medical gas requirements all have physical implications — conduit placement, room dimensions, power requirements. Selecting technology after construction decisions are locked in creates retrofitting costs that are consistently underestimated.",
+    icon: Target,
+    title: "Shared goals",
+    body: "Every specialist in the ecosystem understands the full picture — your practice model, your financial structure, your clinical vision. Decisions are made in context, not in isolation.",
   },
   {
-    heading: "Financial structure that doesn't match the operating model",
-    body: "How a practice is legally and financially structured affects everything from tax treatment to partnership entry to eventual sale value. Structures designed by a banker without legal and operational input frequently require expensive restructuring within 3–5 years.",
+    icon: Layers,
+    title: "Expertise that compounds",
+    body: "When your architect, banker, and legal advisor are all working from the same strategic plan, their individual expertise adds up to something more than the sum of its parts.",
   },
-];
-
-const statsStrip = [
-  { label: "Financial", desc: "Banking, capital planning & healthcare financing" },
-  { label: "Legal", desc: "Corporate structure, partnerships & transactions" },
-  { label: "Design", desc: "Healthcare facility planning & clinical environments" },
-  { label: "Technology", desc: "EMR, IT infrastructure & digital systems" },
-];
-
-const referralPoints = [
-  "You receive a name and phone number",
-  "Each advisor operates independently",
-  "Conflicts between advisors surface after the fact",
-  "You manage communication across 6+ relationships",
-  "No one is responsible for the integrated outcome",
-];
-
-const ecosystemPoints = [
-  "You engage one strategic relationship",
-  "All advisors are briefed on your goals and constraints",
-  "Decisions are reviewed for alignment before they're made",
-  "Vitalis manages the coordination layer",
-  "Vitalis is accountable for the strategic outcome",
+  {
+    icon: Shield,
+    title: "Accountable to your outcome",
+    body: "Vitalis holds accountability for the strategic result. Not just the advisory process — the actual outcome. That accountability shapes how the whole ecosystem operates.",
+  },
 ];
 
 const Partners = () => {
