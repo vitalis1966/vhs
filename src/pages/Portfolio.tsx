@@ -346,7 +346,7 @@ const Portfolio = () => {
                         {cs.specialty}
                       </span>
                     </div>
-                    <h3 className="font-display text-lg lg:text-xl xl:text-2xl font-bold text-white leading-snug">
+                    <h3 className="font-display text-lg lg:text-xl xl:text-2xl font-bold text-white leading-snug mb-2">
                       {cs.title}
                     </h3>
                     <p className="mt-2 text-white/70 text-sm flex items-center gap-1.5">
