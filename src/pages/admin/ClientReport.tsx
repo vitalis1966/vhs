@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import vitalisLogo from "@/assets/vitalis-logo.png";
+import BookingWidget from "@/components/BookingWidget";
 
 // ─── Text transformation ───────────────────────────────────────────────────────
 
