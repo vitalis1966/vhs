@@ -573,6 +573,14 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
+          {/* Booking CTA */}
+          <div className="no-print space-y-4">
+            <h3 className="font-display text-xl font-bold text-foreground text-center">
+              Ready to get started? Book a discovery call
+            </h3>
+            <BookingWidget />
+          </div>
+
           {/* Bottom Send button */}
           <div className="no-print flex justify-center pt-4 pb-8">
             <Button size="lg" onClick={() => setSendOpen(true)}>
