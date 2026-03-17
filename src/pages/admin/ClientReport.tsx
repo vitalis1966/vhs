@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import vitalisLogo from "@/assets/vitalis-logo.png";
+import BookingWidget from "@/components/BookingWidget";
 
 // ─── Text transformation ───────────────────────────────────────────────────────
 
@@ -571,6 +572,14 @@ export default function ClientReport() {
               </div>
             </ClientReportCard>
           )}
+
+          {/* Booking CTA */}
+          <div className="no-print space-y-4">
+            <h3 className="font-display text-xl font-bold text-foreground text-center">
+              Ready to get started? Book a discovery call
+            </h3>
+            <BookingWidget />
+          </div>
 
           {/* Bottom Send button */}
           <div className="no-print flex justify-center pt-4 pb-8">

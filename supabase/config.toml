@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.process-reminders]
 verify_jwt = false
+
+[functions.get-booking-slots]
+verify_jwt = false
+
+[functions.create-booking]
+verify_jwt = false
