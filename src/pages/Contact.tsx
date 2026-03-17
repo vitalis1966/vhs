@@ -68,10 +68,6 @@ const Contact = () => {
         </div>
       </section>
 
-      <a href="https://outlook.office.com/book/VitalisHealthServices@vitalisstrategies.com/?ismsaljsauthenabled">
-        Schedule online
-      </a>
-
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-[1fr_360px] gap-16">
