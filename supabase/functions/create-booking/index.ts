@@ -89,14 +89,17 @@ serve(async (req) => {
     // Note: Microsoft Bookings automatically sends confirmation emails to both
     // the customer and assigned staff when sendConfirmationToCustomer is true.
     const appointmentBody = {
+      "@odata.type": "#microsoft.graph.bookingAppointment",
       serviceId,
-      start: { dateTime: `${date}T${time}:00`, timeZone: "America/Toronto" },
-      end: { dateTime: `${date}T${endTime}:00`, timeZone: "America/Toronto" },
+      start: { "@odata.type": "#microsoft.graph.dateTimeTimeZone", dateTime: `${date}T${time}:00`, timeZone: "America/Toronto" },
+      end: { "@odata.type": "#microsoft.graph.dateTimeTimeZone", dateTime: `${date}T${endTime}:00`, timeZone: "America/Toronto" },
       customers: [
         {
+          "@odata.type": "#microsoft.graph.bookingCustomerInformation",
           name,
           emailAddress: email,
           notes: customerNotes,
+          timeZone: "America/Toronto",
         },
       ],
       isLocationOnline: true,
