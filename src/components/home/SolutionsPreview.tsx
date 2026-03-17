@@ -6,33 +6,33 @@ import { Building2, TrendingUp, Handshake, ArrowRight } from "lucide-react";
 const solutionTracks = [
   {
     icon: Building2,
-    label: "New Clinic Track",
-    title: "Solutions for New Clinics",
+    label: "New Practice Track",
+    title: "Solutions for New Practices",
     description:
-      "For physicians and healthcare entrepreneurs planning a new clinic, expansion, or healthcare venture, with support across development strategy, facility planning, operations design, and launch readiness.",
+      "For practitioners and healthcare entrepreneurs planning a new medical clinic, dental office, or veterinary facility, with support across development strategy, facility planning, operations design, and launch readiness.",
     bullets: [
-      "Clinic development strategy",
+      "Practice development strategy",
       "Facility planning and design coordination",
       "Operational design and staffing models",
       "Technology planning and launch support",
     ],
-    cta: "Planning a Clinic? Start Here",
-    href: "/solutions",
+    cta: "Planning a Practice? Start Here",
+    href: "/solutions/new-clinics",
   },
   {
     icon: TrendingUp,
     label: "Existing Practice Track",
-    title: "Solutions for Existing Clinics",
+    title: "Solutions for Existing Practices",
     description:
-      "For established practices seeking stronger performance through workflow optimization, staffing redesign, revenue cycle improvement, and technology modernization.",
+      "For established practices seeking an objective view of performance through workflow analysis, staffing review, revenue assessment, and technology evaluation.",
     bullets: [
-      "Workflow and patient flow optimization",
-      "Staff structure redesign",
-      "Revenue cycle performance improvement",
-      "Technology modernization",
+      "Workflow and patient flow analysis",
+      "Staff structure review",
+      "Revenue and billing assessment",
+      "Technology review",
     ],
-    cta: "Improve Your Practice",
-    href: "/solutions",
+    cta: "Learn About Our Assessment",
+    href: "/strategic-assessment/intake",
   },
   {
     icon: Handshake,
@@ -69,7 +69,7 @@ export function SolutionsPreview() {
             Clear entry points based on your priorities
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Whether you are planning a clinic, optimizing an existing practice, or seeking long-term strategic advisory, Vitalis provides structured solutions aligned to your stage.
+            Whether you are planning a practice, looking for an objective view of an existing one, or seeking long-term strategic advisory, Vitalis provides structured solutions aligned to your stage.
           </p>
         </motion.div>
 

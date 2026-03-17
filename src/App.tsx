@@ -23,12 +23,17 @@ import AssessmentList from "./pages/admin/AssessmentList";
 import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import SubmissionsDashboard from "./pages/admin/SubmissionsDashboard";
 import InternalReport from "./pages/admin/InternalReport";
+import ClientReport from "./pages/admin/ClientReport";
 import AssessmentImport from "./pages/admin/AssessmentImport";
 import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
 import Engagement from "./pages/Engagement";
 import MissionVision from "./pages/MissionVision";
 import HealthcareIT from "./pages/HealthcareIT";
+import Medical from "./pages/solutions/Medical";
+import Dental from "./pages/solutions/Dental";
+import Veterinary from "./pages/solutions/Veterinary";
+import NHSF from "./pages/solutions/NHSF";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +52,10 @@ const App = () => (
           <Route path="/solutions" element={<Solutions />} />
           <Route path="/solutions/new-clinics" element={<SolutionsNewClinics />} />
           <Route path="/solutions/existing-clinics" element={<SolutionsExistingClinics />} />
+          <Route path="/solutions/medical" element={<Medical />} />
+          <Route path="/solutions/dental" element={<Dental />} />
+          <Route path="/solutions/veterinary" element={<Veterinary />} />
+          <Route path="/solutions/nhsf" element={<NHSF />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/clinic-audit" element={<ClinicAudit />} />
           <Route path="/strategic-assessment" element={<StrategicAssessment />} />
@@ -61,6 +70,7 @@ const App = () => (
           <Route path="/admin/assessments/:id/import" element={<AdminGuard><AssessmentImport /></AdminGuard>} />
           <Route path="/admin/submissions" element={<AdminGuard><SubmissionsDashboard /></AdminGuard>} />
           <Route path="/admin/submissions/:sessionId" element={<AdminGuard><InternalReport /></AdminGuard>} />
+          <Route path="/admin/submissions/:sessionId/client-report" element={<AdminGuard><ClientReport /></AdminGuard>} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />

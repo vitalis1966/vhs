@@ -33,6 +33,8 @@ import {
   GripVertical,
   X,
   Upload,
+  Pencil,
+  Check,
 } from "lucide-react";
 
 interface SectionWithQuestions extends AssessmentSection {
@@ -52,6 +54,11 @@ export default function AssessmentEditor() {
   const [showNewSection, setShowNewSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState("");
   const [newSectionDesc, setNewSectionDesc] = useState("");
+
+  // Editing section name state
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const [editSectionTitle, setEditSectionTitle] = useState("");
+  const [editSectionDesc, setEditSectionDesc] = useState("");
 
   // Editing question state
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
@@ -125,6 +132,32 @@ export default function AssessmentEditor() {
     await (supabase.from("assessment_sections" as any).delete().eq("id", sId) as any);
     setSections(sections.filter((s) => s.id !== sId));
     toast({ title: "Section deleted" });
+  };
+
+  const startEditSection = (section: SectionWithQuestions, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSectionId(section.id);
+    setEditSectionTitle(section.title);
+    setEditSectionDesc(section.description || "");
+  };
+
+  const cancelEditSection = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSectionId(null);
+  };
+
+  const saveSection = async (sId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!editSectionTitle.trim()) return;
+    await (supabase.from("assessment_sections" as any).update({
+      title: editSectionTitle.trim(),
+      description: editSectionDesc.trim() || null,
+    }).eq("id", sId) as any);
+    setSections(sections.map((s) =>
+      s.id === sId ? { ...s, title: editSectionTitle.trim(), description: editSectionDesc.trim() || null } : s
+    ));
+    setEditingSectionId(null);
+    toast({ title: "Section updated" });
   };
 
   const moveSectionUp = async (idx: number) => {
@@ -308,67 +341,161 @@ export default function AssessmentEditor() {
                   {/* Section header */}
                   <div className="flex items-center gap-3 p-5 cursor-pointer" onClick={() => toggleSection(section.id)}>
                     <GripVertical className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-accent">Section {sIdx + 1}</span>
-                        <h3 className="font-display text-base font-bold text-foreground">{section.title}</h3>
-                        <Badge variant="secondary" className="text-[10px]">{section.questions.length} Q</Badge>
-                      </div>
-                      {section.description && <p className="text-xs text-muted-foreground mt-1">{section.description}</p>}
+                    <div className="flex-1 min-w-0">
+                      {editingSectionId === section.id ? (
+                        <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                          <Input
+                            value={editSectionTitle}
+                            onChange={(e) => setEditSectionTitle(e.target.value)}
+                            placeholder="Section title"
+                            className="h-8 text-sm font-bold"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveSection(section.id, e as any);
+                              if (e.key === "Escape") setEditingSectionId(null);
+                            }}
+                          />
+                          <Input
+                            value={editSectionDesc}
+                            onChange={(e) => setEditSectionDesc(e.target.value)}
+                            placeholder="Optional description"
+                            className="h-7 text-xs"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-accent">Section {sIdx + 1}</span>
+                            <h3 className="font-display text-base font-bold text-foreground">{section.title}</h3>
+                            <Badge variant="secondary" className="text-[10px]">{section.questions.length} Q</Badge>
+                          </div>
+                          {section.description && <p className="text-xs text-muted-foreground mt-1">{section.description}</p>}
+                        </>
+                      )}
                     </div>
                     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionUp(sIdx)} disabled={sIdx === 0}>
-                        <ArrowUp className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionDown(sIdx)} disabled={sIdx === sections.length - 1}>
-                        <ArrowDown className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteSection(section.id)}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                      {editingSectionId === section.id ? (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary" onClick={(e) => saveSection(section.id, e)}>
+                            <Check className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={cancelEditSection}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => startEditSection(section, e)}>
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionUp(sIdx)} disabled={sIdx === 0}>
+                            <ArrowUp className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSectionDown(sIdx)} disabled={sIdx === sections.length - 1}>
+                            <ArrowDown className="h-3 w-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteSection(section.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
                     </div>
-                    {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                    {editingSectionId !== section.id && (
+                      expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </div>
 
                   {/* Expanded content */}
                   {expanded && (
                     <div className="border-t border-border/40 p-5 space-y-3">
                       {section.questions.map((q, qIdx) => (
-                        <div key={q.id} className="bg-secondary/30 rounded-xl p-4 flex items-start gap-3">
-                          <div className="flex flex-col gap-1 flex-shrink-0 pt-1">
-                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionUp(section.id, qIdx)} disabled={qIdx === 0}>
-                              <ArrowUp className="h-2.5 w-2.5" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionDown(section.id, qIdx)} disabled={qIdx === section.questions.length - 1}>
-                              <ArrowDown className="h-2.5 w-2.5" />
-                            </Button>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-bold text-muted-foreground">Q{qIdx + 1}</span>
-                              <Badge variant="outline" className="text-[10px]">{q.field_type}</Badge>
-                              {q.is_required && <Badge variant="destructive" className="text-[10px]">Required</Badge>}
+                        <div key={q.id}>
+                          <div className="bg-secondary/30 rounded-xl p-4 flex items-start gap-3">
+                            <div className="flex flex-col gap-1 flex-shrink-0 pt-1">
+                              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionUp(section.id, qIdx)} disabled={qIdx === 0}>
+                                <ArrowUp className="h-2.5 w-2.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveQuestionDown(section.id, qIdx)} disabled={qIdx === section.questions.length - 1}>
+                                <ArrowDown className="h-2.5 w-2.5" />
+                              </Button>
                             </div>
-                            <p className="text-sm font-medium text-foreground">{q.question_text}</p>
-                            {q.helper_text && <p className="text-xs text-muted-foreground mt-0.5">{q.helper_text}</p>}
-                            {q.options && <p className="text-xs text-muted-foreground/60 mt-1">Options: {q.options.join(", ")}</p>}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-bold text-muted-foreground">Q{qIdx + 1}</span>
+                                <Badge variant="outline" className="text-[10px]">{q.field_type}</Badge>
+                                {q.is_required && <Badge variant="destructive" className="text-[10px]">Required</Badge>}
+                              </div>
+                              <p className="text-sm font-medium text-foreground">{q.question_text}</p>
+                              {q.helper_text && <p className="text-xs text-muted-foreground mt-0.5">{q.helper_text}</p>}
+                              {q.options && <p className="text-xs text-muted-foreground/60 mt-1">Options: {(q.options as string[]).join(", ")}</p>}
+                            </div>
+                            <div className="flex gap-1 flex-shrink-0">
+                              <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => startEditQuestion(q)}>Edit</Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteQuestion(section.id, q.id)}>
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => startEditQuestion(q)}>Edit</Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => deleteQuestion(section.id, q.id)}>
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+
+                          {/* Inline edit form for this question */}
+                          {editingQuestion === q.id && (
+                            <div className="bg-accent/5 rounded-xl p-5 border border-accent/20 space-y-4 mt-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-display text-sm font-bold text-foreground">Update Question</h4>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetQForm}>
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Question Text *</Label>
+                                <Input value={qForm.question_text} onChange={(e) => setQForm({ ...qForm, question_text: e.target.value })} maxLength={500} />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Helper Text</Label>
+                                <Input value={qForm.helper_text} onChange={(e) => setQForm({ ...qForm, helper_text: e.target.value })} maxLength={500} placeholder="Optional guidance text" />
+                              </div>
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label>Field Type</Label>
+                                  <Select value={qForm.field_type} onValueChange={(v) => setQForm({ ...qForm, field_type: v })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                      {FIELD_TYPES.map((ft) => (
+                                        <SelectItem key={ft.value} value={ft.value}>{ft.label}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Switch checked={qForm.is_required} onCheckedChange={(v) => setQForm({ ...qForm, is_required: v })} />
+                                  <Label>Required</Label>
+                                </div>
+                              </div>
+                              {needsOptions && (
+                                <div className="space-y-2">
+                                  <Label>Options (one per line)</Label>
+                                  <Textarea
+                                    value={qForm.options}
+                                    onChange={(e) => setQForm({ ...qForm, options: e.target.value })}
+                                    rows={4}
+                                    placeholder={"Option 1\nOption 2\nOption 3"}
+                                  />
+                                </div>
+                              )}
+                              <Button variant="hero" size="sm" onClick={() => saveQuestion(section.id)}>
+                                <Save className="mr-2 h-4 w-4" />
+                                Update Question
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
 
-                      {/* Editing / Adding question form */}
-                      {(editingQuestion && section.questions.some((q) => q.id === editingQuestion)) || addingToSection === section.id ? (
+                      {/* Add new question form */}
+                      {addingToSection === section.id ? (
                         <div className="bg-accent/5 rounded-xl p-5 border border-accent/20 space-y-4">
                           <div className="flex items-center justify-between">
-                            <h4 className="font-display text-sm font-bold text-foreground">
-                              {editingQuestion ? "Edit Question" : "New Question"}
-                            </h4>
+                            <h4 className="font-display text-sm font-bold text-foreground">New Question</h4>
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetQForm}>
                               <X className="h-4 w-4" />
                             </Button>
@@ -411,14 +538,16 @@ export default function AssessmentEditor() {
                           )}
                           <Button variant="hero" size="sm" onClick={() => saveQuestion(section.id)}>
                             <Save className="mr-2 h-4 w-4" />
-                            {editingQuestion ? "Update Question" : "Add Question"}
+                            Add Question
                           </Button>
                         </div>
                       ) : (
-                        <Button variant="outline" size="sm" onClick={() => startAddQuestion(section.id)} className="w-full">
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add Question
-                        </Button>
+                        !editingQuestion && (
+                          <Button variant="outline" size="sm" onClick={() => startAddQuestion(section.id)} className="w-full">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Question
+                          </Button>
+                        )
                       )}
                     </div>
                   )}

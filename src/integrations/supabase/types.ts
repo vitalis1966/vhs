@@ -365,6 +365,39 @@ export type Database = {
         }
         Relationships: []
       }
+      client_report_edits: {
+        Row: {
+          created_at: string | null
+          edited_text: string
+          id: string
+          item_index: number
+          original_text: string
+          section_key: string
+          session_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          edited_text: string
+          id?: string
+          item_index?: number
+          original_text: string
+          section_key: string
+          session_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          edited_text?: string
+          id?: string
+          item_index?: number
+          original_text?: string
+          section_key?: string
+          session_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       email_events: {
         Row: {
           created_at: string

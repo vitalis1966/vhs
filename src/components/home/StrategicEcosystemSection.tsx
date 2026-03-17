@@ -1,27 +1,66 @@
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Scale,
-  Briefcase,
   Building2,
-  Laptop2,
-  Home,
-  Landmark,
+  TrendingUp,
+  DollarSign,
+  Users,
+  Settings,
+  Laptop,
+  Handshake,
   ArrowRight,
 } from "lucide-react";
 
-const ecosystemPartners = [
-  { icon: Landmark, label: "Financial Institutions", angle: 0 },
-  { icon: Scale, label: "Legal Advisors", angle: 60 },
-  { icon: Building2, label: "Architecture & Design", angle: 120 },
-  { icon: Home, label: "Real Estate Advisors", angle: 180 },
-  { icon: Laptop2, label: "Healthcare Technology", angle: 240 },
-  { icon: Briefcase, label: "Operational Consultants", angle: 300 },
+const ecosystemNodes = [
+  { icon: Building2, label: "Facility Development", angle: 0 },
+  { icon: TrendingUp, label: "Growth Strategy", angle: 51.4 },
+  { icon: DollarSign, label: "Billing & Revenue", angle: 102.8 },
+  { icon: Users, label: "People & Recruitment", angle: 154.3 },
+  { icon: Settings, label: "Operations & Workflow", angle: 205.7 },
+  { icon: Laptop, label: "Digital & Technology", angle: 257.1 },
+  { icon: Handshake, label: "Transitions & Advisory", angle: 308.6 },
 ];
 
 export function StrategicEcosystemSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hubRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [lines, setLines] = useState<{ x1: number; y1: number; x2: number; y2: number }[]>([]);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  const recalcLines = useCallback(() => {
+    if (!containerRef.current || !hubRef.current) return;
+    const cRect = containerRef.current.getBoundingClientRect();
+    const hRect = hubRef.current.getBoundingClientRect();
+    const hubCenterX = hRect.left - cRect.left + hRect.width / 2;
+    const hubCenterY = hRect.top - cRect.top + hRect.height / 2;
+    setContainerSize({ width: cRect.width, height: cRect.height });
+
+    const newLines = nodeRefs.current.map((node) => {
+      if (!node) return { x1: hubCenterX, y1: hubCenterY, x2: hubCenterX, y2: hubCenterY };
+      const nRect = node.getBoundingClientRect();
+      return {
+        x1: hubCenterX,
+        y1: hubCenterY,
+        x2: nRect.left - cRect.left + nRect.width / 2,
+        y2: nRect.top - cRect.top + nRect.height / 2,
+      };
+    });
+    setLines(newLines);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(recalcLines, 100);
+    window.addEventListener("resize", recalcLines);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", recalcLines);
+    };
+  }, [recalcLines]);
+
   return (
-    <section className="py-24 lg:py-32 bg-background overflow-hidden">
+    <section className="py-16 lg:py-20 bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
         <motion.div
@@ -29,7 +68,7 @@ export function StrategicEcosystemSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-10"
+          className="text-center max-w-3xl mx-auto mb-6"
         >
           <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
             Strategic Ecosystem
@@ -44,10 +83,22 @@ export function StrategicEcosystemSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-center max-w-2xl mx-auto mb-20"
+          className="text-center max-w-2xl mx-auto mb-4"
         >
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Physicians launching or growing clinics often need financing partners, architects, legal advisors, technology vendors, and operational consultants. Vitalis works alongside you to coordinate trusted partners — ensuring decisions are aligned and projects move forward efficiently.
+            Practitioners launching or growing practices often need financing partners, architects, legal advisors, technology vendors, and operational consultants. Vitalis works alongside you to coordinate trusted partners — ensuring decisions are aligned and projects move forward efficiently.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
+          <p className="text-muted-foreground text-base italic">
+            Every component of your practice is connected. Our approach treats them that way.
           </p>
         </motion.div>
 
@@ -57,38 +108,31 @@ export function StrategicEcosystemSection() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative max-w-4xl mx-auto mb-20"
+          className="relative max-w-4xl mx-auto mb-16"
         >
           {/* Desktop: Circular Hub-and-Spoke */}
-          <div className="hidden lg:block relative h-[500px]">
-            {/* Connecting lines */}
-            <svg
-              className="absolute inset-0 w-full h-full"
-              viewBox="0 0 500 500"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              {ecosystemPartners.map((partner, i) => {
-                const angleRad = (partner.angle - 90) * (Math.PI / 180);
-                const x2 = 250 + Math.cos(angleRad) * 180;
-                const y2 = 250 + Math.sin(angleRad) * 180;
-                return (
-                  <motion.line
+          <div className="hidden lg:block relative h-[550px]" ref={containerRef}>
+            {/* SVG lines using measured coordinates */}
+            {containerSize.width > 0 && (
+              <svg
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                viewBox={`0 0 ${containerSize.width} ${containerSize.height}`}
+                preserveAspectRatio="none"
+              >
+                {lines.map((line, i) => (
+                  <line
                     key={i}
-                    x1="250"
-                    y1="250"
-                    x2={x2}
-                    y2={y2}
-                    stroke="hsl(var(--accent))"
+                    x1={line.x1}
+                    y1={line.y1}
+                    x2={line.x2}
+                    y2={line.y2}
+                    stroke="hsl(var(--primary))"
                     strokeWidth="2"
-                    strokeDasharray="6 4"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    whileInView={{ pathLength: 1, opacity: 0.4 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.1 }}
+                    opacity="0.6"
                   />
-                );
-              })}
-            </svg>
+                ))}
+              </svg>
+            )}
 
             {/* Center Hub - Vitalis */}
             <motion.div
@@ -97,21 +141,22 @@ export function StrategicEcosystemSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+              ref={hubRef}
             >
-              <div className="w-36 h-36 rounded-full bg-gradient-forest flex flex-col items-center justify-center text-primary-foreground shadow-elevated">
-                <span className="font-display text-xl font-bold">Vitalis</span>
+              <div className="w-40 h-40 rounded-full bg-primary flex flex-col items-center justify-center text-primary-foreground shadow-elevated">
+                <span className="font-display text-lg font-bold leading-tight text-center px-2">Vitalis Health Strategies</span>
                 <span className="text-xs uppercase tracking-wider opacity-80 mt-1">Strategic Hub</span>
               </div>
             </motion.div>
 
-            {/* Partner nodes */}
-            {ecosystemPartners.map((partner, i) => {
-              const angleRad = (partner.angle - 90) * (Math.PI / 180);
-              const x = 50 + Math.cos(angleRad) * 36; // percentage
-              const y = 50 + Math.sin(angleRad) * 36;
+            {/* Surrounding nodes */}
+            {ecosystemNodes.map((node, i) => {
+              const angleRad = (node.angle - 90) * (Math.PI / 180);
+              const x = 50 + Math.cos(angleRad) * 38;
+              const y = 50 + Math.sin(angleRad) * 38;
               return (
                 <motion.div
-                  key={partner.label}
+                  key={node.label}
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -122,13 +167,14 @@ export function StrategicEcosystemSection() {
                     top: `${y}%`,
                     transform: "translate(-50%, -50%)",
                   }}
+                  ref={(el) => { nodeRefs.current[i] = el; }}
                 >
-                  <div className="bg-card rounded-2xl p-5 shadow-card hover:shadow-elevated transition-all duration-300 border border-border/40 text-center min-w-[140px]">
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
-                      <partner.icon className="h-6 w-6 text-primary" />
+                  <div className="bg-card rounded-xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 border border-primary/30 text-center min-w-[160px]">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-2">
+                      <node.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-sm font-semibold text-foreground leading-tight block">
-                      {partner.label}
+                    <span className="text-sm font-medium text-foreground leading-tight block">
+                      {node.label}
                     </span>
                   </div>
                 </motion.div>
@@ -136,39 +182,52 @@ export function StrategicEcosystemSection() {
             })}
           </div>
 
-          {/* Mobile: Stacked layout with central hub */}
+          {/* Mobile: Vertical stacked list with connecting line */}
           <div className="lg:hidden">
+            {/* Hub badge at top */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="bg-gradient-forest rounded-2xl p-8 text-primary-foreground text-center mb-8 shadow-elevated"
+              className="flex justify-center mb-8"
             >
-              <span className="font-display text-2xl font-bold">Vitalis</span>
-              <span className="block text-xs uppercase tracking-wider opacity-80 mt-1 mb-3">
-                Strategic Hub
-              </span>
-              <p className="text-sm leading-relaxed opacity-85">
-                Coordinating trusted partners for your healthcare venture
-              </p>
+              <div className="bg-primary rounded-full px-6 py-3 text-primary-foreground shadow-elevated">
+                <span className="font-display text-base font-bold">Vitalis Health Strategies</span>
+                <span className="block text-xs uppercase tracking-wider opacity-80 text-center mt-0.5">
+                  Strategic Hub
+                </span>
+              </div>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {ecosystemPartners.map((partner, i) => (
-                <motion.div
-                  key={partner.label}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="bg-card rounded-xl p-4 shadow-soft border border-border/40 text-center"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-2">
-                    <partner.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground">{partner.label}</span>
-                </motion.div>
-              ))}
+            {/* Stacked cards with left connecting line */}
+            <div className="relative pl-8">
+              {/* Vertical connecting line */}
+              <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-primary/40" />
+
+              <div className="space-y-4">
+                {ecosystemNodes.map((node, i) => (
+                  <motion.div
+                    key={node.label}
+                    initial={{ opacity: 0, x: -15 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    className="relative"
+                  >
+                    {/* Dot on the line */}
+                    <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary border-2 border-background z-10" style={{ left: '-1.45rem' }} />
+                    {/* Horizontal connector */}
+                    <div className="absolute top-1/2 -translate-y-1/2 w-4 h-0.5 bg-primary/40" style={{ left: '-0.75rem' }} />
+
+                    <div className="bg-card rounded-xl p-4 shadow-soft border border-primary/20 flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                        <node.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{node.label}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

@@ -15,27 +15,27 @@ export function MnASection() {
             transition={{ duration: 0.6 }}
           >
             <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-              Mergers, Acquisitions & Exits
+              Mergers, Acquisitions & Transitions
             </p>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight leading-tight">
-              Curious about a potential sale?<br />
+              Considering a transition or partnership change?<br />
               <span className="text-gradient-primary">Let's discuss your opportunities.</span>
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed text-lg">
-              Vitalis Health Strategies facilitates acquisitions, mergers, and sales (exits) for medical directors of leading medical and surgical clinics across Canada.
+              Vitalis Health Strategies supports acquisitions, mergers, and transitions for practice leaders across Canada's medical, dental, and veterinary sectors.
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              We ensure you receive the maximum value while enhancing patient care and driving growth. By preserving your clinic's strengths and providing strategic operational support, we streamline the transaction process — allowing you to focus on what you do best and unlock your clinic's full potential.
+              We help practice owners navigate complex transactions with clarity — preserving what makes your practice strong while providing the strategic and operational support to move forward confidently.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/contact">
-                  Discuss a Transition
+                  Talk to a Transition Advisor
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="hero-outline" size="lg" asChild>
-                <Link to="/solutions">View M&A Services</Link>
+                <Link to="/contact">Learn About Our M&A Advisory</Link>
               </Button>
             </div>
           </motion.div>
@@ -50,7 +50,7 @@ export function MnASection() {
             <h3 className="font-display text-xl font-bold text-foreground mb-6">What we deliver</h3>
             <ul className="space-y-4">
               {[
-                { title: "Valuation & Market Analysis", desc: "Thorough financial analysis and market positioning to maximize sale value." },
+                { title: "Valuation & Market Analysis", desc: "Thorough financial analysis and market positioning to support informed decisions." },
                 { title: "Due Diligence Support", desc: "Comprehensive operational assessment and risk evaluation for buyers and sellers." },
                 { title: "Transaction Structuring", desc: "Deal structuring, negotiation support, and legal coordination." },
                 { title: "Post-Merger Integration", desc: "Aligning operations, cultures, and systems to realize full transaction value." },

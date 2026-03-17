@@ -15,12 +15,12 @@ const reasons = [
   {
     icon: Users,
     title: "Partnership, Not Transactions",
-    description: "We build long-term relationships. Many clients work with us across multiple stages — from their first clinic build through to eventual transition or sale.",
+    description: "We build long-term relationships. Many clients work with us across multiple stages — from their first practice build through to eventual transition.",
   },
   {
     icon: TrendingUp,
     title: "Deep Healthcare Focus",
-    description: "We don't consult across 20 industries. We focus exclusively on healthcare — clinics, surgical centers, physician groups, and healthcare businesses.",
+    description: "We don't consult across 20 industries. We focus exclusively on healthcare — medical, dental, and veterinary practices, surgical centers, and healthcare organizations.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function CredibilitySection() {
             <span className="text-gradient-primary">A strategic partner.</span>
           </h2>
           <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
-            Healthcare organizations face fragmented advice from disconnected specialists. We bridge that gap with integrated, full-lifecycle expertise.
+            Vitalis was founded by clinicians and healthcare executives who have built, run, and grown private practices — not just advised them. Our team includes experience across medical, dental, and veterinary operations. We understand the day-to-day realities of running a practice because we have lived them.
           </p>
         </motion.div>
 

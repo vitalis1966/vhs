@@ -124,6 +124,33 @@ const templates: Record<string, (data: any) => { subject: string; html: string }
     `,
   }),
 
+  client_report: (data) => ({
+    subject: data.subject_line || `Your Strategic Assessment Report — ${data.organization || data.client_name}`,
+    html: `
+      <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h2 style="color: #1a3a2a; font-size: 24px; margin: 0;">Vitalis Health Strategies</h2>
+          <div style="width: 60px; height: 2px; background: #c8a951; margin: 12px auto;"></div>
+        </div>
+        <div style="color: #333; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">${data.message_body || `Dear ${data.client_name},\n\nPlease find your strategic assessment report ready for review.`}</div>
+        ${data.report_url ? `
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.report_url}" style="display: inline-block; background: #1a3a2a; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+            View Your Report
+          </a>
+        </div>
+        ` : ""}
+        <p style="color: #666; font-size: 12px; margin-top: 40px; text-align: center;">
+          This report is confidential and prepared exclusively for ${data.organization || data.client_name}.
+        </p>
+        <p style="color: #666; font-size: 14px; margin-top: 20px;">
+          Warm regards,<br/>
+          <strong>Vitalis Health Strategies</strong>
+        </p>
+      </div>
+    `,
+  }),
+
   admin_notification: (data) => ({
     subject: `New Strategic Assessment Submitted — ${data.client_name}`,
     html: `

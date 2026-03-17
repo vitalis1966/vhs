@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const stages = [
   {
     label: "Vision & Concept",
-    description: "Exploring the opportunity for a new clinic or healthcare venture.",
+    description: "Exploring the opportunity for a new practice or healthcare venture.",
     isOngoing: false,
   },
   {
@@ -28,7 +28,7 @@ const stages = [
   },
   {
     label: "Grow & Expand",
-    description: "Adding services, physicians, or new locations.",
+    description: "Adding services, practitioners, or new locations.",
     isOngoing: false,
   },
   {
@@ -60,12 +60,12 @@ export function LifecycleSection() {
           </p>
         </motion.div>
 
-        {/* Lifecycle visual */}
-        <div className="relative max-w-5xl mx-auto">
+        {/* Lifecycle visual — full width, larger nodes */}
+        <div className="relative w-full">
           {/* Connecting line */}
-          <div className="hidden lg:block absolute top-7 left-[3.5rem] right-[3.5rem] h-px bg-border z-0" />
+          <div className="hidden lg:block absolute top-10 left-[4rem] right-[4rem] h-0.5 bg-border z-0" />
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-6 lg:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-6 lg:gap-8">
             {stages.map((stage, i) => (
               <motion.div
                 key={stage.label}
@@ -76,7 +76,7 @@ export function LifecycleSection() {
                 className="relative flex flex-col items-center text-center group"
               >
                 <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center font-display text-lg font-bold shadow-soft group-hover:shadow-elevated transition-all duration-300 relative z-10 ${
+                  className={`w-20 h-20 rounded-full flex items-center justify-center font-display text-2xl font-bold shadow-soft group-hover:shadow-elevated transition-all duration-300 relative z-10 ${
                     stage.isOngoing
                       ? "bg-gradient-forest text-primary-foreground ring-2 ring-accent/40 ring-offset-2 ring-offset-background"
                       : "bg-primary text-primary-foreground"
@@ -84,14 +84,10 @@ export function LifecycleSection() {
                 >
                   {stage.isOngoing ? "∞" : i + 1}
                 </div>
-                <h3
-                  className={`mt-4 font-display text-sm font-semibold ${
-                    stage.isOngoing ? "text-foreground" : "text-foreground"
-                  }`}
-                >
+                <h3 className="mt-4 font-display text-base font-bold text-foreground">
                   {stage.label}
                 </h3>
-                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
                   {stage.description}
                 </p>
                 {stage.isOngoing && (

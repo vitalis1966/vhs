@@ -3,21 +3,21 @@ import vitalisLogo from "@/assets/vitalis-logo.png";
 
 const footerLinks = {
   Solutions: [
-    { label: "New Clinic Builds", href: "/solutions" },
-    { label: "Operational Excellence", href: "/solutions" },
-    { label: "Revenue & Growth", href: "/solutions" },
-    { label: "M&A Advisory", href: "/solutions" },
+    { label: "New Practice Builds", href: "/solutions/new-clinics" },
+    { label: "Operational Excellence", href: "/solutions/existing-clinics" },
+    { label: "Revenue & Growth", href: "/clinic-audit" },
+    { label: "M&A Advisory", href: "/contact" },
   ],
   Company: [
     { label: "About", href: "/about" },
     { label: "How We Work", href: "/how-we-work" },
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Partners", href: "/partners" },
+    { label: "Ecosystem", href: "/partners" },
     { label: "Contact", href: "/contact" },
     { label: "Admin Login", href: "/admin/login" },
   ],
   Resources: [
-    { label: "Clinic Audit", href: "/clinic-audit" },
+    { label: "Strategic Assessment", href: "/strategic-assessment" },
     { label: "Insights", href: "/insights" },
   ],
 };
@@ -33,7 +33,7 @@ export function Footer() {
               <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" />
             </Link>
             <p className="mt-4 text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
-              Full-cycle inception-to-exit healthcare consulting. We partner with clinics and healthcare businesses through every stage of growth.
+              Full-cycle healthcare consulting for medical, dental, and veterinary practices. We partner with practices through every stage of growth.
             </p>
             <div className="mt-6 text-sm text-primary-foreground/60">
               <p>Calgary, Alberta, Canada</p>

@@ -26,17 +26,17 @@ export function FinalCtaSection() {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">
-                Book a Consultation
+                Speak With Our Team
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button variant="hero-outline" size="xl" asChild>
-              <Link to="/strategic-assessment/intake">Explore Your Practice Strategy</Link>
+              <Link to="/strategic-assessment">Start Your Strategic Assessment</Link>
             </Button>
           </div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-            <Link to="/solutions" className="hover:text-primary transition-colors">Explore Solutions →</Link>
+            <Link to="/solutions" className="hover:text-primary transition-colors">See Our Solutions →</Link>
             <Link to="/portfolio" className="hover:text-primary transition-colors">View Our Work →</Link>
             <Link to="/about" className="hover:text-primary transition-colors">About Vitalis →</Link>
           </div>
