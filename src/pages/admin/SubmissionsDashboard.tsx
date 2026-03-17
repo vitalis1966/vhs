@@ -280,7 +280,7 @@ export default function SubmissionsDashboard() {
                         {sub.client_name}
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} break-all`}>
                         {sub.client_email ? (
                           <a
                             href={`mailto:${sub.client_email}`}
