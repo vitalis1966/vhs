@@ -32,37 +32,6 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-/** Fetch the first service and its default duration (ISO 8601). */
-async function getServiceInfo(token: string, businessId: string): Promise<{ id: string; durationMinutes: number }> {
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Failed to fetch services (${res.status}): ${errText}`);
-  }
-
-  const data = await res.json();
-  const services = data.value || [];
-  if (services.length === 0) {
-    throw new Error("No services configured in Microsoft Bookings business");
-  }
-
-  const svc = services[0];
-  // defaultDuration is ISO 8601 duration like "PT30M" or "PT1H"
-  let durationMinutes = 30; // fallback
-  const dur = svc.defaultDuration as string | undefined;
-  if (dur) {
-    const hMatch = dur.match(/(\d+)H/);
-    const mMatch = dur.match(/(\d+)M/);
-    durationMinutes = (hMatch ? parseInt(hMatch[1]) * 60 : 0) + (mMatch ? parseInt(mMatch[1]) : 0);
-  }
-
-  return { id: svc.id, durationMinutes };
-}
-
 /** Add minutes to "HH:MM" and return "HH:MM". */
 function addMinutes(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
@@ -72,13 +41,40 @@ function addMinutes(time: string, minutes: number): string {
   return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
 
+/** Parse ISO 8601 duration like PT30M or PT1H into minutes. */
+function parseDuration(dur: string): number {
+  const hMatch = dur.match(/(\d+)H/);
+  const mMatch = dur.match(/(\d+)M/);
+  return (hMatch ? parseInt(hMatch[1]) * 60 : 0) + (mMatch ? parseInt(mMatch[1]) : 0) || 30;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { name, email, organization, date, time, note } = await req.json();
+    const { name, email, organization, date, time, note, debug } = await req.json();
+
+    const token = await getAccessToken();
+    const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
+
+    // Debug mode: return service + staff info to help diagnose
+    if (debug) {
+      const [svcRes, staffRes] = await Promise.all([
+        fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/staffMembers`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      const svcData = await svcRes.json();
+      const staffData = await staffRes.json();
+      return new Response(JSON.stringify({ services: svcData.value, staff: staffData.value }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!name || !email || !date || !time) {
       return new Response(JSON.stringify({ error: "Missing required fields: name, email, date, time" }), {
@@ -87,19 +83,33 @@ serve(async (req) => {
       });
     }
 
-    const token = await getAccessToken();
-    const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
-
-    const { id: serviceId, durationMinutes } = await getServiceInfo(token, businessId);
+    // Fetch service details
+    const svcRes = await fetch(
+      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!svcRes.ok) {
+      const errText = await svcRes.text();
+      throw new Error(`Failed to fetch services (${svcRes.status}): ${errText}`);
+    }
+    const svcData = await svcRes.json();
+    const services = svcData.value || [];
+    if (services.length === 0) throw new Error("No services configured in Microsoft Bookings business");
+    
+    const service = services[0];
+    const serviceId = service.id;
+    const durationMinutes = parseDuration(service.defaultDuration || "PT30M");
+    
+    // Get default staff member IDs from the service
+    const staffMemberIds: string[] = service.staffMemberIds || [];
 
     const endTime = addMinutes(time, durationMinutes);
     const customerNotes = [organization, note].filter(Boolean).join(" — ");
 
-    // Use the exact appointment shape that Microsoft Bookings expects.
-    // Key: start/end must match the service's configured duration.
     const appointmentBody = {
       "@odata.type": "#microsoft.graph.bookingAppointment",
       serviceId,
+      staffMemberIds,
       start: {
         "@odata.type": "#microsoft.graph.dateTimeTimeZone",
         dateTime: `${date}T${time}:00`,
@@ -117,12 +127,19 @@ serve(async (req) => {
           emailAddress: email,
           notes: customerNotes,
           timeZone: "America/Toronto",
+          customQuestionAnswers: [],
+          location: {
+            "@odata.type": "#microsoft.graph.location",
+            displayName: "",
+            locationType: "default",
+          },
         },
       ],
       isLocationOnline: true,
+      optOutOfCustomerEmail: false,
     };
 
-    console.log("Creating appointment with body:", JSON.stringify(appointmentBody));
+    console.log("Creating appointment:", JSON.stringify(appointmentBody));
 
     const apptRes = await fetch(
       `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/appointments`,
