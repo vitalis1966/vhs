@@ -20,10 +20,8 @@ import {
   Check,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
-
-// ATB logo: Upload to replace src="" on img#atb-logo — expected format: PNG or SVG, white or dark background version
-// Holland logo: Upload to replace src="" on img#holland-logo — expected format: PNG or SVG, white or dark background version
-// Alternatively, logos can be placed in /public/logos/ and referenced as src="/logos/atb.png" and src="/logos/holland.png"
+import atbLogo from "@/assets/atb-logo.png";
+import hollandLogo from "@/assets/holland-logo.svg";
 
 const ecosystemPartners = [
   { icon: Landmark, label: "Financial Institutions", angle: 0 },
