@@ -137,47 +137,6 @@ const Partners = () => {
         </div>
       </section>
 
-      {/* SECTION 2 — The Coordination Problem */}
-      <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Why coordination matters more than any individual advisor.
-            </h2>
-            <p className="mt-4 text-muted-foreground text-lg max-w-3xl mx-auto">
-              The most expensive mistakes in healthcare development happen at the handoffs — where one advisor's decisions conflict with another's.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {coordinationProblems.map((problem, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40"
-              >
-                <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-5">
-                  <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">{problem.heading}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{problem.body}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center text-muted-foreground italic max-w-3xl mx-auto leading-relaxed"
-          >
-            Vitalis sits at the intersection of all of these decisions — not as a referral service, but as a coordinator with enough operational knowledge to catch misalignments before they become expensive.
-          </motion.p>
-        </div>
-      </section>
 
       {/* SECTION 3 — Hub Visual */}
       <section className="py-20 lg:py-28 bg-gradient-section overflow-hidden">
