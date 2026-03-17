@@ -61,12 +61,15 @@ const fadeUp = {
 const cellClass = "text-sm px-3 py-3 align-middle";
 const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-muted-foreground";
 
-function getStatusLabel(practiceType: string | null, lifecycleStatus: string | null): string {
-  if (practiceType) {
-    if (/exist/i.test(practiceType)) return "Existing Practice";
-    if (/new/i.test(practiceType)) return "New Practice";
+function getStatusInfo(assessmentPurpose: string | null): { label: string; color: string } {
+  const val = (assessmentPurpose || "").trim().toLowerCase();
+  if (val.includes("building a new") || val.includes("planning a new") || val.includes("exploring a new")) {
+    return { label: "New Practice", color: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100" };
   }
-  return "Assessment";
+  if (val.includes("establishing healthcare it") || val.includes("improving existing healthcare it")) {
+    return { label: "Healthcare IT", color: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100" };
+  }
+  return { label: "Existing Practice", color: "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100" };
 }
 
 export default function SubmissionsDashboard() {
