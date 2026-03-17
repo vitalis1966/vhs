@@ -33,6 +33,13 @@ const ecosystemPartners = [
   { icon: Briefcase, label: "Operational Consultants", angle: 300 },
 ];
 
+const statsStrip = [
+  { label: "Financial", desc: "Banking, capital planning & healthcare financing" },
+  { label: "Legal", desc: "Corporate structure, partnerships & transactions" },
+  { label: "Design", desc: "Healthcare facility planning & clinical environments" },
+  { label: "Technology", desc: "EMR, IT infrastructure & digital systems" },
+];
+
 const ecosystemBenefits = [
   {
     icon: Users,
