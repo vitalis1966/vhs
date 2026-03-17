@@ -23,6 +23,7 @@ import AssessmentList from "./pages/admin/AssessmentList";
 import AssessmentEditor from "./pages/admin/AssessmentEditor";
 import SubmissionsDashboard from "./pages/admin/SubmissionsDashboard";
 import InternalReport from "./pages/admin/InternalReport";
+import ClientReport from "./pages/admin/ClientReport";
 import AssessmentImport from "./pages/admin/AssessmentImport";
 import Portfolio from "./pages/Portfolio";
 import Partners from "./pages/Partners";
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/admin/assessments/:id/import" element={<AdminGuard><AssessmentImport /></AdminGuard>} />
           <Route path="/admin/submissions" element={<AdminGuard><SubmissionsDashboard /></AdminGuard>} />
           <Route path="/admin/submissions/:sessionId" element={<AdminGuard><InternalReport /></AdminGuard>} />
+          <Route path="/admin/submissions/:sessionId/client-report" element={<AdminGuard><ClientReport /></AdminGuard>} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />
