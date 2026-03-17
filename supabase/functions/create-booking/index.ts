@@ -121,26 +121,23 @@ serve(async (req) => {
       start: {
         "@odata.type": "#microsoft.graph.dateTimeTimeZone",
         dateTime: `${date}T${time}:00`,
-        timeZone: "America/Toronto",
+        timeZone: "UTC",
       },
       end: {
         "@odata.type": "#microsoft.graph.dateTimeTimeZone",
         dateTime: `${date}T${endTime}:00`,
-        timeZone: "America/Toronto",
+        timeZone: "UTC",
       },
+      customerEmailAddress: email,
+      customerName: name,
+      customerNotes,
       customers: [
         {
           "@odata.type": "#microsoft.graph.bookingCustomerInformation",
           name,
           emailAddress: email,
           notes: customerNotes,
-          timeZone: "America/Toronto",
-          customQuestionAnswers: [],
-          location: {
-            "@odata.type": "#microsoft.graph.location",
-            displayName: "",
-            locationType: "default",
-          },
+          timeZone: "UTC",
         },
       ],
       isLocationOnline: true,
