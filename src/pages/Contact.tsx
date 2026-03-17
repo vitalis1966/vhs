@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import BookingWidget from "@/components/BookingWidget";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
