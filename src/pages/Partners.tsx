@@ -13,11 +13,12 @@ import {
   Landmark,
   Briefcase,
   CheckCircle,
-  AlertTriangle,
   Settings,
   MapPin,
-  X,
-  Check,
+  Users,
+  Target,
+  Layers,
+  Shield,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 import atbLogo from "@/assets/atb-logo.png";
