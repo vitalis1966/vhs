@@ -373,7 +373,7 @@ export default function SubmissionsDashboard() {
                         </Button>
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-4`}>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
