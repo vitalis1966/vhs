@@ -13,11 +13,12 @@ import {
   Landmark,
   Briefcase,
   CheckCircle,
-  AlertTriangle,
   Settings,
   MapPin,
-  X,
-  Check,
+  Users,
+  Target,
+  Layers,
+  Shield,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 import atbLogo from "@/assets/atb-logo.png";
@@ -32,21 +33,6 @@ const ecosystemPartners = [
   { icon: Briefcase, label: "Operational Consultants", angle: 300 },
 ];
 
-const coordinationProblems = [
-  {
-    heading: "Facility design that doesn't match operations",
-    body: "Architects optimise for aesthetics and code compliance. They rarely know how a specific clinical model runs day-to-day. Without operational input during design, practices frequently open with layouts that create workflow problems they spend years trying to work around.",
-  },
-  {
-    heading: "Technology selected after the building is built",
-    body: "EMR selection, network infrastructure, and medical gas requirements all have physical implications — conduit placement, room dimensions, power requirements. Selecting technology after construction decisions are locked in creates retrofitting costs that are consistently underestimated.",
-  },
-  {
-    heading: "Financial structure that doesn't match the operating model",
-    body: "How a practice is legally and financially structured affects everything from tax treatment to partnership entry to eventual sale value. Structures designed by a banker without legal and operational input frequently require expensive restructuring within 3–5 years.",
-  },
-];
-
 const statsStrip = [
   { label: "Financial", desc: "Banking, capital planning & healthcare financing" },
   { label: "Legal", desc: "Corporate structure, partnerships & transactions" },
@@ -54,20 +40,27 @@ const statsStrip = [
   { label: "Technology", desc: "EMR, IT infrastructure & digital systems" },
 ];
 
-const referralPoints = [
-  "You receive a name and phone number",
-  "Each advisor operates independently",
-  "Conflicts between advisors surface after the fact",
-  "You manage communication across 6+ relationships",
-  "No one is responsible for the integrated outcome",
-];
-
-const ecosystemPoints = [
-  "You engage one strategic relationship",
-  "All advisors are briefed on your goals and constraints",
-  "Decisions are reviewed for alignment before they're made",
-  "Vitalis manages the coordination layer",
-  "Vitalis is accountable for the strategic outcome",
+const ecosystemBenefits = [
+  {
+    icon: Users,
+    title: "One conversation",
+    body: "You speak to Vitalis. We bring in who you need, brief them on your goals, and keep everyone aligned. You do not manage a team of advisors — you have one strategic relationship.",
+  },
+  {
+    icon: Target,
+    title: "Shared goals",
+    body: "Every specialist in the ecosystem understands the full picture — your practice model, your financial structure, your clinical vision. Decisions are made in context, not in isolation.",
+  },
+  {
+    icon: Layers,
+    title: "Expertise that compounds",
+    body: "When your architect, banker, and legal advisor are all working from the same strategic plan, their individual expertise adds up to something more than the sum of its parts.",
+  },
+  {
+    icon: Shield,
+    title: "Accountable to your outcome",
+    body: "Vitalis holds accountability for the strategic result. Not just the advisory process — the actual outcome. That accountability shapes how the whole ecosystem operates.",
+  },
 ];
 
 const Partners = () => {
@@ -151,47 +144,6 @@ const Partners = () => {
         </div>
       </section>
 
-      {/* SECTION 2 — The Coordination Problem */}
-      <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
-              Why coordination matters more than any individual advisor.
-            </h2>
-            <p className="mt-4 text-muted-foreground text-lg max-w-3xl mx-auto">
-              The most expensive mistakes in healthcare development happen at the handoffs — where one advisor's decisions conflict with another's.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {coordinationProblems.map((problem, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-card rounded-2xl p-7 shadow-soft border border-border/40"
-              >
-                <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-5">
-                  <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">{problem.heading}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{problem.body}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center text-muted-foreground italic max-w-3xl mx-auto leading-relaxed"
-          >
-            Vitalis sits at the intersection of all of these decisions — not as a referral service, but as a coordinator with enough operational knowledge to catch misalignments before they become expensive.
-          </motion.p>
-        </div>
-      </section>
 
       {/* SECTION 3 — Hub Visual */}
       <section className="py-20 lg:py-28 bg-gradient-section overflow-hidden">
@@ -366,39 +318,34 @@ const Partners = () => {
         </div>
       </section>
 
-      {/* SECTION 6 — Why This Model Works */}
+      {/* SECTION 6 — One Ecosystem */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">The difference between coordination and referral.</h2>
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">ONE ECOSYSTEM</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Built together. Aligned from the start.</h2>
+            <p className="mt-4 text-muted-foreground text-lg max-w-3xl mx-auto">
+              The Vitalis ecosystem is not a referral network. ATB Financial, Holland Design, Field Law, and our extended network of specialists work alongside Vitalis on a shared foundation — each bringing their expertise to your project with full awareness of what everyone else is doing.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-            {/* Referral Column */}
-            <div className="bg-muted/50 rounded-2xl p-8 border border-border/40">
-              <h3 className="font-display text-xl font-bold text-muted-foreground mb-6">A referral</h3>
-              <ul className="space-y-4">
-                {referralPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <X className="h-5 w-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground leading-relaxed">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Ecosystem Column */}
-            <div className="bg-accent/10 rounded-2xl p-8 border border-accent/30">
-              <h3 className="font-display text-xl font-bold text-accent mb-6">The Vitalis ecosystem</h3>
-              <ul className="space-y-4">
-                {ecosystemPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground leading-relaxed">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {ecosystemBenefits.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card rounded-2xl p-7 shadow-sm border border-border/40"
+              >
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
+                  <item.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground mb-3">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
