@@ -43,10 +43,9 @@ interface SubmissionRow {
   client_name: string;
   client_email: string;
   organization: string;
-  practice_type: string | null;
+  assessment_purpose: string | null;
   report_id: string | null;
   analysis_status: string | null;
-  lifecycle_status: string | null;
   client_report_sent: boolean;
   has_client_report: boolean;
   meeting_booked: boolean;
@@ -62,12 +61,15 @@ const fadeUp = {
 const cellClass = "text-sm px-3 py-3 align-middle";
 const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-muted-foreground";
 
-function getStatusLabel(practiceType: string | null, lifecycleStatus: string | null): string {
-  if (practiceType) {
-    if (/exist/i.test(practiceType)) return "Existing Practice";
-    if (/new/i.test(practiceType)) return "New Practice";
+function getStatusInfo(assessmentPurpose: string | null): { label: string; color: string } {
+  const val = (assessmentPurpose || "").trim().toLowerCase();
+  if (val.includes("building a new") || val.includes("planning a new") || val.includes("exploring a new")) {
+    return { label: "New Practice", color: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100" };
   }
-  return "Assessment";
+  if (val.includes("establishing healthcare it") || val.includes("improving existing healthcare it")) {
+    return { label: "Healthcare IT", color: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100" };
+  }
+  return { label: "Existing Practice", color: "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100" };
 }
 
 export default function SubmissionsDashboard() {
@@ -108,21 +110,19 @@ export default function SubmissionsDashboard() {
       let clientName = "Unknown";
       let clientEmail = "";
       let organization = "—";
-      let lifecycleStatus: string | null = null;
-      let practiceType: string | null = null;
+      let assessmentPurpose: string | null = null;
 
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, email, organization_name, lifecycle_status, practice_type")
+          .select("full_name, email, organization_name, assessment_purpose")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
           clientName = intake.full_name || "Unknown";
           clientEmail = intake.email || "";
           organization = intake.organization_name || "—";
-          lifecycleStatus = intake.lifecycle_status || null;
-          practiceType = intake.practice_type || null;
+          assessmentPurpose = intake.assessment_purpose || null;
         }
       }
 
@@ -151,10 +151,9 @@ export default function SubmissionsDashboard() {
         client_name: clientName,
         client_email: clientEmail,
         organization,
-        practice_type: practiceType,
+        assessment_purpose: assessmentPurpose,
         report_id: report?.id || null,
         analysis_status: report?.analysis_status || null,
-        lifecycle_status: lifecycleStatus,
         client_report_sent: clientReportSent,
         has_client_report: report?.analysis_status === "complete",
         meeting_booked: sess.meeting_booked || false,
@@ -265,9 +264,9 @@ export default function SubmissionsDashboard() {
                     <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Meeting</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Internal</TableHead>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Analysis</TableHead>
-                    <TableHead className={headClass} style={{ width: "4%" }}></TableHead>
+                    <TableHead className={`${headClass} pl-6`} style={{ width: "8%" }}>Client</TableHead>
+                    <TableHead className={`${headClass} pl-4`} style={{ width: "8%" }}>Analysis</TableHead>
+                    <TableHead className={`${headClass} pl-4`} style={{ width: "4%" }}></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -299,9 +298,14 @@ export default function SubmissionsDashboard() {
                       </TableCell>
 
                       <TableCell className={cellClass}>
-                        <Badge variant="secondary" className="whitespace-nowrap">
-                          {getStatusLabel(sub.practice_type, sub.lifecycle_status)}
-                        </Badge>
+                        {(() => {
+                          const status = getStatusInfo(sub.assessment_purpose);
+                          return (
+                            <Badge className={`${status.color} whitespace-nowrap`}>
+                              {status.label}
+                            </Badge>
+                          );
+                        })()}
                       </TableCell>
 
                       <TableCell className={`${cellClass} text-center`}>
@@ -340,7 +344,7 @@ export default function SubmissionsDashboard() {
                         )}
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-6`}>
                         {sub.has_client_report ? (
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2 whitespace-nowrap" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}/client-report`}>
@@ -352,7 +356,7 @@ export default function SubmissionsDashboard() {
                         )}
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-4`}>
                         <Button
                           variant="outline"
                           size="sm"
@@ -369,7 +373,7 @@ export default function SubmissionsDashboard() {
                         </Button>
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-4`}>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
