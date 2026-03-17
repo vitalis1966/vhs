@@ -43,10 +43,9 @@ interface SubmissionRow {
   client_name: string;
   client_email: string;
   organization: string;
-  practice_type: string | null;
+  assessment_purpose: string | null;
   report_id: string | null;
   analysis_status: string | null;
-  lifecycle_status: string | null;
   client_report_sent: boolean;
   has_client_report: boolean;
   meeting_booked: boolean;
