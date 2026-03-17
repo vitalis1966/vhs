@@ -155,7 +155,25 @@ export default function InternalReport() {
     setRerunning(false);
   };
 
-  const analysis = report?.analysis_data || {};
+  const analysis = (() => {
+    let data = report?.analysis_data || {};
+    // The AI sometimes stores the full JSON response inside executive_summary with markdown fences
+    if (data.executive_summary && typeof data.executive_summary === "string") {
+      const es = data.executive_summary.trim();
+      if (es.startsWith("```") || es.startsWith("{")) {
+        try {
+          const clean = es.replace(/```json\s*|```/g, "").trim();
+          const parsed = JSON.parse(clean);
+          console.log("[InternalReport] Parsed structured data from executive_summary string");
+          // Merge parsed fields back, preserving any top-level fields not in parsed
+          data = { ...data, ...parsed, executive_summary: parsed.executive_summary || "" };
+        } catch (e) {
+          console.error("[InternalReport] Failed to parse executive_summary JSON:", e);
+        }
+      }
+    }
+    return data;
+  })();
 
   const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—";
