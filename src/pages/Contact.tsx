@@ -69,6 +69,12 @@ const Contact = () => {
         </div>
       </section>
 
+      <section className="py-12 bg-muted/20">
+        <div className="container mx-auto px-4 lg:px-8 max-w-2xl">
+          <BookingWidget />
+        </div>
+      </section>
+
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-[1fr_360px] gap-16">
