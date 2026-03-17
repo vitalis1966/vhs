@@ -32,8 +32,8 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-/** Fetch the first available service ID from the booking business dynamically. */
-async function getServiceId(token: string, businessId: string): Promise<string> {
+/** Fetch the first service and its default duration (ISO 8601). */
+async function getServiceInfo(token: string, businessId: string): Promise<{ id: string; durationMinutes: number }> {
   const res = await fetch(
     `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`,
     { headers: { Authorization: `Bearer ${token}` } }
@@ -50,10 +50,20 @@ async function getServiceId(token: string, businessId: string): Promise<string> 
     throw new Error("No services configured in Microsoft Bookings business");
   }
 
-  return services[0].id;
+  const svc = services[0];
+  // defaultDuration is ISO 8601 duration like "PT30M" or "PT1H"
+  let durationMinutes = 30; // fallback
+  const dur = svc.defaultDuration as string | undefined;
+  if (dur) {
+    const hMatch = dur.match(/(\d+)H/);
+    const mMatch = dur.match(/(\d+)M/);
+    durationMinutes = (hMatch ? parseInt(hMatch[1]) * 60 : 0) + (mMatch ? parseInt(mMatch[1]) : 0);
+  }
+
+  return { id: svc.id, durationMinutes };
 }
 
-/** Calculate end time by adding 30 minutes to start time string (HH:MM). */
+/** Add minutes to "HH:MM" and return "HH:MM". */
 function addMinutes(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
   const totalMin = h * 60 + m + minutes;
@@ -80,19 +90,26 @@ serve(async (req) => {
     const token = await getAccessToken();
     const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
 
-    // Dynamically retrieve the first available service ID
-    const serviceId = await getServiceId(token, businessId);
+    const { id: serviceId, durationMinutes } = await getServiceInfo(token, businessId);
 
-    const endTime = addMinutes(time, 30);
+    const endTime = addMinutes(time, durationMinutes);
     const customerNotes = [organization, note].filter(Boolean).join(" — ");
 
-    // Note: Microsoft Bookings automatically sends confirmation emails to both
-    // the customer and assigned staff when sendConfirmationToCustomer is true.
+    // Use the exact appointment shape that Microsoft Bookings expects.
+    // Key: start/end must match the service's configured duration.
     const appointmentBody = {
       "@odata.type": "#microsoft.graph.bookingAppointment",
       serviceId,
-      start: { "@odata.type": "#microsoft.graph.dateTimeTimeZone", dateTime: `${date}T${time}:00`, timeZone: "America/Toronto" },
-      end: { "@odata.type": "#microsoft.graph.dateTimeTimeZone", dateTime: `${date}T${endTime}:00`, timeZone: "America/Toronto" },
+      start: {
+        "@odata.type": "#microsoft.graph.dateTimeTimeZone",
+        dateTime: `${date}T${time}:00`,
+        timeZone: "America/Toronto",
+      },
+      end: {
+        "@odata.type": "#microsoft.graph.dateTimeTimeZone",
+        dateTime: `${date}T${endTime}:00`,
+        timeZone: "America/Toronto",
+      },
       customers: [
         {
           "@odata.type": "#microsoft.graph.bookingCustomerInformation",
@@ -105,7 +122,8 @@ serve(async (req) => {
       isLocationOnline: true,
     };
 
-    // Permissions required: BookingsAppointment.ReadWrite.All
+    console.log("Creating appointment with body:", JSON.stringify(appointmentBody));
+
     const apptRes = await fetch(
       `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/appointments`,
       {
