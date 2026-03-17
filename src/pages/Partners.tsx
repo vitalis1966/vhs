@@ -311,39 +311,34 @@ const Partners = () => {
         </div>
       </section>
 
-      {/* SECTION 6 — Why This Model Works */}
+      {/* SECTION 6 — One Ecosystem */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">The difference between coordination and referral.</h2>
+            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">ONE ECOSYSTEM</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Built together. Aligned from the start.</h2>
+            <p className="mt-4 text-muted-foreground text-lg max-w-3xl mx-auto">
+              The Vitalis ecosystem is not a referral network. ATB Financial, Holland Design, Field Law, and our extended network of specialists work alongside Vitalis on a shared foundation — each bringing their expertise to your project with full awareness of what everyone else is doing.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-            {/* Referral Column */}
-            <div className="bg-muted/50 rounded-2xl p-8 border border-border/40">
-              <h3 className="font-display text-xl font-bold text-muted-foreground mb-6">A referral</h3>
-              <ul className="space-y-4">
-                {referralPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <X className="h-5 w-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground leading-relaxed">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Ecosystem Column */}
-            <div className="bg-accent/10 rounded-2xl p-8 border border-accent/30">
-              <h3 className="font-display text-xl font-bold text-accent mb-6">The Vitalis ecosystem</h3>
-              <ul className="space-y-4">
-                {ecosystemPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground leading-relaxed">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {ecosystemBenefits.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card rounded-2xl p-7 shadow-sm border border-border/40"
+              >
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
+                  <item.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-foreground mb-3">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
