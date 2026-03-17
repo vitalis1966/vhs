@@ -344,7 +344,7 @@ export default function SubmissionsDashboard() {
                         )}
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-6`}>
                         {sub.has_client_report ? (
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2 whitespace-nowrap" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}/client-report`}>
@@ -356,7 +356,7 @@ export default function SubmissionsDashboard() {
                         )}
                       </TableCell>
 
-                      <TableCell className={cellClass}>
+                      <TableCell className={`${cellClass} pl-4`}>
                         <Button
                           variant="outline"
                           size="sm"
