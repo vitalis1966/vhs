@@ -292,6 +292,8 @@ export type Database = {
           current_section_index: number | null
           id: string
           intake_id: string | null
+          meeting_booked: boolean
+          meeting_booked_by: string | null
           status: string
           submitted_at: string | null
           updated_at: string | null
@@ -303,6 +305,8 @@ export type Database = {
           current_section_index?: number | null
           id?: string
           intake_id?: string | null
+          meeting_booked?: boolean
+          meeting_booked_by?: string | null
           status?: string
           submitted_at?: string | null
           updated_at?: string | null
@@ -314,6 +318,8 @@ export type Database = {
           current_section_index?: number | null
           id?: string
           intake_id?: string | null
+          meeting_booked?: boolean
+          meeting_booked_by?: string | null
           status?: string
           submitted_at?: string | null
           updated_at?: string | null

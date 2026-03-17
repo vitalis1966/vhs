@@ -20,7 +20,12 @@ interface DaySlots {
   slots: Slot[];
 }
 
-export default function BookingWidget() {
+interface BookingWidgetProps {
+  sessionId?: string;
+  bookedBy?: "client" | "admin";
+}
+
+export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProps) {
   const { toast } = useToast();
 
   const [days, setDays] = useState<DaySlots[]>([]);
@@ -79,6 +84,15 @@ export default function BookingWidget() {
       if (data?.error) throw new Error(data.error);
 
       setBooked({ date: days[selectedDay].dayLabel, time: selectedTime });
+
+      // Track meeting booking on the session
+      if (sessionId) {
+        await supabase
+          .from("assessment_sessions" as any)
+          .update({ meeting_booked: true, meeting_booked_by: bookedBy || "client" } as any)
+          .eq("id", sessionId);
+      }
+
       toast({ title: "Call Booked", description: `Your discovery call is confirmed for ${days[selectedDay].dayLabel} at ${formatTime(selectedTime)}.` });
     } catch (err: any) {
       toast({ title: "Booking Failed", description: err.message || "Could not complete booking. Please try again.", variant: "destructive" });
