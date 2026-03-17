@@ -1,95 +1,100 @@
 import { motion } from "framer-motion";
-import { Building2, TrendingUp, DollarSign, Users, ArrowLeftRight, HelpCircle } from "lucide-react";
+import { Stethoscope, Sparkles, PawPrint, Building2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const tiles = [
   {
-    icon: Building2,
-    label: "I'm opening a new practice",
-    sublabel: "Planning, building, or about to launch",
-    targetId: "journey-building",
+    to: "/solutions/medical",
+    gradient: "bg-gradient-to-br from-[#1a3d3d] to-[#2d6b6b]",
+    Icon: Stethoscope,
+    eyebrow: "MEDICAL",
+    label: "Medical Practice",
+    sub: "Clinics · Specialists · Surgical",
   },
   {
-    icon: TrendingUp,
-    label: "I have an existing practice",
-    sublabel: "Looking to improve performance or grow",
-    targetId: "journey-operating",
+    to: "/solutions/dental",
+    gradient: "bg-gradient-to-br from-[#2d4a1e] to-[#4a7a30]",
+    Icon: Sparkles,
+    eyebrow: "DENTAL",
+    label: "Dental Practice",
+    sub: "General · Specialty · Multi-Location",
   },
   {
-    icon: DollarSign,
-    label: "My revenue or billing needs attention",
-    sublabel: "Billing gaps, fee schedule, or collections",
-    targetId: "journey-operating",
+    to: "/solutions/veterinary",
+    gradient: "bg-gradient-to-br from-[#3d2a1a] to-[#7a5530]",
+    Icon: PawPrint,
+    eyebrow: "VETERINARY",
+    label: "Veterinary Practice",
+    sub: "Companion · Mixed · Specialty",
   },
   {
-    icon: Users,
-    label: "I need to grow or recruit",
-    sublabel: "Adding practitioners, locations, or staff",
-    targetId: "journey-transitioning",
-  },
-  {
-    icon: ArrowLeftRight,
-    label: "I'm buying, selling, or transitioning",
-    sublabel: "M&A, partnership change, or succession",
-    targetId: "journey-transitioning",
-  },
-  {
-    icon: HelpCircle,
-    label: "I'm not sure where to start",
-    sublabel: "A strategic assessment will clarify this",
-    targetId: "assessment-cta",
+    to: "/solutions/nhsf",
+    gradient: "bg-gradient-to-br from-[#1a2a4a] to-[#2a4a7a]",
+    Icon: Building2,
+    eyebrow: "SURGICAL",
+    label: "Surgical Facility",
+    sub: "NHSF · CSF · Procedural Centre",
   },
 ];
 
-function scrollToId(targetId: string) {
-  const el = document.getElementById(targetId);
-  if (el) {
-    const top = el.getBoundingClientRect().top + window.scrollY - 100;
-    window.scrollTo({ top, behavior: "smooth" });
-  }
-}
-
 export function JourneyFinderSection() {
   return (
-    <section className="py-24 lg:py-32 bg-muted/30">
-      <div className="container mx-auto px-4 lg:px-8">
+    <section className="py-20 lg:py-28 bg-background">
+      <div className="max-w-5xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center"
         >
           <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Find Your Starting Point
+            Who We Work With
           </p>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
-            Where are you right now?
+            Tell us about your practice.
           </h2>
-          <p className="mt-4 text-muted-foreground text-lg">
-            Choose what best describes your situation.
+          <p className="mt-4 text-muted-foreground text-base max-w-md mx-auto">
+            Select your practice type. We'll take you directly to the right place.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
           {tiles.map((tile, i) => (
-            <motion.button
-              key={tile.label}
-              initial={{ opacity: 0, y: 15 }}
+            <motion.div
+              key={tile.eyebrow}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.06 }}
-              onClick={() => scrollToId(tile.targetId)}
-              className="bg-card rounded-xl border border-border/40 shadow-sm p-5 hover:border-primary/40 hover:shadow-md cursor-pointer transition-all duration-150 flex items-start gap-4 text-left"
+              transition={{ duration: 0.4, delay: i * 0.08 }}
             >
-              <div className="rounded-lg bg-primary/10 p-2 flex-shrink-0">
-                <tile.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-semibold text-base text-foreground">{tile.label}</p>
-                <p className="text-sm text-muted-foreground mt-0.5">{tile.sublabel}</p>
-              </div>
-            </motion.button>
+              <Link
+                to={tile.to}
+                className={`${tile.gradient} relative rounded-2xl overflow-hidden h-[280px] flex flex-col justify-end cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:brightness-110 group block`}
+                role="link"
+                tabIndex={0}
+              >
+                <tile.Icon className="absolute top-6 right-6 w-20 h-20 text-white opacity-[0.15]" strokeWidth={1} />
+                <div className="relative z-10 p-7">
+                  <p className="text-white/60 text-xs uppercase tracking-widest mb-1">
+                    {tile.eyebrow}
+                  </p>
+                  <p className="text-white text-2xl font-bold font-display">
+                    {tile.label}
+                  </p>
+                  <p className="text-white/70 text-sm mt-1">{tile.sub}</p>
+                  <ArrowRight className="w-5 h-5 text-white/60 mt-4 group-hover:translate-x-1 transition-transform duration-200" />
+                </div>
+              </Link>
+            </motion.div>
           ))}
+        </div>
+
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          Not sure where to start?{" "}
+          <Link to="/strategic-assessment" className="text-primary hover:underline">
+            Take the strategic assessment →
+          </Link>
         </div>
       </div>
     </section>
