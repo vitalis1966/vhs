@@ -54,27 +54,10 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, organization, date, time, note, debug } = await req.json();
+    const { name, email, organization, date, time, note } = await req.json();
 
     const token = await getAccessToken();
     const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
-
-    // Debug mode: return service + staff info to help diagnose
-    if (debug) {
-      const [svcRes, staffRes] = await Promise.all([
-        fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/staffMembers`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-      const svcData = await svcRes.json();
-      const staffData = await staffRes.json();
-      return new Response(JSON.stringify({ services: svcData.value, staff: staffData.value }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     if (!name || !email || !date || !time) {
       return new Response(JSON.stringify({ error: "Missing required fields: name, email, date, time" }), {
