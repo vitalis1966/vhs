@@ -298,9 +298,14 @@ export default function SubmissionsDashboard() {
                       </TableCell>
 
                       <TableCell className={cellClass}>
-                        <Badge variant="secondary" className="whitespace-nowrap">
-                          {getStatusLabel(sub.practice_type, sub.lifecycle_status)}
-                        </Badge>
+                        {(() => {
+                          const status = getStatusInfo(sub.assessment_purpose);
+                          return (
+                            <Badge className={`${status.color} whitespace-nowrap`}>
+                              {status.label}
+                            </Badge>
+                          );
+                        })()}
                       </TableCell>
 
                       <TableCell className={`${cellClass} text-center`}>
