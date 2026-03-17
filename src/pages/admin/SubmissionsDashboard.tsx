@@ -63,10 +63,14 @@ const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-mut
 
 function getStatusInfo(assessmentPurpose: string | null): { label: string; color: string } {
   const val = (assessmentPurpose || "").trim().toLowerCase();
-  if (val.includes("building a new") || val.includes("planning a new") || val.includes("exploring a new")) {
+  console.log("[SubmissionsDashboard] assessment_purpose raw value:", assessmentPurpose);
+  // Match slug values stored in DB: building_new_clinic, planning_new_space, exploring_new_venture
+  if (val.includes("building_new") || val.includes("planning_new") || val.includes("exploring_new") ||
+      val.includes("building a new") || val.includes("planning a new") || val.includes("exploring a new")) {
     return { label: "New Practice", color: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100" };
   }
-  if (val.includes("establishing healthcare it") || val.includes("improving existing healthcare it")) {
+  // Match: healthcare_it_new, healthcare_it_existing, or human-readable versions
+  if (val.includes("healthcare_it") || val.includes("healthcare it")) {
     return { label: "Healthcare IT", color: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100" };
   }
   return { label: "Existing Practice", color: "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100" };
