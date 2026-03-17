@@ -60,7 +60,7 @@ const simpleNavLinks = [
   { label: "Engagement", href: "/engagement" },
   { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Partners", href: "/partners" },
+  { label: "Ecosystem", href: "/partners" },
   { label: "Contact", href: "/contact" },
 ];
 
