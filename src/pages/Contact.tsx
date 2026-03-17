@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import BookingWidget from "@/components/BookingWidget";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -65,6 +66,12 @@ const Contact = () => {
             Whether you're exploring a new venture, looking for an objective view of operations, or planning a
             transition — we're here to help you think it through.
           </motion.p>
+        </div>
+      </section>
+
+      <section className="py-12 bg-muted/20">
+        <div className="container mx-auto px-4 lg:px-8 max-w-2xl">
+          <BookingWidget />
         </div>
       </section>
 
