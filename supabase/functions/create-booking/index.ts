@@ -32,34 +32,20 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-/** Fetch the first available service ID from the booking business dynamically. */
-async function getServiceId(token: string, businessId: string): Promise<string> {
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Failed to fetch services (${res.status}): ${errText}`);
-  }
-
-  const data = await res.json();
-  const services = data.value || [];
-  if (services.length === 0) {
-    throw new Error("No services configured in Microsoft Bookings business");
-  }
-
-  return services[0].id;
-}
-
-/** Calculate end time by adding 30 minutes to start time string (HH:MM). */
+/** Add minutes to "HH:MM" and return "HH:MM". */
 function addMinutes(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
   const totalMin = h * 60 + m + minutes;
   const newH = Math.floor(totalMin / 60) % 24;
   const newM = totalMin % 60;
   return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+}
+
+/** Parse ISO 8601 duration like PT30M or PT1H into minutes. */
+function parseDuration(dur: string): number {
+  const hMatch = dur.match(/(\d+)H/);
+  const mMatch = dur.match(/(\d+)M/);
+  return (hMatch ? parseInt(hMatch[1]) * 60 : 0) + (mMatch ? parseInt(mMatch[1]) : 0) || 30;
 }
 
 serve(async (req) => {
@@ -70,6 +56,9 @@ serve(async (req) => {
   try {
     const { name, email, organization, date, time, note } = await req.json();
 
+    const token = await getAccessToken();
+    const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
+
     if (!name || !email || !date || !time) {
       return new Response(JSON.stringify({ error: "Missing required fields: name, email, date, time" }), {
         status: 400,
@@ -77,30 +66,61 @@ serve(async (req) => {
       });
     }
 
-    const token = await getAccessToken();
-    const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
+    // Fetch service + staff in parallel
+    const [svcRes, staffRes] = await Promise.all([
+      fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/staffMembers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
 
-    // Dynamically retrieve the first available service ID
-    const serviceId = await getServiceId(token, businessId);
+    if (!svcRes.ok) throw new Error(`Failed to fetch services: ${await svcRes.text()}`);
+    if (!staffRes.ok) throw new Error(`Failed to fetch staff: ${await staffRes.text()}`);
 
-    const endTime = addMinutes(time, 30);
+    const services = (await svcRes.json()).value || [];
+    const staffMembers = (await staffRes.json()).value || [];
+    if (services.length === 0) throw new Error("No services configured");
+
+    const service = services[0];
+    const serviceId = service.id;
+    const durationMinutes = parseDuration(service.defaultDuration || "PT30M");
+    
+    // With application permissions, staffMemberIds MUST be provided.
+    // Use service's assigned staff, or fall back to any active staff member.
+    let staffMemberIds: string[] = service.staffMemberIds || [];
+    if (staffMemberIds.length === 0 && staffMembers.length > 0) {
+      staffMemberIds = [staffMembers[0].id];
+    }
+
+    const endTime = addMinutes(time, durationMinutes);
     const customerNotes = [organization, note].filter(Boolean).join(" — ");
 
-    // Note: Microsoft Bookings automatically sends confirmation emails to both
-    // the customer and assigned staff when sendConfirmationToCustomer is true.
+    // Use minimal payload — the Graph API v1.0 with app permissions
+    // is very strict about the shape. Use the legacy flat customer fields
+    // which are more reliable with application permissions.
     const appointmentBody = {
       serviceId,
-      start: { dateTime: `${date}T${time}:00`, timeZone: "America/Toronto" },
-      end: { dateTime: `${date}T${endTime}:00`, timeZone: "America/Toronto" },
+      staffMemberIds,
+      start: {
+        dateTime: `${date}T${time}:00.0000000`,
+        timeZone: "UTC",
+      },
+      end: {
+        dateTime: `${date}T${endTime}:00.0000000`,
+        timeZone: "UTC",
+      },
       customerName: name,
       customerEmailAddress: email,
       customerNotes,
-      sendConfirmationToCustomer: true,
+      isLocationOnline: true,
     };
 
-    // Permissions required: BookingsAppointment.ReadWrite.All
+    console.log("Creating appointment:", JSON.stringify(appointmentBody));
+
     const apptRes = await fetch(
-      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/appointments`,
+      `https://graph.microsoft.com/beta/solutions/bookingBusinesses/${businessId}/appointments`,
       {
         method: "POST",
         headers: {
