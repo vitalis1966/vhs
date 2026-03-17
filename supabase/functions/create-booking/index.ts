@@ -83,25 +83,33 @@ serve(async (req) => {
       });
     }
 
-    // Fetch service details
-    const svcRes = await fetch(
-      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (!svcRes.ok) {
-      const errText = await svcRes.text();
-      throw new Error(`Failed to fetch services (${svcRes.status}): ${errText}`);
-    }
-    const svcData = await svcRes.json();
-    const services = svcData.value || [];
-    if (services.length === 0) throw new Error("No services configured in Microsoft Bookings business");
-    
+    // Fetch service + staff in parallel
+    const [svcRes, staffRes] = await Promise.all([
+      fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/services`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/staffMembers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
+
+    if (!svcRes.ok) throw new Error(`Failed to fetch services: ${await svcRes.text()}`);
+    if (!staffRes.ok) throw new Error(`Failed to fetch staff: ${await staffRes.text()}`);
+
+    const services = (await svcRes.json()).value || [];
+    const staffMembers = (await staffRes.json()).value || [];
+    if (services.length === 0) throw new Error("No services configured");
+
     const service = services[0];
     const serviceId = service.id;
     const durationMinutes = parseDuration(service.defaultDuration || "PT30M");
     
-    // Get default staff member IDs from the service
-    const staffMemberIds: string[] = service.staffMemberIds || [];
+    // With application permissions, staffMemberIds MUST be provided.
+    // Use service's assigned staff, or fall back to any active staff member.
+    let staffMemberIds: string[] = service.staffMemberIds || [];
+    if (staffMemberIds.length === 0 && staffMembers.length > 0) {
+      staffMemberIds = [staffMembers[0].id];
+    }
 
     const endTime = addMinutes(time, durationMinutes);
     const customerNotes = [organization, note].filter(Boolean).join(" — ");
