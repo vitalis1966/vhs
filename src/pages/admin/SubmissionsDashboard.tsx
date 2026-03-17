@@ -110,21 +110,19 @@ export default function SubmissionsDashboard() {
       let clientName = "Unknown";
       let clientEmail = "";
       let organization = "—";
-      let lifecycleStatus: string | null = null;
-      let practiceType: string | null = null;
+      let assessmentPurpose: string | null = null;
 
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, email, organization_name, lifecycle_status, practice_type")
+          .select("full_name, email, organization_name, assessment_purpose")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
           clientName = intake.full_name || "Unknown";
           clientEmail = intake.email || "";
           organization = intake.organization_name || "—";
-          lifecycleStatus = intake.lifecycle_status || null;
-          practiceType = intake.practice_type || null;
+          assessmentPurpose = intake.assessment_purpose || null;
         }
       }
 
