@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Loader2,
-  ArrowRight,
   FileSearch,
   RefreshCw,
   BarChart3,
@@ -44,6 +43,7 @@ interface SubmissionRow {
   client_name: string;
   client_email: string;
   organization: string;
+  practice_type: string | null;
   report_id: string | null;
   analysis_status: string | null;
   lifecycle_status: string | null;
@@ -58,6 +58,17 @@ const fadeUp = {
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
 };
+
+const cellClass = "text-sm px-3 py-3 align-middle";
+const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-muted-foreground";
+
+function getStatusLabel(practiceType: string | null, lifecycleStatus: string | null): string {
+  if (practiceType) {
+    if (/exist/i.test(practiceType)) return "Existing Practice";
+    if (/new/i.test(practiceType)) return "New Practice";
+  }
+  return lifecycleStatus?.replace(/_/g, " ") || "—";
+}
 
 export default function SubmissionsDashboard() {
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
@@ -98,10 +109,12 @@ export default function SubmissionsDashboard() {
       let clientEmail = "";
       let organization = "—";
       let lifecycleStatus: string | null = null;
+      let practiceType: string | null = null;
+
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, email, organization_name, lifecycle_status")
+          .select("full_name, email, organization_name, lifecycle_status, practice_type")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
@@ -109,6 +122,7 @@ export default function SubmissionsDashboard() {
           clientEmail = intake.email || "";
           organization = intake.organization_name || "—";
           lifecycleStatus = intake.lifecycle_status || null;
+          practiceType = intake.practice_type || null;
         }
       }
 
@@ -118,7 +132,6 @@ export default function SubmissionsDashboard() {
         .eq("session_id", sess.id)
         .single() as any);
 
-      // Check if client report email was sent
       const { data: clientEmails } = await (supabase
         .from("email_events" as any)
         .select("id, status")
@@ -126,7 +139,7 @@ export default function SubmissionsDashboard() {
         .eq("email_type", "client_report") as any);
 
       const clientReportSent = (clientEmails || []).some(
-        (e: any) => e.status !== "failed"
+        (e: any) => e.status === "sent"
       );
 
       rows.push({
@@ -138,6 +151,7 @@ export default function SubmissionsDashboard() {
         client_name: clientName,
         client_email: clientEmail,
         organization,
+        practice_type: practiceType,
         report_id: report?.id || null,
         analysis_status: report?.analysis_status || null,
         lifecycle_status: lifecycleStatus,
@@ -243,114 +257,100 @@ export default function SubmissionsDashboard() {
               <Table style={{ tableLayout: "fixed", width: "100%" }}>
                 <TableHeader>
                   <TableRow>
-                    <TableHead style={{ width: "10%" }}>Client</TableHead>
-                    <TableHead style={{ width: "12%" }}>Email</TableHead>
-                    <TableHead style={{ width: "9%" }}>Organization</TableHead>
-                    <TableHead style={{ width: "8%" }}>Submitted</TableHead>
-                    <TableHead style={{ width: "8%" }}>Status</TableHead>
-                    <TableHead style={{ width: "9%" }}>Communication</TableHead>
-                    <TableHead style={{ width: "9%" }}>Engagement</TableHead>
-                    <TableHead style={{ width: "9%" }}>Internal</TableHead>
-                    <TableHead style={{ width: "9%" }}>Client</TableHead>
-                    <TableHead style={{ width: "9%" }}>Analysis</TableHead>
-                    <TableHead style={{ width: "4%" }}></TableHead>
+                    <TableHead className={headClass} style={{ width: "9%" }}>Client</TableHead>
+                    <TableHead className={headClass} style={{ width: "16%" }}>Email</TableHead>
+                    <TableHead className={headClass} style={{ width: "12%" }}>Organization</TableHead>
+                    <TableHead className={headClass} style={{ width: "7%" }}>Submitted</TableHead>
+                    <TableHead className={headClass} style={{ width: "9%" }}>Status</TableHead>
+                    <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
+                    <TableHead className={headClass} style={{ width: "9%" }}>Engagement</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Internal</TableHead>
+                    <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
+                    <TableHead className={headClass} style={{ width: "7%" }}>Analysis</TableHead>
+                    <TableHead className={headClass} style={{ width: "4%" }}></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {submissions.map((sub) => (
                     <TableRow key={sub.session_id}>
-                      {/* Client Name */}
-                      <TableCell className="font-medium overflow-hidden text-ellipsis whitespace-nowrap" title={sub.client_name}>
+                      <TableCell className={`${cellClass} font-medium`}>
                         {sub.client_name}
                       </TableCell>
 
-                      {/* Client Email */}
-                      <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap" title={sub.client_email}>
+                      <TableCell className={cellClass}>
                         {sub.client_email ? (
                           <a
                             href={`mailto:${sub.client_email}`}
-                            className="text-accent hover:underline text-sm"
+                            className="text-accent hover:underline break-all"
                           >
                             {sub.client_email}
                           </a>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
 
-                      {/* Organization */}
-                      <TableCell className="text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={sub.organization}>
+                      <TableCell className={`${cellClass} text-muted-foreground`}>
                         {sub.organization}
                       </TableCell>
 
-                      {/* Submitted Date */}
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className={`${cellClass} text-muted-foreground whitespace-nowrap`}>
                         {formatDate(sub.submitted_at)}
                       </TableCell>
 
-                      {/* Lifecycle Status */}
-                      <TableCell>
-                        {sub.lifecycle_status ? (
-                          <Badge variant="secondary" className="text-[10px] truncate max-w-full">
-                            {sub.lifecycle_status.replace(/_/g, " ")}
-                          </Badge>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
+                      <TableCell className={cellClass}>
+                        <Badge variant="secondary" className="whitespace-nowrap">
+                          {getStatusLabel(sub.practice_type, sub.lifecycle_status)}
+                        </Badge>
                       </TableCell>
 
-                      {/* Communication */}
-                      <TableCell>
-                        {sub.analysis_status === "complete" && sub.client_report_sent ? (
-                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100 text-[10px]">
+                      <TableCell className={`${cellClass} text-center`}>
+                        {sub.client_report_sent ? (
+                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100 whitespace-nowrap">
                             Sent Out
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-[10px] text-muted-foreground">
+                          <Badge variant="secondary" className="text-muted-foreground whitespace-nowrap">
                             Not Sent
                           </Badge>
                         )}
                       </TableCell>
 
-                      {/* Engagement */}
-                      <TableCell>
+                      <TableCell className={`${cellClass} text-center`}>
                         {sub.meeting_booked ? (
-                          <Badge className="bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-100 text-[10px]">
+                          <Badge className="bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-100 whitespace-nowrap">
                             Meeting Booked
                           </Badge>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
 
-                      {/* Internal Report */}
-                      <TableCell>
+                      <TableCell className={cellClass}>
                         {sub.analysis_status === "complete" ? (
                           <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}`}>
-                              Internal Report
+                              Report
                             </Link>
                           </Button>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
 
-                      {/* Client Report — show if report exists (analysis complete) */}
-                      <TableCell>
+                      <TableCell className={cellClass}>
                         {sub.has_client_report ? (
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2" asChild>
                             <Link to={`/admin/submissions/${sub.session_id}/client-report`}>
-                              Client Report
+                              Report
                             </Link>
                           </Button>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
 
-                      {/* Analyze / Rerun */}
-                      <TableCell>
+                      <TableCell className={cellClass}>
                         <Button
                           variant="outline"
                           size="sm"
@@ -367,8 +367,7 @@ export default function SubmissionsDashboard() {
                         </Button>
                       </TableCell>
 
-                      {/* Delete */}
-                      <TableCell>
+                      <TableCell className={cellClass}>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
