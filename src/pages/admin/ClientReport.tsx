@@ -47,6 +47,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import vitalisLogo from "@/assets/vitalis-logo.png";
 import BookingWidget from "@/components/BookingWidget";
+import {
+  FindingsCategoryDonut,
+  FocusAreasTimeline,
+  FinancialWaterfallChart,
+  extractFinancialData,
+} from "@/components/admin/ReportCharts";
 
 // ─── Text transformation ───────────────────────────────────────────────────────
 
