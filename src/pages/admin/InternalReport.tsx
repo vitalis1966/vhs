@@ -23,6 +23,7 @@ import {
   Calendar,
   MapPin,
   Stethoscope,
+  Phone,
   Printer,
   CheckCircle,
   XCircle,
