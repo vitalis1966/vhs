@@ -260,10 +260,9 @@ export default function SubmissionsDashboard() {
               <Table style={{ tableLayout: "fixed", width: "100%" }}>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Client</TableHead>
-                    <TableHead className={headClass} style={{ width: "15%" }}>Email</TableHead>
-                    <TableHead className={headClass} style={{ width: "12%" }}>Organization</TableHead>
-                    <TableHead className={headClass} style={{ width: "8%" }}>Submitted</TableHead>
+                     <TableHead className={headClass} style={{ width: "10%" }}>Client</TableHead>
+                    <TableHead className={headClass} style={{ width: "14%" }}>Organization</TableHead>
+                    <TableHead className={headClass} style={{ width: "9%" }}>Submitted</TableHead>
                     <TableHead className={headClass} style={{ width: "10%" }}>Status</TableHead>
                     <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
                     <TableHead className={headClass} style={{ width: "8%" }}>Meeting</TableHead>
@@ -278,19 +277,6 @@ export default function SubmissionsDashboard() {
                     <TableRow key={sub.session_id}>
                       <TableCell className={`${cellClass} font-medium whitespace-nowrap`}>
                         {sub.client_name}
-                      </TableCell>
-
-                      <TableCell className={`${cellClass} break-all`}>
-                        {sub.client_email ? (
-                          <a
-                            href={`mailto:${sub.client_email}`}
-                            className="text-accent hover:underline"
-                          >
-                            {sub.client_email}
-                          </a>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
                       </TableCell>
 
                       <TableCell className={`${cellClass} text-muted-foreground`}>
