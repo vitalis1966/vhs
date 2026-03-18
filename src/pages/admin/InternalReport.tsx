@@ -325,12 +325,13 @@ export default function InternalReport() {
           {/* 2. Overall Score */}
           {report.overall_score != null && (
             <ReportCard title="Overall Readiness Score" icon={<BarChart3 className="h-5 w-5" />}>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-foreground">{report.overall_score}</div>
-                  <p className="text-xs text-muted-foreground mt-1">out of 100</p>
-                </div>
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <ReadinessGaugeChart score={report.overall_score} category={report.readiness_category || ""} />
                 <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="text-4xl font-bold text-foreground">{report.overall_score}</div>
+                    <span className="text-sm text-muted-foreground">/ 100</span>
+                  </div>
                   <Progress value={report.overall_score} className="h-3 mb-2" />
                   <Badge className={`text-xs border ${severityColors[report.readiness_category || ""] || "bg-secondary"}`}>
                     {(report.readiness_category || "—").replace(/_/g, " ")}
