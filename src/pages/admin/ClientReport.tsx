@@ -319,20 +319,49 @@ export default function ClientReport() {
 
   const analysis = (() => {
     let data = report.analysis_data || {};
-    // The AI sometimes stores the full JSON response inside executive_summary with markdown fences
+    // Robust parsing: handle multiple malformed storage patterns
+    const tryParseJSON = (raw: string): any | null => {
+      try {
+        let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+        return JSON.parse(cleaned);
+      } catch (e1) {
+        try {
+          const first = raw.indexOf("{");
+          const last = raw.lastIndexOf("}");
+          if (first !== -1 && last > first) {
+            return JSON.parse(raw.substring(first, last + 1));
+          }
+        } catch (e2) { /* fall through */ }
+        return null;
+      }
+    };
+
+    // Case 1: executive_summary contains the full JSON blob (parse_error scenario)
     if (data.executive_summary && typeof data.executive_summary === "string") {
       const es = data.executive_summary.trim();
       if (es.startsWith("```") || es.startsWith("{")) {
-        try {
-          const clean = es.replace(/```json\s*|```/g, "").trim();
-          const parsed = JSON.parse(clean);
-          console.log("[ClientReport] Parsed structured data from executive_summary string");
-          data = { ...data, ...parsed, executive_summary: parsed.executive_summary || "" };
-        } catch (e) {
-          console.error("[ClientReport] Failed to parse executive_summary JSON:", e);
+        const parsed = tryParseJSON(es);
+        if (parsed && typeof parsed === "object") {
+          console.log("[ClientReport] Extracted structured data from executive_summary string");
+          data = { ...data, ...parsed, executive_summary: parsed.executive_summary || "", parse_error: undefined };
+        } else {
+          console.error("[ClientReport] Could not parse executive_summary JSON — will show fallback");
+          data = { ...data, executive_summary: "", _malformed: true };
         }
       }
     }
+
+    // Case 2: analysis_data itself might be a string
+    if (typeof data === "string") {
+      const parsed = tryParseJSON(data);
+      if (parsed) {
+        data = parsed;
+      } else {
+        console.error("[ClientReport] analysis_data is an unparseable string");
+        data = { executive_summary: "", _malformed: true };
+      }
+    }
+
     return data;
   })();
   const orgName = intake?.organization_name || intake?.full_name || "Your Organization";
