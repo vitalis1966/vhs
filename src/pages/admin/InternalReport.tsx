@@ -393,6 +393,7 @@ export default function InternalReport() {
           {/* 5. Areas of Concern */}
           {analysis.concerns?.length > 0 && (
             <ReportCard title="Areas of Concern" icon={<AlertTriangle className="h-5 w-5" />}>
+              <ConcernsPriorityMatrix concerns={analysis.concerns} />
               <div className="space-y-3">
                 {analysis.concerns.map((c: any, i: number) => (
                   <div key={i} className="flex items-start gap-3 bg-secondary/30 rounded-xl p-4">
