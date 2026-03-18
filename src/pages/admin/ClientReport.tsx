@@ -583,6 +583,7 @@ export default function ClientReport() {
           {/* Key Findings (was "Areas of Concern") */}
           {keyFindings.length > 0 && (
             <ClientReportCard title="Key Findings" icon={<AlertTriangle className="h-5 w-5" />}>
+              <FindingsCategoryDonut findings={keyFindings} />
               <div className="space-y-3">
                 {keyFindings.map((c: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
