@@ -29,6 +29,15 @@ import {
   XCircle,
   MessageSquare,
 } from "lucide-react";
+import {
+  RadarScoreChart,
+  SectionScoreBar,
+  ReadinessGaugeChart,
+  ConcernsPriorityMatrix,
+  FocusAreasTimeline,
+  FinancialWaterfallChart,
+  extractFinancialData,
+} from "@/components/admin/ReportCharts";
 import { useToast } from "@/hooks/use-toast";
 
 const fadeUp = {
