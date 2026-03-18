@@ -413,9 +413,17 @@ export default function InternalReport() {
             </ReportCard>
           )}
 
+          {/* Financial Waterfall (if data found) */}
+          {extractFinancialData(analysis) && (
+            <ReportCard title="Financial Overview" icon={<BarChart3 className="h-5 w-5" />}>
+              <FinancialWaterfallChart data={extractFinancialData(analysis)!} />
+            </ReportCard>
+          )}
+
           {/* 6. Focus Areas */}
           {analysis.focus_areas?.length > 0 && (
             <ReportCard title="Priority Focus Areas" icon={<Target className="h-5 w-5" />}>
+              <FocusAreasTimeline focusAreas={analysis.focus_areas} showLabels={true} />
               <div className="space-y-3">
                 {analysis.focus_areas.map((f: any, i: number) => (
                   <div key={i} className="bg-secondary/30 rounded-xl p-4">
