@@ -60,6 +60,7 @@ const fadeUp = {
 
 const cellClass = "text-sm px-3 py-3 align-middle";
 const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-muted-foreground";
+const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wide";
 
 function getStatusInfo(assessmentPurpose: string | null): { label: string; color: string } {
   const val = (assessmentPurpose || "").trim().toLowerCase();
