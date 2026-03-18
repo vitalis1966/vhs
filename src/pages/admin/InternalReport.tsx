@@ -304,7 +304,7 @@ export default function InternalReport() {
             <div className="grid sm:grid-cols-2 gap-4">
               <InfoRow icon={<User className="h-4 w-4" />} label="Client" value={intake?.full_name || "—"} />
               <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
-              <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={intake?.phone || "—"} />
+              <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={formatPhone(intake?.phone) || "—"} />
               <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
               <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
               <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
@@ -544,6 +544,18 @@ export default function InternalReport() {
 }
 
 // --- Helper components ---
+
+function formatPhone(phone: string | null | undefined): string {
+  if (!phone) return "";
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `(${digits.slice(1, 4)})${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  return phone;
+}
 
 function ReportCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
