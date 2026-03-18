@@ -59,6 +59,11 @@ const replacements: [RegExp, string][] = [
   [/\d+\s+out\s+of\s+100/gi, ""],
 ];
 
+function capitalizeFirst(text: string): string {
+  if (!text) return text;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function transformText(text: string): string {
   if (!text) return text;
   let result = text;
@@ -67,6 +72,8 @@ function transformText(text: string): string {
   }
   // Clean up double spaces left by removals
   result = result.replace(/\s{2,}/g, " ").trim();
+  // Ensure first character is capitalized
+  result = capitalizeFirst(result);
   return result;
 }
 
