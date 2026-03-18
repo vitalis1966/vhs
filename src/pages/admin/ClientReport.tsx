@@ -595,9 +595,17 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
+          {/* Financial Waterfall (if data found) */}
+          {extractFinancialData(analysis) && (
+            <ClientReportCard title="Financial Overview" icon={<Target className="h-5 w-5" />}>
+              <FinancialWaterfallChart data={extractFinancialData(analysis)!} />
+            </ClientReportCard>
+          )}
+
           {/* Priority Focus Areas */}
           {focusAreas.length > 0 && (
             <ClientReportCard title="Priority Focus Areas" icon={<Target className="h-5 w-5" />}>
+              <FocusAreasTimeline focusAreas={focusAreas} showLabels={false} />
               <div className="space-y-3">
                 {focusAreas.map((f: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
