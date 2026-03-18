@@ -36,6 +36,7 @@ import {
   Calendar,
   MapPin,
   Stethoscope,
+  Phone,
   FileText,
   Target,
   Lightbulb,
