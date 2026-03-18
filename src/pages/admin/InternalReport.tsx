@@ -353,6 +353,7 @@ export default function InternalReport() {
           {/* 4. Section-by-Section Analysis */}
           {analysis.section_analyses?.length > 0 && (
             <ReportCard title="Section Analysis" icon={<BarChart3 className="h-5 w-5" />}>
+              <RadarScoreChart sections={analysis.section_analyses.filter((s: any) => s.score != null)} />
               <div className="space-y-6">
                 {analysis.section_analyses.map((sa: any, i: number) => (
                   <div key={i} className="border border-border/40 rounded-xl p-5">
@@ -368,8 +369,8 @@ export default function InternalReport() {
                       </div>
                     </div>
                     {sa.summary && <p className="text-sm text-muted-foreground mb-3">{sa.summary}</p>}
-                    {sa.score != null && <Progress value={sa.score} className="h-2 mb-3" />}
-                    <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                    {sa.score != null && <SectionScoreBar score={sa.score} />}
+                    <div className="grid sm:grid-cols-2 gap-3 text-xs mt-3">
                       {sa.operational_gaps?.length > 0 && (
                         <BulletList title="Operational Gaps" items={sa.operational_gaps} color="text-amber-700" />
                       )}
