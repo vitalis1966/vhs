@@ -504,13 +504,14 @@ export default function ClientReport() {
           {/* Client Overview */}
           <ClientReportCard title="Overview" icon={<User className="h-5 w-5" />}>
             <div className="grid sm:grid-cols-2 gap-4">
-              <InfoRow icon={<User className="h-4 w-4" />} label="Contact" value={intake?.full_name || "—"} />
-              <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
-              <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
-              <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
-              <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
-              <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
-              <InfoRow icon={<Calendar className="h-4 w-4" />} label="Date" value={formatDate(session?.submitted_at)} />
+               <InfoRow icon={<User className="h-4 w-4" />} label="Contact" value={intake?.full_name || "—"} />
+               <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
+               <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={intake?.phone || "—"} />
+               <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
+               <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
+               <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
+               <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
+               <InfoRow icon={<Calendar className="h-4 w-4" />} label="Submitted" value={formatDate(session?.submitted_at)} />
             </div>
           </ClientReportCard>
 
