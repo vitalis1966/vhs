@@ -505,6 +505,7 @@ export default function ClientReport() {
             <div className="grid sm:grid-cols-2 gap-4">
               <InfoRow icon={<User className="h-4 w-4" />} label="Contact" value={intake?.full_name || "—"} />
               <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
+              <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
               <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
               <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
               <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
