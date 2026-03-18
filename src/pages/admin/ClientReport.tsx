@@ -47,6 +47,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import vitalisLogo from "@/assets/vitalis-logo.png";
 import BookingWidget from "@/components/BookingWidget";
+import {
+  FindingsCategoryDonut,
+  FocusAreasTimeline,
+  FinancialWaterfallChart,
+  extractFinancialData,
+} from "@/components/admin/ReportCharts";
 
 // ─── Text transformation ───────────────────────────────────────────────────────
 
@@ -577,6 +583,7 @@ export default function ClientReport() {
           {/* Key Findings (was "Areas of Concern") */}
           {keyFindings.length > 0 && (
             <ClientReportCard title="Key Findings" icon={<AlertTriangle className="h-5 w-5" />}>
+              <FindingsCategoryDonut findings={keyFindings} />
               <div className="space-y-3">
                 {keyFindings.map((c: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
@@ -588,9 +595,17 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
+          {/* Financial Waterfall (if data found) */}
+          {extractFinancialData(analysis) && (
+            <ClientReportCard title="Financial Overview" icon={<Target className="h-5 w-5" />}>
+              <FinancialWaterfallChart data={extractFinancialData(analysis)!} />
+            </ClientReportCard>
+          )}
+
           {/* Priority Focus Areas */}
           {focusAreas.length > 0 && (
             <ClientReportCard title="Priority Focus Areas" icon={<Target className="h-5 w-5" />}>
+              <FocusAreasTimeline focusAreas={focusAreas} showLabels={false} />
               <div className="space-y-3">
                 {focusAreas.map((f: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
