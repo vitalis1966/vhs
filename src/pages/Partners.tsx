@@ -110,6 +110,9 @@ const Partners = () => {
     <div className="min-h-screen">
       <Navbar />
 
+      {/* Strategic Ecosystem overview — moved from homepage */}
+      <StrategicEcosystemSection />
+
       {/* SECTION 1 — Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
