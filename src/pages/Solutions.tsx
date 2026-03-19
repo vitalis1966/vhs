@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/Navbar";
+import { MnASection } from "@/components/home/MnASection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
