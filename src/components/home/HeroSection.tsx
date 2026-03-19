@@ -67,21 +67,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
-          className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl"
-        >
-          {heroStats.map((stat, i) => (
-            <div key={i} className="flex items-center gap-4 border-l-2 border-accent/30 pl-4">
-              <div>
-                <p className="font-display text-lg font-bold text-foreground">{stat.value}</p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );

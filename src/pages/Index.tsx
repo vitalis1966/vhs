@@ -1,6 +1,9 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
+import { ImpactStatsSection } from "@/components/home/ImpactStatsSection";
+import { WhatWeDoSection } from "@/components/home/WhatWeDoSection";
+import { PracticePathFinder } from "@/components/home/PracticePathFinder";
 import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { FinalCtaSection } from "@/components/home/FinalCtaSection";
 import { usePageMeta } from "@/lib/seo";
@@ -14,6 +17,9 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <HeroSection />
+      <ImpactStatsSection />
+      <WhatWeDoSection />
+      <PracticePathFinder />
       <CredibilitySection variant="homepage" />
       <FinalCtaSection />
       <Footer />
