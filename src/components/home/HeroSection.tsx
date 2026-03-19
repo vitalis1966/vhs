@@ -3,12 +3,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-const heroStats = [
-  { value: "200+", label: "Practices Supported Across Canada" },
-  { value: "$40M+", label: "Revenue Gaps Identified Across Client Assessments" },
-  { value: "15+", label: "New Facilities Guided from Concept to Opening" },
-  { value: "Med · Dent · Vet", label: "Every Stage, One Team" },
-];
+
+
 
 export function HeroSection() {
   return (
