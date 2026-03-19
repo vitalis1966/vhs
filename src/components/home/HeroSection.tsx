@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const heroStats = [
   { value: "200+", label: "Practices Supported Across Canada" },
@@ -55,36 +55,12 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-6 flex flex-col gap-2"
-          >
-            {[
-              "Development & Build — Transform concepts into state-of-the-art healthcare environments",
-              "Operational Growth — Optimize operations, strengthen patient care, fuel long-term growth",
-              "Ongoing Advisory — Sustained strategic partnership through every stage",
-            ].map((item) => (
-              <div key={item} className="flex items-start gap-2 text-muted-foreground">
-                <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-1" />
-                <span className="text-sm leading-relaxed">{item}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-10 flex flex-col sm:flex-row gap-4"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-10"
           >
             <Button variant="hero" size="xl" asChild>
               <Link to="/strategic-assessment">
                 Start Your Strategic Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/solutions/new-clinics">
-                Planning a New Facility? Start Here
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -94,7 +70,7 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
+          transition={{ duration: 0.7, delay: 0.45 }}
           className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl"
         >
           {heroStats.map((stat, i) => (

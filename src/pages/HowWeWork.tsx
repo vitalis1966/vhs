@@ -1,5 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { PracticePathFinder } from "@/components/home/PracticePathFinder";
+import { HealthcarePathwaysSection } from "@/components/home/HealthcarePathwaysSection";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,6 +39,12 @@ const HowWeWork = () => {
           </motion.p>
         </div>
       </section>
+
+      {/* Practice type selector — moved from homepage */}
+      <PracticePathFinder />
+
+      {/* Healthcare pathways — moved from homepage */}
+      <HealthcarePathwaysSection />
 
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">

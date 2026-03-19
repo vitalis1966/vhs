@@ -1,5 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ThreePsSection } from "@/components/home/ThreePsSection";
+import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -87,6 +89,12 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* 4Ps Framework — moved from homepage */}
+      <ThreePsSection />
+
+      {/* Full credibility / differentiators — moved from homepage */}
+      <CredibilitySection variant="full" />
 
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
