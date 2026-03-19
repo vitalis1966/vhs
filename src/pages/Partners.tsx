@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
+import { StrategicEcosystemSection } from "@/components/home/StrategicEcosystemSection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -108,6 +109,9 @@ const Partners = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+
+      {/* Strategic Ecosystem overview — moved from homepage */}
+      <StrategicEcosystemSection />
 
       {/* SECTION 1 — Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">

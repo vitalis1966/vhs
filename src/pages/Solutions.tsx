@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/Navbar";
+import { MnASection } from "@/components/home/MnASection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -148,6 +149,9 @@ const Solutions = () => {
           </div>
         </div>
       </section>
+
+      {/* M&A Section — moved from homepage */}
+      <MnASection />
 
       {/* Lifecycle CTA */}
       <section className="py-20 lg:py-28 bg-background">

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, Target, Users, TrendingUp } from "lucide-react";
 
-const reasons = [
+const allReasons = [
   {
     icon: Shield,
     title: "Full-Cycle Expertise",
@@ -24,7 +24,13 @@ const reasons = [
   },
 ];
 
-export function CredibilitySection() {
+interface CredibilitySectionProps {
+  variant?: "homepage" | "full";
+}
+
+export function CredibilitySection({ variant = "full" }: CredibilitySectionProps) {
+  const reasons = variant === "homepage" ? allReasons.slice(0, 2) : allReasons;
+
   return (
     <section className="py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
@@ -47,7 +53,7 @@ export function CredibilitySection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className={`grid ${variant === "homepage" ? "md:grid-cols-2 max-w-3xl" : "md:grid-cols-2 max-w-5xl"} gap-8 mx-auto`}>
           {reasons.map((reason, i) => (
             <motion.div
               key={reason.title}
