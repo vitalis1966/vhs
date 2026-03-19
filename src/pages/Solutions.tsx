@@ -150,6 +150,9 @@ const Solutions = () => {
         </div>
       </section>
 
+      {/* M&A Section — moved from homepage */}
+      <MnASection />
+
       {/* Lifecycle CTA */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl text-center">
