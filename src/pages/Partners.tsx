@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
+import { StrategicEcosystemSection } from "@/components/home/StrategicEcosystemSection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
