@@ -12,16 +12,16 @@ export function HeroSection() {
       <div className="absolute top-20 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
 
-      <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-24 pb-16">
+      <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-24 pb-16 text-center">
         <div className="max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex items-center gap-2 mb-8"
-          >
+            className="flex items-center gap-2 mb-8">
+            
             <span className="h-px w-12 bg-accent" />
-            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm text-center">
               Full-Cycle Healthcare Strategy
             </span>
           </motion.div>
@@ -30,8 +30,8 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.08] tracking-tight"
-          >
+            className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.08] tracking-tight">
+            
             Practice Strategy for Medical,
             <br />
             Dental, and Veterinary
@@ -43,8 +43,8 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed"
-          >
+            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed">
+            
             Vitalis Health Strategies works with private medical, dental, and veterinary practices across Canada. Whether you are planning a new facility, running an established practice, or figuring out what is holding your current one back — our team has the operational and strategic experience to help you move forward with clarity.
           </motion.p>
 
@@ -52,8 +52,8 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10"
-          >
+            className="mt-10">
+            
             <Button variant="hero" size="xl" asChild>
               <Link to="/strategic-assessment">
                 Start Your Strategic Assessment
@@ -64,6 +64,6 @@ export function HeroSection() {
         </div>
 
       </div>
-    </section>
-  );
+    </section>);
+
 }
