@@ -12,7 +12,8 @@ const stats = [
 export function ImpactStatsSection() {
   return (
     <section className="py-20 lg:py-28 bg-background">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -42,6 +43,7 @@ export function ImpactStatsSection() {
               <p className="text-sm text-muted-foreground mt-1">{stat.context}</p>
             </motion.div>
           ))}
+        </div>
         </div>
       </div>
     </section>
