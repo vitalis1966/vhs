@@ -44,6 +44,7 @@ export function ImpactStatsSection() {
             </motion.div>
           ))}
         </div>
+        </div>
       </div>
     </section>
   );
