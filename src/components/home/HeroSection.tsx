@@ -20,8 +20,8 @@ export function HeroSection() {
             transition={{ duration: 0.5 }}
             className="flex items-center gap-2 mb-8">
             
-            <span className="h-px w-12 bg-accent" />
-            <span className="text-accent font-semibold tracking-widest uppercase text-sm text-center">
+            
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm mx-[240px]">
               Full-Cycle Healthcare Strategy
             </span>
           </motion.div>
@@ -43,7 +43,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed text-center">
+            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed text-center mx-[99px]">
             
             Vitalis Health Strategies works with private medical, dental, and veterinary practices across Canada. Whether you are planning a new facility, running an established practice, or figuring out what is holding your current one back — our team has the operational and strategic experience to help you move forward with clarity.
           </motion.p>
