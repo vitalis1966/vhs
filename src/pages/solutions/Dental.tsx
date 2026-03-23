@@ -117,7 +117,10 @@ export default function Dental() {
         <div className="absolute top-20 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10 max-w-6xl">
           <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5 }} className="text-center">
-            <span className="inline-block text-accent font-semibold tracking-widest uppercase text-sm mb-4">Dental Practices</span>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Dental Practices</span>
+            </div>
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight tracking-tight max-w-4xl mx-auto">
               Full-cycle consulting for dental practices — from your first office to a multi-location group.
             </h1>
