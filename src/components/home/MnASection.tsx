@@ -14,9 +14,10 @@ export function MnASection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-              Mergers, Acquisitions & Transitions
-            </p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Mergers, Acquisitions & Transitions</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight leading-tight">
               Considering a transition or partnership change?<br />
               <span className="text-gradient-primary">Let's discuss your opportunities.</span>

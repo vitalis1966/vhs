@@ -63,9 +63,10 @@ const About = () => {
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            About Vitalis
-          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">About Vitalis</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Built by Clinicians. Focused on Practice Performance.
           </motion.h1>
@@ -99,7 +100,10 @@ const About = () => {
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Our Team</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Our Team</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Experienced advisors with healthcare focus</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Our team blends strategy, operations, and implementation expertise to support practitioners and healthcare leaders across Calgary and Canada.</p>
           </motion.div>

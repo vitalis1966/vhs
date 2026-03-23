@@ -35,7 +35,10 @@ export default function AssessmentList() {
       <section className="pt-32 pb-20 lg:pt-40 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
           <motion.div {...fadeUp}>
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Admin</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Admin</span>
+          </div>
             <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
               Assessment Builder
             </h1>

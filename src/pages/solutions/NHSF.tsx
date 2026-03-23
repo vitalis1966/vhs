@@ -134,7 +134,10 @@ export default function NHSF() {
         <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl text-center">
             <motion.div {...fadeUp}>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Non-Hospital Surgical Facilities</p>
+              <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Non-Hospital Surgical Facilities</span>
+          </div>
               <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight leading-tight">
                 We build surgical facilities from the ground up — concept to accreditation, in every province, for every type of surgical practice.
               </h1>

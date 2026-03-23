@@ -138,9 +138,10 @@ const SolutionsNewClinics = () => {
       {/* S1 — Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            Planning & Building
-          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Planning & Building</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Everything that has to go right before you open your doors.
           </motion.h1>
@@ -173,7 +174,10 @@ const SolutionsNewClinics = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Planning Challenge</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">The Planning Challenge</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Most new practices take longer and cost more than planned. The reason is almost always the same.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">The decisions that matter most get made without complete information — because most practitioners are navigating a new build for the first time.</p>
           </div>
@@ -195,7 +199,10 @@ const SolutionsNewClinics = () => {
       <section id="feasibility" className="py-20 lg:py-28 bg-muted/30 scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp}>
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Practice Feasibility & Financial Planning</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Practice Feasibility & Financial Planning</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">Before you sign anything — know whether the numbers work.</h2>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mb-12">
               Practice feasibility is not just about whether a location exists or whether there is patient demand. It is about whether the specific practice model you have in mind — with its service mix, staffing requirements, facility size, and capital needs — can generate the revenue required to be financially sustainable. Vitalis conducts feasibility analyses that give practitioners a clear financial picture before they commit to a lease, a loan, or a construction contract.
@@ -228,7 +235,10 @@ const SolutionsNewClinics = () => {
       <section id="facility-design" className="py-20 lg:py-28 bg-background scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Facility Development Support</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Facility Development Support</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">The facility you design today determines how you practice for the next decade.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Facility design decisions — room count, layout, workflow adjacency, mechanical rough-in, and equipment placement — are among the most expensive to change after construction. Vitalis provides operational and clinical input into the design process alongside your architect, ensuring the facility you build supports how you actually intend to practice.
@@ -258,7 +268,10 @@ const SolutionsNewClinics = () => {
       <section id="regulatory" className="py-20 lg:py-28 bg-gradient-section scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Regulatory & Compliance Guidance</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Regulatory & Compliance Guidance</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Every province has its own rules. Getting them wrong costs more than getting them right.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Regulatory requirements for private healthcare facilities in Canada vary significantly by province, practice type, and scope of services. CPSA in Alberta, CPSBC in BC, CPSO in Ontario — each has its own registration, facility, and operational standards. Add dental regulatory bodies, veterinary colleges, and NHSF accreditation for surgical facilities, and the compliance picture becomes genuinely complex. Vitalis maps applicable regulatory requirements before your build begins — so compliance is designed in, not retrofitted.
@@ -287,7 +300,10 @@ const SolutionsNewClinics = () => {
       <section id="people" className="py-20 lg:py-28 bg-muted/40 scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">People Strategy</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">People Strategy</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">The practice you build is only as strong as the team you build it with.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Most new practice builds focus intensively on the physical and financial elements — and underinvest in the people infrastructure that will determine day-to-day performance from day one. Vitalis integrates people strategy into the planning process from the start — not as an afterthought.
@@ -337,7 +353,10 @@ const SolutionsNewClinics = () => {
       <section id="technology" className="py-20 lg:py-28 bg-background scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Technology & Software Setup</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Technology & Software Setup</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Technology decisions made before opening are the ones you live with the longest.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               EMR selection, practice management software, scheduling systems, billing platforms, diagnostic equipment integration, and IT infrastructure — each one involves a decision that is expensive to reverse. Vitalis helps practices make these decisions with complete information, ensuring the technology they launch with supports their clinical model and scales with their growth.
@@ -369,7 +388,10 @@ const SolutionsNewClinics = () => {
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">The Development Journey</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">The Development Journey</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">From concept to opening day — the full development journey.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Practice development involves many interconnected decisions. Vitalis helps coordinate these elements so your practice is positioned for a strong start from day one.</p>
           </div>
@@ -394,7 +416,10 @@ const SolutionsNewClinics = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Coordinated Advisory</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Coordinated Advisory</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Working with trusted partners.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Practice development requires expertise across many domains. Vitalis works alongside you to coordinate strategic partners who specialize in critical areas.</p>
           </div>

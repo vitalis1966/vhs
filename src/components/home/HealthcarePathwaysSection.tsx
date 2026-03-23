@@ -71,9 +71,12 @@ export function HealthcarePathwaysSection() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mb-16"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Your Healthcare Journey
-          </p>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+              Your Healthcare Journey
+            </span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Where is your practice right now?
           </h2>

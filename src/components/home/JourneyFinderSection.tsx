@@ -48,9 +48,10 @@ export function JourneyFinderSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Who We Work With
-          </p>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Who We Work With</span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Tell us about your practice.
           </h2>
