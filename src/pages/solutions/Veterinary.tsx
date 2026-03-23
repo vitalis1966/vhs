@@ -48,7 +48,7 @@ const challenges = [
   {
     icon: CircleDollarSign,
     title: "Revenue Is More Complex Than the Invoice",
-    body: "Pet insurance, wellness plans, multi-service bundles, specialist referral fees, and pharmacy revenue all require deliberate systems to capture. Most independent practices collect what they invoice — they don't systematically optimize it.",
+    body: "Veterinary revenue spans pet insurance, wellness plans, service bundles, specialist referral fees, and pharmacy — each requiring deliberate systems to capture. Most independent practices collect what they invoice without optimizing what or how they invoice.",
   },
   {
     icon: UserPlus,
