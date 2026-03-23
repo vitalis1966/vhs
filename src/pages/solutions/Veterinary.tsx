@@ -33,10 +33,10 @@ const fadeUp = {
 };
 
 const heroStats = [
-  "Small Animal · Mixed · Specialty",
-  "Alberta & Western Canada",
-  "Independent & Corporate-Track Practices",
-  "ABVMA & CVBC Expertise",
+  { stat: "Small Animal · Mixed · Specialty", context: "Companion, mixed, and specialist practices" },
+  { stat: "New Builds & Established Practices", context: "Every stage of your practice's lifecycle" },
+  { stat: "Alberta & Western Canada", context: "Alberta-focused with national reach" },
+  { stat: "ABVMA & CVBC Expertise", context: "Regulatory context built in" },
 ];
 
 const challenges = [
