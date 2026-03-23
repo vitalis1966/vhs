@@ -14,7 +14,6 @@ import {
   Brain,
   Stethoscope,
   TrendingUp,
-  Briefcase,
   Monitor,
   MapPin,
   Shield,
@@ -24,6 +23,10 @@ import {
   Heart,
   Activity,
   Building2,
+  CircleDollarSign,
+  Handshake,
+  UserPlus,
+  ShieldCheck,
 } from "lucide-react";
 
 const fadeUp = {
@@ -32,68 +35,67 @@ const fadeUp = {
 };
 
 const heroStats = [
-  { value: "Family Medicine to Complex Specialty" },
-  { value: "Calgary · Edmonton · Across Canada" },
-  { value: "New Builds & Established Practices" },
-  { value: "CPSA & AHS Expertise" },
+  "Family Medicine to Complex Specialty",
+  "Calgary · Edmonton · Across Canada",
+  "New Builds & Established Practices",
+  "CPSA & AHS Expertise",
 ];
 
 const challenges = [
   {
     icon: DollarSign,
     title: "Billing Complexity",
-    body: "Medical practices across Canada face billing complexity — in Alberta this runs through AHCIP, shadow billing, WCB, MVA, and uninsured service fee schedules, creating a revenue cycle that is unusually intricate for a private practice. Most medical clinics are under-collecting — often without knowing it.",
+    body: "Medical billing in Canada — AHCIP, shadow billing, WCB, MVA, and uninsured services — is unusually intricate. Most clinics are under-collecting without knowing it.",
   },
   {
-    icon: Users,
+    icon: UserPlus,
     title: "Physician Recruitment",
-    body: "Canada faces a documented physician shortage — and Alberta is among the most acutely affected provinces, particularly in rural and semi-rural communities. Even Calgary and Edmonton practices struggle to recruit and retain associates who fit their clinical model and compensation structure. The recruitment problem is partly operational — how the practice is structured, what it offers, and how it onboards new physicians.",
+    body: "Canada's physician shortage hits Alberta hard — even Calgary and Edmonton practices struggle to recruit associates who fit their model. The problem is partly structural, not just market-driven.",
   },
   {
     icon: Settings,
     title: "Operational Systems",
-    body: "Most medical clinics in Canada were built around a physician's clinical expertise, not an operational blueprint. Scheduling systems, patient flow protocols, staff roles, and administrative workflows are typically informal — functional, but not optimized. When patient volume grows or a physician leaves, those informal systems break.",
+    body: "Most clinics were built around clinical expertise, not an operational blueprint. When volume grows or a physician leaves, those informal systems break.",
   },
   {
     icon: TrendingUp,
     title: "Growth Planning",
-    body: "Adding a second physician, a new service line, or a second location requires more than clinical capacity. Financial modeling, space planning, regulatory navigation, and operational redesign are all prerequisites for growth that holds. Practices that grow without this foundation discover the costs faster than the revenue.",
+    body: "Adding a physician, service line, or location requires financial modeling, regulatory navigation, and operational redesign — not just clinical capacity. Practices that skip this discover the costs first.",
   },
 ];
 
 const services = [
-  { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue, operations, staffing, growth readiness, compliance.", link: "/strategic-assessment" },
-  { icon: Building2, title: "New Practice Planning & Builds", body: "Site selection, financial modeling, facility design input, CPSA compliance planning, EMR selection, operational launch preparation for GPs, specialists, and surgical groups across Canada." },
-  { icon: DollarSign, title: "Revenue Cycle & Billing Optimization", body: "AHS claims accuracy, shadow billing structure, uninsured service fee schedules, WCB and MVA billing, denial management. Alberta medical practices consistently leave 10–20% of collectible revenue uncaptured." },
-  { icon: Settings, title: "Operations & Workflow Optimization", body: "Patient flow design, scheduling model analysis, appointment mix optimization, staff role alignment, and administrative process redesign." },
-  { icon: Users, title: "Physician Recruitment & Retention", body: "Associate physician search strategy, compensation model design, partnership structure, onboarding frameworks, retention planning for practices in Calgary, Edmonton, rural Alberta, and across Canada." },
-  { icon: Monitor, title: "Healthcare Technology & EMR", body: "EMR platform evaluation and selection (Med Access, CHR, OSCAR, PS Suite, Wolf), scheduling system review, practice management software, digital workflow optimization." },
-  { icon: TrendingUp, title: "Growth Strategy & Expansion", body: "Service line expansion analysis, second location feasibility, multi-physician growth modeling, and operational prerequisites for scaling." },
-  { icon: Briefcase, title: "Fractional & Advisory Leadership", body: "On-demand strategic support for practices that need executive-level guidance without a full-time commitment." },
-  { icon: Brain, title: "Mergers, Acquisitions & Transitions", body: "Practice valuation, acquisition advisory, partnership restructuring, corporate structure optimization, transition planning." },
+  { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue, operations, staffing, growth readiness, and compliance." },
+  { icon: Building2, title: "New Practice Builds", body: "Site selection, financial modeling, facility design, CPSA compliance, EMR selection, and operational launch preparation." },
+  { icon: CircleDollarSign, title: "Revenue Cycle & Billing", body: "AHS claims accuracy, shadow billing, uninsured service fee schedules, WCB and MVA billing — Alberta practices consistently leave 10–20% of revenue uncaptured." },
+  { icon: Settings, title: "Operations & Workflow", body: "Patient flow, scheduling optimization, appointment mix analysis, staff role alignment, and administrative process redesign." },
+  { icon: Users, title: "Physician Recruitment", body: "Associate physician search, compensation model design, partnership structure, onboarding frameworks, and retention planning." },
+  { icon: Monitor, title: "Technology & EMR", body: "EMR selection (Med Access, CHR, OSCAR, PS Suite, Wolf), scheduling systems, practice management software, and digital workflow optimization." },
+  { icon: TrendingUp, title: "Growth & Expansion", body: "Service line expansion, second location feasibility, multi-physician growth modeling, and operational prerequisites for scaling." },
+  { icon: Handshake, title: "M&A & Transitions", body: "Practice valuation, acquisition advisory, partnership restructuring, corporate structuring, and transition planning." },
 ];
 
 const practiceTypes = [
-  { icon: Stethoscope, title: "Family Medicine & Primary Care", body: "Solo and group GP practices, walk-in clinics, and primary care networks across Calgary, Edmonton, Red Deer, and rural Alberta" },
-  { icon: Activity, title: "Internal Medicine", body: "General internists and sub-specialists managing complex chronic disease panels" },
-  { icon: Eye, title: "Dermatology", body: "Medical and cosmetic dermatology practices, including CPSA-accredited procedural facilities" },
-  { icon: Bone, title: "Orthopedics & Musculoskeletal", body: "Orthopedic surgery practices and musculoskeletal clinics" },
-  { icon: Eye, title: "Ophthalmology", body: "Ophthalmology clinics and surgical practices, including cataract and refractive surgery centres" },
-  { icon: Activity, title: "Sports Medicine & Rehabilitation", body: "Sports medicine clinics, multidisciplinary rehabilitation, WCB and MVA billing" },
-  { icon: Heart, title: "Women's Health & OB/GYN", body: "Obstetrics and gynecology practices, women's health clinics" },
-  { icon: Brain, title: "Mental Health & Psychiatry", body: "Psychiatric practices, outpatient mental health clinics, interdisciplinary mental health organizations" },
+  { icon: Stethoscope, title: "Family Medicine & Primary Care", body: "Solo GPs, group practices, walk-in clinics" },
+  { icon: Activity, title: "Internal Medicine", body: "General internists and sub-specialists" },
+  { icon: Eye, title: "Dermatology", body: "Medical and cosmetic dermatology, procedural facilities" },
+  { icon: Bone, title: "Orthopedics & Musculoskeletal", body: "Orthopedic surgery and musculoskeletal clinics" },
+  { icon: Eye, title: "Ophthalmology", body: "Ophthalmology clinics and surgical practices" },
+  { icon: Activity, title: "Sports Medicine & Rehab", body: "Multidisciplinary, WCB and MVA billing" },
+  { icon: Heart, title: "Women's Health & OB/GYN", body: "Obstetrics, gynecology, women's health" },
+  { icon: Brain, title: "Mental Health & Psychiatry", body: "Psychiatric practices and mental health clinics" },
 ];
 
 const regulatoryFeatures = [
-  { icon: Shield, title: "Alberta Health Care Insurance Plan (AHCIP)", body: "Physician billing in Alberta operates through AHCIP — a fee-for-service schedule that covers insured services. Billing accuracy, modifier usage, and claim submission timing directly affect collection rates. Most practices have at least one systematic billing gap that compounds quietly over time." },
-  { icon: FileText, title: "CPSA Registration & Facility Standards", body: "All medical clinics in Alberta must register with CPSA. Facilities performing procedures beyond general practice may require additional CPSA accreditation. Vitalis helps practices understand what registration and compliance they need at their current stage." },
-  { icon: DollarSign, title: "Shadow Billing & Uninsured Services", body: "Many Alberta physicians offer both insured (AHCIP) and uninsured services. Structuring these service lines, setting fee schedules, and ensuring billing captures all appropriate revenue is an area where Vitalis consistently identifies significant uncaptured income." },
+  { icon: Shield, title: "Alberta Health Care Insurance Plan", body: "Physician billing through AHCIP covers insured services via a fee-for-service schedule. Billing accuracy and claim timing directly affect collection rates." },
+  { icon: FileText, title: "CPSA Registration & Facility Standards", body: "All Alberta medical clinics must register with CPSA. Facilities performing procedures beyond general practice may require additional accreditation." },
+  { icon: DollarSign, title: "Shadow Billing & Uninsured Services", body: "Many Alberta physicians offer both insured and uninsured services. Structuring fee schedules and ensuring billing captures all appropriate revenue is where Vitalis consistently finds significant gaps." },
 ];
 
 const geoCards = [
-  { title: "Calgary", body: "Calgary's medical practice landscape spans established inner-city clinics, rapidly growing suburban communities, and specialized surgical centres. Growth corridors in SE, NE, and NW Calgary present strong opportunities for new medical facilities — particularly family medicine and specialty clinics." },
-  { title: "Edmonton & Northern Alberta", body: "Edmonton supports a strong medical practice market anchored by proximity to Alberta's largest hospitals and research institutions. Northern Alberta communities face significant physician shortages, creating opportunities for practices willing to serve underserved populations." },
-  { title: "Rural Alberta & Across Canada", body: "Rural Alberta practices face unique challenges including physician recruitment, limited specialist access, and distance-related operational constraints. Vitalis also works with medical practices in BC, Saskatchewan, Manitoba, and Ontario." },
+  { title: "Calgary", body: "Established inner-city clinics, rapidly growing suburban communities, and specialized surgical centres. Growth corridors in SE, NE, and NW Calgary present strong opportunities." },
+  { title: "Edmonton & Northern Alberta", body: "Strong medical practice market anchored by proximity to Alberta's largest hospitals and research institutions. Northern communities face significant physician shortages." },
+  { title: "Rural Alberta & Across Canada", body: "Rural practices face unique challenges including physician recruitment and limited specialist access. Vitalis also works with practices in BC, Saskatchewan, Manitoba, and Ontario." },
 ];
 
 const processSteps = [
@@ -104,9 +106,9 @@ const processSteps = [
 ];
 
 const caseStudies = [
-  { tag: "Revenue Cycle · Calgary", headline: "28% improvement in net collections", body: "Multi-physician primary care clinic. AHS billing gaps and uncaptured uninsured service revenue. 28% net collections improvement without adding patients." },
-  { tag: "New Build · Edmonton", headline: "Specialist clinic opened on schedule and within budget", body: "Multi-physician clinic, feasibility through opening day within 14-month window." },
-  { tag: "Operations · Alberta", headline: "Scheduling redesign recovered 22% of unused OR time", body: "Surgical practice operational assessment. Scheduling redesign recovered 22% unused procedure time within 60 days." },
+  { tag: "REVENUE CYCLE · CALGARY", headline: "28% improvement in net collections", body: "Multi-physician primary care clinic. AHS billing gaps and uncaptured uninsured service revenue. 28% net collections improvement without adding patients." },
+  { tag: "NEW BUILD · EDMONTON", headline: "Specialist clinic opened on schedule and within budget", body: "Multi-physician clinic, feasibility through opening day within 14-month window." },
+  { tag: "OPERATIONS · ALBERTA", headline: "Scheduling redesign recovered 22% of unused OR time", body: "Surgical practice operational assessment. Scheduling redesign recovered 22% unused procedure time within 60 days." },
 ];
 
 const newPracticeServices = [
@@ -138,101 +140,57 @@ export default function Medical() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* HERO */}
-      <section className="relative bg-gradient-hero pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+      {/* SECTION 1 — HERO */}
+      <section className="relative bg-gradient-hero pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden">
         <div className="absolute top-20 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10 max-w-6xl">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5 }} className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10 max-w-5xl">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5 }}>
+            <div className="flex items-center gap-2 mb-6">
               <span className="h-px w-12 bg-accent" />
               <span className="text-accent font-semibold tracking-widest uppercase text-sm">Medical Practices</span>
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight tracking-tight max-w-4xl mx-auto">
-              Full-cycle strategic consulting for medical clinics and practices — from your first facility to your most complex operational challenge.
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight tracking-tight">
+              Full-cycle strategy for medical practices —{" "}
+              <span className="text-gradient-primary italic">from first clinic to exit.</span>
             </h1>
-            <p className="mt-6 text-muted-foreground text-lg max-w-3xl mx-auto leading-relaxed">
-              Vitalis works with family physicians, specialists, surgical groups, and multi-physician organizations across Calgary, Edmonton, and Canada. Opening a new clinic, navigating a billing problem, trying to grow, or preparing for a major transition — we have the operational and strategic experience to help.
+            <p className="mt-6 text-muted-foreground text-lg max-w-3xl leading-relaxed">
+              Vitalis works with family physicians, specialists, surgical groups, and multi-physician organizations across Calgary, Edmonton, and Canada. Whether you're opening a clinic, navigating a billing problem, trying to grow, or preparing for a transition — we have the operational and strategic experience to help.
             </p>
           </motion.div>
 
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.1 }} className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
             {heroStats.map((s, i) => (
-              <div key={i} className="rounded-xl bg-background/60 backdrop-blur-sm border border-border/50 p-4 text-center">
-                <p className="text-sm font-medium text-foreground">{s.value}</p>
+              <div key={i} className="rounded-lg bg-background/60 backdrop-blur-sm border border-border/50 px-4 py-3 text-center">
+                <p className="text-sm font-medium text-foreground">{s}</p>
               </div>
             ))}
           </motion.div>
 
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.25 }} className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.2 }} className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button variant="hero" size="xl" asChild>
-              <Link to="/strategic-assessment">Start Your Strategic Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link to="/strategic-assessment">Start Your Practice Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button variant="hero-outline" size="xl" asChild>
-              <Link to="/contact">Speak With Our Team</Link>
+              <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </motion.div>
         </div>
       </section>
 
-      {/* CHALLENGES */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* SECTION 2 — SELF-IDENTIFICATION */}
+      <section className="py-16 lg:py-24 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-              The challenges medical practice owners face across Canada — and what actually causes them.
-            </h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Where Are You?</span>
+            </div>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Every engagement starts with one question.</h2>
           </motion.div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {challenges.map((c, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="rounded-2xl bg-card p-8 shadow-card">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                  <c.icon className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">{c.title}</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">{c.body}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* SERVICES */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">What Vitalis does for medical practices.</h2>
-            <p className="mt-4 text-muted-foreground text-lg">Every service below is available as a standalone engagement or as part of a broader advisory relationship.</p>
-          </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((s, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="rounded-2xl bg-card p-6 shadow-card hover:shadow-elevated transition-shadow duration-300">
-                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-4">
-                  <s.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-display text-lg font-bold text-foreground mb-2">{s.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{s.body}</p>
-                {s.link && (
-                  <Link to={s.link} className="mt-3 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TWO PATHS */}
-      <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Where are you in your practice's lifecycle?</h2>
-          </motion.div>
           <div className="grid lg:grid-cols-2 gap-8">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}
-              className="rounded-2xl bg-card border border-border/50 p-8 lg:p-10 flex flex-col">
+              className="rounded-2xl bg-card border-2 border-border p-8 lg:p-10 flex flex-col shadow-elevated">
               <span className="inline-block text-xs font-semibold tracking-widest uppercase text-accent bg-accent/10 px-3 py-1 rounded-full w-fit mb-4">Opening a New Practice</span>
               <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-4">Get the foundation right. It's harder to fix once you've opened.</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -252,7 +210,7 @@ export default function Medical() {
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5, delay: 0.1 }}
-              className="rounded-2xl bg-card border border-border/50 p-8 lg:p-10 flex flex-col">
+              className="rounded-2xl bg-card border-2 border-border p-8 lg:p-10 flex flex-col shadow-elevated">
               <span className="inline-block text-xs font-semibold tracking-widest uppercase text-accent bg-accent/10 px-3 py-1 rounded-full w-fit mb-4">Optimizing an Established Practice</span>
               <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-4">Running well and running at your potential are not the same thing.</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -274,62 +232,172 @@ export default function Medical() {
         </div>
       </section>
 
-      {/* PRACTICE TYPES */}
-      <section className="py-20 lg:py-28 bg-muted/30">
+      {/* SECTION 3 — PAIN POINTS (dark band) */}
+      <section className="py-16 lg:py-24 bg-gradient-forest">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Medical practices across Canada.</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">The Challenges</span>
+            </div>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-primary-foreground tracking-tight">
+              The challenges medical practice owners face — and what actually causes them.
+            </h2>
           </motion.div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {practiceTypes.map((p, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="rounded-xl bg-card p-6 text-center shadow-soft hover:shadow-card transition-shadow duration-300">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <p.icon className="h-6 w-6 text-primary" />
+          <div className="grid md:grid-cols-2 gap-6">
+            {challenges.map((c, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="rounded-2xl bg-primary-foreground/95 p-7">
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                  <c.icon className="h-6 w-6 text-accent" />
                 </div>
-                <h3 className="font-display text-sm font-bold text-foreground mb-1">{p.title}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed">{p.body}</p>
+                <h3 className="font-display text-lg font-bold text-foreground mb-2">{c.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{c.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* REGULATORY */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* SECTION 4 — SERVICES */}
+      <section className="py-16 lg:py-24 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Billing and regulatory context — Alberta, BC, Ontario, and across Canada.</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Our Services</span>
+            </div>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">What Vitalis does for medical practices.</h2>
+            <p className="mt-3 text-muted-foreground text-lg">Every service is available as a standalone engagement or as part of a broader advisory relationship.</p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {regulatoryFeatures.map((f, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }} className="text-center">
-                <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-5">
-                  <f.icon className="h-8 w-8 text-primary" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {services.map((s, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.35, delay: i * 0.04 }}
+                className="rounded-xl bg-card p-5 shadow-card hover:shadow-elevated transition-shadow duration-300 flex flex-col">
+                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+                  <s.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-display text-lg font-bold text-foreground mb-3">{f.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{f.body}</p>
+                <h3 className="font-display text-sm font-bold text-foreground mb-1.5">{s.title}</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">{s.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5 — MID-PAGE CTA */}
+      <section className="py-14 lg:py-20 bg-muted/40">
+        <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}>
+            <p className="font-display text-2xl lg:text-3xl font-bold text-foreground leading-snug tracking-tight italic">
+              "Your medical practice is a clinical asset and a business. It deserves strategy that treats it as both."
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+              <Button variant="hero" size="lg" asChild>
+                <Link to="/strategic-assessment">Start Your Practice Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              </Button>
+              <Button variant="hero-outline" size="lg" asChild>
+                <Link to="/contact">Speak With Our Team</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SECTION 6 — CASE STUDIES */}
+      <section className="py-16 lg:py-24 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Medical Practice Engagements</span>
+            </div>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">A sample of what we've delivered.</h2>
+            <p className="mt-2 text-muted-foreground text-sm">Client details withheld.</p>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {caseStudies.map((c, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="rounded-2xl bg-card border-2 border-border p-8 shadow-elevated flex flex-col">
+                <span className="inline-block text-xs font-bold tracking-wider uppercase text-accent mb-4">{c.tag}</span>
+                <h3 className="font-display text-xl font-bold text-foreground mb-3">{c.headline}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{c.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7 — SPECIALTIES */}
+      <section className="py-14 lg:py-20 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Specialties We Work With</span>
+            </div>
+            <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground tracking-tight">Medical practices across Canada.</h2>
+          </motion.div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {practiceTypes.map((p, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.3, delay: i * 0.04 }}
+                className="flex items-start gap-3 p-4 rounded-lg">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <p.icon className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">{p.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{p.body}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 8 — REGULATORY CONTEXT */}
+      <section className="py-14 lg:py-20 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Billing & Regulatory Context</span>
+            </div>
+            <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground tracking-tight">Alberta, BC, Ontario, and across Canada.</h2>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {regulatoryFeatures.map((f, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.08 }}
+                className="rounded-xl bg-card border border-border/60 p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <f.icon className="h-5 w-5 text-primary" />
+                  <h3 className="font-display text-sm font-bold text-foreground">{f.title}</h3>
+                </div>
+                <p className="text-muted-foreground text-xs leading-relaxed">{f.body}</p>
               </motion.div>
             ))}
           </div>
           <motion.p initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-12 text-center text-muted-foreground text-sm italic max-w-3xl mx-auto">
-            Vitalis also works with medical practices in British Columbia (under CPSBC registration), Ontario (CPSO), Saskatchewan, and Manitoba — applying the same structured approach to each province's specific billing, regulatory, and market environment.
+            className="mt-8 text-center text-muted-foreground text-xs italic">
+            Vitalis also works with practices in British Columbia (CPSBC), Ontario (CPSO), Saskatchewan, and Manitoba.
           </motion.p>
         </div>
       </section>
 
-      {/* GEOGRAPHY */}
-      <section className="py-20 lg:py-28 bg-gradient-section">
+      {/* SECTION 9 — GEOGRAPHY */}
+      <section className="py-14 lg:py-20 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Medical practices across Calgary, Edmonton, and Canada.</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Where We Work</span>
+            </div>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-10">
             {geoCards.map((g, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="rounded-2xl bg-card p-6 shadow-card">
-                <MapPin className="h-6 w-6 text-accent mb-3" />
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.08 }}
+                className="text-center">
+                <MapPin className="h-6 w-6 text-accent mx-auto mb-3" />
                 <h3 className="font-display text-lg font-bold text-foreground mb-2">{g.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{g.body}</p>
               </motion.div>
@@ -338,70 +406,53 @@ export default function Medical() {
         </div>
       </section>
 
-      {/* NHSF CALLOUT */}
-      <section className="py-16 bg-background">
+      {/* SECTION 10 — HOW IT WORKS */}
+      <section className="py-16 lg:py-24 bg-background">
+        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">How It Works</span>
+            </div>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">What working with Vitalis looks like.</h2>
+          </motion.div>
+          <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="hidden lg:block absolute top-6 left-[12.5%] right-[12.5%] h-0.5 bg-border" />
+            {processSteps.map((s, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="relative flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-background border-2 border-primary flex items-center justify-center text-primary font-bold text-sm z-10 mb-4">
+                  {s.num}
+                </div>
+                <h3 className="font-display text-base font-bold text-foreground">{s.title}</h3>
+                <p className="text-muted-foreground text-xs mt-1">{s.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 11 — NHSF CALLOUT */}
+      <section className="py-10 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}
-            className="rounded-2xl bg-primary/5 border border-primary/20 p-8 lg:p-10 flex flex-col lg:flex-row items-start lg:items-center gap-6">
-            <div className="flex-grow">
-              <h3 className="font-display text-xl font-bold text-foreground mb-2">Planning a surgical facility or procedural centre?</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                If your practice involves surgical or procedural services that would qualify as a Non-Hospital Surgical Facility under CPSA accreditation, Vitalis provides dedicated advisory for that pathway. NHSF builds and accreditation preparation involve a separate regulatory and financial framework from standard medical clinic development.
-              </p>
+            className="rounded-2xl bg-gradient-forest p-8 lg:p-12 text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">Surgical Facilities</span>
             </div>
-            <Button variant="hero" size="lg" className="flex-shrink-0" asChild>
+            <h3 className="font-display text-2xl lg:text-3xl font-bold text-primary-foreground mb-3">Planning a surgical facility or procedural centre?</h3>
+            <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
+              If your practice involves surgical or procedural services that would qualify as a Non-Hospital Surgical Facility under CPSA accreditation, Vitalis provides dedicated advisory for that pathway. NHSF builds and accreditation preparation involve a separate regulatory and financial framework from standard medical clinic development.
+            </p>
+            <Button variant="gold" size="lg" asChild>
               <Link to="/solutions/nhsf">Explore Our NHSF & Surgical Facility Advisory <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </motion.div>
         </div>
       </section>
 
-      {/* PROCESS */}
-      <section className="py-20 lg:py-28 bg-muted/30">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">What working with Vitalis looks like.</h2>
-          </motion.div>
-          <div className="relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 lg:gap-0">
-            <div className="hidden lg:block absolute top-6 left-[12.5%] right-[12.5%] h-0.5 bg-border" />
-            <div className="lg:hidden absolute top-0 bottom-0 left-6 w-0.5 bg-border" />
-            {processSteps.map((s, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="relative flex lg:flex-col items-center lg:items-center text-center lg:w-1/4 gap-4 lg:gap-0 pl-12 lg:pl-0">
-                <div className="w-12 h-12 rounded-full bg-background border-2 border-primary flex items-center justify-center text-primary font-bold text-sm z-10 flex-shrink-0 absolute left-0 lg:relative lg:left-auto">
-                  {s.num}
-                </div>
-                <div className="lg:mt-4">
-                  <h3 className="font-display text-base font-bold text-foreground">{s.title}</h3>
-                  <p className="text-muted-foreground text-xs mt-1">{s.body}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CASE STUDIES */}
-      <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="text-center mb-4">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">Medical practice engagements — a sample.</h2>
-          </motion.div>
-          <p className="text-center text-muted-foreground text-sm mb-12">Client details withheld.</p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {caseStudies.map((c, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="rounded-2xl bg-card border border-border/50 p-6 shadow-card">
-                <span className="inline-block text-xs font-semibold tracking-wider uppercase text-accent mb-3">{c.tag}</span>
-                <h3 className="font-display text-lg font-bold text-foreground mb-2">{c.headline}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{c.body}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
+      {/* SECTION 12 — FINAL CTA */}
       <section className="py-20 lg:py-28 bg-gradient-forest text-primary-foreground">
         <div className="container mx-auto px-4 lg:px-8 max-w-3xl text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}>
@@ -410,7 +461,7 @@ export default function Medical() {
             </h2>
             <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
               <Button variant="gold" size="xl" asChild>
-                <Link to="/strategic-assessment">Start Your Strategic Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link to="/strategic-assessment">Start Your Practice Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button size="xl" className="border-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent" asChild>
                 <Link to="/contact">Speak With Our Team</Link>
