@@ -67,11 +67,11 @@ const challenges = [
 const services = [
   { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue collection, scheduling utilization, overhead ratios, staffing structure, technology, and growth readiness." },
   { icon: Building2, title: "New Dental Office Builds", body: "Financial modeling, site selection, dental-specific facility planning, ADA+C compliance, practice management software setup, and launch preparation." },
-  { icon: CircleDollarSign, title: "Billing & Fee Collection", body: "Alberta Blue Cross claim accuracy, ADA fee guide alignment, coordination of benefits review, predetermination optimization, and patient billing protocols." },
-  { icon: Calendar, title: "Operations & Scheduling", body: "Operatory utilization analysis, hygiene chair productivity, appointment mix review, scheduling redesign, and patient flow improvement." },
-  { icon: Users, title: "Associate Recruitment", body: "Associate dentist search strategy, compensation model design, partnership track structuring, and onboarding framework." },
+  { icon: CircleDollarSign, title: "Billing & Fee Collection", body: "Systematic review of every revenue stream — insurance carriers, fee guide alignment, coordination of benefits, and patient billing — to find and close collection gaps." },
+  { icon: Calendar, title: "Operations & Scheduling", body: "Operatory utilization, hygiene productivity, appointment mix, and patient flow — redesigned to run at capacity without adding space." },
+  { icon: Users, title: "Associate Recruitment", body: "Finding the right associates, structuring compensation fairly, and building the partnership track that retains them long term." },
   { icon: Monitor, title: "Practice Technology", body: "Practice management software selection (Dentrix, Eaglesoft, Tracker, ABELDent, Curve), digital X-ray integration, patient communication, and online booking." },
-  { icon: TrendingUp, title: "Growth & Multi-Location", body: "Second location feasibility, demographic analysis, financial modeling for multi-site operations, and operational infrastructure for expansion." },
+  { icon: TrendingUp, title: "Growth & Multi-Location", body: "Second locations, new service lines, and multi-site operations — planned financially and built operationally before you open." },
   { icon: Handshake, title: "M&A & Transitions", body: "Dental practice valuation, acquisition advisory, DSO negotiation support, partner buyout structuring, and associate buy-in planning." },
 ];
 
