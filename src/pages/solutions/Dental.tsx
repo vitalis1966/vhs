@@ -35,10 +35,10 @@ const fadeUp = {
 };
 
 const heroStats = [
-  "General & Specialty Dentistry",
-  "Calgary & Edmonton Markets",
-  "Solo Practices to Multi-Location Groups",
-  "ADA+C & Provincial Expertise",
+  { stat: "General & Specialty Dentistry", context: "From solo GPs to multi-location groups" },
+  { stat: "New Builds & Established Practices", context: "Every stage of your practice's lifecycle" },
+  { stat: "Calgary & Edmonton Markets", context: "Alberta-focused with national reach" },
+  { stat: "ADA+C & Provincial Expertise", context: "Regulatory and billing context built in" },
 ];
 
 const challenges = [
