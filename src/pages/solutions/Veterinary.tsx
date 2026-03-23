@@ -187,7 +187,7 @@ export default function Veterinary() {
           <div className="grid lg:grid-cols-2 gap-8">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}
               className="rounded-2xl bg-card border-2 border-border p-8 lg:p-10 flex flex-col shadow-elevated">
-              <span className="inline-block text-xs font-semibold tracking-widest uppercase text-accent bg-accent/10 px-3 py-1 rounded-full w-fit mb-4">Opening a New Practice</span>
+              <span className="inline-block text-xs font-semibold tracking-widest uppercase text-forest bg-forest/10 px-3 py-1 rounded-full w-fit mb-4">Opening a New Practice</span>
               <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-4">The financial and operational decisions made before opening day determine the ceiling of your practice for years.</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                 A new small animal clinic in Calgary or Edmonton typically requires $500,000 to $1.5M in capital before opening, depending on service scope and equipment specification. Emergency and specialty facilities are considerably higher. Understanding exactly what you are building, what it will cost, and what revenue model will support it — before you commit — is what separates a strong launch from a financial strain.
