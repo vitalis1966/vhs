@@ -67,12 +67,12 @@ const challenges = [
 const services = [
   { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue, operations, staffing, growth readiness, and compliance." },
   { icon: Building2, title: "New Practice Builds", body: "Site selection, financial modeling, facility design, CPSA compliance, EMR selection, and operational launch preparation." },
-  { icon: CircleDollarSign, title: "Revenue Cycle & Billing", body: "AHS claims accuracy, shadow billing, uninsured service fee schedules, WCB and MVA billing — Alberta practices consistently leave 10–20% of revenue uncaptured." },
-  { icon: Settings, title: "Operations & Workflow", body: "Patient flow, scheduling optimization, appointment mix analysis, staff role alignment, and administrative process redesign." },
-  { icon: Users, title: "Physician Recruitment", body: "Associate physician search, compensation model design, partnership structure, onboarding frameworks, and retention planning." },
+  { icon: CircleDollarSign, title: "Revenue Cycle & Billing", body: "Independent review of every revenue stream — AHS, shadow billing, uninsured services, and third-party billing — to recover what's being left behind." },
+  { icon: Settings, title: "Operations & Workflow", body: "Scheduling, patient flow, staff role design, and administrative systems — optimized to run the practice efficiently at any volume." },
+  { icon: Users, title: "Physician Recruitment", body: "Finding, structuring, and retaining the right physicians — from search strategy through compensation design and partnership planning." },
   { icon: Monitor, title: "Technology & EMR", body: "EMR selection (Med Access, CHR, OSCAR, PS Suite, Wolf), scheduling systems, practice management software, and digital workflow optimization." },
-  { icon: TrendingUp, title: "Growth & Expansion", body: "Service line expansion, second location feasibility, multi-physician growth modeling, and operational prerequisites for scaling." },
-  { icon: Handshake, title: "M&A & Transitions", body: "Practice valuation, acquisition advisory, partnership restructuring, corporate structuring, and transition planning." },
+  { icon: TrendingUp, title: "Growth & Expansion", body: "New service lines, additional locations, and multi-physician growth — modeled financially and built operationally before you commit." },
+  { icon: Handshake, title: "M&A & Transitions", body: "Valuations, acquisitions, partnership restructuring, and succession planning — for practices at every stage of ownership change." },
 ];
 
 const practiceTypes = [
