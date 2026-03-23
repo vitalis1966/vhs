@@ -126,10 +126,10 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto flex items-center justify-between h-14 lg:h-16 px-4 lg:px-6 xl:px-8 max-w-[1440px]">
-        <Link to="/" className="flex items-center gap-4 flex-shrink-0">
+        <Link to="/" className="flex flex-col items-center gap-0.5 flex-shrink-0">
           <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 lg:h-12 w-auto" />
-          <span className="hidden lg:block h-8 w-px bg-border/60" />
-          <span className="hidden lg:block text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
+          <span className="hidden lg:flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="text-accent text-[10px]">🍁</span>
             Proudly Canadian
           </span>
         </Link>
