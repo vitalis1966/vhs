@@ -65,11 +65,11 @@ const challenges = [
 const services = [
   { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue, operations, staffing, technology, growth readiness, and competitive positioning." },
   { icon: Building2, title: "New Clinic Builds", body: "Feasibility analysis, financial modeling, site selection, ABVMA facility classification planning, practice management software, and associate recruitment." },
-  { icon: CircleDollarSign, title: "Revenue Optimization", body: "Revenue per visit analysis, wellness plan structure and adoption, invoice accuracy, pharmaceutical pricing, specialist referral fees, and insurance billing." },
-  { icon: Settings, title: "Operations & Workflow", body: "Appointment scheduling, exam room utilization, patient flow, technician role alignment, and administrative workflow optimization." },
-  { icon: Users, title: "Associate Recruitment", body: "Veterinarian and RVT search strategy, compensation model design, partnership track structuring, cultural onboarding, and retention planning." },
+  { icon: CircleDollarSign, title: "Revenue Optimization", body: "Revenue per visit, wellness plan adoption, invoice accuracy, pharmaceutical pricing, and referral fees — reviewed across every stream." },
+  { icon: Settings, title: "Operations & Workflow", body: "Scheduling, exam room utilization, patient flow, and technician role design — built to run efficiently as the practice grows." },
+  { icon: Users, title: "Associate Recruitment", body: "Finding, compensating, and retaining the right veterinarians and RVTs — from search strategy through partnership structure." },
   { icon: Monitor, title: "Practice Technology", body: "Practice management software selection (ezyVet, Cornerstone, AVImark, Provet Cloud), imaging integration, inventory management, and client communication." },
-  { icon: TrendingUp, title: "Growth & Expansion", body: "Second location feasibility, demographic analysis for Alberta veterinary markets, and financial modeling for multi-site operations." },
+  { icon: TrendingUp, title: "Growth & Expansion", body: "Second locations and multi-site growth — analyzed demographically, modeled financially, and built operationally." },
   { icon: Handshake, title: "M&A & Transitions", body: "Practice valuation, corporate acquisition advisory, associate buy-in structuring, partnership buyout planning, and transition preparation." },
 ];
 
