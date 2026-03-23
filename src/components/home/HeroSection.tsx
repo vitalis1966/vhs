@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-
-
-
 export function HeroSection() {
   return (
     <section className="relative min-h-[95vh] flex items-center bg-gradient-hero overflow-hidden">
@@ -13,12 +10,12 @@ export function HeroSection() {
       <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-24 pb-16">
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex items-center gap-2 mb-8"
+            className="flex items-center justify-center gap-2 mb-8"
           >
             <span className="h-px w-12 bg-accent" />
             <span className="text-accent font-semibold tracking-widest uppercase text-sm">
@@ -34,16 +31,16 @@ export function HeroSection() {
           >
             Practice Strategy for Medical,
             <br />
-            Dental, and Veterinary
-            <br />
-            <span className="text-gradient-primary italic">Practices — at Every Stage.</span>
+            Dental &amp; Veterinary
+            {" "}
+            <span className="text-gradient-primary italic">— at Every Stage.</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl leading-relaxed"
+            className="mt-8 text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
             Vitalis Health Strategies works with private medical, dental, and veterinary practices across Canada. Whether you are planning a new facility, running an established practice, or figuring out what is holding your current one back — our team has the operational and strategic experience to help you move forward with clarity.
           </motion.p>
@@ -62,7 +59,6 @@ export function HeroSection() {
             </Button>
           </motion.div>
         </div>
-
       </div>
     </section>
   );

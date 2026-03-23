@@ -108,10 +108,13 @@ export function PracticePathFinder() {
       <div className="max-w-4xl mx-auto px-6 text-center">
         {step === 1 && (
           <>
-            <p className="text-xs uppercase tracking-widest text-amber-600 font-medium">
-              Get Started
-            </p>
-            <h2 className="font-display text-4xl font-bold text-foreground mt-3">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <span className="h-px w-12 bg-accent" />
+              <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+                Get Started
+              </span>
+            </div>
+            <h2 className="font-display text-4xl font-bold text-foreground">
               What type of practice are you?
             </h2>
             <p className="text-base text-muted-foreground mt-3">
