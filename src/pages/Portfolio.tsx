@@ -392,6 +392,8 @@ const Portfolio = () => {
             <AnimatePresence mode="popLayout">
               {filteredCases.map((cs, i) => {
                 const isFirst = i === 0 && activeFilter === "All";
+                const topBorderColor = borderColorMap[cs.type[0]] || "#264a39";
+                const resultStat = resultStatMap[cs.id];
                 return (
                   <motion.div
                     key={cs.id}
@@ -400,41 +402,55 @@ const Portfolio = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.04, duration: 0.35 }}
-                    className={`group bg-background rounded-lg border border-border/60 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:border-border ${
+                    className={`group bg-white rounded-lg border border-border/60 overflow-hidden flex flex-col min-h-[200px] transition-all duration-300 hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:border-border ${
                       isFirst ? "lg:col-span-2" : ""
                     } ${!cs.isOngoing ? "cursor-pointer" : ""}`}
-                    style={{ borderTopWidth: "3px", borderTopColor: "hsl(var(--forest))" }}
+                    style={{ borderTop: `3px solid ${topBorderColor}` }}
                     role={cs.isOngoing ? undefined : "button"}
                     tabIndex={cs.isOngoing ? undefined : 0}
                     onClick={() => handleCardClick(cs)}
                     onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !cs.isOngoing) { e.preventDefault(); setSelectedCaseId(cs.id); } }}
                   >
-                    <div className="p-6 flex flex-col flex-1">
+                    <div className="p-5 flex flex-col flex-1">
                       {/* Tags */}
-                      <div className="flex gap-2 flex-wrap mb-2">
+                      <div className="flex gap-2 flex-wrap">
                         {cs.type.map(t => (
-                          <span key={t} className="text-xs font-medium text-foreground px-2.5 py-0.5 rounded-full border border-border bg-transparent">
+                          <span key={t} className="text-xs text-foreground px-2 py-0.5 rounded-full border border-border" style={{ borderWidth: '0.5px' }}>
                             {t}
                           </span>
                         ))}
                       </div>
                       {/* Specialty */}
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">{cs.specialty}</p>
+                      <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-2">{cs.specialty}</p>
+                      {/* Result stat or Active badge */}
+                      {cs.isOngoing ? (
+                        <span className="inline-flex self-start mt-2 text-[10px] uppercase tracking-widest font-medium px-2 py-0.5 rounded-full bg-[#7a8a7a]/10 text-[#3d5a47] border border-[#7a8a7a]/30" style={{ borderWidth: '0.5px' }}>
+                          Active Engagement
+                        </span>
+                      ) : resultStat ? (
+                        <p className="text-sm font-bold mt-2" style={{ color: topBorderColor }}>{resultStat}</p>
+                      ) : null}
                       {/* Title */}
-                      <h3 className="font-display text-lg font-bold text-forest leading-snug mb-3 line-clamp-3">
+                      <h3 className={`font-display font-semibold text-forest leading-[1.4] mt-2 ${isFirst ? "text-xl" : "text-base"}`}>
                         {cs.title}
                       </h3>
-                      {/* Ongoing body or location */}
-                      {cs.isOngoing && cs.ongoingBody && (
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-3">{cs.ongoingBody}</p>
+                      {/* Featured card key result */}
+                      {isFirst && (
+                        <p className="text-[13px] italic text-muted-foreground mt-1.5">
+                          Opened 4 weeks ahead of projection · +19% above projected volume
+                        </p>
                       )}
-                      <div className="mt-auto">
-                        <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+                      {/* Ongoing body */}
+                      {cs.isOngoing && cs.ongoingBody && (
+                        <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-3">{cs.ongoingBody}</p>
+                      )}
+                      <div className="mt-auto pt-3">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                           <MapPin className="w-3 h-3" />
                           {cs.location}
                         </p>
                         {!cs.isOngoing && (
-                          <span className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1">
+                          <span className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1 mt-2">
                             Read more <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                         )}
