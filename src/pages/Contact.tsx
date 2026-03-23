@@ -42,13 +42,15 @@ const Contact = () => {
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
+          <motion.divinitial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-accent font-medium tracking-widest uppercase text-sm mb-6"
+            className="flex items-center gap-2 mb-6"
           >
-            Get In Touch
-          </motion.p>
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+              Get In Touch
+            </span>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -70,9 +70,10 @@ export function StrategicEcosystemSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-6"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Strategic Ecosystem
-          </p>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Strategic Ecosystem</span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Healthcare ventures require many specialists.
           </h2>

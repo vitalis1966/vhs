@@ -56,7 +56,10 @@ const Solutions = () => {
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">Solutions Overview</motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Solutions Overview</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Full-cycle strategic advisory for healthcare organizations.
           </motion.h1>
@@ -94,7 +97,10 @@ const Solutions = () => {
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Full-Cycle Capabilities</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Full-Cycle Capabilities</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Comprehensive expertise across healthcare strategy.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Vitalis brings deep capability across the full spectrum of healthcare strategy consulting — supporting organizations through every challenge and opportunity.</p>
           </div>
@@ -115,7 +121,10 @@ const Solutions = () => {
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Types of Practices We Work With</p>
+              <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Types of Practices We Work With</span>
+          </div>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-4">Healthcare practices of all types.</h2>
               <p className="text-muted-foreground leading-relaxed">Vitalis supports practitioners and organizations across a range of practice types and clinical specialties throughout Calgary and across Canada.</p>
             </div>
@@ -134,7 +143,10 @@ const Solutions = () => {
       <section className="py-20 lg:py-28 bg-gradient-section">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-12">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Organizations We Support</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Organizations We Support</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">From private practices to public systems.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Vitalis supports a range of healthcare organizations through practical, coordinated advisory engagements.</p>
           </div>

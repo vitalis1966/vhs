@@ -116,9 +116,10 @@ const Partners = () => {
       {/* SECTION 1 — Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            THE VITALIS ECOSYSTEM
-          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">THE VITALIS ECOSYSTEM</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             One relationship. Every specialist you need.
           </motion.h1>
@@ -326,7 +327,10 @@ const Partners = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="text-center mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">ONE ECOSYSTEM</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">ONE ECOSYSTEM</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Built together. Aligned from the start.</h2>
             <p className="mt-4 text-muted-foreground text-lg max-w-3xl mx-auto">
               The Vitalis ecosystem is not a referral network. ATB Financial, Holland Design, Field Law, and our extended network of specialists work alongside Vitalis on a shared foundation — each bringing their expertise to your project with full awareness of what everyone else is doing.
