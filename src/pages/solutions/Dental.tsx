@@ -44,8 +44,8 @@ const heroStats = [
 const challenges = [
   {
     icon: DollarSign,
-    title: "Fee Collection Gaps Are Systematic",
-    body: "Dental practices across Canada routinely under-collect — 8–15% of collectable revenue is going uncaptured across insurance carriers. The gaps are systematic, not random, and compound quietly until identified by an independent review.",
+    title: "Revenue Is Systematically Under-Captured",
+    body: "Dental practices across Canada routinely leave 8–15% of collectible revenue uncaptured — across insurance carriers, fee schedules, and patient billing. The gaps are systematic, not random, and compound quietly until identified by an independent review.",
   },
   {
     icon: Building2,
