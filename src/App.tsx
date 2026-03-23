@@ -34,6 +34,10 @@ import Medical from "./pages/solutions/Medical";
 import Dental from "./pages/solutions/Dental";
 import Veterinary from "./pages/solutions/Veterinary";
 import NHSF from "./pages/solutions/NHSF";
+import Insights from "./pages/Insights";
+import InsightArticle from "./pages/InsightArticle";
+import InsightsAdmin from "./pages/admin/InsightsAdmin";
+import InsightsEditor from "./pages/admin/InsightsEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
