@@ -79,6 +79,10 @@ const App = () => (
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />
           <Route path="/healthcare-it" element={<HealthcareIT />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/insights/:slug" element={<InsightArticle />} />
+          <Route path="/admin/insights" element={<AdminGuard><InsightsAdmin /></AdminGuard>} />
+          <Route path="/admin/insights/:id" element={<AdminGuard><InsightsEditor /></AdminGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
