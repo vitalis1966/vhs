@@ -145,6 +145,7 @@ const Contact = () => {
                   <option value="recruitment">Practitioner Recruitment</option>
                   <option value="ma">M&A / Transition</option>
                   <option value="healthcare-it">Healthcare IT & Technology</option>
+                  <option value="people">People Management</option>
                   <option value="assessment">Strategic Assessment</option>
                   <option value="general">General Inquiry</option>
                 </select>
