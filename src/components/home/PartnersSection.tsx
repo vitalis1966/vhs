@@ -52,7 +52,7 @@ export function PartnersSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
             <span className="h-px w-12 bg-accent" />
             <span className="text-accent font-semibold tracking-widest uppercase text-sm">Our Ecosystem</span>
           </div>

@@ -327,7 +327,7 @@ const Partners = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="text-center mb-16">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center justify-center gap-2 mb-4">
             <span className="h-px w-12 bg-accent" />
             <span className="text-accent font-semibold tracking-widest uppercase text-sm">ONE ECOSYSTEM</span>
           </div>
