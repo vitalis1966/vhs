@@ -35,10 +35,10 @@ const fadeUp = {
 };
 
 const heroStats = [
-  "Family Medicine to Complex Specialty",
-  "Calgary · Edmonton · Across Canada",
-  "New Builds & Established Practices",
-  "CPSA & AHS Expertise",
+  { stat: "Family Medicine to Complex Specialty", context: "GPs, specialists, and surgical groups across Canada" },
+  { stat: "New Builds & Established Practices", context: "Every stage of your practice's lifecycle" },
+  { stat: "Calgary · Edmonton · Across Canada", context: "Alberta-focused with national reach" },
+  { stat: "CPSA & AHS Expertise", context: "Regulatory and billing context built in" },
 ];
 
 const challenges = [
