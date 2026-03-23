@@ -36,7 +36,6 @@ interface CaseStudy {
   services: string[];
   metrics: CaseMetric[];
   isOngoing?: boolean;
-  ongoingBody?: string;
 }
 
 const caseStudies: CaseStudy[] = [
@@ -57,7 +56,7 @@ const caseStudies: CaseStudy[] = [
     metrics: [
       { label: "First-attempt accreditation", value: "No requirements list", sublabel: "Passed on first assessment" },
       { label: "4 weeks ahead of schedule", value: "Ahead of revised projection", sublabel: "" },
-      { label: "19% above base-case volume", value: "+19%", sublabel: "First 6 months of operations" },
+      { label: "+19% above base-case volume", value: "+19%", sublabel: "First 6 months of operations" },
     ],
   },
   {
@@ -101,17 +100,17 @@ const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    id: "calgary-orthopaedics-new-build",
-    title: "A Calgary orthopaedic and sports medicine clinic opens ahead of schedule and under budget.",
-    tagline: "A specialist group with a shared vision, and a site that almost derailed the entire project.",
-    location: "Calgary, Alberta",
+    id: "ortho-sports-medicine-new-build",
+    title: "A multi-specialty clinic builds a new facility, opens ahead of schedule, and under budget.",
+    tagline: "Two practitioners. A shared facility concept. A timeline that couldn't slip.",
+    location: "Western Canada",
     type: ["New Build"],
-    specialty: "Orthopedics · Sports Medicine",
-    size: "5,200 sq ft, 2 orthopaedic surgeons + 1 sports medicine physician",
+    specialty: "Musculoskeletal and Sports Medicine",
+    size: "5,200 sq ft, 2 surgeons + 1 sports medicine physician",
     duration: "18 months",
-    overview: "Two orthopaedic surgeons and a sports medicine physician had been renting space in separate facilities for years, each referring patients to the others without a shared operational base. The plan was to build a combined clinic with shared imaging, rehabilitation, and procedure capacity, a model that would reduce overhead for all three and create a more integrated patient experience.\n\nThe group had identified a location in NW Calgary and was weeks away from signing a lease when Vitalis was brought in for a feasibility review.",
-    challenge: "The proposed NW Calgary location had a structural issue with the floor load specifications that would have required significant and expensive reinforcement to support the planned imaging equipment. More critically, the space had no provision for the medical gas infrastructure required for the procedure room. These were not visible from the lease terms or the standard commercial real estate inspection, but they would have added approximately $180,000 to the buildout cost and extended the timeline by four months.\n\nA parallel issue: the group's financial model had not modelled shared overhead correctly. Each physician had modelled their own costs in isolation, meaning the collective financial picture had never been built.",
-    approach: "The lease was paused while two alternative sites were assessed. The preferred alternative, a ground-floor space in a medical-dental building in the NW corridor, had the required mechanical capacity, adequate floor loading, and a landlord willing to provide a tenant improvement allowance that covered 60% of the buildout cost.\n\nA consolidated financial model was built for the three-physician group, incorporating shared overhead allocation, individual revenue projections by service type, and imaging equipment amortization. The physicians reached agreement on the cost-sharing model before the lease was signed.",
+    overview: "Two surgeons and a sports medicine physician had been renting space in separate facilities for years, each referring patients to the others without a shared operational base. The plan was to build a combined clinic with shared imaging, rehabilitation, and procedure capacity, a model that would reduce overhead for all three and create a more integrated patient experience.\n\nThe group had identified a location and was weeks away from signing a lease when Vitalis was brought in for a feasibility review.",
+    challenge: "The proposed location had a structural issue with the floor load specifications that would have required significant and expensive reinforcement to support the planned imaging equipment. More critically, the space had no provision for the medical gas infrastructure required for the procedure room. These were not visible from the lease terms or the standard commercial real estate inspection, but they would have added approximately $180,000 to the buildout cost and extended the timeline by four months.\n\nA parallel issue: the group's financial model had not modelled shared overhead correctly. Each physician had modelled their own costs in isolation, meaning the collective financial picture had never been built.",
+    approach: "The lease was paused while two alternative sites were assessed. The preferred alternative, a ground-floor space in a medical-dental building in the same corridor, had the required mechanical capacity, adequate floor loading, and a landlord willing to provide a tenant improvement allowance that covered 60% of the buildout cost.\n\nA consolidated financial model was built for the three-physician group, incorporating shared overhead allocation, individual revenue projections by service type, and imaging equipment amortization. The physicians reached agreement on the cost-sharing model before the lease was signed.",
     outcome: "The clinic opened 5 weeks ahead of the revised timeline. Total buildout cost came in 8% under the model. The TI allowance negotiated from the landlord covered infrastructure costs that would have been absorbed entirely at the original location. In the first year of operations, combined overhead per physician was 24% lower than each had been paying individually.",
     services: ["Practice Feasibility and Site Assessment", "Financial Modeling and Overhead Allocation", "Lease Negotiation Advisory", "Facility Design Input", "Equipment Procurement Planning", "Operational Launch Preparation"],
     metrics: [
@@ -121,43 +120,23 @@ const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    id: "edmonton-urgent-care-expansion",
-    title: "Edmonton urgent care network scales from two locations to five in 26 months.",
+    id: "urgent-care-expansion",
+    title: "An independent urgent care network builds a growth plan and scales to five locations in just over two years.",
     tagline: "Strong unit economics at two clinics. A growth plan that had never been written down.",
-    location: "Edmonton, Alberta",
+    location: "Western Canada",
     type: ["Growth", "Operations"],
-    specialty: "Urgent Care · Walk-In Medicine",
+    specialty: "Urgent Care and Walk-In Medicine",
     size: "2 to 5 locations, 14 to 31 physicians across network",
     duration: "26 months, strategy through third location opening",
-    overview: "An Edmonton urgent care operator with two well-performing clinics (one in the south, one in the west end) had strong patient volumes, solid physician relationships, and the operational confidence to grow. What they lacked was a documented growth framework: a financial model for expansion, a site selection methodology, a hiring model that could scale, and the technology infrastructure to manage a multi-site network.\n\nThe operator had been approached by two investment partners in the prior 18 months, had turned both down, and decided to grow independently. Vitalis was engaged to build and execute the expansion strategy.",
-    challenge: "The two existing clinics ran on slightly different operational models: different EMR configurations, different scheduling approaches, different fee structures for uninsured services. Quality and patient experience were consistent because the owner was physically present across both locations most days. A third location would make that impossible.\n\nThe financial model for expansion also had a significant gap: the owner had been modelling new location economics based on the performance of the existing two, which were both in high-density residential corridors with strong walk-in demand. The three identified target markets included one suburban commercial zone with meaningfully different demographics.",
-    approach: "Vitalis conducted demographic and competitive analysis for six potential Edmonton expansion markets, producing a ranked site matrix with revenue projections, competition intensity, and infrastructure cost estimates for each. The three sites selected for expansion had materially stronger projected economics than the one the owner had initially favoured.\n\nA standardized operational model was designed for the network: common EMR configuration, common fee schedules, common scheduling protocols. This model could be replicated at each new location without the owner's daily presence. A hiring and credentialing model for new physicians was built, and a medical director structure was designed for each location.",
+    overview: "An urgent care operator with two well-performing clinics had strong patient volumes, solid physician relationships, and the operational confidence to grow. What they lacked was a documented growth framework: a financial model for expansion, a site selection methodology, a hiring model that could scale, and the technology infrastructure to manage a multi-site network.\n\nThe operator had been approached by two investment partners in the prior 18 months, had turned both down, and decided to grow independently. Vitalis was engaged to build and execute the expansion strategy.",
+    challenge: "The two existing clinics ran on slightly different operational models: different EMR configurations, different scheduling approaches, different fee structures for uninsured services. Quality and patient experience were consistent because the owner was physically present across both locations most days. A third location would make that impossible.\n\nThe financial model for expansion also had a significant gap: the operator had been modelling new location economics based on the performance of the existing two, which were both in high-density residential corridors with strong walk-in demand. The three identified target markets included one suburban commercial zone with meaningfully different demographics.",
+    approach: "Vitalis conducted demographic and competitive analysis for six potential expansion markets, producing a ranked site matrix with revenue projections, competition intensity, and infrastructure cost estimates for each. The three sites selected for expansion had materially stronger projected economics than the one the operator had initially favoured.\n\nA standardized operational model was designed for the network: common EMR configuration, common fee schedules, common scheduling protocols. This model could be replicated at each new location without the owner's daily presence. A hiring and credentialing model for new physicians was built, and a medical director structure was designed for each location.",
     outcome: "Three additional locations opened over 26 months. All three reached operational break-even within the financial model's projected timeframe. Physician headcount across the network grew from 14 to 31. The owner was no longer the operational dependency at any individual location.",
     services: ["Growth Strategy and Market Analysis", "Site Selection Methodology", "Financial Modeling for Multi-Site Operations", "Operational Standardization", "Technology and EMR Standardization", "Physician Recruitment Framework", "Medical Director Structure Design"],
     metrics: [
       { label: "3 new locations in 26 months", value: "3 locations", sublabel: "All within projected economics" },
       { label: "14 to 31 physicians", value: "2.2x growth", sublabel: "Network headcount" },
       { label: "Break-even on schedule", value: "On target", sublabel: "All three new locations" },
-    ],
-  },
-  {
-    id: "calgary-internal-medicine-people",
-    title: "A Calgary specialist group fixes its people problems before they become patient problems.",
-    tagline: "High clinical quality. High staff turnover. A leadership team that had never been shown what was actually driving it.",
-    location: "Calgary, Alberta",
-    type: ["People", "Operations"],
-    specialty: "Internal Medicine · Cardiology",
-    size: "4-physician specialist group, 12 clinical and administrative staff",
-    duration: "11 months",
-    overview: "A four-physician group combining internal medicine and cardiology had built a respected specialist practice over nine years. Referral volumes were strong. Clinical outcomes were excellent. But the practice had replaced seven staff members in the prior 18 months, including two clinical coordinators and a billing specialist, and the physicians were increasingly pulled into operational and interpersonal issues that had nothing to do with patient care.\n\nThe lead physician described it as 'a people problem we can't seem to fix.' What the assessment found was that it was a systems problem wearing a people costume.",
-    challenge: "Behavioural profiling of the physician group and key clinical staff revealed a team composition that had significant strengths (deep technical expertise, high attention to detail, strong individual accountability) but no natural internal communication bridge between the physicians' analytical, task-focused working style and the emotionally-driven, relationship-oriented preferences of the nursing and administrative team.\n\nThere were no documented performance expectations for any non-physician role. There was no regular team communication structure. Underperformance was addressed reactively and inconsistently, sometimes immediately, sometimes never, which had created a perception of favouritism and arbitrary management. Two of the seven staff departures in the prior 18 months had followed incidents where performance issues were addressed with no documented process.",
-    approach: "Individual behavioural profiles were completed for all 16 team members. The results were shared with the physician group in a facilitated session that connected the profile data to the specific dynamics they had been experiencing, without naming individuals. A team communication model was designed that created structured touchpoints between physicians and staff that didn't require any individual to change their fundamental working style.\n\nPerformance expectation frameworks were built for every non-physician role. A feedback and performance conversation model was trained with the lead physician and the clinic manager. Clear protocols for managing underperformance, with documentation requirements and timelines, were established and communicated to the full team.",
-    outcome: "Staff turnover in the 12 months following the engagement: one departure, a retirement. The two remaining clinical coordinators who had been flagged as potential departure risks received structured feedback and role clarity and remained. Administrative overhead (time spent by physicians on non-clinical operational issues) decreased by an estimated 60% within six months. Billing performance also improved: the billing specialist, now operating within a clear performance framework, identified and corrected a systematic coding pattern that had been causing claim denials.",
-    services: ["Behavioural Profiling and Team Assessment", "Performance Framework Design", "Culture and Communication Structure", "Leadership Development", "Operations and Workflow Review", "Billing Performance Improvement"],
-    metrics: [
-      { label: "1 departure in 12 months post-engagement", value: "1 vs. 7", sublabel: "Down from 7 in prior 18 months" },
-      { label: "~60% reduction in physician admin time", value: "-60%", sublabel: "Non-clinical operational issues" },
-      { label: "Systematic billing improvement", value: "Coding corrected", sublabel: "From performance clarity" },
     ],
   },
   {
@@ -177,21 +156,21 @@ const caseStudies: CaseStudy[] = [
     metrics: [
       { label: "First-attempt accreditation", value: "Passed", sublabel: "No re-assessment required" },
       { label: "On timeline", value: "On schedule", sublabel: "Opened within the planned schedule" },
-      { label: "17% above base-case revenue", value: "+17%", sublabel: "First full operating year" },
+      { label: "+17% above base-case revenue", value: "+17%", sublabel: "First full operating year" },
     ],
   },
   {
-    id: "calgary-allergy-immunology-build",
-    title: "A Calgary allergy and immunology clinic opens with the operational infrastructure that most new clinics build over years.",
-    tagline: "A single allergist. A clear clinical vision. And a financial model that almost didn't get built.",
-    location: "Calgary, Alberta",
+    id: "specialty-medicine-build",
+    title: "A specialty clinic opens with the operational and financial infrastructure that most new practices spend years building.",
+    tagline: "A single specialist. A clear clinical vision. And a financial model that almost didn't get built.",
+    location: "Canada",
     type: ["New Build", "Revenue & Billing"],
-    specialty: "Allergy & Immunology",
-    size: "2,800 sq ft, 1 physician, CPSA-registered clinic",
+    specialty: "Specialty Medicine",
+    size: "2,800 sq ft, 1 physician, registered clinic",
     duration: "13 months",
-    overview: "An allergist completing a fellowship in Calgary had a clear plan: open an independent allergy and immunology clinic serving both adult and pediatric patients, with on-site testing, treatment programs, and a structured asthma management program. The clinical model was well-defined. The business model required significant development.\n\nAllergy and immunology practices in Alberta have a specific billing profile: a mix of AHS fee-for-service for clinical visits, uninsured services for certain testing panels, and the operational complexity of managing clinical programs that require regular patient attendance over multi-year periods. Most allergists entering private practice for the first time underestimate the revenue cycle complexity of this billing structure.",
+    overview: "A specialist completing a fellowship had a clear plan: open an independent clinic serving both adult and pediatric patients, with on-site testing, treatment programs, and a structured management program. The clinical model was well-defined. The business model required significant development.\n\nSpecialty practices in Canada have a specific billing profile: a mix of fee-for-service for clinical visits, uninsured services for certain testing panels, and the operational complexity of managing clinical programs that require regular patient attendance over multi-year periods. Most specialists entering private practice for the first time underestimate the revenue cycle complexity of this billing structure.",
     challenge: "The physician's initial financial model projected first-year revenue based on a full panel of patients from month three onward. It did not account for the ramp-up period required to build a referral network from referring family physicians and pediatricians, who typically take 6 to 9 months to begin consistently sending patients to a new specialist. The projected break-even timeline was therefore approximately 8 months shorter than a realistic model would produce.\n\nThe clinic design also had an efficiency gap: the proposed layout placed the patient waiting and observation area on the opposite side of the space from the nursing station, creating a staffing model that required a second clinical staff member earlier than financially feasible.",
-    approach: "The financial model was rebuilt with realistic referral ramp assumptions based on comparable allergy practices in the Calgary market. A GP outreach and referral development strategy was built into the pre-opening operational plan, creating the referral pipeline before opening day rather than after.\n\nThe facility layout was redesigned to consolidate the observation area adjacent to the nursing station, reducing the clinical staffing requirement during the practice's first two years. The billing structure was mapped in full before opening: AHS billing codes, uninsured service fee schedules for testing panels, and a structured approach to managing billing over multi-year patient courses.",
+    approach: "The financial model was rebuilt with realistic referral ramp assumptions based on comparable specialty practices in the same market. A GP outreach and referral development strategy was built into the pre-opening operational plan, creating the referral pipeline before opening day rather than after.\n\nThe facility layout was redesigned to consolidate the observation area adjacent to the nursing station, reducing the clinical staffing requirement during the practice's first two years. The billing structure was mapped in full before opening: insured billing codes, uninsured service fee schedules for testing panels, and a structured approach to managing billing over multi-year patient courses.",
     outcome: "The clinic reached billing break-even one month ahead of the revised (realistic) financial model. Referral volume from GP partners was measurably higher than comparable solo specialist openings in the same market, attributed to the pre-opening outreach program. The specialty program reached patient volume targets within the first year, providing a recurring revenue base that stabilized the practice's cash flow profile significantly earlier than the initial financial projections.",
     services: ["New Practice Feasibility and Financial Modeling", "Facility Design Input", "Billing Structure Setup", "Referral Development Strategy", "Operational Systems Design", "Staff Recruitment Planning"],
     metrics: [
@@ -201,104 +180,180 @@ const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    id: "calgary-facial-plastics-expense",
-    title: "A Calgary facial plastic surgery practice reduces overhead by 31% and rebuilds its financial model for sustainable growth.",
+    id: "cosmetic-medicine-expense",
+    title: "A cosmetic medicine practice reduces overhead by 31 percent and rebuilds its financial model for sustainable growth.",
     tagline: "Strong clinical reputation. Revenue that looked good until the costs were modelled properly.",
-    location: "Calgary, Alberta",
+    location: "Canada",
     type: ["Operations", "Revenue & Billing"],
-    specialty: "Facial Plastic Surgery",
+    specialty: "Cosmetic and Aesthetic Medicine",
     size: "Solo practitioner, mixed public and private-pay",
     duration: "10 months",
-    overview: "A Calgary facial plastic surgeon had operated a well-regarded independent practice for seven years. Clinical outcomes were strong. Patient volume was above average. The practice had a mix of publicly insured reconstructive procedures and private-pay cosmetic surgeries, a billing structure that should have produced excellent financial performance.\n\nThe reality was a practice operating on thin margins despite strong revenue, with no clear picture of where the money was going or which services were actually profitable.",
-    challenge: "The practice had accumulated overhead across seven years of organic growth: staff who had been hired for specific tasks that were no longer the highest priority, a facility lease that had rolled to market rate without renegotiation, supply costs that had never been benchmarked against alternatives, and a cosmetic service pricing structure that had not been updated since the practice opened.\n\nThe publicly insured reconstructive side of the practice was also billing below what the AHS schedule permitted for several procedure codes, a systematic gap that had never been identified because the physician had no independent revenue cycle review.",
-    approach: "Vitalis conducted a full operational and financial assessment: staff role analysis, facility cost benchmarking, supply cost review, and a complete AHS billing audit across 18 months of claims. The billing audit identified four procedure codes being consistently under-billed, representing approximately $67,000 in recoverable annual revenue.\n\nThe cosmetic service fee schedule was rebuilt against current Calgary market rates for the same procedures. Three supply vendors were replaced with better-priced alternatives without compromising clinical specification. The staffing model was restructured: two part-time roles were consolidated into one full-time role with a broader scope, reducing labour cost while improving administrative coverage.",
-    outcome: "Total overhead reduction across the engagement: 31%. AHS billing corrections implemented within 60 days added $67,000 in annual revenue. The cosmetic fee schedule update increased average revenue per cosmetic case by 18%. The practice's net margin improved from 22% to 41% over the engagement period, a 19-point improvement without adding a single patient.",
-    services: ["Operational and Financial Assessment", "AHS Billing Revenue Cycle Review", "Cost Structure Analysis and Vendor Benchmarking", "Fee Schedule Review and Update", "Staffing Model Optimization", "Operations and Workflow Redesign"],
+    overview: "A cosmetic and aesthetic medicine practitioner had operated a well-regarded independent practice for seven years. Clinical outcomes were strong. Patient volume was above average. The practice had a mix of publicly insured reconstructive procedures and private-pay cosmetic services, a billing structure that should have produced excellent financial performance.\n\nThe reality was a practice operating on thin margins despite strong revenue, with no clear picture of where the money was going or which services were actually profitable.",
+    challenge: "The practice had accumulated overhead across seven years of organic growth: staff who had been hired for specific tasks that were no longer the highest priority, a facility lease that had rolled to market rate without renegotiation, supply costs that had never been benchmarked against alternatives, and a cosmetic service pricing structure that had not been updated since the practice opened.\n\nThe publicly insured side of the practice was also billing below what the applicable schedule permitted for several procedure codes, a systematic gap that had never been identified because the physician had no independent revenue cycle review.",
+    approach: "Vitalis conducted a full operational and financial assessment: staff role analysis, facility cost benchmarking, supply cost review, and a complete billing audit across 18 months of claims. The billing audit identified four procedure codes being consistently under-billed, representing approximately $67,000 in recoverable annual revenue.\n\nThe cosmetic service fee schedule was rebuilt against current market rates for the same procedures. Three supply vendors were replaced with better-priced alternatives without compromising clinical specification. The staffing model was restructured: two part-time roles were consolidated into one full-time role with a broader scope, reducing labour cost while improving administrative coverage.",
+    outcome: "Total overhead reduction across the engagement: 31%. Billing corrections implemented within 60 days added $67,000 in annual revenue. The cosmetic fee schedule update increased average revenue per cosmetic case by 18%. The practice's net margin improved from 22% to 41% over the engagement period, a 19-point improvement without adding a single patient.",
+    services: ["Operational and Financial Assessment", "Billing Revenue Cycle Review", "Cost Structure Analysis and Vendor Benchmarking", "Fee Schedule Review and Update", "Staffing Model Optimization", "Operations and Workflow Redesign"],
     metrics: [
       { label: "31% overhead reduction", value: "-31%", sublabel: "Total across all cost categories" },
-      { label: "$67K annual revenue recovered", value: "$67K", sublabel: "AHS billing corrections" },
+      { label: "$67K annual revenue recovered", value: "$67K", sublabel: "Billing corrections" },
       { label: "22% to 41% net margin", value: "+19 pts", sublabel: "19-point improvement" },
     ],
   },
-  // Ongoing engagements
+  // New case studies
   {
-    id: "calgary-dental-ongoing-advisory",
-    title: "Calgary dental organization retains Vitalis as ongoing strategic advisor across three locations.",
-    tagline: "Long-term advisory across operations, compensation, and expansion.",
-    location: "Calgary, Alberta",
-    type: ["Ongoing"],
-    specialty: "Multi-Site Dental Group",
+    id: "psychology-group-expansion",
+    title: "A psychology group opens a second location, restructures operations across both sites, and stabilizes financial performance.",
+    tagline: "An established group practice. A second location that exposed what the first one had quietly absorbed.",
+    location: "Canada",
+    type: ["Operations", "People", "New Build"],
+    specialty: "Psychology and Mental Health",
+    size: "2 locations, 6 clinicians",
+    duration: "6 months",
+    overview: "A group psychology practice with a single established location had operated successfully for several years. The lead psychologist had built a team of six clinicians with strong patient retention and a full appointment schedule. When the opportunity to open a second location arose, the decision was made to proceed. Within six months of opening, the financial and operational strain of running two sites made clear that the model that had worked at one location was not built to scale.\n\nThe core issue was not revenue. Both locations had patient volume. The issue was that the operational infrastructure had been designed around the owner being physically present. Scheduling, billing, clinical oversight, and staff management all ran through a single point of contact. At one location this was manageable. At two it was unsustainable.",
+    challenge: "The owner was spending most of each week managing operational issues across two sites rather than delivering clinical services. Billing at the second location was being processed inconsistently, with uninsured service fees and third-party billing handled differently at each site. Staff at the new location had not been onboarded with clear role expectations, and two departures in the first four months had created scheduling instability.",
+    approach: "Vitalis conducted a full operational assessment across both sites. A standardized billing protocol was implemented for uninsured services, third-party payers, and insurance submissions. Fee schedules were reviewed and updated across both locations to reflect current market rates.\n\nAn operational model was designed that did not require the owner to be the central decision-maker for daily functions. This included role redesign for the clinic manager position, a scheduling framework that could be managed remotely, and a communication structure between sites. A staff onboarding process was documented and implemented before the next hire.\n\nFinancial modeling was updated to reflect the true two-location cost structure, and a revised break-even analysis was completed to give the owner a clear picture of what profitability at both locations actually required.",
+    outcome: "Within four months of implementation, the owner had reduced direct operational involvement by an estimated 60 percent and returned to a full clinical schedule. Billing consistency improved materially across both sites. The practice reached combined break-even at the second location ahead of the revised projection.",
+    services: ["Operational Assessment and Workflow Redesign", "Billing Protocol Standardization", "Fee Schedule Review and Update", "Role Design and Staff Onboarding Framework", "Financial Modeling and Break-Even Analysis", "Multi-Site Management Structure Design"],
+    metrics: [
+      { label: "60% reduction in owner operational involvement", value: "-60%", sublabel: "Within four months" },
+      { label: "Break-even ahead of revised projection", value: "Ahead of plan", sublabel: "Second location" },
+      { label: "Billing consistency restored", value: "Standardized", sublabel: "Across both sites" },
+    ],
+  },
+  {
+    id: "new-location-build-generic",
+    title: "A practice owner plans and opens a second location, on time and within budget, in a new market.",
+    tagline: "A proven model. A new market. A build that needed to go right the first time.",
+    location: "Canada",
+    type: ["New Build", "Operations"],
+    specialty: "Healthcare Practice",
+    size: "2 locations",
+    duration: "14 months",
+    overview: "A practice owner with one well-established location had identified a second market opportunity and made the decision to expand. The business case was sound and the clinical model had been refined over several years of operation. What the owner had not done before was manage a facility build in a market where they had no existing relationships, no knowledge of local commercial real estate, and no prior experience navigating the regulatory and operational requirements for a new site.\n\nThe build scope was significant. The new location required a purpose-designed clinical layout, specific infrastructure for the practice type, and regulatory compliance preparation before the facility could open. A construction contractor had been identified and a general timeline had been discussed, but no formal project plan existed.",
+    challenge: "The early site selection process had not accounted for several location-specific constraints. The first space under consideration had lease terms that were unfavorable for a healthcare tenant, including no tenant improvement allowance and a restriction on signage that would have limited visibility at street level. A second space had favorable terms but required a structural assessment before clinical infrastructure could be specified.\n\nOn the operational side, the owner had not yet defined the staffing model for the new location, the compensation structure for the clinical team, or the practice management technology that would be used. These decisions needed to be made before the buildout design could be finalized.",
+    approach: "Vitalis provided site selection advisory, lease review, and negotiation support for the second space, which proceeded after the structural assessment confirmed feasibility. Lease terms were renegotiated to include a tenant improvement allowance that offset a meaningful portion of buildout costs.\n\nA clinical space program was developed to guide the architect and contractor, specifying room count, layout requirements, and clinical infrastructure needs. Construction milestones were tracked against the opening timeline, and equipment procurement was coordinated to align with construction completion.\n\nThe staffing model was designed before recruitment began. Compensation benchmarks were established for each role, a hiring process was documented, and onboarding materials were prepared so that the team hired for the new location started with clear expectations from day one.",
+    outcome: "The facility opened within the planned timeline and within budget. The new location reached its initial patient volume target within the first three months of operation.",
+    services: ["Site Selection and Lease Advisory", "Clinical Space Programming", "Facility Design Coordination", "Staffing Model Design and Recruitment Framework", "Practice Management Technology Setup", "Financial Modeling"],
+    metrics: [
+      { label: "On time and within budget", value: "On target", sublabel: "Facility opening" },
+      { label: "Patient volume target reached", value: "Within 3 months", sublabel: "Of opening" },
+      { label: "Staffed and operational from day one", value: "No delays", sublabel: "No hiring delays" },
+    ],
+  },
+  {
+    id: "family-medicine-revenue-increase",
+    title: "A solo physician with over 15 years in practice achieves a 44 percent year-over-year revenue increase without adding patients.",
+    tagline: "Fifteen years in practice. A full patient panel. Revenue that had plateaued for years.",
+    location: "Canada",
+    type: ["Revenue & Billing", "Operations"],
+    specialty: "Family Medicine",
+    size: "Solo physician, full patient panel",
+    duration: "12 months",
+    overview: "A solo family physician had been in practice for over 15 years. The practice had a full and loyal patient panel, strong clinical outcomes, and a stable team. Revenue had remained essentially flat for the previous four years. The physician assumed this was a function of capacity, not performance. There was no more room in the schedule.\n\nWhat the physician had not seen was that the revenue generated per patient encounter had drifted significantly below what the practice model and patient panel could support. The billing system had not been reviewed since the early years of the practice. Uninsured service fees had never been formally structured. Third-party billing was inconsistent. Several service codes being used regularly were generating below their appropriate reimbursement rates.",
+    challenge: "The physician had never had an independent review of the practice's financial performance. All billing had been managed by the same administrative staff member for nine years using a process established at the start of the practice. No external benchmark had ever been applied. From the inside, the numbers looked normal because they had always looked that way.\n\nThe practice also had no formal structure for uninsured services. Fees were set informally and had not been updated in years. Patients were often not informed of uninsured services at booking, leading to inconsistent collection at the point of care.",
+    approach: "Vitalis conducted a full revenue cycle review covering insured services, uninsured service fees, and third-party billing. A 90-day sample of billing records was analyzed against applicable fee schedules and reimbursement benchmarks.\n\nAn updated fee schedule was built for all uninsured services, benchmarked against current market rates. An updated billing protocol was implemented with the existing administrative team, requiring no new hires. A booking and checkout workflow was redesigned to ensure uninsured service disclosure and collection happened consistently.\n\nThird-party billing for WCB, MVA, and insurance forms was reorganized and partially outsourced to a billing service, removing the administrative burden from the in-house team.",
+    outcome: "Within 12 months of implementation, the practice recorded a 44 percent year-over-year revenue increase. This was achieved with no increase in patient volume, no new staff, and no change to the physician's clinical schedule. It represented the largest single-year revenue increase in the practice's history.",
+    services: ["Revenue Cycle Assessment", "Fee Schedule Review and Development", "Uninsured Service Fee Structure", "AHS and Third-Party Billing Protocol Redesign", "Administrative Workflow Optimization"],
+    metrics: [
+      { label: "44% year-over-year revenue increase", value: "+44%", sublabel: "Largest in the practice's 15-year history" },
+      { label: "No new patients added", value: "Same panel", sublabel: "Same panel, same schedule" },
+      { label: "No additional staff", value: "Existing team", sublabel: "Existing team, updated protocols" },
+    ],
+  },
+  {
+    id: "multi-specialty-culture-retention",
+    title: "A multi-specialty clinic addresses a culture and retention problem before it becomes a patient care problem.",
+    tagline: "A well-run clinic on paper. A team that kept leaving.",
+    location: "Canada",
+    type: ["People", "Operations"],
+    specialty: "Multi-Specialty Clinic",
+    size: "Multi-physician group, 12 clinical and administrative staff",
+    duration: "12 months",
+    overview: "A multi-specialty clinic with strong patient volumes and an experienced physician group had been experiencing staff turnover at a rate that was becoming operationally disruptive. Over an 18-month period, seven support staff members had left. Three were replaceable without significant disruption. The others created gaps in clinical workflow, institutional knowledge, and team cohesion that took months to recover from.\n\nThe physician group had attributed the turnover to compensation. Wages were reviewed and adjusted twice. The turnover continued. When a senior clinical coordinator gave notice and cited management style and unclear expectations as the reason for leaving, the lead physician recognized that the problem was not being addressed at its source.",
+    challenge: "The clinic had no formal performance management process. Expectations for non-clinical staff had never been documented. Feedback was informal and inconsistent, and staff reported in exit conversations that they often did not know where they stood or what was expected of them. The culture that had formed was one of ambiguity, which different people experienced as stressful in different ways.\n\nThe physician group, while excellent clinically, had not had any leadership development support. Disagreements between partners about how to address staff issues had created inconsistency in how different staff members were managed, which compounded the problem.",
+    approach: "Vitalis conducted behavioural profiling for the clinical and leadership team to give the physician group an objective picture of their own working styles and how those styles were landing with the non-clinical team around them. The profiling results were shared in a facilitated session that gave language to dynamics that had been present but unnamed.\n\nPerformance frameworks were built for every non-clinical role. These included documented expectations, defined scope of responsibility, and a structured feedback process. A communication model was designed so that staff had regular, predictable touchpoints with leadership and a clear process for raising concerns.\n\nA partner alignment session addressed the disagreements between physicians about management approach and established a shared framework for how personnel decisions would be made going forward.",
+    outcome: "In the 12 months following the engagement, the clinic had one staff departure, a retirement. The two staff members who had been identified as retention risks during the engagement remained and both reported in subsequent check-ins that their experience had improved materially. Physician time spent on non-clinical operational issues decreased by an estimated 60 percent.",
+    services: ["Behavioural Profiling and Team Assessment", "Performance Framework Design", "Leadership Communication Structure", "Partner Alignment Facilitation", "Staff Onboarding and Expectation Design"],
+    metrics: [
+      { label: "1 departure in 12 months", value: "1 vs. 7", sublabel: "Down from 7 in the prior 18 months" },
+      { label: "60% reduction in physician time on non-clinical issues", value: "-60%", sublabel: "Estimated" },
+      { label: "Retention stabilized", value: "Stabilized", sublabel: "No departures linked to culture or management" },
+    ],
+  },
+  // Advisory engagements
+  {
+    id: "dental-ongoing-advisory",
+    title: "Dental group retains Vitalis as ongoing strategic advisor through a period of operational growth and expansion planning.",
+    tagline: "",
+    location: "",
+    type: ["Advisory"],
+    specialty: "Multi-Site Dental Organization",
     size: "3 locations",
     duration: "Ongoing",
     isOngoing: true,
-    ongoingBody: "Long-term advisory relationship supporting operational alignment, associate compensation review, and expansion planning as the group prepares for a fourth location.",
     overview: "", challenge: "", approach: "", outcome: "",
     services: ["Strategic Advisory", "Compensation Review", "Expansion Planning"],
     metrics: [],
   },
   {
-    id: "edmonton-family-medicine-ongoing",
-    title: "Edmonton primary care group engaged on rolling operational review and annual performance benchmarking.",
-    tagline: "Recurring quarterly engagement covering operations and billing.",
-    location: "Edmonton, Alberta",
-    type: ["Ongoing"],
-    specialty: "Family Medicine",
+    id: "primary-care-ongoing",
+    title: "Primary care group engaged on rolling performance review, billing optimization, and quarterly operational benchmarking.",
+    tagline: "",
+    location: "",
+    type: ["Advisory"],
+    specialty: "Primary Care",
     size: "Multi-physician group",
     duration: "Ongoing",
     isOngoing: true,
-    ongoingBody: "Recurring engagement covering scheduling utilization, AHS billing performance, and staffing structure, reviewed and updated quarterly.",
     overview: "", challenge: "", approach: "", outcome: "",
     services: ["Operational Review", "Billing Performance", "Staffing Structure"],
     metrics: [],
   },
   {
-    id: "calgary-veterinary-ongoing",
-    title: "Independent Calgary veterinary practice retained Vitalis through a corporate acquisition approach and subsequent growth phase.",
-    tagline: "Ongoing advisory supporting independence and growth.",
-    location: "Calgary, Alberta",
-    type: ["Ongoing"],
-    specialty: "Veterinary, Companion Animal",
+    id: "veterinary-ongoing",
+    title: "Independent veterinary practice retained Vitalis through a corporate acquisition approach and a subsequent growth phase.",
+    tagline: "",
+    location: "",
+    type: ["Advisory"],
+    specialty: "Veterinary Practice",
     size: "Independent practice",
     duration: "Ongoing",
     isOngoing: true,
-    ongoingBody: "Ongoing strategic advisory supporting valuation positioning, associate retention, and the operational improvements required to maintain independence.",
     overview: "", challenge: "", approach: "", outcome: "",
     services: ["Valuation Advisory", "Associate Retention", "Operational Improvement"],
     metrics: [],
   },
   {
-    id: "calgary-oral-surgery-ongoing",
-    title: "Calgary oral surgery practice engaging Vitalis for EBITDA improvement and acquisition readiness over 18 months.",
-    tagline: "Structured advisory for ownership transition preparation.",
-    location: "Calgary, Alberta",
-    type: ["Ongoing"],
-    specialty: "Oral Surgery",
+    id: "surgical-specialty-ongoing",
+    title: "Specialist practice engaged for EBITDA improvement, overhead reduction, and acquisition readiness over an 18-month period.",
+    tagline: "",
+    location: "",
+    type: ["Advisory"],
+    specialty: "Surgical Specialty",
     size: "Single-location practice",
     duration: "18-month engagement",
     isOngoing: true,
-    ongoingBody: "Structured advisory engagement focused on financial documentation, overhead reduction, and governance structure in preparation for a planned ownership transition.",
     overview: "", challenge: "", approach: "", outcome: "",
     services: ["EBITDA Improvement", "Overhead Reduction", "Transition Preparation"],
     metrics: [],
   },
   {
-    id: "calgary-specialist-leadership-ongoing",
-    title: "Multi-physician specialist group retains Vitalis for leadership development and team structure as they transition to a new managing partner.",
-    tagline: "Advisory support for partner transition and governance.",
-    location: "Calgary, Alberta",
-    type: ["Ongoing"],
-    specialty: "Internal Medicine, Specialist Group",
+    id: "specialist-group-ongoing",
+    title: "Multi-physician practice retains Vitalis for leadership transition planning, team structure design, and partner succession.",
+    tagline: "",
+    location: "",
+    type: ["Advisory"],
+    specialty: "Specialist Group",
     size: "Multi-physician group",
     duration: "Ongoing",
     isOngoing: true,
-    ongoingBody: "Advisory support covering partner transition planning, leadership role design, and the communication and governance frameworks required for a smooth handover.",
     overview: "", challenge: "", approach: "", outcome: "",
     services: ["Leadership Development", "Partner Transition", "Governance Design"],
     metrics: [],
   },
 ];
 
-const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Growth", "M&A", "Technology", "People", "Ongoing"];
+const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Growth", "M&A", "Technology", "People", "Advisory"];
 
 const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
@@ -308,19 +363,22 @@ const borderColorMap: Record<string, string> = {
   "M&A": "#6b3d5a",
   "Technology": "#2a6b6b",
   "People": "#8b4a3a",
-  "Ongoing": "#5a7a5a",
+  "Advisory": "#5a7a5a",
 };
 
 const resultStatMap: Record<string, string> = {
   "calgary-ent-surgical-build": "+19% above projected volume",
   "edmonton-family-medicine-revenue": "$310K recovered annually",
   "calgary-dental-dso-advisory": "+23% above original offer",
-  "calgary-orthopaedics-new-build": "Opened ahead of schedule",
-  "edmonton-urgent-care-expansion": "2 to 5 locations in 26 months",
-  "calgary-internal-medicine-people": "7 to 1 staff departures in 12 months",
+  "ortho-sports-medicine-new-build": "Opened ahead of schedule, under budget",
+  "urgent-care-expansion": "2 to 5 locations in 26 months",
   "vancouver-ophthalmology-nhsf": "First-attempt accreditation",
-  "calgary-allergy-immunology-build": "Break-even 1 month ahead of plan",
-  "calgary-facial-plastics-expense": "31% overhead reduction",
+  "specialty-medicine-build": "Break-even 1 month ahead of plan",
+  "cosmetic-medicine-expense": "31% overhead reduction",
+  "psychology-group-expansion": "New location opened on time",
+  "new-location-build-generic": "Opened within timeline and budget",
+  "family-medicine-revenue-increase": "44% year-over-year revenue increase",
+  "multi-specialty-culture-retention": "Staff turnover reduced by 70 percent",
 };
 
 const Portfolio = () => {
@@ -395,7 +453,6 @@ const Portfolio = () => {
                 const isFirst = i === 0 && activeFilter === "All";
                 const topBorderColor = borderColorMap[cs.type[0]] || "#264a39";
                 const resultStat = resultStatMap[cs.id];
-                // Calculate row index for alternate row tinting (0-indexed, 3 cols)
                 const rowIndex = Math.floor(i / 3);
                 const isAltRow = rowIndex % 2 === 1;
                 return (
@@ -432,27 +489,21 @@ const Portfolio = () => {
                       </div>
                       {/* Specialty */}
                       <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-2">{cs.specialty}</p>
-                      {/* Result stat or Active badge */}
-                      {cs.isOngoing ? (
-                        <span className="inline-flex self-start mt-1.5 text-[10px] uppercase tracking-widest font-medium rounded-full" style={{ padding: '3px 10px', background: '#5a7a5a1f', color: '#5a7a5a', border: '1px solid rgba(90, 122, 90, 0.4)' }}>
-                          ● Active Engagement
-                        </span>
-                      ) : resultStat ? (
+                      {/* Result stat (no Active badge for ongoing) */}
+                      {!cs.isOngoing && resultStat ? (
                         <p className="text-sm font-bold mt-1.5 mb-2 pl-2" style={{ color: topBorderColor, borderLeft: `2px solid ${topBorderColor}` }}>{resultStat}</p>
                       ) : null}
                       {/* Title */}
                       <h3 className={`font-display font-semibold text-forest leading-[1.4] ${cs.isOngoing ? 'mt-2' : ''} ${isFirst ? "text-xl" : "text-base"} line-clamp-3`}>
                         {cs.title}
                       </h3>
-                      {/* Ongoing body */}
-                      {cs.isOngoing && cs.ongoingBody && (
-                        <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-3">{cs.ongoingBody}</p>
-                      )}
                       <div className="mt-auto pt-3">
-                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3" />
-                          {cs.location}
-                        </p>
+                        {cs.location && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3" />
+                            {cs.location}
+                          </p>
+                        )}
                         {!cs.isOngoing && (
                           <span className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1 mt-2">
                             Read more <ArrowRight className="w-3.5 h-3.5" />
@@ -497,29 +548,33 @@ const Portfolio = () => {
               <div className="p-6 lg:p-8 pb-0">
                 <SheetHeader className="text-left mb-0">
                   <SheetDescription className="text-xs font-medium tracking-widest uppercase text-accent mb-3">
-                    {selectedCase.specialty}, {selectedCase.location}
+                    {selectedCase.specialty}{selectedCase.location ? `, ${selectedCase.location}` : ""}
                   </SheetDescription>
                   <SheetTitle className="font-display text-2xl lg:text-3xl font-bold text-foreground leading-snug">
                     {selectedCase.title}
                   </SheetTitle>
                 </SheetHeader>
-                <p className="mt-4 text-lg text-muted-foreground italic leading-relaxed">
-                  {selectedCase.tagline}
-                </p>
+                {selectedCase.tagline && (
+                  <p className="mt-4 text-lg text-muted-foreground italic leading-relaxed">
+                    {selectedCase.tagline}
+                  </p>
+                )}
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground border-y border-border py-4">
                   <span className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />{selectedCase.type.join(", ")}</span>
-                  <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{selectedCase.location}</span>
+                  {selectedCase.location && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{selectedCase.location}</span>}
                   <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{selectedCase.duration}</span>
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">{selectedCase.size}</p>
               </div>
               <div className="p-6 lg:p-8 space-y-8 flex-1">
-                <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Situation</p>
-                  {selectedCase.overview.split("\n\n").map((p, i) => (
-                    <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
-                  ))}
-                </div>
+                {selectedCase.overview && (
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Situation</p>
+                    {selectedCase.overview.split("\n\n").map((p, i) => (
+                      <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
+                    ))}
+                  </div>
+                )}
                 {selectedCase.challenge && (
                   <div>
                     <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">The Challenge</p>
@@ -528,37 +583,49 @@ const Portfolio = () => {
                     ))}
                   </div>
                 )}
-                <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">What We Did</p>
-                  {selectedCase.approach.split("\n\n").map((p, i) => (
-                    <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
-                  ))}
-                </div>
-                <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Results</p>
-                  {selectedCase.outcome.split("\n\n").map((p, i) => (
-                    <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
-                  ))}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {selectedCase.metrics.map((m, i) => (
-                    <div key={i} className="bg-muted/50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-foreground">{m.value}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{m.label}</p>
-                      {m.sublabel && <p className="text-xs text-muted-foreground/70 mt-0.5">{m.sublabel}</p>}
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Services In This Engagement</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCase.services.map(s => (
-                      <span key={s} className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full">
-                        {s}
-                      </span>
+                {selectedCase.approach && (
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">What We Did</p>
+                    {selectedCase.approach.split("\n\n").map((p, i) => (
+                      <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
                     ))}
                   </div>
-                </div>
+                )}
+                {selectedCase.outcome && (
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Results</p>
+                    {selectedCase.outcome.split("\n\n").map((p, i) => (
+                      <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0">{p}</p>
+                    ))}
+                  </div>
+                )}
+                {/* Compact stat list */}
+                {selectedCase.metrics.length > 0 && (
+                  <div className="space-y-2">
+                    {selectedCase.metrics.map((m, i) => {
+                      const topBorderColor = borderColorMap[selectedCase.type[0]] || "#264a39";
+                      return (
+                        <div key={i} className="flex items-baseline gap-2 pl-3" style={{ borderLeft: `3px solid ${topBorderColor}` }}>
+                          <span className="text-sm font-bold text-forest">{m.label}</span>
+                          <span className="text-sm text-muted-foreground">/</span>
+                          <span className="text-sm text-muted-foreground">{m.sublabel || m.value}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {selectedCase.services.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-3">Services In This Engagement</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCase.services.map(s => (
+                        <span key={s} className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="sticky bottom-0 p-6 lg:p-8 pt-4 pb-6 bg-background border-t border-border">
                 <Button variant="hero" size="lg" className="w-full" asChild>
