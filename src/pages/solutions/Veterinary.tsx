@@ -154,10 +154,11 @@ export default function Veterinary() {
             </p>
           </motion.div>
 
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="mt-8 flex flex-wrap gap-3">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
             {heroStats.map((s, i) => (
-              <div key={i} className="rounded-full bg-background/60 backdrop-blur-sm border border-border/50 px-4 py-2">
-                <p className="text-sm font-medium text-foreground">{s}</p>
+              <div key={i} className="bg-card/60 backdrop-blur-sm rounded-xl p-4 border border-border/30">
+                <p className="text-sm font-bold text-foreground">{s.stat}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.context}</p>
               </div>
             ))}
           </motion.div>
