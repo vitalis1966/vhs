@@ -44,8 +44,8 @@ const heroStats = [
 const challenges = [
   {
     icon: DollarSign,
-    title: "Billing Complexity",
-    body: "Medical billing in Canada — AHCIP, shadow billing, WCB, MVA, and uninsured services — is unusually intricate. Most clinics are under-collecting without knowing it.",
+    title: "Revenue Complexity",
+    body: "Medical practices in Canada navigate a layered revenue environment — AHCIP, shadow billing, WCB, MVA, and uninsured services each with distinct requirements. Most clinics are under-collecting across one or more streams without knowing where the gap is.",
   },
   {
     icon: UserPlus,
