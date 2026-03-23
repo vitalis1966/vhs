@@ -192,7 +192,7 @@ export default function Medical() {
           <div className="grid lg:grid-cols-2 gap-8">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }}
               className="rounded-2xl bg-card border-2 border-border p-8 lg:p-10 flex flex-col shadow-elevated">
-              <span className="inline-block text-xs font-semibold tracking-widest uppercase text-accent bg-accent/10 px-3 py-1 rounded-full w-fit mb-4">Opening a New Practice</span>
+              <span className="inline-block text-xs font-semibold tracking-widest uppercase text-forest bg-forest/10 px-3 py-1 rounded-full w-fit mb-4">Opening a New Practice</span>
               <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-4">Get the foundation right. It's harder to fix once you've opened.</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                 Opening a medical clinic or specialist practice in Alberta involves CPSA registration, facility compliance, billing setup, technology selection, staffing, and a financial model — all before you see your first patient. Vitalis works with physicians from the earliest planning stages to opening day.
