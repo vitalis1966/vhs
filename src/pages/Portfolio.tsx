@@ -387,14 +387,17 @@ const Portfolio = () => {
       </section>
 
       {/* Card Grid */}
-      <section className="py-16 lg:py-24 bg-background">
+      <section className="pt-8 pb-16 lg:pb-24 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
             <AnimatePresence mode="popLayout">
               {filteredCases.map((cs, i) => {
                 const isFirst = i === 0 && activeFilter === "All";
                 const topBorderColor = borderColorMap[cs.type[0]] || "#264a39";
                 const resultStat = resultStatMap[cs.id];
+                // Calculate row index for alternate row tinting (0-indexed, 3 cols)
+                const rowIndex = Math.floor(i / 3);
+                const isAltRow = rowIndex % 2 === 1;
                 return (
                   <motion.div
                     key={cs.id}
@@ -403,10 +406,16 @@ const Portfolio = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.04, duration: 0.35 }}
-                    className={`group bg-white rounded-lg border border-border/60 overflow-hidden flex flex-col min-h-[200px] transition-all duration-300 hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:border-border ${
+                    className={`group bg-white rounded-lg overflow-hidden flex flex-col min-h-[200px] transition-all duration-300 hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)] ${
                       isFirst ? "lg:col-span-2" : ""
                     } ${!cs.isOngoing ? "cursor-pointer" : ""}`}
-                    style={{ borderTop: `3px solid ${topBorderColor}` }}
+                    style={{
+                      borderTop: `3px solid ${topBorderColor}`,
+                      border: `1px solid rgba(0,0,0,0.12)`,
+                      borderTopWidth: '3px',
+                      borderTopColor: topBorderColor,
+                      background: isAltRow ? 'rgba(38, 74, 57, 0.02)' : 'white',
+                    }}
                     role={cs.isOngoing ? undefined : "button"}
                     tabIndex={cs.isOngoing ? undefined : 0}
                     onClick={() => handleCardClick(cs)}
@@ -425,22 +434,16 @@ const Portfolio = () => {
                       <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-2">{cs.specialty}</p>
                       {/* Result stat or Active badge */}
                       {cs.isOngoing ? (
-                        <span className="inline-flex self-start mt-2 text-[10px] uppercase tracking-widest font-medium px-2 py-0.5 rounded-full bg-[#7a8a7a]/10 text-[#3d5a47] border border-[#7a8a7a]/30" style={{ borderWidth: '0.5px' }}>
-                          Active Engagement
+                        <span className="inline-flex self-start mt-1.5 text-[10px] uppercase tracking-widest font-medium rounded-full" style={{ padding: '3px 10px', background: '#5a7a5a1f', color: '#5a7a5a', border: '1px solid rgba(90, 122, 90, 0.4)' }}>
+                          ● Active Engagement
                         </span>
                       ) : resultStat ? (
-                        <p className="text-sm font-bold mt-2" style={{ color: topBorderColor }}>{resultStat}</p>
+                        <p className="text-sm font-bold mt-1.5 mb-2 pl-2" style={{ color: topBorderColor, borderLeft: `2px solid ${topBorderColor}` }}>{resultStat}</p>
                       ) : null}
                       {/* Title */}
-                      <h3 className={`font-display font-semibold text-forest leading-[1.4] mt-2 ${isFirst ? "text-xl" : "text-base"}`}>
+                      <h3 className={`font-display font-semibold text-forest leading-[1.4] ${cs.isOngoing ? 'mt-2' : ''} ${isFirst ? "text-xl" : "text-base"} line-clamp-3`}>
                         {cs.title}
                       </h3>
-                      {/* Featured card key result */}
-                      {isFirst && (
-                        <p className="text-[13px] italic text-muted-foreground mt-1.5">
-                          Opened 4 weeks ahead of projection · +19% above projected volume
-                        </p>
-                      )}
                       {/* Ongoing body */}
                       {cs.isOngoing && cs.ongoingBody && (
                         <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-3">{cs.ongoingBody}</p>
