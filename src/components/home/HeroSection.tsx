@@ -29,7 +29,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.08] tracking-tight"
           >
-            Practice Strategy for Medical,
+            Practice Strategy for Medical,{" "}
             <br />
             Dental &amp; Veterinary
             {" "}
