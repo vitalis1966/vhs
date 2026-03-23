@@ -33,10 +33,10 @@ const fadeUp = {
 };
 
 const heroStats = [
-  "Small Animal · Mixed · Specialty",
-  "Alberta & Western Canada",
-  "Independent & Corporate-Track Practices",
-  "ABVMA & CVBC Expertise",
+  { stat: "Small Animal · Mixed · Specialty", context: "Companion, mixed, and specialist practices" },
+  { stat: "New Builds & Established Practices", context: "Every stage of your practice's lifecycle" },
+  { stat: "Alberta & Western Canada", context: "Alberta-focused with national reach" },
+  { stat: "ABVMA & CVBC Expertise", context: "Regulatory context built in" },
 ];
 
 const challenges = [
@@ -48,7 +48,7 @@ const challenges = [
   {
     icon: CircleDollarSign,
     title: "Revenue Is More Complex Than the Invoice",
-    body: "Pet insurance, wellness plans, multi-service bundles, specialist referral fees, and pharmacy revenue all require deliberate systems to capture. Most independent practices collect what they invoice — they don't systematically optimize it.",
+    body: "Veterinary revenue spans pet insurance, wellness plans, service bundles, specialist referral fees, and pharmacy — each requiring deliberate systems to capture. Most independent practices collect what they invoice without optimizing what or how they invoice.",
   },
   {
     icon: UserPlus,
@@ -65,11 +65,11 @@ const challenges = [
 const services = [
   { icon: ClipboardList, title: "Strategic Assessment", body: "Independent review across revenue, operations, staffing, technology, growth readiness, and competitive positioning." },
   { icon: Building2, title: "New Clinic Builds", body: "Feasibility analysis, financial modeling, site selection, ABVMA facility classification planning, practice management software, and associate recruitment." },
-  { icon: CircleDollarSign, title: "Revenue Optimization", body: "Revenue per visit analysis, wellness plan structure and adoption, invoice accuracy, pharmaceutical pricing, specialist referral fees, and insurance billing." },
-  { icon: Settings, title: "Operations & Workflow", body: "Appointment scheduling, exam room utilization, patient flow, technician role alignment, and administrative workflow optimization." },
-  { icon: Users, title: "Associate Recruitment", body: "Veterinarian and RVT search strategy, compensation model design, partnership track structuring, cultural onboarding, and retention planning." },
+  { icon: CircleDollarSign, title: "Revenue Optimization", body: "Revenue per visit, wellness plan adoption, invoice accuracy, pharmaceutical pricing, and referral fees — reviewed across every stream." },
+  { icon: Settings, title: "Operations & Workflow", body: "Scheduling, exam room utilization, patient flow, and technician role design — built to run efficiently as the practice grows." },
+  { icon: Users, title: "Associate Recruitment", body: "Finding, compensating, and retaining the right veterinarians and RVTs — from search strategy through partnership structure." },
   { icon: Monitor, title: "Practice Technology", body: "Practice management software selection (ezyVet, Cornerstone, AVImark, Provet Cloud), imaging integration, inventory management, and client communication." },
-  { icon: TrendingUp, title: "Growth & Expansion", body: "Second location feasibility, demographic analysis for Alberta veterinary markets, and financial modeling for multi-site operations." },
+  { icon: TrendingUp, title: "Growth & Expansion", body: "Second locations and multi-site growth — analyzed demographically, modeled financially, and built operationally." },
   { icon: Handshake, title: "M&A & Transitions", body: "Practice valuation, corporate acquisition advisory, associate buy-in structuring, partnership buyout planning, and transition preparation." },
 ];
 
@@ -154,10 +154,11 @@ export default function Veterinary() {
             </p>
           </motion.div>
 
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="mt-8 flex flex-wrap gap-3">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
             {heroStats.map((s, i) => (
-              <div key={i} className="rounded-full bg-background/60 backdrop-blur-sm border border-border/50 px-4 py-2">
-                <p className="text-sm font-medium text-foreground">{s}</p>
+              <div key={i} className="bg-card/60 backdrop-blur-sm rounded-xl p-4 border border-border/30">
+                <p className="text-sm font-bold text-foreground">{s.stat}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.context}</p>
               </div>
             ))}
           </motion.div>
