@@ -302,13 +302,13 @@ const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "G
 
 const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
-  "Revenue & Billing": "hsl(var(--accent))",
-  "Operations": "#4a5568",
-  "Growth": "#b7791f",
-  "M&A": "#3d5a47",
-  "Technology": "#2d6a6a",
-  "People": "#6b5b5b",
-  "Ongoing": "#7a8a7a",
+  "Revenue & Billing": "#b5832a",
+  "Operations": "#3b5a7a",
+  "Growth": "#c47c2b",
+  "M&A": "#6b3d5a",
+  "Technology": "#2a6b6b",
+  "People": "#8b4a3a",
+  "Ongoing": "#5a7a5a",
 };
 
 const resultStatMap: Record<string, string> = {
