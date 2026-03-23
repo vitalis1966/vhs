@@ -47,6 +47,10 @@ export function ImpactStatsSection() {
             </motion.div>
           ))}
         </div>
+
+        <p className="mt-3 max-w-3xl mx-auto text-xs italic text-muted-foreground text-center">
+          Results reflect outcomes from individual client engagements or estimates derived from client-reported data across the Vitalis portfolio. Figures may represent a single engagement, an average across multiple engagements, or a combination of financial and operational outcomes. Past results are not a guarantee of future performance. Individual outcomes vary based on practice type, size, specialty, market conditions, and starting position at the time of engagement.
+        </p>
       </div>
     </section>
   );
