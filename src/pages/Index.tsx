@@ -17,9 +17,9 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <HeroSection />
+      <PracticePathFinder />
       <ImpactStatsSection />
       <WhatWeDoSection />
-      <PracticePathFinder />
       <CredibilitySection variant="homepage" />
       <FinalCtaSection />
       <Footer />
