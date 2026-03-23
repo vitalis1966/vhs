@@ -365,7 +365,7 @@ const Portfolio = () => {
       </section>
 
       {/* Filter Bar */}
-      <section className="py-6 bg-background border-b border-border sticky top-[72px] z-30">
+      <section className="py-6 bg-background sticky top-[72px] z-30">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="flex gap-2 overflow-x-auto flex-nowrap pb-1 scrollbar-hide">
             {filterOptions.map(filter => (
@@ -382,6 +382,7 @@ const Portfolio = () => {
               </button>
             ))}
           </div>
+          <div className="mt-4 border-b" style={{ borderColor: 'rgba(0,0,0,0.08)' }} />
         </div>
       </section>
 
