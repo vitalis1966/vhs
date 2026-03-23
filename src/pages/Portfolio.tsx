@@ -300,6 +300,29 @@ const caseStudies: CaseStudy[] = [
 
 const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Growth", "M&A", "Technology", "People", "Ongoing"];
 
+const borderColorMap: Record<string, string> = {
+  "New Build": "#264a39",
+  "Revenue & Billing": "hsl(var(--accent))",
+  "Operations": "#4a5568",
+  "Growth": "#b7791f",
+  "M&A": "#3d5a47",
+  "Technology": "#2d6a6a",
+  "People": "#6b5b5b",
+  "Ongoing": "#7a8a7a",
+};
+
+const resultStatMap: Record<string, string> = {
+  "calgary-ent-surgical-build": "+19% above projected volume",
+  "edmonton-family-medicine-revenue": "$310K recovered annually",
+  "calgary-dental-dso-advisory": "+23% above original offer",
+  "calgary-orthopaedics-new-build": "Opened ahead of schedule",
+  "edmonton-urgent-care-expansion": "2 → 5 locations in 26 months",
+  "calgary-internal-medicine-people": "7 → 1 staff departures in 12 months",
+  "vancouver-ophthalmology-nhsf": "First-attempt CPSBC accreditation",
+  "calgary-allergy-immunology-build": "Break-even 1 month ahead of plan",
+  "calgary-facial-plastics-expense": "31% overhead reduction",
+};
+
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
