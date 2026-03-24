@@ -24,13 +24,13 @@ export function FinalCtaSection() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <Button variant="hero" size="xl" asChild>
+            <Button variant="hero" size="lg" asChild>
               <Link to="/contact">
                 Speak With Our Team
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="hero-outline" size="xl" asChild>
+            <Button variant="hero-outline" size="lg" asChild>
               <Link to="/strategic-assessment">Start Your Strategic Assessment</Link>
             </Button>
           </div>
