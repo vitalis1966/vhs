@@ -135,7 +135,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden xl:flex items-center gap-4 2xl:gap-6">
+        <div className="hidden xl:flex items-center gap-3 2xl:gap-5">
           {simpleNavLinks.slice(0, 3).map(renderDesktopLink)}
 
           {/* Solutions Mega-Menu */}
@@ -256,11 +256,11 @@ export function Navbar() {
 
           {simpleNavLinks.slice(3).map(renderDesktopLink)}
 
-          <div className="flex items-center gap-2 ml-2">
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
+          <div className="flex items-center gap-1.5 ml-1 2xl:gap-2 2xl:ml-2 shrink-0">
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[11px] h-8 px-2.5 2xl:text-[13px] 2xl:h-9 2xl:px-3">
               <Link to="/strategic-assessment">Strategic Assessment</Link>
             </Button>
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[11px] h-8 px-2.5 2xl:text-[13px] 2xl:h-9 2xl:px-3">
               <Link to="/contact">Speak With Our Team</Link>
             </Button>
           </div>
