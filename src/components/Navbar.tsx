@@ -256,12 +256,18 @@ export function Navbar() {
 
           {simpleNavLinks.slice(3).map(renderDesktopLink)}
 
-          <div className="flex items-center gap-1.5 ml-1 2xl:gap-2 2xl:ml-2 shrink-0">
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[11px] h-8 px-2.5 2xl:text-[13px] 2xl:h-9 2xl:px-3">
-              <Link to="/strategic-assessment">Strategic Assessment</Link>
+          <div className="flex items-center gap-1 ml-1 2xl:gap-2 2xl:ml-2 shrink-0">
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[10px] h-8 px-2 xl:max-w-[128px] 2xl:text-[13px] 2xl:h-9 2xl:px-3 2xl:max-w-none">
+              <Link to="/strategic-assessment">
+                <span className="2xl:hidden">Assessment</span>
+                <span className="hidden 2xl:inline">Strategic Assessment</span>
+              </Link>
             </Button>
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[11px] h-8 px-2.5 2xl:text-[13px] 2xl:h-9 2xl:px-3">
-              <Link to="/contact">Speak With Our Team</Link>
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[10px] h-8 px-2 xl:max-w-[128px] 2xl:text-[13px] 2xl:h-9 2xl:px-3 2xl:max-w-none">
+              <Link to="/contact">
+                <span className="2xl:hidden">Speak With Team</span>
+                <span className="hidden 2xl:inline">Speak With Our Team</span>
+              </Link>
             </Button>
           </div>
         </div>
