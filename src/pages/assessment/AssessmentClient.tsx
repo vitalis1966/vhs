@@ -135,26 +135,31 @@ export default function AssessmentClient() {
     if (!token || !sections[currentIdx]) return;
     setSaveStatus("saving");
 
-    for (const q of sections[currentIdx].questions) {
-      const r = responses[q.id];
-      if (!r) continue;
+    try {
+      for (const q of sections[currentIdx].questions) {
+        const r = responses[q.id];
+        if (!r) continue;
 
-      const { error } = await supabase.rpc("upsert_response_by_token" as any, {
+        const { error } = await supabase.rpc("upsert_response_by_token" as any, {
+          p_token: token,
+          p_question_id: q.id,
+          p_response_value: r.value || null,
+          p_response_json: r.json || null,
+        });
+
+        if (error) throw error;
+      }
+
+      // Update session current_section_index via secure RPC
+      await supabase.rpc("update_session_by_token" as any, {
         p_token: token,
-        p_question_id: q.id,
-        p_response_value: r.value || null,
-        p_response_json: r.json || null,
+        p_current_section_index: currentIdx,
       });
-
-      if (error) throw error;
+      setSaveStatus("saved");
+    } catch {
+      setSaveStatus("idle");
+      throw new Error("Failed to save assessment section");
     }
-
-    // Update session current_section_index via secure RPC
-    await supabase.rpc("update_session_by_token" as any, {
-      p_token: token,
-      p_current_section_index: currentIdx,
-    });
-    setSaveStatus("saved");
   };
 
   const validateCurrentSection = (): boolean => {
