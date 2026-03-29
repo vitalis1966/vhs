@@ -164,6 +164,7 @@ const featuredPartners = [
     ],
     logo: null,
     logoAlt: "",
+    externalUrl: null,
   },
 ];
 
