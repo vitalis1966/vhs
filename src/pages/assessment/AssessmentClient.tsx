@@ -67,7 +67,7 @@ export default function AssessmentClient() {
       // Load assessment
       const { data: assess } = await (supabase.from("assessments" as any)
         .select("*")
-        .eq("id", sess.assessment_id)
+        .eq("id", sess_data.assessment_id)
         .single() as any);
 
       // Load sections with questions
