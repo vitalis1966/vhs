@@ -32,10 +32,10 @@ export function Footer() {
             <Link to="/">
               <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" />
             </Link>
-            <p className="mt-4 text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
+            <p className="mt-4 text-white text-sm leading-relaxed max-w-xs">
               Full-cycle healthcare consulting for medical, dental, and veterinary practices. We partner with practices through every stage of growth.
             </p>
-            <div className="mt-6 text-sm text-primary-foreground/60">
+            <div className="mt-6 text-sm text-white">
               <p>Calgary, Alberta, Canada</p>
               <p className="mt-1">info@vitalisstrategies.com</p>
             </div>
@@ -44,7 +44,7 @@ export function Footer() {
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-primary-foreground/50 mb-4">
+              <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-white/90 mb-4">
                 {category}
               </h4>
               <ul className="space-y-3">
@@ -52,7 +52,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                      className="text-sm text-white hover:text-white/80 transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -63,13 +63,13 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-primary-foreground/50">
+        <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-white/80">
             © {new Date().getFullYear()} Vitalis Health Strategies. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-primary-foreground/50">
-            <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms</Link>
+          <div className="flex gap-6 text-sm text-white/80">
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
           </div>
         </div>
       </div>
