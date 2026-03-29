@@ -118,7 +118,9 @@ export function GlobalTab() {
 
           {hasGTM && hasGA4 && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-sm">
-              ⚠️ You have both GTM and GA4 configured. GA4 will not fire directly — fire it through GTM instead. Clear one of these fields.
+              ⚠️ GTM is active. GA4 will <strong>not</strong> fire directly. Configure GA4 as a tag inside your GTM container at{" "}
+              <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">tagmanager.google.com</a>.
+              The GA4 ID here is stored for reference only while GTM is active.
             </div>
           )}
 
