@@ -83,10 +83,8 @@ export default function AssessmentReport() {
         sectionsWithQuestions.push({ ...sec, questions: questions || [] });
       }
 
-      const { data: existingResponses } = await (supabase
-        .from("assessment_responses" as any)
-        .select("*")
-        .eq("session_id", sess.id) as any);
+      // Load responses via secure RPC (scoped by token)
+      const { data: existingResponses } = await supabase.rpc("get_responses_by_token", { p_token: token });
 
       const resMap: Record<string, { value: string; json: any }> = {};
       for (const r of existingResponses || []) {
