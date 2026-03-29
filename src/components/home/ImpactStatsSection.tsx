@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  { value: "$67M+", label: "Revenue Added Across Engagements", context: "Total measured increase above pre-engagement baseline" },
+  { value: "$70M+", label: "Revenue Added Across Engagements", context: "Total measured increase above pre-engagement baseline" },
   { value: "31%", label: "Average Revenue Increase", context: "From pre-engagement baseline across active client portfolio" },
   { value: "34%", label: "Average EBITDA Improvement", context: "For practices completing a full operational engagement" },
   { value: "28%", label: "Average Overhead Reduction", context: "Across operational assessment engagements" },
   { value: "41%", label: "Reduction in Current & Long-Term Liabilities", context: "For practices completing a financial restructuring engagement" },
-  { value: "$310K", label: "Average Annual Billing Recovered", context: "Per revenue cycle engagement, from existing patient volume" },
-  { value: "24%", label: "Physicians & Practitioners Supported", context: "Across practices and facilities built, optimized, or advised" },
-  { value: "100+", label: "Practices Supported", context: "Medical, dental & veterinary across Canada" },
+  { value: "$410K", label: "Average Annual Billing Recovered", context: "Per revenue cycle engagement, from existing patient volume" },
+  { value: "100%", label: "Physicians & Practitioners Partnered", context: "Across practices and facilities built, optimized, or advised" },
+  { value: "25+", label: "Facilities Built", context: "De novo clinic builds completed coast to coast" },
   { value: "15+", label: "New Facilities Opened", context: "On time and on budget, concept through opening day" },
   { value: "$680K", label: "Avg. Additional M&A Value Negotiated", context: "Above initial acquisition offer, per transaction engagement" },
 ];
