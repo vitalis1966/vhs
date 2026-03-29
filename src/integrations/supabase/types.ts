@@ -580,7 +580,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_intake_for_session: {
+        Args: { p_token: string }
+        Returns: {
+          email: string
+          full_name: string
+          organization_name: string
+        }[]
+      }
+      get_session_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          assessment_id: string
+          created_at: string
+          current_section_index: number
+          id: string
+          intake_id: string
+          meeting_booked: boolean
+          meeting_booked_by: string
+          status: string
+          submitted_at: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
