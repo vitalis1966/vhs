@@ -19,12 +19,14 @@ const Index = () => {
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <Navbar />
-      <HeroSection />
-      <PracticePathFinder />
-      <ImpactStatsSection />
-      <WhatWeDoSection />
-      <CredibilitySection variant="homepage" />
-      <FinalCtaSection />
+      <main>
+        <HeroSection />
+        <PracticePathFinder />
+        <ImpactStatsSection />
+        <WhatWeDoSection />
+        <CredibilitySection variant="homepage" />
+        <FinalCtaSection />
+      </main>
       <Footer />
     </div>
   );

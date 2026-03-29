@@ -30,7 +30,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/">
-              <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" />
+              <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" width="120" height="40" />
             </Link>
             <p className="mt-4 text-white text-sm leading-relaxed max-w-xs">
               Full-cycle healthcare consulting for medical, dental, and veterinary practices. We partner with practices through every stage of growth.
@@ -44,9 +44,9 @@ export function Footer() {
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-white/90 mb-4">
+              <p className="font-display text-sm font-semibold uppercase tracking-wider text-white/90 mb-4">
                 {category}
-              </h4>
+              </p>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
