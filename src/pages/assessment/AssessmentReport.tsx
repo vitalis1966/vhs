@@ -93,7 +93,7 @@ export default function AssessmentReport() {
         resMap[r.question_id] = { value: r.response_value || "", json: r.response_json };
       }
 
-      setSession(sess);
+      setSession({ ...sess, access_token: "" } as any);
       setAssessment(assess);
       setSections(sectionsWithQuestions);
       setResponses(resMap);
