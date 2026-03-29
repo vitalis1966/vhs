@@ -1,58 +1,38 @@
 
-Goal: fix responsive CTA behavior and label consistency for the exact button set you listed, without changing routing or unrelated content.
 
-1) Standardize responsive CTA behavior on the listed pages/buttons
-- Apply a consistent “long-label CTA” class pattern to the specified buttons so text wraps cleanly instead of overflowing:
-  - `w-full sm:w-auto`
-  - `whitespace-normal`
-  - `h-auto py-3`
-  - `text-center leading-snug`
-- Keep icon alignment stable with inline-flex centering so wrapped labels stay visually balanced.
-- Use this on:
-  - Homepage: “Start Your Strategic Assessment”
-  - Solutions: “Explore New Practice Solutions”, “Explore Existing Practice Solutions”
-  - Medical/Dental/Veterinary self-identification cards:
-    - “Start Your Build Strategy Assessment”
-    - “Start Your Performance Assessment”
-  - Planning & Building: “Start Your Build Strategy Assessment”
-  - Operating, Growing & Advising: “Start Your Performance Assessment”
-  - Surgical Facilities CTA buttons in Medical/Dental/Veterinary callouts.
+## Accessibility Contrast Fixes
 
-2) Remove duplicate arrow characters where icon arrows already exist
-- In listed CTAs currently using both text arrow (`→`) and icon arrow, remove the text arrow and keep only the icon.
-- This will be applied in:
-  - `src/pages/SolutionsNewClinics.tsx`
-  - `src/pages/SolutionsExistingClinics.tsx`
-  - `src/pages/solutions/NHSF.tsx` facility type CTA labels (data strings).
+Three targeted changes to meet WCAG AA contrast requirements.
 
-3) Fix Surgical Facilities CTA wording consistency
-- Normalize “Explore…” spelling and keep CTA naming consistent across:
-  - Medical, Dental, Veterinary surgical-facility callouts.
-- Update NHSF facility-type card CTA labels to clean, non-redundant wording (no trailing `→`) and corrected spacing/wording for:
-  - Medical NHSF Advisory
-  - Dental Surgical Facility Advisory
-  - Veterinary Surgical Facility Advisory
+### 1. Hero CTA button — dark text on sage background
+The `hero` button variant uses `bg-primary text-primary-foreground`. The primary foreground (`--primary-foreground`) is a light cream, giving only 2.05:1 contrast on the sage green.
 
-4) Files to update
-- `src/components/home/HeroSection.tsx`
-- `src/pages/Solutions.tsx`
-- `src/pages/SolutionsNewClinics.tsx`
-- `src/pages/SolutionsExistingClinics.tsx`
-- `src/pages/solutions/Medical.tsx`
-- `src/pages/solutions/Dental.tsx`
-- `src/pages/solutions/Veterinary.tsx`
-- `src/pages/solutions/NHSF.tsx`
+**Fix:** Override the hero button text to dark green `text-[#1a2a18]` directly in the variant definition in `src/components/ui/button.tsx`.
 
-5) Validation (end-to-end responsive QA)
-- Verify all listed CTAs at: 390, 768, 1024, 1280, 1366, 1536 widths.
-- Confirm:
-  - No overflow/clipping
-  - Text wraps cleanly
-  - Buttons remain aligned in cards/rows
-  - CTA labels match updated wording
-  - No routing/logic changes introduced.
+### 2. "Get Started" label — darkened gold
+The accent color `text-accent` (#c89741-ish) on the cream background fails at 2.44:1.
 
-Technical details
-- I will not modify global button variant behavior to avoid side effects on other pages.
-- Changes are scoped to per-button classNames and targeted CTA label strings only.
-- Existing routes (`to="..."`) remain unchanged.
+**Fix:** Add a new CSS utility class `text-accent-dark` with color `#7a5500` and apply it to the "Get Started" label in `src/components/home/PracticePathFinder.tsx`. Also check for any other `text-accent` labels used as small eyebrow/tagline text on light backgrounds (e.g., HeroSection "Full-Cycle Healthcare Strategy") and apply the same fix.
+
+### 3. Footer text — use white throughout
+Footer uses `text-primary-foreground/70`, `/60`, `/50` opacity variants that produce insufficient contrast on the `bg-primary` (#a5b29f) background.
+
+**Fix:** In `src/components/Footer.tsx`, replace all opacity-reduced text classes with full `text-white` (or `text-white/90` minimum for body copy). Specifically:
+- Body copy: `text-primary-foreground/70` → `text-white`
+- Location/email: `text-primary-foreground/60` → `text-white`
+- Category headings: `text-primary-foreground/50` → `text-white/90`
+- Links: `text-primary-foreground/70` → `text-white hover:text-white/80`
+- Copyright & bottom links: `text-primary-foreground/50` → `text-white/80`
+- Border: `border-primary-foreground/10` → `border-white/20`
+
+### Files to edit
+| File | Change |
+|------|--------|
+| `src/components/ui/button.tsx` | Update `hero` variant: change `text-primary-foreground` to `text-[#1a2a18]` |
+| `src/components/home/PracticePathFinder.tsx` | Change "Get Started" label from `text-accent` to `text-[#7a5500]` |
+| `src/components/home/HeroSection.tsx` | Change "Full-Cycle Healthcare Strategy" label from `text-accent` to `text-[#7a5500]` |
+| `src/components/Footer.tsx` | Replace all low-opacity text colors with `text-white` variants |
+
+### Note
+The hero button variant change will affect all `variant="hero"` buttons site-wide — this is intentional since they all share the same contrast problem. Buttons using `variant="hero-outline"` are unaffected.
+
