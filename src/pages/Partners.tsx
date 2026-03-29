@@ -130,6 +130,7 @@ const featuredPartners = [
     ],
     logo: atbLogo as string,
     logoAlt: "ATB Financial",
+    externalUrl: "https://www.atb.com/business/borrowing/business-loans/professional-practice-financing/",
   },
   {
     category: "ARCHITECTURE & DESIGN",
@@ -146,6 +147,7 @@ const featuredPartners = [
     ],
     logo: hollandLogo as string,
     logoAlt: "Holland Design",
+    externalUrl: "https://www.hollanddesign.ca/",
   },
   {
     category: "LEGAL PARTNER",
