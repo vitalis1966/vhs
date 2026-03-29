@@ -100,9 +100,9 @@ const buildSteps = [
 ];
 
 const facilityTypes = [
-  { icon: Stethoscope, label: "Medical Surgical Facilities", body: "Physician-owned and corporate NHSFs performing medical surgical procedures — ophthalmology, orthopedics, dermatology, plastics, gynecology, ENT, general surgery, and others. Medical NHSFs are the most common type in Canada and the most complex in terms of regulatory and financial structure. May operate under AHS or provincial health authority contracts for publicly funded procedures, or entirely as private-pay facilities.", cta: "Medical NHSF Advisory →", href: "/solutions/medical" },
-  { icon: Smile, label: "Dental & OMS Surgical Facilities", body: "Oral maxillofacial surgery centres, dental surgical facilities, and sedation dentistry practices performing procedures under general anesthesia or deep sedation. These facilities operate under dual regulatory frameworks — CPSA NHSF accreditation and ADA+C (or equivalent provincial dental regulatory body) standards simultaneously. OMS procedures are an approved AHS CSF category in Alberta.", cta: "Dental Surgical Facility Advisory →", href: "/solutions/dental" },
-  { icon: PawPrint, label: "Veterinary Surgical Facilities", body: "Specialty veterinary surgery centres, emergency and critical care facilities, and referral practices with dedicated surgical suites. Veterinary surgical facilities are regulated by provincial veterinary regulatory bodies (ABVMA in Alberta, CVBC in BC) — distinct from CPSA — with their own facility classification, equipment, and staffing standards. Capital requirements are among the highest in the veterinary sector.", cta: "Veterinary Surgical Facility Advisory →", href: "/solutions/veterinary" },
+  { icon: Stethoscope, label: "Medical Surgical Facilities", body: "Physician-owned and corporate NHSFs performing medical surgical procedures — ophthalmology, orthopedics, dermatology, plastics, gynecology, ENT, general surgery, and others. Medical NHSFs are the most common type in Canada and the most complex in terms of regulatory and financial structure. May operate under AHS or provincial health authority contracts for publicly funded procedures, or entirely as private-pay facilities.", cta: "Medical NHSF Advisory", href: "/solutions/medical" },
+  { icon: Smile, label: "Dental & OMS Surgical Facilities", body: "Oral maxillofacial surgery centres, dental surgical facilities, and sedation dentistry practices performing procedures under general anesthesia or deep sedation. These facilities operate under dual regulatory frameworks — CPSA NHSF accreditation and ADA+C (or equivalent provincial dental regulatory body) standards simultaneously. OMS procedures are an approved AHS CSF category in Alberta.", cta: "Dental Surgical Facility Advisory", href: "/solutions/dental" },
+  { icon: PawPrint, label: "Veterinary Surgical Facilities", body: "Specialty veterinary surgery centres, emergency and critical care facilities, and referral practices with dedicated surgical suites. Veterinary surgical facilities are regulated by provincial veterinary regulatory bodies (ABVMA in Alberta, CVBC in BC) — distinct from CPSA — with their own facility classification, equipment, and staffing standards. Capital requirements are among the highest in the veterinary sector.", cta: "Veterinary Surgical Facility Advisory", href: "/solutions/veterinary" },
 ];
 
 const failurePoints = [
@@ -292,7 +292,7 @@ export default function NHSF() {
                     <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6"><Icon className="h-6 w-6 text-primary" /></div>
                     <h3 className="font-display text-lg font-bold text-foreground mb-3">{f.label}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-6">{f.body}</p>
-                    <Button variant="hero-outline" size="default" asChild className="w-full"><Link to={f.href}>{f.cta} <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+                    <Button variant="hero-outline" size="default" asChild className="w-full whitespace-normal h-auto py-3 text-center leading-snug"><Link to={f.href}>{f.cta} <ArrowRight className="ml-1 h-4 w-4 shrink-0" /></Link></Button>
                   </motion.div>
                 );
               })}
@@ -380,7 +380,7 @@ export default function NHSF() {
               <h2 className="font-display text-2xl lg:text-3xl font-bold text-primary-foreground tracking-tight">A surgical facility is not a clinic with an OR. It is one of the most complex investments in private healthcare — and one of the most rewarding when it is built correctly.</h2>
               <p className="text-primary-foreground/70 mt-4 text-lg">Vitalis provides the advisory experience to do it right — from the first feasibility conversation through accreditation and into long-term operations. We have done this across provinces, across specialties, and across facility types. We know exactly where the process breaks down and how to prevent it.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                <Button variant="hero" size="lg" asChild><Link to="/contact">Book a Surgical Facility Consultation <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+                <Button variant="hero" size="lg" asChild className="whitespace-normal h-auto py-3 text-center leading-snug"><Link to="/contact">Book a Surgical Facility Consultation <ArrowRight className="ml-1 h-4 w-4 shrink-0" /></Link></Button>
                 <Button variant="hero-outline" size="lg" asChild className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"><Link to="/strategic-assessment">Start With an Assessment</Link></Button>
               </div>
               <p className="text-primary-foreground/50 text-sm mt-8">Vitalis works with surgical facilities across Alberta, British Columbia, Saskatchewan, Manitoba, Ontario, and other Canadian provinces. Contact us to discuss your province and procedure scope.</p>

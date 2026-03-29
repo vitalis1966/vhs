@@ -205,8 +205,8 @@ export default function Medical() {
                   </li>
                 ))}
               </ul>
-              <Button variant="hero" size="lg" className="w-full" asChild>
-                <Link to="/strategic-assessment">Start Your Build Strategy Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Button variant="hero" size="lg" className="w-full whitespace-normal h-auto py-3 text-center leading-snug" asChild>
+                <Link to="/strategic-assessment">Start Your Build Strategy Assessment <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
               </Button>
             </motion.div>
 
@@ -225,8 +225,8 @@ export default function Medical() {
                   </li>
                 ))}
               </ul>
-              <Button variant="hero" size="lg" className="w-full" asChild>
-                <Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Button variant="hero" size="lg" className="w-full whitespace-normal h-auto py-3 text-center leading-snug" asChild>
+                <Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
               </Button>
             </motion.div>
           </div>
@@ -446,8 +446,8 @@ export default function Medical() {
             <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
               If your practice involves surgical or procedural services that would qualify as a Non-Hospital Surgical Facility under CPSA accreditation, Vitalis provides dedicated advisory for that pathway. NHSF builds and accreditation preparation involve a separate regulatory and financial framework from standard medical clinic development.
             </p>
-            <Button variant="gold" size="lg" asChild>
-              <Link to="/solutions/nhsf">Explore Our NHSF & Surgical Facility Advisory <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Button variant="gold" size="lg" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
+              <Link to="/solutions/nhsf">Explore Our NHSF & Surgical Facility Advisory <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
             </Button>
           </motion.div>
         </div>

@@ -51,10 +51,10 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10"
           >
-            <Button variant="hero" size="xl" asChild>
+            <Button variant="hero" size="xl" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
               <Link to="/strategic-assessment">
                 Start Your Strategic Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
               </Link>
             </Button>
           </motion.div>
