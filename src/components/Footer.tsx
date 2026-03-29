@@ -20,6 +20,12 @@ const footerLinks = {
     { label: "Strategic Assessment", href: "/strategic-assessment" },
     { label: "Insights", href: "/insights" },
   ],
+  Legal: [
+    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Disclaimer", href: "/disclaimer" },
+    { label: "Cookie Policy", href: "/cookies" },
+  ],
 };
 
 export function Footer() {
