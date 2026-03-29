@@ -17,10 +17,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <SEOHead
-        fallbackTitle="Healthcare Consulting for Medical, Dental & Veterinary Practices | Vitalis Health Strategies | Calgary, Alberta"
-        fallbackDescription="Vitalis Health Strategies helps medical, dental, and veterinary practices plan, build, grow, and optimize. Clinician-led consulting across Canada."
-      />
+      <SEOHead />
       <Navbar />
       <main>
         <HeroSection />

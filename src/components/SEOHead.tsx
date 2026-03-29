@@ -1,104 +1,182 @@
 import { Helmet } from "react-helmet-async";
 import { usePageSEO } from "@/hooks/useSEO";
 
-interface SEOHeadProps {
-  fallbackTitle?: string;
-  fallbackDescription?: string;
-}
+export function SEOHead() {
+  const { resolved, route } = usePageSEO();
+  const r = resolved;
 
-export function SEOHead({ fallbackTitle, fallbackDescription }: SEOHeadProps) {
-  const { resolved, pageSEO } = usePageSEO();
-
-  const title = resolved.title || fallbackTitle || "Vitalis Health Strategies";
-  const description = resolved.description || fallbackDescription || "";
+  // Build page-specific schema
+  const buildPageSchema = () => {
+    if (r.schemaJson) return r.schemaJson; // Custom JSON from DB
+    // Auto-generate based on schema_type
+    const base: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": r.schemaType,
+      url: `${r.siteUrl}${route === "/" ? "" : route}`,
+      name: r.title,
+      description: r.description,
+      isPartOf: { "@id": `${r.siteUrl}/#website` },
+      inLanguage: "en-CA",
+    };
+    if (r.schemaType === "Service") {
+      base.provider = { "@id": `${r.siteUrl}/#organization` };
+      base.areaServed = { "@type": "Country", name: "Canada" };
+      base.offers = { "@type": "Offer", availability: "https://schema.org/InStock" };
+    }
+    if (r.breadcrumbs && Array.isArray(r.breadcrumbs) && r.breadcrumbs.length > 0) {
+      base.breadcrumb = {
+        "@type": "BreadcrumbList",
+        itemListElement: (r.breadcrumbs as Array<{ position: number; name: string; item: string }>).map((b) => ({
+          "@type": "ListItem",
+          position: b.position,
+          name: b.name,
+          item: `${r.siteUrl}${b.item}`,
+        })),
+      };
+    }
+    if (r.ogType === "article") {
+      base["@type"] = "Article";
+      base.author = { "@type": "Organization", name: r.articleAuthor || r.siteName };
+      base.publisher = { "@id": `${r.siteUrl}/#organization` };
+      if (r.articlePublished) base.datePublished = r.articlePublished;
+      if (r.articleModified) base.dateModified = r.articleModified;
+      if (r.articleSection) base.articleSection = r.articleSection;
+      if (r.articleTags?.length) base.keywords = r.articleTags.join(", ");
+    }
+    return base;
+  };
 
   return (
     <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      {resolved.keywords && <meta name="keywords" content={resolved.keywords} />}
-      <meta name="robots" content={resolved.robots} />
-      <link rel="canonical" href={resolved.canonical} />
+      {/* CHARSET & COMPAT */}
+      <meta charSet="UTF-8" />
+      <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
 
-      {/* Open Graph */}
-      <meta property="og:title" content={resolved.ogTitle || title} />
-      <meta property="og:description" content={resolved.ogDescription || description} />
-      <meta property="og:type" content={resolved.ogType} />
-      <meta property="og:url" content={resolved.canonical} />
-      <meta property="og:site_name" content={resolved.siteName} />
-      <meta property="og:locale" content={resolved.siteLocale} />
-      <meta property="og:image" content={resolved.ogImage} />
-      {resolved.ogImageAlt && <meta property="og:image:alt" content={resolved.ogImageAlt} />}
-      <meta property="og:image:width" content={resolved.ogImageWidth} />
-      <meta property="og:image:height" content={resolved.ogImageHeight} />
+      {/* VIEWPORT */}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      {/* Twitter */}
-      <meta name="twitter:card" content={resolved.twitterCard} />
-      {resolved.twitterHandle && <meta name="twitter:site" content={resolved.twitterHandle} />}
-      <meta name="twitter:title" content={resolved.twitterTitle || title} />
-      <meta name="twitter:description" content={resolved.twitterDescription || description} />
-      <meta name="twitter:image" content={resolved.twitterImage} />
-      {resolved.twitterImageAlt && <meta name="twitter:image:alt" content={resolved.twitterImageAlt} />}
+      {/* THEME */}
+      <meta name="theme-color" content={r.themeColor} />
+      <meta name="color-scheme" content="light" />
+      <meta name="msapplication-TileColor" content={r.themeColor} />
+      <meta name="msapplication-config" content="/browserconfig.xml" />
 
-      {/* Article meta */}
-      {resolved.articleAuthor && <meta property="article:author" content={resolved.articleAuthor} />}
-      {resolved.articlePublished && <meta property="article:published_time" content={resolved.articlePublished} />}
-      {resolved.articleModified && <meta property="article:modified_time" content={resolved.articleModified} />}
-      {resolved.articleSection && <meta property="article:section" content={resolved.articleSection} />}
-      {resolved.articleTags?.map((tag: string) => (
-        <meta key={tag} property="article:tag" content={tag} />
-      ))}
+      {/* TITLE */}
+      <title>{r.title}</title>
 
-      {/* Verification tags */}
-      {resolved.googleSearchConsole && <meta name="google-site-verification" content={resolved.googleSearchConsole} />}
-      {resolved.bingVerification && <meta name="msvalidate.01" content={resolved.bingVerification} />}
-      {resolved.pinterestVerification && <meta name="p:domain_verify" content={resolved.pinterestVerification} />}
+      {/* BASIC META */}
+      <meta name="description" content={r.description} />
+      {r.keywords && <meta name="keywords" content={r.keywords} />}
+      <meta name="author" content={r.siteName} />
+      <meta name="robots" content={r.robots} />
+      <meta name="language" content="en-CA" />
+      <meta name="revisit-after" content="7 days" />
+      <meta name="rating" content="general" />
 
-      {/* Facebook */}
-      {resolved.facebookAppId && <meta property="fb:app_id" content={resolved.facebookAppId} />}
+      {/* GEO (Calgary) */}
+      <meta name="geo.region" content="CA-AB" />
+      <meta name="geo.placename" content="Calgary, Alberta, Canada" />
+      <meta name="geo.position" content="51.0447;-114.0719" />
+      <meta name="ICBM" content="51.0447, -114.0719" />
 
-      {/* Theme color */}
-      <meta name="theme-color" content={resolved.themeColor} />
+      {/* CANONICAL */}
+      <link rel="canonical" href={r.canonical} />
 
-      {/* Global schemas */}
-      {resolved.globalSchemas?.map((s: { id: string; schema_json: unknown }) => (
-        <script key={s.id} type="application/ld+json">
-          {JSON.stringify(s.schema_json)}
-        </script>
-      ))}
+      {/* HREFLANG */}
+      <link rel="alternate" hrefLang="en-ca" href={r.canonical} />
+      <link rel="alternate" hrefLang="en" href={r.canonical} />
+      <link rel="alternate" hrefLang="x-default" href={r.canonical} />
 
-      {/* Page schema */}
-      {resolved.schemaJson ? (
-        <script type="application/ld+json">
-          {JSON.stringify(resolved.schemaJson)}
-        </script>
-      ) : resolved.schemaType ? (
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": resolved.schemaType,
-            name: title,
-            description,
-            url: resolved.canonical,
-          })}
-        </script>
-      ) : null}
+      {/* OPEN GRAPH */}
+      <meta property="og:site_name" content={r.siteName} />
+      <meta property="og:locale" content={r.siteLocale} />
+      <meta property="og:type" content={r.ogType} />
+      <meta property="og:title" content={r.ogTitle} />
+      <meta property="og:description" content={r.ogDescription} />
+      <meta property="og:url" content={r.canonical} />
+      <meta property="og:image" content={r.ogImage} />
+      <meta property="og:image:secure_url" content={r.ogImage} />
+      <meta property="og:image:type" content="image/jpeg" />
+      <meta property="og:image:width" content={r.ogImageWidth} />
+      <meta property="og:image:height" content={r.ogImageHeight} />
+      <meta property="og:image:alt" content={r.ogImageAlt} />
 
-      {/* Breadcrumb schema */}
-      {resolved.breadcrumbs && (
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: (resolved.breadcrumbs as Array<{ position: number; name: string; item: string }>).map((b) => ({
-              "@type": "ListItem",
-              position: b.position,
-              name: b.name,
-              item: `${resolved.siteUrl}${b.item}`,
-            })),
-          })}
-        </script>
+      {/* FACEBOOK */}
+      {r.facebookAppId && <meta property="fb:app_id" content={r.facebookAppId} />}
+
+      {/* ARTICLE TAGS (when ogType = article) */}
+      {r.ogType === "article" && r.articlePublished && (
+        <meta property="article:published_time" content={r.articlePublished} />
       )}
+      {r.ogType === "article" && r.articleModified && (
+        <meta property="article:modified_time" content={r.articleModified} />
+      )}
+      {r.ogType === "article" && r.articleSection && (
+        <meta property="article:section" content={r.articleSection} />
+      )}
+      {r.ogType === "article" &&
+        r.articleTags?.map((tag: string) => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
+
+      {/* TWITTER / X */}
+      <meta name="twitter:card" content={r.twitterCard} />
+      <meta name="twitter:domain" content="vitalisstrategies.com" />
+      <meta name="twitter:url" content={r.canonical} />
+      <meta name="twitter:title" content={r.twitterTitle} />
+      <meta name="twitter:description" content={r.twitterDescription} />
+      <meta name="twitter:image" content={r.twitterImage} />
+      <meta name="twitter:image:alt" content={r.twitterImageAlt} />
+      {r.twitterHandle && <meta name="twitter:site" content={r.twitterHandle} />}
+      {r.twitterHandle && <meta name="twitter:creator" content={r.twitterHandle} />}
+
+      {/* SEARCH ENGINE VERIFICATION */}
+      {r.googleSearchConsole && (
+        <meta name="google-site-verification" content={r.googleSearchConsole} />
+      )}
+      {r.bingVerification && (
+        <meta name="msvalidate.01" content={r.bingVerification} />
+      )}
+      {r.pinterestVerification && (
+        <meta name="p:domain_verify" content={r.pinterestVerification} />
+      )}
+
+      {/* FAVICONS */}
+      <link rel="icon" href="/favicon.ico" sizes="any" />
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+      <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1C3D2E" />
+      <link rel="shortcut icon" href="/favicon.ico" />
+      <link rel="manifest" href="/site.webmanifest" />
+
+      {/* PRECONNECT */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+      <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+      <link rel="dns-prefetch" href="https://connect.facebook.net" />
+      <link rel="dns-prefetch" href="https://snap.licdn.com" />
+
+      {/* PRELOAD */}
+      <link rel="preload" href="/vitalis-logo.webp" as="image" type="image/webp" />
+
+      {/* GLOBAL SCHEMA — Organization & Website */}
+      {r.globalSchemas.map((schema: { id: string; schema_json: unknown }) => (
+        <script key={schema.id} type="application/ld+json">
+          {JSON.stringify(schema.schema_json)}
+        </script>
+      ))}
+
+      {/* PAGE-SPECIFIC SCHEMA */}
+      <script type="application/ld+json">
+        {JSON.stringify(buildPageSchema())}
+      </script>
     </Helmet>
   );
 }
