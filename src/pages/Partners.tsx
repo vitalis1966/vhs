@@ -439,7 +439,7 @@ const Partners = () => {
           </div>
 
           <div className="space-y-6">
-            {featuredPartners.map((partner, i) => (
+            {featuredPartners.filter(p => p.category !== "LEGAL PARTNER").map((partner, i) => (
               <motion.div
                 key={partner.name}
                 initial={{ opacity: 0, y: 20 }}
