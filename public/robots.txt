@@ -13,4 +13,8 @@ Allow: /
 User-agent: *
 Allow: /
 
+Disallow: /admin/
+Disallow: /admin/login
+Disallow: /admin/seo
+
 Sitemap: https://www.vitalisstrategies.com/sitemap.xml
