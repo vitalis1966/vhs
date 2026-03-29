@@ -146,10 +146,11 @@ export default function AssessmentClient() {
         }, { onConflict: "session_id,question_id" }) as any);
       }
     }
-    // Update session current_section_index
-    await (supabase.from("assessment_sessions" as any)
-      .update({ current_section_index: currentIdx, updated_at: new Date().toISOString() })
-      .eq("id", session.id) as any);
+    // Update session current_section_index via secure RPC
+    await supabase.rpc("update_session_by_token" as any, {
+      p_token: token,
+      p_current_section_index: currentIdx,
+    });
     setSaveStatus("saved");
   };
 
