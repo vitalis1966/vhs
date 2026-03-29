@@ -67,9 +67,9 @@ export function Footer() {
           <p className="text-sm text-white/80">
             © {new Date().getFullYear()} Vitalis Health Strategies. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-primary-foreground/50">
-            <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms</Link>
+          <div className="flex gap-6 text-sm text-white/80">
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
           </div>
         </div>
       </div>
