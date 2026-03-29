@@ -73,7 +73,7 @@ export default function AssessmentClient() {
       // Load sections with questions
       const { data: secs } = await (supabase.from("assessment_sections" as any)
         .select("*")
-        .eq("assessment_id", sess.assessment_id)
+        .eq("assessment_id", sess_data.assessment_id)
         .order("sort_order") as any);
 
       const sectionsWithQuestions: SectionWithQuestions[] = [];
