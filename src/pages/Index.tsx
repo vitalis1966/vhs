@@ -7,6 +7,7 @@ import { PracticePathFinder } from "@/components/home/PracticePathFinder";
 import { CredibilitySection } from "@/components/home/CredibilitySection";
 import { FinalCtaSection } from "@/components/home/FinalCtaSection";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, organizationSchema, websiteSchema } from "@/components/JsonLd";
 
 const Index = () => {
   usePageMeta(
