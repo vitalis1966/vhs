@@ -129,6 +129,8 @@ export default function NHSF() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Non-Hospital Surgical Facility Consulting", "Advisory and consulting for NHSF and surgical facility planning, licensing, operations, and compliance.", "/solutions/nhsf")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Surgical Facilities", path: "/solutions/nhsf" }])} />
       <Navbar />
       <main>
         {/* S1 — Hero */}

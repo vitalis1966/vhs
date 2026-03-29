@@ -136,6 +136,8 @@ export default function Veterinary() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Veterinary Practice Consulting", "Strategic consulting for veterinary clinics — planning, development, operations, and growth advisory.", "/solutions/veterinary")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Veterinary", path: "/solutions/veterinary" }])} />
       <Navbar />
 
       {/* SECTION 1 — HERO */}

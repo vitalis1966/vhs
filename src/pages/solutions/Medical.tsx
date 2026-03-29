@@ -139,6 +139,8 @@ export default function Medical() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Medical Practice Consulting", "Strategic consulting for medical clinics — from new builds to operational optimization and growth advisory.", "/solutions/medical")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Medical", path: "/solutions/medical" }])} />
       <Navbar />
 
       {/* SECTION 1 — HERO */}

@@ -131,6 +131,8 @@ export default function Dental() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Dental Practice Consulting", "Strategic consulting for dental practices — planning, development, operations, and growth advisory.", "/solutions/dental")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Dental", path: "/solutions/dental" }])} />
       <Navbar />
 
       {/* SECTION 1 — HERO */}
