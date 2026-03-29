@@ -71,11 +71,14 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-white/80">
-            © {new Date().getFullYear()} Vitalis Health Strategies. All rights reserved.
+            © 2026 Vitalis Health Strategies Inc. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/80">
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="text-white/40">·</span>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
+            <span className="text-white/40">·</span>
+            <Link to="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
           </div>
         </div>
       </div>
