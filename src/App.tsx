@@ -62,6 +62,7 @@ const App = () => (
         <BrowserRouter>
           <SEOScripts />
           <SEORedirectHandler />
+          <SEOLayout>
           <Suspense fallback={<div className="min-h-screen" />}>
             <Routes>
               <Route path="/" element={<Index />} />
