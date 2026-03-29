@@ -61,7 +61,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <GlobalScripts />
-          <SEORedirectHandler />
+          <RedirectHandler />
           <SEOLayout>
           <Suspense fallback={<div className="min-h-screen" />}>
             <Routes>
