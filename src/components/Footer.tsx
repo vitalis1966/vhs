@@ -32,10 +32,10 @@ export function Footer() {
             <Link to="/">
               <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 w-auto brightness-0 invert" />
             </Link>
-            <p className="mt-4 text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
+            <p className="mt-4 text-white text-sm leading-relaxed max-w-xs">
               Full-cycle healthcare consulting for medical, dental, and veterinary practices. We partner with practices through every stage of growth.
             </p>
-            <div className="mt-6 text-sm text-primary-foreground/60">
+            <div className="mt-6 text-sm text-white">
               <p>Calgary, Alberta, Canada</p>
               <p className="mt-1">info@vitalisstrategies.com</p>
             </div>

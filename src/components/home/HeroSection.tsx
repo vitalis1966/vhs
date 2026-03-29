@@ -18,7 +18,7 @@ export function HeroSection() {
             className="flex items-center gap-2 mb-8"
           >
             <span className="h-px w-12 bg-accent" />
-            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+            <span className="text-[#7a5500] font-semibold tracking-widest uppercase text-sm">
               Full-Cycle Healthcare Strategy
             </span>
           </motion.div>

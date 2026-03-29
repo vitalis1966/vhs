@@ -110,7 +110,7 @@ export function PracticePathFinder() {
           <>
             <div className="flex items-center justify-center gap-2 mb-6">
               <span className="h-px w-12 bg-accent" />
-              <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+               <span className="text-[#7a5500] font-semibold tracking-widest uppercase text-sm">
                 Get Started
               </span>
             </div>
