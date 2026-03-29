@@ -12,7 +12,6 @@ const row2 = [
   { value: "$410K", label: "Average Annual Billing Recovered", context: "Per revenue cycle engagement, from existing patient volume" },
   { value: "100+", label: "Physicians & Practitioners Partnered", context: "Across practices and facilities built, optimized, or advised" },
   { value: "25+", label: "New Facilities Built", context: "De novo clinic builds completed on time and on budget, concept through opening day" },
-  { value: "$680K", label: "Avg. Additional M&A Value Negotiated", context: "Above initial acquisition offer, per transaction engagement" },
 ];
 
 export function ImpactStatsSection() {
@@ -50,7 +49,7 @@ export function ImpactStatsSection() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-[calc(6xl*4/5)] mx-auto mt-5" style={{ maxWidth: "calc(100% * 4 / 5)" }}>
+        <div className="grid grid-cols-3 gap-5 max-w-[calc(6xl*3/5)] mx-auto mt-5" style={{ maxWidth: "calc(100% * 3 / 5)" }}>
           {row2.map((stat, i) => (
             <motion.div
               key={stat.label}

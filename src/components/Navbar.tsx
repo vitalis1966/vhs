@@ -56,8 +56,14 @@ const simpleNavLinks = [
       { label: "Mission & Vision", href: "/about/mission-vision" },
     ],
   },
-  { label: "How We Work", href: "/how-we-work" },
-  { label: "Engagement", href: "/engagement" },
+  {
+    label: "How We Work",
+    href: "/how-we-work",
+    children: [
+      { label: "How We Work", href: "/how-we-work" },
+      { label: "Engagement", href: "/engagement" },
+    ],
+  },
   { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Insights", href: "/insights" },

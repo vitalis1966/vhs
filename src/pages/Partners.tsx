@@ -130,6 +130,7 @@ const featuredPartners = [
     ],
     logo: atbLogo as string,
     logoAlt: "ATB Financial",
+    externalUrl: "https://www.atb.com/business/borrowing/business-loans/professional-practice-financing/",
   },
   {
     category: "ARCHITECTURE & DESIGN",
@@ -146,6 +147,7 @@ const featuredPartners = [
     ],
     logo: hollandLogo as string,
     logoAlt: "Holland Design",
+    externalUrl: "https://www.hollanddesign.ca/",
   },
   {
     category: "LEGAL PARTNER",
@@ -162,6 +164,7 @@ const featuredPartners = [
     ],
     logo: null,
     logoAlt: "",
+    externalUrl: null,
   },
 ];
 
@@ -454,7 +457,13 @@ const Partners = () => {
                     <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-3">{partner.category}</p>
                     {partner.logo ? (
                       <div className="w-40 h-14 flex items-center justify-center mb-4">
-                        <img src={partner.logo} alt={partner.logoAlt} className="max-w-full max-h-full object-contain" />
+                        {partner.externalUrl ? (
+                          <a href={partner.externalUrl} target="_blank" rel="noopener noreferrer">
+                            <img src={partner.logo} alt={partner.logoAlt} className="max-w-full max-h-full object-contain" />
+                          </a>
+                        ) : (
+                          <img src={partner.logo} alt={partner.logoAlt} className="max-w-full max-h-full object-contain" />
+                        )}
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-4">
