@@ -40,7 +40,9 @@ const Index = () => {
           )}
         </div>
       </main>
-      <Footer />
+      <Suspense fallback={<div className="h-64" />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

@@ -116,7 +116,6 @@ const App = () => (
           </Routes>
         </Suspense>
       </BrowserRouter>
-    </TooltipProvider>
   </QueryClientProvider>
 );
 
