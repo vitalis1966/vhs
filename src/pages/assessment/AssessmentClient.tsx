@@ -194,12 +194,15 @@ export default function AssessmentClient() {
   const handleSubmit = async () => {
     if (!session) return;
     setSaveStatus("saving");
-    await (supabase.from("assessment_sessions" as any)
-      .update({ status: "submitted", submitted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", session.id) as any);
+    // Update session status via secure RPC
+    await supabase.rpc("update_session_by_token" as any, {
+      p_token: token,
+      p_status: "submitted",
+      p_submitted_at: new Date().toISOString(),
+    });
 
-    // Cancel pending reminders
-    await EmailAutomationService.cancelPendingReminders(session.id);
+    // Cancel pending reminders via secure RPC
+    await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 
     // Send completion email and admin notification
     // Use secure RPC to get intake info (avoids direct table access to PII)
