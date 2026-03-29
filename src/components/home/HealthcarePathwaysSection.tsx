@@ -5,6 +5,7 @@ import { Building, TrendingUp, Handshake, ArrowRight } from "lucide-react";
 
 const pathways = [
   {
+    id: "journey-building",
     icon: Building,
     number: "01",
     eyebrow: "Planning & Building",
@@ -22,6 +23,7 @@ const pathways = [
     href: "/solutions/new-clinics",
   },
   {
+    id: "journey-operating",
     icon: TrendingUp,
     number: "02",
     eyebrow: "Operating & Growing",
@@ -39,6 +41,7 @@ const pathways = [
     href: "/strategic-assessment",
   },
   {
+    id: "journey-transitioning",
     icon: Handshake,
     number: "03",
     eyebrow: "Scaling or Transitioning",
@@ -59,7 +62,7 @@ const pathways = [
 
 export function HealthcarePathwaysSection() {
   return (
-    <section className="py-24 lg:py-32 bg-background">
+    <section id="journey-section" className="py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -68,9 +71,12 @@ export function HealthcarePathwaysSection() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mb-16"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Your Healthcare Journey
-          </p>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+              Your Healthcare Journey
+            </span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Where is your practice right now?
           </h2>
@@ -83,11 +89,12 @@ export function HealthcarePathwaysSection() {
           {pathways.map((pathway, i) => (
             <motion.div
               key={pathway.title}
+              id={pathway.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
-              className="bg-card rounded-2xl p-8 shadow-card hover:shadow-elevated transition-all duration-300 flex flex-col group border border-border/40"
+              className="bg-card rounded-2xl p-8 shadow-card hover:shadow-elevated transition-all duration-300 flex flex-col group border border-border/40 border-l-4 border-l-primary"
             >
               <div className="flex items-start justify-between mb-6">
                 <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary transition-colors duration-300">
@@ -117,7 +124,7 @@ export function HealthcarePathwaysSection() {
                 ))}
               </ul>
 
-              <Button variant="hero-outline" size="default" asChild className="w-full mt-auto whitespace-normal text-center">
+              <Button variant="hero" size="lg" asChild className="w-full mt-auto whitespace-normal text-center h-auto py-3">
                 <Link to={pathway.href}>
                   {pathway.cta}
                 </Link>

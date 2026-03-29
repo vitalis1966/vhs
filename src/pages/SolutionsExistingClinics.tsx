@@ -144,9 +144,10 @@ const SolutionsExistingClinics = () => {
       {/* S1 — Hero */}
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">
-            Operating, Growing & Advising
-          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Operating, Growing & Advising</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Most practices are running well. There is almost always room to run significantly better.
           </motion.h1>
@@ -164,8 +165,8 @@ const SolutionsExistingClinics = () => {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8 flex flex-col sm:flex-row gap-4">
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/strategic-assessment">Start Your Performance Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Button variant="hero" size="xl" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
+              <Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
             </Button>
             <Button variant="hero" size="xl" asChild>
               <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-5 w-5" /></Link>
@@ -178,7 +179,10 @@ const SolutionsExistingClinics = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Common Findings</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Common Findings</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">What practice owners discover when they look at the numbers independently.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">These are not hypothetical risks. They are the consistent findings across Vitalis performance assessments.</p>
           </div>
@@ -200,7 +204,10 @@ const SolutionsExistingClinics = () => {
       <section id="operations" className="py-20 lg:py-28 bg-muted/30 scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-12 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Operations & Workflow Optimization</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Operations & Workflow Optimization</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">How your practice runs day-to-day determines what it can become.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Operational performance is not just about efficiency — it is about creating the conditions for consistent clinical quality, staff retention, and financial performance. Vitalis conducts structured operational reviews and works with practice leaders to redesign the workflows, systems, and structures that determine day-to-day performance.
@@ -237,7 +244,10 @@ const SolutionsExistingClinics = () => {
       <section id="billing" className="py-20 lg:py-28 bg-background scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-12 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Billing & Revenue Review</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Billing & Revenue Review</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Your billing system is probably leaving money on the table. Most are.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Revenue cycle performance is the single highest-impact area in most practice performance assessments. Fee collection gaps are almost always systematic — meaning they recur month after month until someone identifies and addresses the underlying process failure. Vitalis conducts structured revenue cycle reviews across medical, dental, and veterinary practices and implements the specific changes that recover and sustain revenue.
@@ -311,7 +321,10 @@ const SolutionsExistingClinics = () => {
       <section id="people" className="py-20 lg:py-28 bg-muted/40 scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-12 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">People</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">People</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Your team is your most important operational system — and the one most practices manage least systematically.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Established practices often reach a stage where clinical performance is strong, patient relationships are good, and the business is financially adequate — but something in the team isn't working the way it should. Turnover is higher than it should be. Key staff aren't performing to their potential. A leadership or cultural tension is present but unnamed. Or the practice is growing and the team structure that worked at smaller scale is starting to show cracks. Vitalis addresses people performance as a structured operational discipline — not as a soft HR function.
@@ -363,7 +376,10 @@ const SolutionsExistingClinics = () => {
       <section id="growth" className="py-20 lg:py-28 bg-background scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-12 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Growth Strategy & Expansion Planning</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Growth Strategy & Expansion Planning</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Growth that isn't planned is usually more expensive than growth that is.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Adding a second location, a new service line, an additional practitioner, or corporate infrastructure each requires a different kind of planning — financial modeling, operational redesign, regulatory navigation, and the people infrastructure to manage at greater scale. Vitalis helps practices build and execute growth strategies that generate financial return rather than just operational complexity.
@@ -387,7 +403,10 @@ const SolutionsExistingClinics = () => {
       <section id="transitions" className="py-20 lg:py-28 bg-gradient-section scroll-mt-24">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div {...fadeUp} className="mb-12 max-w-3xl">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Mergers, Acquisitions & Transitions</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Mergers, Acquisitions & Transitions</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Every practice changes hands eventually. How you manage that transition determines what it's worth.</h2>
             <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
               Whether you are buying a practice, selling one, structuring a partnership, navigating a partner departure, or preparing for a corporate acquisition approach — ownership transitions involve financial, operational, and people complexity that requires specific expertise. Vitalis advises practice owners through every type of ownership change, from the first conversation through to completed transaction.
@@ -416,7 +435,10 @@ const SolutionsExistingClinics = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="mb-16">
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">Engagement Models</p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Engagement Models</span>
+          </div>
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Engagement models designed to match your situation.</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -441,8 +463,8 @@ const SolutionsExistingClinics = () => {
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">An independent view of your practice is one of the highest-return investments you can make.</h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-2xl mx-auto">Most of what Vitalis identifies in a performance assessment was already there — it just wasn't visible. The assessment makes it visible, prioritizes it, and gives you a clear path to acting on it.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="xl" asChild>
-                <Link to="/strategic-assessment">Start Your Performance Assessment → <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Button variant="hero" size="xl" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
+                <Link to="/strategic-assessment">Start Your Performance Assessment <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
               </Button>
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">Speak With Our Team <ArrowRight className="ml-2 h-5 w-5" /></Link>

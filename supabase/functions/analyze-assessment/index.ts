@@ -190,15 +190,28 @@ Provide your analysis as the JSON object described. Return ONLY valid JSON, no m
     const aiResult = await aiResponse.json();
     const rawContent = aiResult.choices?.[0]?.message?.content || "";
 
-    // Parse JSON from AI response
+    // Parse JSON from AI response — robust multi-strategy approach
     let analysisData;
     try {
-      // Strip markdown code block fences if present
-      const cleaned = rawContent.replace(/^```json?\s*/i, "").replace(/\s*```$/i, "").trim();
+      // Strategy 1: Strip markdown code block fences
+      let cleaned = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
       analysisData = JSON.parse(cleaned);
     } catch {
-      console.error("Failed to parse AI response:", rawContent);
-      analysisData = { executive_summary: rawContent, parse_error: true };
+      try {
+        // Strategy 2: Extract first { to last }
+        const first = rawContent.indexOf("{");
+        const last = rawContent.lastIndexOf("}");
+        if (first !== -1 && last > first) {
+          analysisData = JSON.parse(rawContent.substring(first, last + 1));
+          console.log("Parsed AI response using brace extraction strategy");
+        } else {
+          throw new Error("No JSON object found in response");
+        }
+      } catch (e2) {
+        console.error("Failed to parse AI response with all strategies:", e2);
+        console.error("Raw content (first 500 chars):", rawContent.substring(0, 500));
+        analysisData = { executive_summary: "Analysis could not be parsed. Please rerun the analysis.", parse_error: true };
+      }
     }
 
     // Check for existing report

@@ -60,6 +60,7 @@ const simpleNavLinks = [
   { label: "Engagement", href: "/engagement" },
   { label: "Healthcare IT", href: "/healthcare-it" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "Insights", href: "/insights" },
   { label: "Ecosystem", href: "/partners" },
   { label: "Contact", href: "/contact" },
 ];
@@ -125,12 +126,16 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto flex items-center justify-between h-14 lg:h-16 px-4 lg:px-6 xl:px-8 max-w-[1440px]">
-        <Link to="/" className="flex items-center flex-shrink-0">
+        <Link to="/" className="flex flex-col items-center gap-0.5 flex-shrink-0">
           <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 lg:h-12 w-auto" />
+          <span className="hidden lg:flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="text-accent text-[10px]">🍁</span>
+            Proudly Canadian
+          </span>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden xl:flex items-center gap-6 2xl:gap-8">
+        <div className="hidden xl:flex items-center gap-3 2xl:gap-5">
           {simpleNavLinks.slice(0, 3).map(renderDesktopLink)}
 
           {/* Solutions Mega-Menu */}
@@ -251,12 +256,18 @@ export function Navbar() {
 
           {simpleNavLinks.slice(3).map(renderDesktopLink)}
 
-          <div className="flex items-center gap-2 ml-2">
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/strategic-assessment">Strategic Assessment</Link>
+          <div className="flex items-center gap-1 ml-1 2xl:gap-2 2xl:ml-2 shrink-0">
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[10px] h-8 px-2 xl:max-w-[128px] 2xl:text-[13px] 2xl:h-9 2xl:px-3 2xl:max-w-none">
+              <Link to="/strategic-assessment">
+                <span className="2xl:hidden">Assessment</span>
+                <span className="hidden 2xl:inline">Strategic Assessment</span>
+              </Link>
             </Button>
-            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[13px]">
-              <Link to="/contact">Speak With Our Team</Link>
+            <Button variant="hero" size="sm" asChild className="whitespace-nowrap text-[10px] h-8 px-2 xl:max-w-[128px] 2xl:text-[13px] 2xl:h-9 2xl:px-3 2xl:max-w-none">
+              <Link to="/contact">
+                <span className="2xl:hidden">Speak With Team</span>
+                <span className="hidden 2xl:inline">Speak With Our Team</span>
+              </Link>
             </Button>
           </div>
         </div>

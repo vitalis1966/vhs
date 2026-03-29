@@ -23,11 +23,21 @@ import {
   Calendar,
   MapPin,
   Stethoscope,
+  Phone,
   Printer,
   CheckCircle,
   XCircle,
   MessageSquare,
 } from "lucide-react";
+import {
+  RadarScoreChart,
+  SectionScoreBar,
+  ReadinessGaugeChart,
+  ConcernsPriorityMatrix,
+  FocusAreasTimeline,
+  FinancialWaterfallChart,
+  extractFinancialData,
+} from "@/components/admin/ReportCharts";
 import { useToast } from "@/hooks/use-toast";
 
 const fadeUp = {
@@ -155,7 +165,55 @@ export default function InternalReport() {
     setRerunning(false);
   };
 
-  const analysis = report?.analysis_data || {};
+  const analysis = (() => {
+    let data = report?.analysis_data || {};
+    // Robust parsing: handle multiple malformed storage patterns
+    const tryParseJSON = (raw: string): any | null => {
+      try {
+        // Strip markdown fences (```json ... ``` or ``` ... ```)
+        let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+        return JSON.parse(cleaned);
+      } catch (e1) {
+        try {
+          // Try extracting first { to last }
+          const first = raw.indexOf("{");
+          const last = raw.lastIndexOf("}");
+          if (first !== -1 && last > first) {
+            return JSON.parse(raw.substring(first, last + 1));
+          }
+        } catch (e2) { /* fall through */ }
+        return null;
+      }
+    };
+
+    // Case 1: executive_summary contains the full JSON blob (parse_error scenario)
+    if (data.executive_summary && typeof data.executive_summary === "string") {
+      const es = data.executive_summary.trim();
+      if (es.startsWith("```") || es.startsWith("{")) {
+        const parsed = tryParseJSON(es);
+        if (parsed && typeof parsed === "object") {
+          console.log("[InternalReport] Extracted structured data from executive_summary string");
+          data = { ...data, ...parsed, executive_summary: parsed.executive_summary || "", parse_error: undefined };
+        } else {
+          console.error("[InternalReport] Could not parse executive_summary JSON — will show fallback");
+          data = { ...data, executive_summary: "", _malformed: true };
+        }
+      }
+    }
+
+    // Case 2: analysis_data itself might be a string
+    if (typeof data === "string") {
+      const parsed = tryParseJSON(data);
+      if (parsed) {
+        data = parsed;
+      } else {
+        console.error("[InternalReport] analysis_data is an unparseable string");
+        data = { executive_summary: "", _malformed: true };
+      }
+    }
+
+    return data;
+  })();
 
   const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—";
@@ -255,7 +313,9 @@ export default function InternalReport() {
             <div className="grid sm:grid-cols-2 gap-4">
               <InfoRow icon={<User className="h-4 w-4" />} label="Client" value={intake?.full_name || "—"} />
               <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
+              <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={formatPhone(intake?.phone) || "—"} />
               <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
+              <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
               <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
               <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
               <InfoRow icon={<Calendar className="h-4 w-4" />} label="Submitted" value={formatDate(session?.submitted_at)} />
@@ -265,12 +325,13 @@ export default function InternalReport() {
           {/* 2. Overall Score */}
           {report.overall_score != null && (
             <ReportCard title="Overall Readiness Score" icon={<BarChart3 className="h-5 w-5" />}>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-foreground">{report.overall_score}</div>
-                  <p className="text-xs text-muted-foreground mt-1">out of 100</p>
-                </div>
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <ReadinessGaugeChart score={report.overall_score} category={report.readiness_category || ""} />
                 <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="text-4xl font-bold text-foreground">{report.overall_score}</div>
+                    <span className="text-sm text-muted-foreground">/ 100</span>
+                  </div>
                   <Progress value={report.overall_score} className="h-3 mb-2" />
                   <Badge className={`text-xs border ${severityColors[report.readiness_category || ""] || "bg-secondary"}`}>
                     {(report.readiness_category || "—").replace(/_/g, " ")}
@@ -292,6 +353,7 @@ export default function InternalReport() {
           {/* 4. Section-by-Section Analysis */}
           {analysis.section_analyses?.length > 0 && (
             <ReportCard title="Section Analysis" icon={<BarChart3 className="h-5 w-5" />}>
+              <RadarScoreChart sections={analysis.section_analyses.filter((s: any) => s.score != null)} />
               <div className="space-y-6">
                 {analysis.section_analyses.map((sa: any, i: number) => (
                   <div key={i} className="border border-border/40 rounded-xl p-5">
@@ -307,8 +369,8 @@ export default function InternalReport() {
                       </div>
                     </div>
                     {sa.summary && <p className="text-sm text-muted-foreground mb-3">{sa.summary}</p>}
-                    {sa.score != null && <Progress value={sa.score} className="h-2 mb-3" />}
-                    <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                    {sa.score != null && <SectionScoreBar score={sa.score} />}
+                    <div className="grid sm:grid-cols-2 gap-3 text-xs mt-3">
                       {sa.operational_gaps?.length > 0 && (
                         <BulletList title="Operational Gaps" items={sa.operational_gaps} color="text-amber-700" />
                       )}
@@ -331,6 +393,7 @@ export default function InternalReport() {
           {/* 5. Areas of Concern */}
           {analysis.concerns?.length > 0 && (
             <ReportCard title="Areas of Concern" icon={<AlertTriangle className="h-5 w-5" />}>
+              <ConcernsPriorityMatrix concerns={analysis.concerns} />
               <div className="space-y-3">
                 {analysis.concerns.map((c: any, i: number) => (
                   <div key={i} className="flex items-start gap-3 bg-secondary/30 rounded-xl p-4">
@@ -350,9 +413,17 @@ export default function InternalReport() {
             </ReportCard>
           )}
 
+          {/* Financial Waterfall (if data found) */}
+          {extractFinancialData(analysis) && (
+            <ReportCard title="Financial Overview" icon={<BarChart3 className="h-5 w-5" />}>
+              <FinancialWaterfallChart data={extractFinancialData(analysis)!} />
+            </ReportCard>
+          )}
+
           {/* 6. Focus Areas */}
           {analysis.focus_areas?.length > 0 && (
             <ReportCard title="Priority Focus Areas" icon={<Target className="h-5 w-5" />}>
+              <FocusAreasTimeline focusAreas={analysis.focus_areas} showLabels={true} />
               <div className="space-y-3">
                 {analysis.focus_areas.map((f: any, i: number) => (
                   <div key={i} className="bg-secondary/30 rounded-xl p-4">
@@ -493,6 +564,18 @@ export default function InternalReport() {
 }
 
 // --- Helper components ---
+
+function formatPhone(phone: string | null | undefined): string {
+  if (!phone) return "";
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `(${digits.slice(1, 4)})${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  return phone;
+}
 
 function ReportCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (

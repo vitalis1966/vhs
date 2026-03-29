@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { HealthcarePathwaysSection } from "@/components/home/HealthcarePathwaysSection";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,10 @@ const HowWeWork = () => {
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-medium tracking-widest uppercase text-sm mb-6">Our Method</motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Our Method</span>
+          </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-4xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             The full lifecycle,<br />one strategic partner.
           </motion.h1>
@@ -37,6 +41,8 @@ const HowWeWork = () => {
           </motion.p>
         </div>
       </section>
+
+      <HealthcarePathwaysSection />
 
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">

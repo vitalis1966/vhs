@@ -62,9 +62,10 @@ export function SolutionsPreview() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Strategic Solution Pathways
-          </p>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Strategic Solution Pathways</span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Clear entry points based on your priorities
           </h2>

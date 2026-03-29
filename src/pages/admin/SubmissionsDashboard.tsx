@@ -15,11 +15,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Loader2,
-  ArrowRight,
   FileSearch,
   RefreshCw,
   BarChart3,
+  Trash2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -30,14 +41,15 @@ interface SubmissionRow {
   assessment_title: string;
   assessment_slug: string;
   client_name: string;
+  client_email: string;
   organization: string;
+  assessment_purpose: string | null;
   report_id: string | null;
   analysis_status: string | null;
-  overall_score: number | null;
-  readiness_category: string | null;
-  lifecycle_status: string | null;
-  email_count: number;
-  last_activity_at: string | null;
+  client_report_sent: boolean;
+  has_client_report: boolean;
+  meeting_booked: boolean;
+  meeting_booked_by: string | null;
 }
 
 const fadeUp = {
@@ -46,24 +58,30 @@ const fadeUp = {
   viewport: { once: true },
 };
 
-const severityColors: Record<string, string> = {
-  strong: "bg-green-100 text-green-800 border-green-200",
-  stable: "bg-blue-100 text-blue-800 border-blue-200",
-  needs_attention: "bg-amber-100 text-amber-800 border-amber-200",
-  critical: "bg-red-100 text-red-800 border-red-200",
-};
+const cellClass = "text-sm px-3 py-3 align-middle";
+const headClass = "text-sm px-3 py-3 align-middle font-medium text-left text-muted-foreground";
+const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wide";
 
-const assessmentLabel: Record<string, string> = {
-  "new-clinic": "New Clinic",
-  "new-clinic-build": "New Clinic",
-  "existing-clinic": "Existing Clinic",
-  "healthcare-it-assessment": "Healthcare IT",
-};
+function getStatusInfo(assessmentPurpose: string | null): { label: string; color: string } {
+  const val = (assessmentPurpose || "").trim().toLowerCase();
+  console.log("[SubmissionsDashboard] assessment_purpose raw value:", assessmentPurpose);
+  // Match slug values stored in DB: building_new_clinic, planning_new_space, exploring_new_venture
+  if (val.includes("building_new") || val.includes("planning_new") || val.includes("exploring_new") ||
+      val.includes("building a new") || val.includes("planning a new") || val.includes("exploring a new")) {
+    return { label: "New Practice", color: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100" };
+  }
+  // Match: healthcare_it_new, healthcare_it_existing, or human-readable versions
+  if (val.includes("healthcare_it") || val.includes("healthcare it")) {
+    return { label: "Healthcare IT", color: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100" };
+  }
+  return { label: "Existing Practice", color: "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100" };
+}
 
 export default function SubmissionsDashboard() {
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningAnalysis, setRunningAnalysis] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -73,7 +91,6 @@ export default function SubmissionsDashboard() {
   const loadSubmissions = async () => {
     setLoading(true);
 
-    // Get submitted sessions
     const { data: sessions } = await (supabase
       .from("assessment_sessions" as any)
       .select("*")
@@ -89,44 +106,46 @@ export default function SubmissionsDashboard() {
     const rows: SubmissionRow[] = [];
 
     for (const sess of sessions) {
-      // Get assessment info
       const { data: assess } = await (supabase
         .from("assessments" as any)
         .select("title, slug")
         .eq("id", sess.assessment_id)
         .single() as any);
 
-      // Get intake info
       let clientName = "Unknown";
+      let clientEmail = "";
       let organization = "—";
-      let lifecycleStatus: string | null = null;
-      let lastActivityAt: string | null = null;
+      let assessmentPurpose: string | null = null;
+
       if (sess.intake_id) {
         const { data: intake } = await (supabase
           .from("assessment_intakes" as any)
-          .select("full_name, organization_name, lifecycle_status, last_activity_at")
+          .select("full_name, email, organization_name, assessment_purpose")
           .eq("id", sess.intake_id)
           .single() as any);
         if (intake) {
           clientName = intake.full_name || "Unknown";
+          clientEmail = intake.email || "";
           organization = intake.organization_name || "—";
-          lifecycleStatus = intake.lifecycle_status || null;
-          lastActivityAt = intake.last_activity_at || null;
+          assessmentPurpose = intake.assessment_purpose || null;
         }
       }
 
-      // Get internal report
       const { data: report } = await (supabase
         .from("internal_assessment_reports" as any)
-        .select("id, analysis_status, overall_score, readiness_category")
+        .select("id, analysis_status")
         .eq("session_id", sess.id)
         .single() as any);
 
-      // Get email count
-      const { data: emails } = await (supabase
+      const { data: clientEmails } = await (supabase
         .from("email_events" as any)
-        .select("id")
-        .eq("session_id", sess.id) as any);
+        .select("id, status")
+        .eq("session_id", sess.id)
+        .eq("email_type", "client_report") as any);
+
+      const clientReportSent = (clientEmails || []).some(
+        (e: any) => e.status === "sent"
+      );
 
       rows.push({
         session_id: sess.id,
@@ -135,14 +154,15 @@ export default function SubmissionsDashboard() {
         assessment_title: assess?.title || "Unknown",
         assessment_slug: assess?.slug || "",
         client_name: clientName,
+        client_email: clientEmail,
         organization,
+        assessment_purpose: assessmentPurpose,
         report_id: report?.id || null,
         analysis_status: report?.analysis_status || null,
-        overall_score: report?.overall_score || null,
-        readiness_category: report?.readiness_category || null,
-        lifecycle_status: lifecycleStatus,
-        email_count: emails?.length || 0,
-        last_activity_at: lastActivityAt,
+        client_report_sent: clientReportSent,
+        has_client_report: report?.analysis_status === "complete",
+        meeting_booked: sess.meeting_booked || false,
+        meeting_booked_by: sess.meeting_booked_by || null,
       });
     }
 
@@ -156,17 +176,37 @@ export default function SubmissionsDashboard() {
       const response = await supabase.functions.invoke("analyze-assessment", {
         body: { session_id: sessionId },
       });
-
       if (response.error) {
         toast({ title: "Analysis Failed", description: response.error.message, variant: "destructive" });
       } else {
         toast({ title: "Analysis Complete", description: "Internal report has been generated." });
         await loadSubmissions();
       }
-    } catch (err) {
+    } catch {
       toast({ title: "Error", description: "Failed to run analysis.", variant: "destructive" });
     }
     setRunningAnalysis(null);
+  };
+
+  const handleDelete = async (sessionId: string) => {
+    setDeletingId(sessionId);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-submission", {
+        body: { session_id: sessionId },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      setSubmissions((prev) => prev.filter((s) => s.session_id !== sessionId));
+      toast({ title: "Assessment deleted" });
+    } catch (err: any) {
+      toast({
+        title: "Delete Failed",
+        description: err.message || "Could not delete. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setDeletingId(null);
   };
 
   const formatDate = (dateStr: string) =>
@@ -180,11 +220,12 @@ export default function SubmissionsDashboard() {
     <div className="min-h-screen">
       <Navbar />
       <section className="pt-32 pb-10 lg:pt-40 bg-gradient-hero">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
           <motion.div {...fadeUp}>
-            <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-              Internal Admin
-            </p>
+            <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Internal Admin</span>
+          </div>
             <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
               Submission Review
             </h1>
@@ -196,7 +237,7 @@ export default function SubmissionsDashboard() {
       </section>
 
       <section className="py-10 bg-background">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+        <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-xl font-bold text-foreground">
               Submitted Assessments
@@ -217,107 +258,182 @@ export default function SubmissionsDashboard() {
               <p className="text-muted-foreground">No submitted assessments yet.</p>
             </div>
           ) : (
-            <div className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Organization</TableHead>
-                    <TableHead>Assessment</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Submitted</TableHead>
-                    <TableHead>Analysis</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead>Emails</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {submissions.map((sub) => (
-                    <TableRow key={sub.session_id}>
-                      <TableCell className="font-medium">{sub.client_name}</TableCell>
-                      <TableCell className="text-muted-foreground">{sub.organization}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {assessmentLabel[sub.assessment_slug] || sub.assessment_title}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {sub.lifecycle_status ? (
-                          <Badge variant="secondary" className="text-[10px]">
-                            {sub.lifecycle_status.replace(/_/g, " ")}
-                          </Badge>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(sub.submitted_at)}
-                      </TableCell>
-                      <TableCell>
-                        {sub.analysis_status === "complete" ? (
-                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
-                            Complete
-                          </Badge>
-                        ) : sub.analysis_status === "pending" ? (
-                          <Badge variant="secondary">Pending</Badge>
-                        ) : (
-                          <Badge variant="secondary" className="text-muted-foreground">
-                            Not Run
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {sub.overall_score != null ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold">{sub.overall_score}</span>
-                            {sub.readiness_category && (
-                              <span
-                                className={`text-[10px] px-1.5 py-0.5 rounded-full border ${
-                                  severityColors[sub.readiness_category] || "bg-secondary text-secondary-foreground"
-                                }`}
-                              >
-                                {sub.readiness_category.replace(/_/g, " ")}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-xs text-muted-foreground">{sub.email_count}</span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => runAnalysis(sub.session_id)}
-                            disabled={runningAnalysis === sub.session_id}
-                          >
-                            {runningAnalysis === sub.session_id ? (
-                              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                            ) : (
-                              <BarChart3 className="mr-1 h-3 w-3" />
-                            )}
+            <>
+              {/* Desktop table view */}
+              <div className="hidden lg:block bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
+                <Table style={{ tableLayout: "fixed", width: "100%" }}>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className={headClass} style={{ width: "10%" }}>Client</TableHead>
+                      <TableHead className={headClass} style={{ width: "14%" }}>Organization</TableHead>
+                      <TableHead className={headClass} style={{ width: "9%" }}>Submitted</TableHead>
+                      <TableHead className={headClass} style={{ width: "10%" }}>Status</TableHead>
+                      <TableHead className={headClass} style={{ width: "7%" }}>Email</TableHead>
+                      <TableHead className={headClass} style={{ width: "8%" }}>Meeting</TableHead>
+                      <TableHead className={headClass} style={{ width: "8%" }}>Internal</TableHead>
+                      <TableHead className={`${headClass} pl-6`} style={{ width: "8%" }}>Client</TableHead>
+                      <TableHead className={`${headClass} pl-4`} style={{ width: "8%" }}>Analysis</TableHead>
+                      <TableHead className={`${headClass} pl-4`} style={{ width: "4%" }}></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {submissions.map((sub) => (
+                      <TableRow key={sub.session_id}>
+                        <TableCell className={`${cellClass} font-medium`}>
+                          {sub.client_name}
+                        </TableCell>
+                        <TableCell className={`${cellClass} text-muted-foreground`}>
+                          {sub.organization}
+                        </TableCell>
+                        <TableCell className={`${cellClass} text-muted-foreground`}>
+                          {formatDate(sub.submitted_at)}
+                        </TableCell>
+                        <TableCell className={cellClass}>
+                          {(() => {
+                            const status = getStatusInfo(sub.assessment_purpose);
+                            return <Badge className={`${status.color}`}>{status.label}</Badge>;
+                          })()}
+                        </TableCell>
+                        <TableCell className={`${cellClass} text-center`}>
+                          {sub.client_report_sent ? (
+                            <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100">Sent Out</Badge>
+                          ) : (
+                            <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">Not Sent</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className={`${cellClass} text-center`}>
+                          {sub.meeting_booked ? (
+                            <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">Booked</Badge>
+                          ) : (
+                            <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">Not Booked</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className={cellClass}>
+                          {sub.analysis_status === "complete" ? (
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2" asChild>
+                              <Link to={`/admin/submissions/${sub.session_id}`}>Internal Report</Link>
+                            </Button>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className={`${cellClass} pl-6`}>
+                          {sub.has_client_report ? (
+                            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2" asChild>
+                              <Link to={`/admin/submissions/${sub.session_id}/client-report`}>Client Report</Link>
+                            </Button>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className={`${cellClass} pl-4`}>
+                          <Button variant="outline" size="sm" className="text-xs h-8 px-2" onClick={() => runAnalysis(sub.session_id)} disabled={runningAnalysis === sub.session_id}>
+                            {runningAnalysis === sub.session_id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <BarChart3 className="mr-1 h-3 w-3" />}
                             {sub.analysis_status === "complete" ? "Rerun" : "Analyze"}
                           </Button>
-                          {sub.analysis_status === "complete" && (
-                            <Button variant="hero" size="sm" asChild>
-                              <Link to={`/admin/submissions/${sub.session_id}`}>
-                                View Report
-                                <ArrowRight className="ml-1 h-3 w-3" />
-                              </Link>
+                        </TableCell>
+                        <TableCell className={`${cellClass} pl-4`}>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive" disabled={deletingId === sub.session_id}>
+                                {deletingId === sub.session_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+                                <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(sub.session_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile card view */}
+              <div className="lg:hidden space-y-4">
+                {submissions.map((sub) => (
+                  <div key={sub.session_id} className="bg-card rounded-xl shadow-soft border border-border/40 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-sm text-foreground">{sub.client_name}</p>
+                        <p className="text-xs text-muted-foreground">{sub.organization}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {(() => {
+                          const status = getStatusInfo(sub.assessment_purpose);
+                          return <Badge className={`${status.color} text-xs`}>{status.label}</Badge>;
+                        })()}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" disabled={deletingId === sub.session_id}>
+                              {deletingId === sub.session_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                             </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+                              <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(sub.session_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                      <div>
+                        <span className={labelClass}>Submitted</span>
+                        <p className="text-foreground">{formatDate(sub.submitted_at)}</p>
+                      </div>
+                      <div>
+                        <span className={labelClass}>Email</span>
+                        <p>{sub.client_report_sent ? (
+                          <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100 text-xs">Sent Out</Badge>
+                        ) : (
+                          <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100 text-xs">Not Sent</Badge>
+                        )}</p>
+                      </div>
+                      <div>
+                        <span className={labelClass}>Meeting</span>
+                        <p>{sub.meeting_booked ? (
+                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100 text-xs">Booked</Badge>
+                        ) : (
+                          <Badge className="bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100 text-xs">Not Booked</Badge>
+                        )}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {sub.analysis_status === "complete" && (
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-7 px-2" asChild>
+                          <Link to={`/admin/submissions/${sub.session_id}`}>Internal Report</Link>
+                        </Button>
+                      )}
+                      {sub.has_client_report && (
+                        <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-7 px-2" asChild>
+                          <Link to={`/admin/submissions/${sub.session_id}/client-report`}>Client Report</Link>
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" className="text-xs h-7 px-2" onClick={() => runAnalysis(sub.session_id)} disabled={runningAnalysis === sub.session_id}>
+                        {runningAnalysis === sub.session_id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <BarChart3 className="mr-1 h-3 w-3" />}
+                        {sub.analysis_status === "complete" ? "Rerun" : "Analyze"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>

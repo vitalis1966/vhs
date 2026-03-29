@@ -1,14 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle } from "lucide-react";
-
-const heroStats = [
-  { value: "200+", label: "Practices Supported Across Canada" },
-  { value: "$40M+", label: "Revenue Gaps Identified Across Client Assessments" },
-  { value: "15+", label: "New Facilities Guided from Concept to Opening" },
-  { value: "Med · Dent · Vet", label: "Every Stage, One Team" },
-];
+import { ArrowRight } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -36,11 +29,11 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.08] tracking-tight"
           >
-            Practice Strategy for Medical,
+            Practice Strategy for Medical,{" "}
             <br />
-            Dental, and Veterinary
-            <br />
-            <span className="text-gradient-primary italic">Practices — at Every Stage.</span>
+            Dental &amp; Veterinary
+            {" "}
+            <span className="text-gradient-primary italic">— at Every Stage.</span>
           </motion.h1>
 
           <motion.p
@@ -55,57 +48,17 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-6 flex flex-col gap-2"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-10"
           >
-            {[
-              "Development & Build — Transform concepts into state-of-the-art healthcare environments",
-              "Operational Growth — Optimize operations, strengthen patient care, fuel long-term growth",
-              "Ongoing Advisory — Sustained strategic partnership through every stage",
-            ].map((item) => (
-              <div key={item} className="flex items-start gap-2 text-muted-foreground">
-                <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-1" />
-                <span className="text-sm leading-relaxed">{item}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-10 flex flex-col sm:flex-row gap-4"
-          >
-            <Button variant="hero" size="xl" asChild>
+            <Button variant="hero" size="xl" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
               <Link to="/strategic-assessment">
                 Start Your Strategic Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/solutions/new-clinics">
-                Planning a New Facility? Start Here
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
               </Link>
             </Button>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl"
-        >
-          {heroStats.map((stat, i) => (
-            <div key={i} className="flex items-center gap-4 border-l-2 border-accent/30 pl-4">
-              <div>
-                <p className="font-display text-lg font-bold text-foreground">{stat.value}</p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );

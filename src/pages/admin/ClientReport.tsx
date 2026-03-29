@@ -36,6 +36,7 @@ import {
   Calendar,
   MapPin,
   Stethoscope,
+  Phone,
   FileText,
   Target,
   Lightbulb,
@@ -45,6 +46,13 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import vitalisLogo from "@/assets/vitalis-logo.png";
+import BookingWidget from "@/components/BookingWidget";
+import {
+  FindingsCategoryDonut,
+  FocusAreasTimeline,
+  FinancialWaterfallChart,
+  extractFinancialData,
+} from "@/components/admin/ReportCharts";
 
 // ─── Text transformation ───────────────────────────────────────────────────────
 
@@ -58,6 +66,23 @@ const replacements: [RegExp, string][] = [
   [/\d+\s+out\s+of\s+100/gi, ""],
 ];
 
+function formatPhone(phone: string | null | undefined): string {
+  if (!phone) return "";
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `(${digits.slice(1, 4)})${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  return phone;
+}
+
+function capitalizeFirst(text: string): string {
+  if (!text) return text;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function transformText(text: string): string {
   if (!text) return text;
   let result = text;
@@ -66,6 +91,8 @@ function transformText(text: string): string {
   }
   // Clean up double spaces left by removals
   result = result.replace(/\s{2,}/g, " ").trim();
+  // Ensure first character is capitalized
+  result = capitalizeFirst(result);
   return result;
 }
 
@@ -316,7 +343,53 @@ export default function ClientReport() {
     );
   }
 
-  const analysis = report.analysis_data || {};
+  const analysis = (() => {
+    let data = report.analysis_data || {};
+    // Robust parsing: handle multiple malformed storage patterns
+    const tryParseJSON = (raw: string): any | null => {
+      try {
+        let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+        return JSON.parse(cleaned);
+      } catch (e1) {
+        try {
+          const first = raw.indexOf("{");
+          const last = raw.lastIndexOf("}");
+          if (first !== -1 && last > first) {
+            return JSON.parse(raw.substring(first, last + 1));
+          }
+        } catch (e2) { /* fall through */ }
+        return null;
+      }
+    };
+
+    // Case 1: executive_summary contains the full JSON blob (parse_error scenario)
+    if (data.executive_summary && typeof data.executive_summary === "string") {
+      const es = data.executive_summary.trim();
+      if (es.startsWith("```") || es.startsWith("{")) {
+        const parsed = tryParseJSON(es);
+        if (parsed && typeof parsed === "object") {
+          console.log("[ClientReport] Extracted structured data from executive_summary string");
+          data = { ...data, ...parsed, executive_summary: parsed.executive_summary || "", parse_error: undefined };
+        } else {
+          console.error("[ClientReport] Could not parse executive_summary JSON — will show fallback");
+          data = { ...data, executive_summary: "", _malformed: true };
+        }
+      }
+    }
+
+    // Case 2: analysis_data itself might be a string
+    if (typeof data === "string") {
+      const parsed = tryParseJSON(data);
+      if (parsed) {
+        data = parsed;
+      } else {
+        console.error("[ClientReport] analysis_data is an unparseable string");
+        data = { executive_summary: "", _malformed: true };
+      }
+    }
+
+    return data;
+  })();
   const orgName = intake?.organization_name || intake?.full_name || "Your Organization";
 
   // Transform analysis data
@@ -449,12 +522,14 @@ export default function ClientReport() {
           {/* Client Overview */}
           <ClientReportCard title="Overview" icon={<User className="h-5 w-5" />}>
             <div className="grid sm:grid-cols-2 gap-4">
-              <InfoRow icon={<User className="h-4 w-4" />} label="Contact" value={intake?.full_name || "—"} />
-              <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
-              <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
-              <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
-              <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
-              <InfoRow icon={<Calendar className="h-4 w-4" />} label="Date" value={formatDate(session?.submitted_at)} />
+               <InfoRow icon={<User className="h-4 w-4" />} label="Contact" value={intake?.full_name || "—"} />
+               <InfoRow icon={<Building2 className="h-4 w-4" />} label="Organization" value={intake?.organization_name || "—"} />
+               <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={formatPhone(intake?.phone) || "—"} />
+               <InfoRow icon={<Stethoscope className="h-4 w-4" />} label="Specialty" value={intake?.specialty || "—"} />
+               <InfoRow icon={<FileText className="h-4 w-4" />} label="Email" value={intake?.email || "—"} />
+               <InfoRow icon={<FileText className="h-4 w-4" />} label="Practice Type" value={intake?.practice_type || "—"} />
+               <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value={[intake?.city, intake?.province_state, intake?.country].filter(Boolean).join(", ") || "—"} />
+               <InfoRow icon={<Calendar className="h-4 w-4" />} label="Submitted" value={formatDate(session?.submitted_at)} />
             </div>
           </ClientReportCard>
 
@@ -508,6 +583,7 @@ export default function ClientReport() {
           {/* Key Findings (was "Areas of Concern") */}
           {keyFindings.length > 0 && (
             <ClientReportCard title="Key Findings" icon={<AlertTriangle className="h-5 w-5" />}>
+              <FindingsCategoryDonut findings={keyFindings} />
               <div className="space-y-3">
                 {keyFindings.map((c: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
@@ -519,9 +595,17 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
+          {/* Financial Waterfall (if data found) */}
+          {extractFinancialData(analysis) && (
+            <ClientReportCard title="Financial Overview" icon={<Target className="h-5 w-5" />}>
+              <FinancialWaterfallChart data={extractFinancialData(analysis)!} />
+            </ClientReportCard>
+          )}
+
           {/* Priority Focus Areas */}
           {focusAreas.length > 0 && (
             <ClientReportCard title="Priority Focus Areas" icon={<Target className="h-5 w-5" />}>
+              <FocusAreasTimeline focusAreas={focusAreas} showLabels={false} />
               <div className="space-y-3">
                 {focusAreas.map((f: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
@@ -571,6 +655,14 @@ export default function ClientReport() {
               </div>
             </ClientReportCard>
           )}
+
+          {/* Booking CTA */}
+          <div className="no-print space-y-4">
+            <h3 className="font-display text-xl font-bold text-foreground text-center">
+              Ready to get started? Book a discovery call
+            </h3>
+            <BookingWidget sessionId={sessionId} bookedBy="admin" />
+          </div>
 
           {/* Bottom Send button */}
           <div className="no-print flex justify-center pt-4 pb-8">

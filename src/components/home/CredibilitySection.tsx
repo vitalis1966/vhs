@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, Target, Users, TrendingUp } from "lucide-react";
 
-const reasons = [
+const allReasons = [
   {
     icon: Shield,
     title: "Full-Cycle Expertise",
@@ -24,7 +24,13 @@ const reasons = [
   },
 ];
 
-export function CredibilitySection() {
+interface CredibilitySectionProps {
+  variant?: "homepage" | "full";
+}
+
+export function CredibilitySection({ variant = "full" }: CredibilitySectionProps) {
+  const reasons = variant === "homepage" ? allReasons.slice(0, 2) : allReasons;
+
   return (
     <section className="py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
@@ -35,9 +41,12 @@ export function CredibilitySection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-            Why Vitalis
-          </p>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">
+              Why Vitalis
+            </span>
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
             Not just a consultant.<br />
             <span className="text-gradient-primary">A strategic partner.</span>
@@ -47,7 +56,7 @@ export function CredibilitySection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className={`grid ${variant === "homepage" ? "md:grid-cols-2 max-w-3xl" : "md:grid-cols-2 max-w-5xl"} gap-8 mx-auto`}>
           {reasons.map((reason, i) => (
             <motion.div
               key={reason.title}

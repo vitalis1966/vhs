@@ -40,9 +40,10 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <p className="text-accent font-medium tracking-widest uppercase text-sm mb-4">
-                Internal Admin
-              </p>
+              <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-12 bg-accent" />
+            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Internal Admin</span>
+          </div>
               <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
                 Admin Dashboard
               </h1>

@@ -34,6 +34,10 @@ import Medical from "./pages/solutions/Medical";
 import Dental from "./pages/solutions/Dental";
 import Veterinary from "./pages/solutions/Veterinary";
 import NHSF from "./pages/solutions/NHSF";
+import Insights from "./pages/Insights";
+import InsightArticle from "./pages/InsightArticle";
+import InsightsAdmin from "./pages/admin/InsightsAdmin";
+import InsightsEditor from "./pages/admin/InsightsEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +79,10 @@ const App = () => (
           <Route path="/partners" element={<Partners />} />
           <Route path="/engagement" element={<Engagement />} />
           <Route path="/healthcare-it" element={<HealthcareIT />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/insights/:slug" element={<InsightArticle />} />
+          <Route path="/admin/insights" element={<AdminGuard><InsightsAdmin /></AdminGuard>} />
+          <Route path="/admin/insights/:id" element={<AdminGuard><InsightsEditor /></AdminGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
