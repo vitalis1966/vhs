@@ -18,6 +18,12 @@
       body{font-family:"Montserrat",system-ui,sans-serif;background:hsl(40 33% 97%);color:hsl(155 25% 12%)}
       h1,h2,h3,h4,h5,h6{font-family:"Playfair Display",Georgia,serif}
       .min-h-screen{min-height:100vh}
+      /* Critical above-fold: hero gradient, nav, layout */
+      .bg-gradient-hero{background:linear-gradient(165deg,hsl(40 33% 99%) 0%,hsl(40 40% 96%) 40%,hsl(148 12% 88%) 100%)}
+      .container{width:100%;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}
+      @media(min-width:1024px){.container{max-width:1280px}}
+      .animate-fade-in{animation:fadeInUp .6s ease-out both}
+      @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     </style>
     <title>Healthcare Consulting for Medical, Dental & Veterinary Practices | Vitalis Health Strategies | Calgary, Alberta</title>
     <meta name="description" content="Vitalis Health Strategies helps medical, dental, and veterinary practices plan, build, grow, and optimize. Clinician-led consulting across Canada.">
