@@ -31,7 +31,7 @@ export function ImpactStatsSection() {
           </span>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-6xl mx-auto">
           {row1.map((stat, i) => (
             <motion.div
               key={stat.label}
