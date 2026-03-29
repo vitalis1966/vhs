@@ -87,7 +87,7 @@ const Solutions = () => {
               <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center mb-6"><TrendingUp className="h-7 w-7 text-primary-foreground" /></div>
               <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground mb-4">Growing an Existing Practice</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">For practice leaders looking to gain an objective view of operations, improve performance, modernize systems, and position their practice for sustainable growth.</p>
-              <Button variant="hero" size="lg" asChild><Link to="/solutions/existing-clinics">Explore Existing Practice Solutions <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              <Button variant="hero" size="lg" asChild className="whitespace-normal h-auto py-3 text-center leading-snug"><Link to="/solutions/existing-clinics">Explore Existing Practice Solutions <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></Link></Button>
             </motion.div>
           </div>
         </div>

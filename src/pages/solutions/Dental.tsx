@@ -415,8 +415,8 @@ export default function Dental() {
             <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
               Oral maxillofacial surgery facilities, dental surgical centres, and practices offering general anesthesia or deep sedation require CPSA NHSF accreditation. Vitalis provides dedicated advisory for dental surgical facility builds and compliance preparation.
             </p>
-            <Button variant="gold" size="lg" asChild>
-              <Link to="/solutions/nhsf">Explore Our Surgical Facility Advisory <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Button variant="gold" size="lg" asChild className="whitespace-normal h-auto py-3 text-center leading-snug">
+              <Link to="/solutions/nhsf">Explore Our Surgical Facility Advisory <ArrowRight className="ml-2 h-5 w-5 shrink-0" /></Link>
             </Button>
           </motion.div>
         </div>
