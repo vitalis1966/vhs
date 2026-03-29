@@ -60,6 +60,7 @@ export function Footer() {
                 ))}
               </ul>
             </div>
+          ))}
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
