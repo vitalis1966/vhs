@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -130,6 +131,7 @@ const featuredPartners = [
     ],
     logo: atbLogo as string,
     logoAlt: "ATB Financial",
+    externalUrl: "https://www.atb.com/business/borrowing/business-loans/professional-practice-financing/",
   },
   {
     category: "ARCHITECTURE & DESIGN",
@@ -146,6 +148,7 @@ const featuredPartners = [
     ],
     logo: hollandLogo as string,
     logoAlt: "Holland Design",
+    externalUrl: "https://www.hollanddesign.ca/",
   },
   {
     category: "LEGAL PARTNER",
@@ -162,6 +165,7 @@ const featuredPartners = [
     ],
     logo: null,
     logoAlt: "",
+    externalUrl: null,
   },
 ];
 
@@ -453,8 +457,14 @@ const Partners = () => {
                   <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-border/30">
                     <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-3">{partner.category}</p>
                     {partner.logo ? (
-                      <div className="w-40 h-14 flex items-center justify-center mb-4">
-                        <img src={partner.logo} alt={partner.logoAlt} className="max-w-full max-h-full object-contain" />
+                      <div className={cn("w-40 flex items-center justify-center mb-4", partner.name === "ATB Financial" ? "h-20" : "h-14")}>
+                        {partner.externalUrl ? (
+                          <a href={partner.externalUrl} target="_blank" rel="noopener noreferrer">
+                            <img src={partner.logo} alt={partner.logoAlt} className={cn("object-contain bg-transparent", partner.name === "ATB Financial" ? "max-h-16 w-auto h-auto" : "max-w-full max-h-full")} />
+                          </a>
+                        ) : (
+                          <img src={partner.logo} alt={partner.logoAlt} className={cn("object-contain bg-transparent", partner.name === "ATB Financial" ? "max-h-16 w-auto h-auto" : "max-w-full max-h-full")} />
+                        )}
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-4">
