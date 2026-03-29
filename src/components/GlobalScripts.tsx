@@ -5,31 +5,32 @@ import { useGlobalScripts } from "@/hooks/useSEO";
 export function GlobalScripts() {
   const scripts = useGlobalScripts();
 
-  const gtmId = scripts?.google_tag_manager_id || "";
+  const gtmHead = scripts?.google_tag_manager_head || "";
+  const gtmBody = scripts?.google_tag_manager_body || "";
   const customBody = scripts?.custom_body_script || "";
 
   // GTM noscript body injection — immediately after <body> opens
   useEffect(() => {
-    if (!gtmId) return;
+    if (!gtmBody) return;
     const existing = document.getElementById("gtm-noscript-container");
     if (existing) existing.remove();
 
-    const ns = document.createElement("noscript");
-    ns.id = "gtm-noscript-container";
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
-    iframe.height = "0";
-    iframe.width = "0";
-    iframe.style.display = "none";
-    iframe.style.visibility = "hidden";
-    ns.appendChild(iframe);
-    document.body.insertBefore(ns, document.body.firstChild);
+    const container = document.createElement("div");
+    container.id = "gtm-noscript-container";
+    container.innerHTML = gtmBody;
+    if (container.firstChild) {
+      document.body.insertBefore(container.firstChild, document.body.firstChild);
+    }
     return () => {
       try {
-        document.body.removeChild(ns);
+        const el = document.getElementById("gtm-noscript-container");
+        if (el) document.body.removeChild(el);
+        // Also try removing the raw noscript if it was moved
+        const ns = document.body.querySelector('noscript > iframe[src*="googletagmanager.com/ns.html"]');
+        if (ns?.parentElement) document.body.removeChild(ns.parentElement);
       } catch {}
     };
-  }, [gtmId]);
+  }, [gtmBody]);
 
   // Custom body script injection
   useEffect(() => {
@@ -57,15 +58,15 @@ export function GlobalScripts() {
     custom_head_script: customHead,
   } = scripts;
 
-  const useGTM = !!gtmId;
-  const useGA4 = !!ga4Id && !gtmId;
-  const useAds = !!adsId && !gtmId;
+  const hasGTM = !!gtmHead;
+  const useGA4 = !!ga4Id && !hasGTM;
+  const useAds = !!adsId && !hasGTM;
 
   return (
     <Helmet>
-      {/* GOOGLE TAG MANAGER */}
-      {useGTM && (
-        <script>{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`}</script>
+      {/* GOOGLE TAG MANAGER — raw head snippet */}
+      {hasGTM && (
+        <script>{gtmHead}</script>
       )}
 
       {/* GOOGLE ANALYTICS 4 (direct, only if no GTM) */}

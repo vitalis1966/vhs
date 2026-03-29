@@ -19,9 +19,10 @@ const INTEGRATION_CARDS: Array<{
   helpUrl: string;
   helpLabel: string;
   relatedKeys?: string[];
+  isGtm?: boolean;
 }> = [
   { key: "google_analytics_id", label: "Google Analytics 4", icon: "📊", description: "Track website traffic and user behavior.", helpUrl: "https://analytics.google.com", helpLabel: "analytics.google.com" },
-  { key: "google_tag_manager_id", label: "Google Tag Manager", icon: "🏷️", description: "Saving this ID automatically injects the GTM script in two places: (1) as the first script in <head>, and (2) as a noscript iframe immediately after <body> opens. You do not need to paste code manually — just save the ID here.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com" },
+  { key: "google_tag_manager_head", label: "Google Tag Manager", icon: "🏷️", description: "Paste the two GTM snippets exactly as provided by Google Tag Manager. No ID needed — just paste the full code blocks.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com", isGtm: true },
   { key: "google_search_console", label: "Search Console Verification", icon: "🔍", description: "Paste the content value only — not the full <meta> tag.", helpUrl: "https://search.google.com/search-console", helpLabel: "search.google.com" },
   { key: "google_ads_id", label: "Google Ads", icon: "📣", description: "Conversion tracking for Google Ads campaigns.", helpUrl: "https://ads.google.com", helpLabel: "ads.google.com", relatedKeys: ["google_ads_conversion_label"] },
   { key: "bing_verification", label: "Bing Webmaster", icon: "🅱️", description: "Verify site ownership for Bing Webmaster Tools.", helpUrl: "https://www.bing.com/webmasters", helpLabel: "bing.com/webmasters" },
