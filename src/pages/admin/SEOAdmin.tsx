@@ -352,7 +352,7 @@ function SchemaTab() {
 
   const saveMutation = useMutation({
     mutationFn: async ({ id, schema_json, is_active }: { id: string; schema_json: Record<string, unknown>; is_active: boolean }) => {
-      const { error } = await supabase.from("seo_schema_global").update({ schema_json, is_active }).eq("id", id);
+      const { error } = await supabase.from("seo_schema_global").update({ schema_json: schema_json as unknown as import("@/integrations/supabase/types").Json, is_active }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
