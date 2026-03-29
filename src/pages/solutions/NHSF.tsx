@@ -292,7 +292,7 @@ export default function NHSF() {
                     <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6"><Icon className="h-6 w-6 text-primary" /></div>
                     <h3 className="font-display text-lg font-bold text-foreground mb-3">{f.label}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-6">{f.body}</p>
-                    <Button variant="hero-outline" size="default" asChild className="w-full"><Link to={f.href}>{f.cta} <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+                    <Button variant="hero-outline" size="default" asChild className="w-full whitespace-normal h-auto py-3 text-center leading-snug"><Link to={f.href}>{f.cta} <ArrowRight className="ml-1 h-4 w-4 shrink-0" /></Link></Button>
                   </motion.div>
                 );
               })}
