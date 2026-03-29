@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, MapPin, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildBreadcrumbSchema } from "@/components/JsonLd";
 
 const Contact = () => {
   usePageMeta(

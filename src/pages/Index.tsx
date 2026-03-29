@@ -16,6 +16,8 @@ const Index = () => {
   );
   return (
     <div className="min-h-screen">
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
       <Navbar />
       <HeroSection />
       <PracticePathFinder />

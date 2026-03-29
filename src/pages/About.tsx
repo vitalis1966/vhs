@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, organizationSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 
 const team = [
   {

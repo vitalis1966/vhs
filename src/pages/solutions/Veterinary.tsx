@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import {

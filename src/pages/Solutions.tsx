@@ -22,6 +22,7 @@ import {
   Target,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 
 const capabilities = [
   { icon: Brain, title: "Strategic Consulting", description: "Business strategy, market positioning, growth planning, and long-term strategic roadmaps." },
