@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import { SEORedirectHandler } from "@/components/SEORedirectHandler";
-import { SEOScripts } from "@/components/SEOScripts";
+import { GlobalScripts } from "@/components/GlobalScripts";
 import { SEOLayout } from "@/components/SEOLayout";
 
 const AdminGuard = lazy(() => import("@/components/AdminGuard").then(m => ({ default: m.AdminGuard })));
@@ -60,7 +60,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <SEOScripts />
+          <GlobalScripts />
           <SEORedirectHandler />
           <SEOLayout>
           <Suspense fallback={<div className="min-h-screen" />}>
