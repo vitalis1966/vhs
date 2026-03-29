@@ -71,7 +71,7 @@ export function GlobalTab() {
 
   if (isLoading) return <p className="text-muted-foreground p-4">Loading…</p>;
 
-  const hasGTM = !!(form.google_tag_manager_id as string);
+  const hasGTM = !!((form.google_tag_manager_head as string) || (form.google_tag_manager_body as string));
   const hasGA4 = !!(form.google_analytics_id as string);
 
   return (
