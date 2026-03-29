@@ -55,11 +55,11 @@ export function Footer() {
                       className="text-sm text-white hover:text-white/80 transition-colors"
                     >
                       {link.label}
-                    </Link>
+                </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </p>
           ))}
         </div>
 
