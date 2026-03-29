@@ -580,7 +580,61 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
+      get_intake_for_session: {
+        Args: { p_token: string }
+        Returns: {
+          email: string
+          full_name: string
+          organization_name: string
+        }[]
+      }
+      get_responses_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          id: string
+          question_id: string
+          response_json: Json
+          response_value: string
+          session_id: string
+          updated_at: string
+        }[]
+      }
+      get_session_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          assessment_id: string
+          created_at: string
+          current_section_index: number
+          id: string
+          intake_id: string
+          meeting_booked: boolean
+          meeting_booked_by: string
+          status: string
+          submitted_at: string
+          updated_at: string
+        }[]
+      }
+      schedule_reminder_by_token: {
+        Args: {
+          p_reminder_number: number
+          p_reminder_type?: string
+          p_scheduled_at: string
+          p_token: string
+        }
+        Returns: string
+      }
+      update_session_by_token: {
+        Args: {
+          p_current_section_index?: number
+          p_meeting_booked?: boolean
+          p_meeting_booked_by?: string
+          p_status?: string
+          p_submitted_at?: string
+          p_token: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

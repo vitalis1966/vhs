@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import {
@@ -135,6 +136,8 @@ export default function Veterinary() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Veterinary Practice Consulting", "Strategic consulting for veterinary clinics — planning, development, operations, and growth advisory.", "/solutions/veterinary")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Veterinary", path: "/solutions/veterinary" }])} />
       <Navbar />
 
       {/* SECTION 1 — HERO */}

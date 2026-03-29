@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 import {
   ClipboardList, DollarSign, Building2, Shield, FileText, Users, Settings,
   BarChart2, RefreshCw, ArrowRight, MapPin, Eye, Bone, Microscope, Scissors,
@@ -128,6 +129,8 @@ export default function NHSF() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Non-Hospital Surgical Facility Consulting", "Advisory and consulting for NHSF and surgical facility planning, licensing, operations, and compliance.", "/solutions/nhsf")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Surgical Facilities", path: "/solutions/nhsf" }])} />
       <Navbar />
       <main>
         {/* S1 — Hero */}

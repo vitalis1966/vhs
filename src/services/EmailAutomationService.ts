@@ -102,7 +102,7 @@ export const EmailAutomationService = {
     });
   },
 
-  async scheduleReminders(sessionId: string) {
+  async scheduleReminders(accessToken: string) {
     const now = Date.now();
     const reminders = [
       { number: 1, delay: 24 * 60 * 60 * 1000 },       // 24 hours
@@ -111,22 +111,16 @@ export const EmailAutomationService = {
     ];
 
     for (const r of reminders) {
-      await (supabase.from("assessment_reminders" as any).insert({
-        session_id: sessionId,
-        reminder_type: "incomplete_assessment",
-        reminder_number: r.number,
-        scheduled_at: new Date(now + r.delay).toISOString(),
-        status: "pending",
-      }) as any);
+      await supabase.rpc("schedule_reminder_by_token" as any, {
+        p_token: accessToken,
+        p_reminder_number: r.number,
+        p_scheduled_at: new Date(now + r.delay).toISOString(),
+      });
     }
   },
 
-  async cancelPendingReminders(sessionId: string) {
-    await (supabase
-      .from("assessment_reminders" as any)
-      .update({ status: "cancelled" })
-      .eq("session_id", sessionId)
-      .eq("status", "pending") as any);
+  async cancelPendingReminders(accessToken: string) {
+    await supabase.rpc("cancel_reminders_by_token" as any, { p_token: accessToken });
   },
 
   async getEmailHistory(sessionId?: string, intakeId?: string): Promise<any[]> {

@@ -1,58 +1,72 @@
 
-Goal: fix responsive CTA behavior and label consistency for the exact button set you listed, without changing routing or unrelated content.
 
-1) Standardize responsive CTA behavior on the listed pages/buttons
-- Apply a consistent “long-label CTA” class pattern to the specified buttons so text wraps cleanly instead of overflowing:
-  - `w-full sm:w-auto`
-  - `whitespace-normal`
-  - `h-auto py-3`
-  - `text-center leading-snug`
-- Keep icon alignment stable with inline-flex centering so wrapped labels stay visually balanced.
-- Use this on:
-  - Homepage: “Start Your Strategic Assessment”
-  - Solutions: “Explore New Practice Solutions”, “Explore Existing Practice Solutions”
-  - Medical/Dental/Veterinary self-identification cards:
-    - “Start Your Build Strategy Assessment”
-    - “Start Your Performance Assessment”
-  - Planning & Building: “Start Your Build Strategy Assessment”
-  - Operating, Growing & Advising: “Start Your Performance Assessment”
-  - Surgical Facilities CTA buttons in Medical/Dental/Veterinary callouts.
+## Performance Optimization Plan
 
-2) Remove duplicate arrow characters where icon arrows already exist
-- In listed CTAs currently using both text arrow (`→`) and icon arrow, remove the text arrow and keep only the icon.
-- This will be applied in:
-  - `src/pages/SolutionsNewClinics.tsx`
-  - `src/pages/SolutionsExistingClinics.tsx`
-  - `src/pages/solutions/NHSF.tsx` facility type CTA labels (data strings).
+### 1. Font Loading — Eliminate Render Blocking (~1,730ms savings)
 
-3) Fix Surgical Facilities CTA wording consistency
-- Normalize “Explore…” spelling and keep CTA naming consistent across:
-  - Medical, Dental, Veterinary surgical-facility callouts.
-- Update NHSF facility-type card CTA labels to clean, non-redundant wording (no trailing `→`) and corrected spacing/wording for:
-  - Medical NHSF Advisory
-  - Dental Surgical Facility Advisory
-  - Veterinary Surgical Facility Advisory
+**index.html**: Add `preconnect` hints before any other resource loads.
 
-4) Files to update
-- `src/components/home/HeroSection.tsx`
-- `src/pages/Solutions.tsx`
-- `src/pages/SolutionsNewClinics.tsx`
-- `src/pages/SolutionsExistingClinics.tsx`
-- `src/pages/solutions/Medical.tsx`
-- `src/pages/solutions/Dental.tsx`
-- `src/pages/solutions/Veterinary.tsx`
-- `src/pages/solutions/NHSF.tsx`
+**src/index.css**: Remove the `@import url(...)` for Google Fonts — it is render-blocking. Instead, load the fonts via a `<link>` tag in `index.html` with `media="print" onload="this.media='all'"` pattern (non-blocking), plus a `<noscript>` fallback. The Google Fonts URL already includes `&display=swap`, which handles `font-display: swap`.
 
-5) Validation (end-to-end responsive QA)
-- Verify all listed CTAs at: 390, 768, 1024, 1280, 1366, 1536 widths.
-- Confirm:
-  - No overflow/clipping
-  - Text wraps cleanly
-  - Buttons remain aligned in cards/rows
-  - CTA labels match updated wording
-  - No routing/logic changes introduced.
+```html
+<!-- index.html <head> additions -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
+```
 
-Technical details
-- I will not modify global button variant behavior to avoid side effects on other pages.
-- Changes are scoped to per-button classNames and targeted CTA label strings only.
-- Existing routes (`to="..."`) remain unchanged.
+### 2. Route-Level Code Splitting — Reduce Unused JS (~306KB savings)
+
+**src/App.tsx**: Convert all page imports (except `Index`) to `React.lazy()`. Wrap `<Routes>` in `<Suspense>`. This splits every page into its own chunk, so only the homepage JS loads on initial visit.
+
+Pages to lazy-load (30+ routes):
+- All `/about`, `/solutions/*`, `/contact`, `/clinic-audit`, `/strategic-assessment/*`, `/assessment/*`, `/admin/*`, `/portfolio`, `/partners`, `/engagement`, `/healthcare-it`, `/insights/*`, `/not-found`
+
+Keep eagerly loaded: `Index` (homepage) — it's the landing page.
+
+### 3. Vendor Chunk Splitting — Separate Large Dependencies
+
+**vite.config.ts**: Add `build.rollupOptions.output.manualChunks` to split vendor code:
+
+```js
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+        'vendor-query': ['@tanstack/react-query'],
+        'vendor-ui': ['framer-motion', 'lucide-react'],
+      }
+    }
+  }
+}
+```
+
+This creates smaller, cacheable vendor chunks instead of one monolithic bundle.
+
+### 4. LCP Improvement
+
+The font fixes in step 1 directly address the 2.5s element render delay. Moving fonts from a blocking CSS `@import` to a non-blocking `<link>` with preload allows text to paint immediately with fallback fonts, then swap when the web font arrives.
+
+### 5. Cache Headers
+
+Cache headers are set at the hosting/CDN layer, not in application code. Lovable's hosting already serves hashed assets (e.g., `index-CsHPxJdZ.js`) with appropriate cache headers. No code change is needed — this is handled by the platform. If a custom domain with a CDN (e.g., Cloudflare) is in use, cache rules should be configured there.
+
+---
+
+### Files to edit
+
+| File | Change |
+|------|--------|
+| `index.html` | Add preconnect + non-blocking font link |
+| `src/index.css` | Remove line 1 (`@import url(...)`) |
+| `src/App.tsx` | Convert 30+ imports to `React.lazy()`, add `Suspense` wrapper |
+| `vite.config.ts` | Add `build.rollupOptions.output.manualChunks` for vendor splitting |
+
+### Expected impact
+- Eliminates ~1,730ms render-blocking time (fonts)
+- Reduces initial JS from ~465KB to ~150-200KB (lazy routes + vendor splitting)
+- LCP should drop from 5.5s to ~2-3s range
+

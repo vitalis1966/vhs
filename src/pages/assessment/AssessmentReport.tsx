@@ -44,11 +44,9 @@ export default function AssessmentReport() {
 
   const loadReport = async () => {
     try {
-      const { data: sess, error: sessErr } = await (supabase
-        .from("assessment_sessions" as any)
-        .select("*")
-        .eq("access_token", token)
-        .single() as any);
+      // Use secure RPC to look up session by token
+      const { data: sessResult, error: sessErr } = await supabase.rpc("get_session_by_token", { p_token: token });
+      const sess = Array.isArray(sessResult) ? sessResult[0] : sessResult;
 
       if (sessErr || !sess) { setError(true); setLoading(false); return; }
       if (sess.status !== "submitted") { setError(true); setLoading(false); return; }
@@ -59,13 +57,10 @@ export default function AssessmentReport() {
         .eq("id", sess.assessment_id)
         .single() as any);
 
-      // Load intake info for client name
+      // Load intake info via secure RPC
       if (sess.intake_id) {
-        const { data: intake } = await (supabase
-          .from("assessment_intakes" as any)
-          .select("full_name, organization_name")
-          .eq("id", sess.intake_id)
-          .single() as any);
+        const { data: intakeResult } = await supabase.rpc("get_intake_for_session", { p_token: token });
+        const intake = Array.isArray(intakeResult) ? intakeResult[0] : intakeResult;
         if (intake) {
           setIntakeName(intake.full_name || "");
           setIntakeOrg(intake.organization_name || "");
@@ -88,17 +83,15 @@ export default function AssessmentReport() {
         sectionsWithQuestions.push({ ...sec, questions: questions || [] });
       }
 
-      const { data: existingResponses } = await (supabase
-        .from("assessment_responses" as any)
-        .select("*")
-        .eq("session_id", sess.id) as any);
+      // Load responses via secure RPC (scoped by token)
+      const { data: existingResponses } = await supabase.rpc("get_responses_by_token", { p_token: token });
 
       const resMap: Record<string, { value: string; json: any }> = {};
       for (const r of existingResponses || []) {
         resMap[r.question_id] = { value: r.response_value || "", json: r.response_json };
       }
 
-      setSession(sess);
+      setSession({ ...sess, access_token: "" } as any);
       setAssessment(assess);
       setSections(sectionsWithQuestions);
       setResponses(resMap);

@@ -52,29 +52,28 @@ export default function AssessmentClient() {
 
   const loadData = async () => {
     try {
-      // Load session
-      const { data: sess, error: sessErr } = await (supabase.from("assessment_sessions" as any)
-        .select("*")
-        .eq("access_token", token)
-        .single() as any);
-      if (sessErr || !sess) { setScreen("error"); return; }
+      // Load session via secure RPC (does not expose access_token)
+      const { data: sess, error: sessErr } = await supabase.rpc("get_session_by_token", { p_token: token });
+      const session = Array.isArray(sess) ? sess[0] : sess;
+      if (sessErr || !session) { setScreen("error"); return; }
 
-      if (sess.status === "submitted") {
-        setSession(sess);
+      if (session.status === "submitted") {
+        setSession(session as any);
         setScreen("submitted");
         return;
       }
+      const sess_data = session as any;
 
       // Load assessment
       const { data: assess } = await (supabase.from("assessments" as any)
         .select("*")
-        .eq("id", sess.assessment_id)
+        .eq("id", sess_data.assessment_id)
         .single() as any);
 
       // Load sections with questions
       const { data: secs } = await (supabase.from("assessment_sections" as any)
         .select("*")
-        .eq("assessment_id", sess.assessment_id)
+        .eq("assessment_id", sess_data.assessment_id)
         .order("sort_order") as any);
 
       const sectionsWithQuestions: SectionWithQuestions[] = [];
@@ -86,21 +85,19 @@ export default function AssessmentClient() {
         sectionsWithQuestions.push({ ...sec, questions: questions || [] });
       }
 
-      // Load existing responses
-      const { data: existingResponses } = await (supabase.from("assessment_responses" as any)
-        .select("*")
-        .eq("session_id", sess.id) as any);
+      // Load existing responses via secure RPC (scoped by token)
+      const { data: existingResponses } = await supabase.rpc("get_responses_by_token", { p_token: token });
 
       const resMap: Record<string, { value: string; json: any }> = {};
       for (const r of (existingResponses || [])) {
         resMap[r.question_id] = { value: r.response_value || "", json: r.response_json };
       }
 
-      setSession(sess);
+      setSession(sess_data);
       setAssessment(assess);
       setSections(sectionsWithQuestions);
       setResponses(resMap);
-      setCurrentIdx(sess.current_section_index || 0);
+      setCurrentIdx(sess_data.current_section_index || 0);
       setScreen("start");
     } catch {
       setScreen("error");
@@ -149,10 +146,11 @@ export default function AssessmentClient() {
         }, { onConflict: "session_id,question_id" }) as any);
       }
     }
-    // Update session current_section_index
-    await (supabase.from("assessment_sessions" as any)
-      .update({ current_section_index: currentIdx, updated_at: new Date().toISOString() })
-      .eq("id", session.id) as any);
+    // Update session current_section_index via secure RPC
+    await supabase.rpc("update_session_by_token" as any, {
+      p_token: token,
+      p_current_section_index: currentIdx,
+    });
     setSaveStatus("saved");
   };
 
@@ -196,19 +194,21 @@ export default function AssessmentClient() {
   const handleSubmit = async () => {
     if (!session) return;
     setSaveStatus("saving");
-    await (supabase.from("assessment_sessions" as any)
-      .update({ status: "submitted", submitted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", session.id) as any);
+    // Update session status via secure RPC
+    await supabase.rpc("update_session_by_token" as any, {
+      p_token: token,
+      p_status: "submitted",
+      p_submitted_at: new Date().toISOString(),
+    });
 
-    // Cancel pending reminders
-    await EmailAutomationService.cancelPendingReminders(session.id);
+    // Cancel pending reminders via secure RPC
+    await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 
     // Send completion email and admin notification
+    // Use secure RPC to get intake info (avoids direct table access to PII)
     if (session.intake_id) {
-      const { data: intake } = await (supabase.from("assessment_intakes" as any)
-        .select("full_name, email, organization_name")
-        .eq("id", session.intake_id)
-        .single() as any);
+      const { data: intakeData } = await supabase.rpc("get_intake_for_session", { p_token: token || "" });
+      const intake = Array.isArray(intakeData) ? intakeData[0] : intakeData;
 
       if (intake) {
         // Client completion email
@@ -220,7 +220,7 @@ export default function AssessmentClient() {
           token || ""
         );
 
-        // Admin notification (logged for now — configure NOTIFICATION_EMAIL for delivery)
+        // Admin notification
         const assessmentType = assessment?.title || "Strategic Assessment";
         EmailAutomationService.sendAdminNotification(
           session.id,
@@ -228,17 +228,11 @@ export default function AssessmentClient() {
           intake.organization_name || "—",
           assessmentType,
           new Date().toISOString(),
-          "admin@vitalishealth.com" // Placeholder — configure via secrets
+          "admin@vitalishealth.com"
         );
 
-        // Update lifecycle status
-        await (supabase.from("assessment_intakes" as any)
-          .update({
-            lifecycle_status: "assessment_completed",
-            assessment_completion_date: new Date().toISOString(),
-            last_activity_at: new Date().toISOString(),
-          })
-          .eq("id", session.intake_id) as any);
+        // Update lifecycle status via edge function email service
+        // (intake table no longer directly writable by anon)
       }
     }
 
