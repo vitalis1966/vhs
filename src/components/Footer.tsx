@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import vitalisLogo from "@/assets/vitalis-logo.png";
+import vitalisLogo from "@/assets/vitalis-logo.webp";
 
 const footerLinks = {
   Solutions: [
