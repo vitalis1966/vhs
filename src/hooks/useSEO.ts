@@ -82,7 +82,7 @@ export function useSEOPage(route: string) {
         .eq("is_active", true)
         .maybeSingle();
       if (error) throw error;
-      return data as SEOPageData | null;
+      return data as unknown as SEOPageData | null;
     },
     staleTime: 5 * 60 * 1000,
   });
