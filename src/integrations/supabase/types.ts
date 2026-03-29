@@ -575,6 +575,261 @@ export type Database = {
           },
         ]
       }
+      seo_global: {
+        Row: {
+          bing_verification: string | null
+          crisp_website_id: string | null
+          custom_body_script: string | null
+          custom_head_script: string | null
+          default_description: string | null
+          default_og_image: string | null
+          default_robots: string | null
+          default_title: string | null
+          facebook_app_id: string | null
+          facebook_page_url: string | null
+          google_ads_conversion_label: string | null
+          google_ads_id: string | null
+          google_analytics_id: string | null
+          google_search_console: string | null
+          google_tag_manager_id: string | null
+          hotjar_id: string | null
+          id: number
+          instagram_url: string | null
+          intercom_app_id: string | null
+          linkedin_partner_id: string | null
+          linkedin_url: string | null
+          meta_pixel_id: string | null
+          pinterest_verification: string | null
+          site_locale: string | null
+          site_name: string | null
+          site_url: string | null
+          theme_color: string | null
+          twitter_handle: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bing_verification?: string | null
+          crisp_website_id?: string | null
+          custom_body_script?: string | null
+          custom_head_script?: string | null
+          default_description?: string | null
+          default_og_image?: string | null
+          default_robots?: string | null
+          default_title?: string | null
+          facebook_app_id?: string | null
+          facebook_page_url?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
+          google_analytics_id?: string | null
+          google_search_console?: string | null
+          google_tag_manager_id?: string | null
+          hotjar_id?: string | null
+          id?: number
+          instagram_url?: string | null
+          intercom_app_id?: string | null
+          linkedin_partner_id?: string | null
+          linkedin_url?: string | null
+          meta_pixel_id?: string | null
+          pinterest_verification?: string | null
+          site_locale?: string | null
+          site_name?: string | null
+          site_url?: string | null
+          theme_color?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bing_verification?: string | null
+          crisp_website_id?: string | null
+          custom_body_script?: string | null
+          custom_head_script?: string | null
+          default_description?: string | null
+          default_og_image?: string | null
+          default_robots?: string | null
+          default_title?: string | null
+          facebook_app_id?: string | null
+          facebook_page_url?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
+          google_analytics_id?: string | null
+          google_search_console?: string | null
+          google_tag_manager_id?: string | null
+          hotjar_id?: string | null
+          id?: number
+          instagram_url?: string | null
+          intercom_app_id?: string | null
+          linkedin_partner_id?: string | null
+          linkedin_url?: string | null
+          meta_pixel_id?: string | null
+          pinterest_verification?: string | null
+          site_locale?: string | null
+          site_name?: string | null
+          site_url?: string | null
+          theme_color?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_pages: {
+        Row: {
+          article_author: string | null
+          article_modified: string | null
+          article_published: string | null
+          article_section: string | null
+          article_tags: string[] | null
+          breadcrumbs: Json | null
+          canonical_override: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          keywords: string | null
+          noindex: boolean | null
+          og_description: string | null
+          og_image: string | null
+          og_image_alt: string | null
+          og_image_height: string | null
+          og_image_width: string | null
+          og_title: string | null
+          og_type: string | null
+          page_label: string
+          robots: string | null
+          route: string
+          schema_json: Json | null
+          schema_type: string | null
+          title: string | null
+          twitter_card: string | null
+          twitter_description: string | null
+          twitter_image: string | null
+          twitter_image_alt: string | null
+          twitter_title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          article_author?: string | null
+          article_modified?: string | null
+          article_published?: string | null
+          article_section?: string | null
+          article_tags?: string[] | null
+          breadcrumbs?: Json | null
+          canonical_override?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string | null
+          noindex?: boolean | null
+          og_description?: string | null
+          og_image?: string | null
+          og_image_alt?: string | null
+          og_image_height?: string | null
+          og_image_width?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_label: string
+          robots?: string | null
+          route: string
+          schema_json?: Json | null
+          schema_type?: string | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_image_alt?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          article_author?: string | null
+          article_modified?: string | null
+          article_published?: string | null
+          article_section?: string | null
+          article_tags?: string[] | null
+          breadcrumbs?: Json | null
+          canonical_override?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string | null
+          noindex?: boolean | null
+          og_description?: string | null
+          og_image?: string | null
+          og_image_alt?: string | null
+          og_image_height?: string | null
+          og_image_width?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_label?: string
+          robots?: string | null
+          route?: string
+          schema_json?: Json | null
+          schema_type?: string | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_image_alt?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_redirects: {
+        Row: {
+          created_at: string | null
+          from_path: string
+          id: string
+          is_active: boolean | null
+          note: string | null
+          redirect_type: number | null
+          to_path: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_path: string
+          id?: string
+          is_active?: boolean | null
+          note?: string | null
+          redirect_type?: number | null
+          to_path: string
+        }
+        Update: {
+          created_at?: string | null
+          from_path?: string
+          id?: string
+          is_active?: boolean | null
+          note?: string | null
+          redirect_type?: number | null
+          to_path?: string
+        }
+        Relationships: []
+      }
+      seo_schema_global: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          label: string
+          schema_json: Json
+          updated_at: string | null
+        }
+        Insert: {
+          id: string
+          is_active?: boolean | null
+          label: string
+          schema_json: Json
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          schema_json?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
