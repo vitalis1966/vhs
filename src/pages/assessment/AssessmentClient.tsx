@@ -52,18 +52,17 @@ export default function AssessmentClient() {
 
   const loadData = async () => {
     try {
-      // Load session
-      const { data: sess, error: sessErr } = await (supabase.from("assessment_sessions" as any)
-        .select("*")
-        .eq("access_token", token)
-        .single() as any);
-      if (sessErr || !sess) { setScreen("error"); return; }
+      // Load session via secure RPC (does not expose access_token)
+      const { data: sess, error: sessErr } = await supabase.rpc("get_session_by_token", { p_token: token });
+      const session = Array.isArray(sess) ? sess[0] : sess;
+      if (sessErr || !session) { setScreen("error"); return; }
 
-      if (sess.status === "submitted") {
-        setSession(sess);
+      if (session.status === "submitted") {
+        setSession(session as any);
         setScreen("submitted");
         return;
       }
+      const sess_data = session as any;
 
       // Load assessment
       const { data: assess } = await (supabase.from("assessments" as any)
