@@ -203,11 +203,10 @@ export default function AssessmentClient() {
     await EmailAutomationService.cancelPendingReminders(session.id);
 
     // Send completion email and admin notification
+    // Use secure RPC to get intake info (avoids direct table access to PII)
     if (session.intake_id) {
-      const { data: intake } = await (supabase.from("assessment_intakes" as any)
-        .select("full_name, email, organization_name")
-        .eq("id", session.intake_id)
-        .single() as any);
+      const { data: intakeData } = await supabase.rpc("get_intake_for_session", { p_token: token || "" });
+      const intake = Array.isArray(intakeData) ? intakeData[0] : intakeData;
 
       if (intake) {
         // Client completion email
@@ -219,7 +218,7 @@ export default function AssessmentClient() {
           token || ""
         );
 
-        // Admin notification (logged for now — configure NOTIFICATION_EMAIL for delivery)
+        // Admin notification
         const assessmentType = assessment?.title || "Strategic Assessment";
         EmailAutomationService.sendAdminNotification(
           session.id,
@@ -227,17 +226,11 @@ export default function AssessmentClient() {
           intake.organization_name || "—",
           assessmentType,
           new Date().toISOString(),
-          "admin@vitalishealth.com" // Placeholder — configure via secrets
+          "admin@vitalishealth.com"
         );
 
-        // Update lifecycle status
-        await (supabase.from("assessment_intakes" as any)
-          .update({
-            lifecycle_status: "assessment_completed",
-            assessment_completion_date: new Date().toISOString(),
-            last_activity_at: new Date().toISOString(),
-          })
-          .eq("id", session.intake_id) as any);
+        // Update lifecycle status via edge function email service
+        // (intake table no longer directly writable by anon)
       }
     }
 
