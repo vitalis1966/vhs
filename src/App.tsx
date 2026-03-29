@@ -53,9 +53,8 @@ const queryClient = new QueryClient();
 const DeferredChrome = () => {
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    // Defer tooltips/toasts until after first paint + idle
-    const id = requestIdleCallback(() => setReady(true), { timeout: 2000 });
-    return () => cancelIdleCallback(id);
+    const id = setTimeout(() => setReady(true), 100);
+    return () => clearTimeout(id);
   }, []);
   if (!ready) return null;
   return (
