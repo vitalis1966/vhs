@@ -1,6 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
-import { useSEOPage, useSEOGlobal, useSEOSchemas } from "@/hooks/useSEO";
+import { usePageSEO } from "@/hooks/useSEO";
 
 interface SEOHeadProps {
   fallbackTitle?: string;
@@ -8,125 +7,96 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({ fallbackTitle, fallbackDescription }: SEOHeadProps) {
-  const { pathname } = useLocation();
-  const { data: page } = useSEOPage(pathname);
-  const { data: global } = useSEOGlobal();
-  const { data: schemas } = useSEOSchemas();
+  const { resolved, pageSEO } = usePageSEO();
 
-  const siteUrl = global?.site_url || "https://www.vitalisstrategies.com";
-  const siteName = global?.site_name || "Vitalis Health Strategies";
-
-  const title = page?.title || fallbackTitle || global?.default_title || siteName;
-  const description = page?.description || fallbackDescription || global?.default_description || "";
-  const keywords = page?.keywords || "";
-  const robots = page?.noindex ? "noindex, follow" : (page?.robots || global?.default_robots || "index, follow");
-  const canonical = page?.canonical_override || `${siteUrl}${pathname}`;
-
-  const ogTitle = page?.og_title || title;
-  const ogDescription = page?.og_description || description;
-  const ogImage = page?.og_image
-    ? (page.og_image.startsWith("http") ? page.og_image : `${siteUrl}${page.og_image}`)
-    : global?.default_og_image
-      ? (global.default_og_image.startsWith("http") ? global.default_og_image : `${siteUrl}${global.default_og_image}`)
-      : undefined;
-  const ogType = page?.og_type || "website";
-
-  const twitterCard = page?.twitter_card || "summary_large_image";
-  const twitterTitle = page?.twitter_title || ogTitle;
-  const twitterDescription = page?.twitter_description || ogDescription;
-  const twitterImage = page?.twitter_image
-    ? (page.twitter_image.startsWith("http") ? page.twitter_image : `${siteUrl}${page.twitter_image}`)
-    : ogImage;
-
-  // Build breadcrumb schema
-  const breadcrumbSchema = page?.breadcrumbs?.length
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: page.breadcrumbs.map((b) => ({
-          "@type": "ListItem",
-          position: b.position,
-          name: b.name,
-          item: `${siteUrl}${b.item}`,
-        })),
-      }
-    : null;
-
-  // Build page-level schema
-  const pageSchema = page?.schema_json || (page?.schema_type ? {
-    "@context": "https://schema.org",
-    "@type": page.schema_type,
-    name: title,
-    description,
-    url: canonical,
-  } : null);
+  const title = resolved.title || fallbackTitle || "Vitalis Health Strategies";
+  const description = resolved.description || fallbackDescription || "";
 
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      {keywords && <meta name="keywords" content={keywords} />}
-      <meta name="robots" content={robots} />
-      <link rel="canonical" href={canonical} />
+      {resolved.keywords && <meta name="keywords" content={resolved.keywords} />}
+      <meta name="robots" content={resolved.robots} />
+      <link rel="canonical" href={resolved.canonical} />
 
       {/* Open Graph */}
-      <meta property="og:title" content={ogTitle} />
-      <meta property="og:description" content={ogDescription} />
-      <meta property="og:type" content={ogType} />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={global?.site_locale || "en_CA"} />
-      {ogImage && <meta property="og:image" content={ogImage} />}
-      {page?.og_image_alt && <meta property="og:image:alt" content={page.og_image_alt} />}
-      {page?.og_image_width && <meta property="og:image:width" content={page.og_image_width} />}
-      {page?.og_image_height && <meta property="og:image:height" content={page.og_image_height} />}
+      <meta property="og:title" content={resolved.ogTitle || title} />
+      <meta property="og:description" content={resolved.ogDescription || description} />
+      <meta property="og:type" content={resolved.ogType} />
+      <meta property="og:url" content={resolved.canonical} />
+      <meta property="og:site_name" content={resolved.siteName} />
+      <meta property="og:locale" content={resolved.siteLocale} />
+      <meta property="og:image" content={resolved.ogImage} />
+      {resolved.ogImageAlt && <meta property="og:image:alt" content={resolved.ogImageAlt} />}
+      <meta property="og:image:width" content={resolved.ogImageWidth} />
+      <meta property="og:image:height" content={resolved.ogImageHeight} />
 
       {/* Twitter */}
-      <meta name="twitter:card" content={twitterCard} />
-      {global?.twitter_handle && <meta name="twitter:site" content={global.twitter_handle} />}
-      <meta name="twitter:title" content={twitterTitle} />
-      <meta name="twitter:description" content={twitterDescription} />
-      {twitterImage && <meta name="twitter:image" content={twitterImage} />}
-      {page?.twitter_image_alt && <meta name="twitter:image:alt" content={page.twitter_image_alt} />}
+      <meta name="twitter:card" content={resolved.twitterCard} />
+      {resolved.twitterHandle && <meta name="twitter:site" content={resolved.twitterHandle} />}
+      <meta name="twitter:title" content={resolved.twitterTitle || title} />
+      <meta name="twitter:description" content={resolved.twitterDescription || description} />
+      <meta name="twitter:image" content={resolved.twitterImage} />
+      {resolved.twitterImageAlt && <meta name="twitter:image:alt" content={resolved.twitterImageAlt} />}
 
       {/* Article meta */}
-      {page?.article_author && <meta property="article:author" content={page.article_author} />}
-      {page?.article_published && <meta property="article:published_time" content={page.article_published} />}
-      {page?.article_modified && <meta property="article:modified_time" content={page.article_modified} />}
-      {page?.article_section && <meta property="article:section" content={page.article_section} />}
-      {page?.article_tags?.map((tag) => (
+      {resolved.articleAuthor && <meta property="article:author" content={resolved.articleAuthor} />}
+      {resolved.articlePublished && <meta property="article:published_time" content={resolved.articlePublished} />}
+      {resolved.articleModified && <meta property="article:modified_time" content={resolved.articleModified} />}
+      {resolved.articleSection && <meta property="article:section" content={resolved.articleSection} />}
+      {resolved.articleTags?.map((tag: string) => (
         <meta key={tag} property="article:tag" content={tag} />
       ))}
 
       {/* Verification tags */}
-      {global?.google_search_console && <meta name="google-site-verification" content={global.google_search_console} />}
-      {global?.bing_verification && <meta name="msvalidate.01" content={global.bing_verification} />}
-      {global?.pinterest_verification && <meta name="p:domain_verify" content={global.pinterest_verification} />}
+      {resolved.googleSearchConsole && <meta name="google-site-verification" content={resolved.googleSearchConsole} />}
+      {resolved.bingVerification && <meta name="msvalidate.01" content={resolved.bingVerification} />}
+      {resolved.pinterestVerification && <meta name="p:domain_verify" content={resolved.pinterestVerification} />}
 
       {/* Facebook */}
-      {global?.facebook_app_id && <meta property="fb:app_id" content={global.facebook_app_id} />}
+      {resolved.facebookAppId && <meta property="fb:app_id" content={resolved.facebookAppId} />}
 
       {/* Theme color */}
-      {global?.theme_color && <meta name="theme-color" content={global.theme_color} />}
+      <meta name="theme-color" content={resolved.themeColor} />
 
       {/* Global schemas */}
-      {schemas?.map((s) => (
+      {resolved.globalSchemas?.map((s: { id: string; schema_json: unknown }) => (
         <script key={s.id} type="application/ld+json">
           {JSON.stringify(s.schema_json)}
         </script>
       ))}
 
       {/* Page schema */}
-      {pageSchema && (
+      {resolved.schemaJson ? (
         <script type="application/ld+json">
-          {JSON.stringify(pageSchema)}
+          {JSON.stringify(resolved.schemaJson)}
         </script>
-      )}
+      ) : resolved.schemaType ? (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": resolved.schemaType,
+            name: title,
+            description,
+            url: resolved.canonical,
+          })}
+        </script>
+      ) : null}
 
       {/* Breadcrumb schema */}
-      {breadcrumbSchema && (
+      {resolved.breadcrumbs && (
         <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: (resolved.breadcrumbs as Array<{ position: number; name: string; item: string }>).map((b) => ({
+              "@type": "ListItem",
+              position: b.position,
+              name: b.name,
+              item: `${resolved.siteUrl}${b.item}`,
+            })),
+          })}
         </script>
       )}
     </Helmet>

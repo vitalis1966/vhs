@@ -1,120 +1,114 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-export interface SEOPageData {
-  id: string;
-  route: string;
-  page_label: string;
-  title: string | null;
-  description: string | null;
-  keywords: string | null;
-  robots: string | null;
-  noindex: boolean | null;
-  og_title: string | null;
-  og_description: string | null;
-  og_image: string | null;
-  og_image_alt: string | null;
-  og_image_width: string | null;
-  og_image_height: string | null;
-  og_type: string | null;
-  twitter_title: string | null;
-  twitter_description: string | null;
-  twitter_image: string | null;
-  twitter_image_alt: string | null;
-  twitter_card: string | null;
-  canonical_override: string | null;
-  article_author: string | null;
-  article_published: string | null;
-  article_modified: string | null;
-  article_section: string | null;
-  article_tags: string[] | null;
-  schema_type: string | null;
-  schema_json: Record<string, unknown> | null;
-  breadcrumbs: Array<{ position: number; name: string; item: string }> | null;
-  is_active: boolean | null;
-}
+export function usePageSEO() {
+  const { pathname } = useLocation();
 
-export interface SEOGlobalData {
-  site_name: string | null;
-  site_url: string | null;
-  site_locale: string | null;
-  default_og_image: string | null;
-  theme_color: string | null;
-  default_title: string | null;
-  default_description: string | null;
-  default_robots: string | null;
-  twitter_handle: string | null;
-  facebook_page_url: string | null;
-  facebook_app_id: string | null;
-  linkedin_url: string | null;
-  instagram_url: string | null;
-  google_analytics_id: string | null;
-  google_tag_manager_id: string | null;
-  google_search_console: string | null;
-  google_ads_id: string | null;
-  google_ads_conversion_label: string | null;
-  bing_verification: string | null;
-  pinterest_verification: string | null;
-  meta_pixel_id: string | null;
-  linkedin_partner_id: string | null;
-  hotjar_id: string | null;
-  intercom_app_id: string | null;
-  crisp_website_id: string | null;
-  custom_head_script: string | null;
-  custom_body_script: string | null;
-}
+  // Normalize path: strip trailing slash, lowercase
+  const route = pathname.replace(/\/$/, "").toLowerCase() || "/";
 
-export interface SEOSchemaGlobal {
-  id: string;
-  label: string;
-  schema_json: Record<string, unknown>;
-  is_active: boolean | null;
-}
-
-export function useSEOPage(route: string) {
-  return useQuery({
+  const { data: pageSEO } = useQuery({
     queryKey: ["seo-page", route],
-    queryFn: async (): Promise<SEOPageData | null> => {
-      const { data, error } = await supabase
+    queryFn: async () => {
+      const { data } = await supabase
         .from("seo_pages")
         .select("*")
         .eq("route", route)
         .eq("is_active", true)
-        .maybeSingle();
-      if (error) throw error;
-      return data as unknown as SEOPageData | null;
+        .single();
+      return data;
     },
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
-}
 
-export function useSEOGlobal() {
-  return useQuery({
+  const { data: globalSEO } = useQuery({
     queryKey: ["seo-global"],
-    queryFn: async (): Promise<SEOGlobalData | null> => {
-      const { data, error } = await supabase
+    queryFn: async () => {
+      const { data } = await supabase
         .from("seo_global")
         .select("*")
         .eq("id", 1)
-        .maybeSingle();
-      if (error) throw error;
-      return data as SEOGlobalData | null;
+        .single();
+      return data;
     },
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
-}
 
-export function useSEOSchemas() {
-  return useQuery({
-    queryKey: ["seo-schemas-global"],
-    queryFn: async (): Promise<SEOSchemaGlobal[]> => {
-      const { data, error } = await supabase
+  const { data: globalSchemas } = useQuery({
+    queryKey: ["seo-schema-global"],
+    queryFn: async () => {
+      const { data } = await supabase
         .from("seo_schema_global")
         .select("*")
         .eq("is_active", true);
-      if (error) throw error;
-      return (data ?? []) as SEOSchemaGlobal[];
+      return data || [];
     },
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
+
+  const SITE_URL = globalSEO?.site_url || "https://www.vitalisstrategies.com";
+  const canonicalPath = route === "/" ? "" : route;
+  const canonical = pageSEO?.canonical_override || `${SITE_URL}${canonicalPath}`;
+
+  // Resolve with fallbacks: page → global → hardcoded default
+  const resolved = {
+    title: pageSEO?.title || globalSEO?.default_title || "Vitalis Health Strategies",
+    description: pageSEO?.description || globalSEO?.default_description || "",
+    keywords: pageSEO?.keywords || "",
+    robots: pageSEO?.noindex ? "noindex, follow" : (pageSEO?.robots || globalSEO?.default_robots || "index, follow"),
+    canonical,
+    ogTitle: pageSEO?.og_title || pageSEO?.title || globalSEO?.default_title || "",
+    ogDescription: pageSEO?.og_description || pageSEO?.description || "",
+    ogImage: `${SITE_URL}${pageSEO?.og_image || globalSEO?.default_og_image || "/og-default.jpg"}`,
+    ogImageAlt: pageSEO?.og_image_alt || pageSEO?.title || "",
+    ogImageWidth: pageSEO?.og_image_width || "1200",
+    ogImageHeight: pageSEO?.og_image_height || "630",
+    ogType: pageSEO?.og_type || "website",
+    twitterCard: pageSEO?.twitter_card || "summary_large_image",
+    twitterTitle: pageSEO?.twitter_title || pageSEO?.og_title || pageSEO?.title || "",
+    twitterDescription: pageSEO?.twitter_description || pageSEO?.og_description || pageSEO?.description || "",
+    twitterImage: `${SITE_URL}${pageSEO?.twitter_image || pageSEO?.og_image || globalSEO?.default_og_image || "/og-default.jpg"}`,
+    twitterImageAlt: pageSEO?.twitter_image_alt || pageSEO?.og_image_alt || "",
+    twitterHandle: globalSEO?.twitter_handle || "",
+    facebookAppId: globalSEO?.facebook_app_id || "",
+    siteName: globalSEO?.site_name || "Vitalis Health Strategies",
+    siteLocale: globalSEO?.site_locale || "en_CA",
+    themeColor: globalSEO?.theme_color || "#1C3D2E",
+    siteUrl: SITE_URL,
+    schemaType: pageSEO?.schema_type || "WebPage",
+    schemaJson: pageSEO?.schema_json || null,
+    breadcrumbs: pageSEO?.breadcrumbs || null,
+    articleAuthor: pageSEO?.article_author || "",
+    articlePublished: pageSEO?.article_published || "",
+    articleModified: pageSEO?.article_modified || "",
+    articleSection: pageSEO?.article_section || "",
+    articleTags: pageSEO?.article_tags || [],
+    globalSchemas: globalSchemas || [],
+    // Verifications
+    googleSearchConsole: globalSEO?.google_search_console || "",
+    bingVerification: globalSEO?.bing_verification || "",
+    pinterestVerification: globalSEO?.pinterest_verification || "",
+  };
+
+  return { resolved, pageSEO, globalSEO, globalSchemas, route };
+}
+
+export function useGlobalScripts() {
+  const { data } = useQuery({
+    queryKey: ["seo-global-scripts"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("seo_global")
+        .select("google_analytics_id, google_tag_manager_id, google_ads_id, google_ads_conversion_label, meta_pixel_id, linkedin_partner_id, hotjar_id, intercom_app_id, crisp_website_id, custom_head_script, custom_body_script")
+        .eq("id", 1)
+        .single();
+      return data;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+  return data;
 }

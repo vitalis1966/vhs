@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
-import { useSEOGlobal } from "@/hooks/useSEO";
+import { useGlobalScripts } from "@/hooks/useSEO";
 
 export function SEOScripts() {
-  const { data: global } = useSEOGlobal();
+  const global = useGlobalScripts();
   if (!global) return null;
 
   return (
