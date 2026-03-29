@@ -81,7 +81,7 @@ const Solutions = () => {
               <div className="w-14 h-14 rounded-xl bg-gradient-forest flex items-center justify-center mb-6"><Building2 className="h-7 w-7 text-primary-foreground" /></div>
               <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground mb-4">Planning a New Practice</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">For practitioners and healthcare entrepreneurs planning a new medical clinic, dental office, or veterinary facility. We guide you from concept through launch.</p>
-              <Button variant="hero" size="lg" asChild><Link to="/solutions/new-clinics">Explore New Practice Solutions <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              <Button variant="hero" size="lg" asChild className="whitespace-normal h-auto py-3 text-center leading-snug"><Link to="/solutions/new-clinics">Explore New Practice Solutions <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></Link></Button>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-8 lg:p-10 shadow-card border border-border/40 hover:shadow-elevated transition-shadow duration-300">
               <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center mb-6"><TrendingUp className="h-7 w-7 text-primary-foreground" /></div>
