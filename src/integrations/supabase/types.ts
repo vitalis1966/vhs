@@ -588,6 +588,17 @@ export type Database = {
           organization_name: string
         }[]
       }
+      get_responses_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          id: string
+          question_id: string
+          response_json: Json
+          response_value: string
+          session_id: string
+          updated_at: string
+        }[]
+      }
       get_session_by_token: {
         Args: { p_token: string }
         Returns: {
