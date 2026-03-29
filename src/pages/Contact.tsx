@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, MapPin, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildBreadcrumbSchema } from "@/components/JsonLd";
 
 const Contact = () => {
   usePageMeta(
@@ -38,6 +39,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
       <Navbar />
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">

@@ -22,6 +22,7 @@ import {
   Target,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 
 const capabilities = [
   { icon: Brain, title: "Strategic Consulting", description: "Business strategy, market positioning, growth planning, and long-term strategic roadmaps." },
@@ -52,6 +53,8 @@ const Solutions = () => {
   );
   return (
     <div className="min-h-screen">
+      <JsonLd data={buildServiceSchema("Healthcare Consulting Solutions", "Comprehensive consulting for medical, dental, and veterinary practices across all stages — planning, building, growing, and optimizing.", "/solutions")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }])} />
       <Navbar />
 
       <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-gradient-hero">

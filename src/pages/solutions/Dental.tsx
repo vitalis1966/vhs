@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/lib/seo";
+import { JsonLd, buildServiceSchema, buildBreadcrumbSchema } from "@/components/JsonLd";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import {
@@ -130,6 +131,8 @@ export default function Dental() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={buildServiceSchema("Dental Practice Consulting", "Strategic consulting for dental practices — planning, development, operations, and growth advisory.", "/solutions/dental")} />
+      <JsonLd data={buildBreadcrumbSchema([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }, { name: "Dental", path: "/solutions/dental" }])} />
       <Navbar />
 
       {/* SECTION 1 — HERO */}
