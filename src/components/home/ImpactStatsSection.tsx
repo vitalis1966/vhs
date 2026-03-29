@@ -12,7 +12,6 @@ const row2 = [
   { value: "$410K", label: "Average Annual Billing Recovered", context: "Per revenue cycle engagement, from existing patient volume" },
   { value: "100+", label: "Physicians & Practitioners Partnered", context: "Across practices and facilities built, optimized, or advised" },
   { value: "25+", label: "New Facilities Built", context: "De novo clinic builds completed on time and on budget, concept through opening day" },
-  { value: "$680K", label: "Avg. Additional M&A Value Negotiated", context: "Above initial acquisition offer, per transaction engagement" },
 ];
 
 export function ImpactStatsSection() {
