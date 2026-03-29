@@ -49,7 +49,7 @@ export function ImpactStatsSection() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-5 max-w-[calc(6xl*3/5)] mx-auto mt-5" style={{ maxWidth: "calc(100% * 3 / 5)" }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-6xl mx-auto mt-5">
           {row2.map((stat, i) => (
             <motion.div
               key={stat.label}
