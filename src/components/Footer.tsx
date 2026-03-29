@@ -16,6 +16,12 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "Admin Login", href: "/admin/login" },
   ],
+  Legal: [
+    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Disclaimer", href: "/disclaimer" },
+    { label: "Cookie Policy", href: "/cookies" },
+  ],
   Resources: [
     { label: "Strategic Assessment", href: "/strategic-assessment" },
     { label: "Insights", href: "/insights" },
@@ -26,7 +32,7 @@ export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/">
@@ -65,11 +71,14 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-white/80">
-            © {new Date().getFullYear()} Vitalis Health Strategies. All rights reserved.
+            © 2026 Vitalis Health Strategies Inc. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/80">
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="text-white/40">·</span>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
+            <span className="text-white/40">·</span>
+            <Link to="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
           </div>
         </div>
       </div>

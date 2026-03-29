@@ -1,10 +1,11 @@
 import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { usePageMeta } from "@/lib/seo";
 import { JsonLd, organizationSchema, websiteSchema } from "@/components/JsonLd";
 import { useLazySection } from "@/hooks/useLazySection";
+
+const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
 
 const PracticePathFinder = lazy(() => import("@/components/home/PracticePathFinder").then(m => ({ default: m.PracticePathFinder })));
 const ImpactStatsSection = lazy(() => import("@/components/home/ImpactStatsSection").then(m => ({ default: m.ImpactStatsSection })));
@@ -39,7 +40,9 @@ const Index = () => {
           )}
         </div>
       </main>
-      <Footer />
+      <Suspense fallback={<div className="h-64" />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

@@ -105,21 +105,21 @@ export default function AssessmentClient() {
   };
 
   const saveResponse = useCallback(async (questionId: string, value: string, jsonValue?: any) => {
-    if (!session) return;
+    if (!token) return;
     setSaveStatus("saving");
     try {
-      await (supabase.from("assessment_responses" as any).upsert({
-        session_id: session.id,
-        question_id: questionId,
-        response_value: value || null,
-        response_json: jsonValue || null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "session_id,question_id" }) as any);
+      const { error } = await supabase.rpc("upsert_response_by_token" as any, {
+        p_token: token,
+        p_question_id: questionId,
+        p_response_value: value || null,
+        p_response_json: jsonValue || null,
+      });
+      if (error) throw error;
       setSaveStatus("saved");
     } catch {
       setSaveStatus("idle");
     }
-  }, [session]);
+  }, [token]);
 
   const handleResponseChange = (questionId: string, value: string, jsonValue?: any) => {
     setResponses((prev) => ({
@@ -132,26 +132,34 @@ export default function AssessmentClient() {
   };
 
   const saveAllCurrentSection = async () => {
-    if (!session || !sections[currentIdx]) return;
+    if (!token || !sections[currentIdx]) return;
     setSaveStatus("saving");
-    for (const q of sections[currentIdx].questions) {
-      const r = responses[q.id];
-      if (r) {
-        await (supabase.from("assessment_responses" as any).upsert({
-          session_id: session.id,
-          question_id: q.id,
-          response_value: r.value || null,
-          response_json: r.json || null,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: "session_id,question_id" }) as any);
+
+    try {
+      for (const q of sections[currentIdx].questions) {
+        const r = responses[q.id];
+        if (!r) continue;
+
+        const { error } = await supabase.rpc("upsert_response_by_token" as any, {
+          p_token: token,
+          p_question_id: q.id,
+          p_response_value: r.value || null,
+          p_response_json: r.json || null,
+        });
+
+        if (error) throw error;
       }
+
+      // Update session current_section_index via secure RPC
+      await supabase.rpc("update_session_by_token" as any, {
+        p_token: token,
+        p_current_section_index: currentIdx,
+      });
+      setSaveStatus("saved");
+    } catch {
+      setSaveStatus("idle");
+      throw new Error("Failed to save assessment section");
     }
-    // Update session current_section_index via secure RPC
-    await supabase.rpc("update_session_by_token" as any, {
-      p_token: token,
-      p_current_section_index: currentIdx,
-    });
-    setSaveStatus("saved");
   };
 
   const validateCurrentSection = (): boolean => {
