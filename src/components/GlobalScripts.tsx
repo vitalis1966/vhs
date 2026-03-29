@@ -5,8 +5,8 @@ import { useGlobalScripts } from "@/hooks/useSEO";
 export function GlobalScripts() {
   const scripts = useGlobalScripts();
 
-  const gtmHead = scripts?.google_tag_manager_head || "";
-  const gtmBody = scripts?.google_tag_manager_body || "";
+  const gtmHead = (scripts as any)?.google_tag_manager_head || "";
+  const gtmBody = (scripts as any)?.google_tag_manager_body || "";
   const customBody = scripts?.custom_body_script || "";
 
   // GTM noscript body injection — immediately after <body> opens
