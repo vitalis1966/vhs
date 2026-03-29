@@ -270,8 +270,8 @@ const StrategicAssessmentIntake = () => {
           }
 
           // Schedule reminders
-          if (sessionId) {
-            EmailAutomationService.scheduleReminders(sessionId);
+          if (accessToken) {
+            EmailAutomationService.scheduleReminders(accessToken);
           }
         }
       }
