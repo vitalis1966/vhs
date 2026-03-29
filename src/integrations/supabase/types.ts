@@ -591,6 +591,8 @@ export type Database = {
           google_ads_id: string | null
           google_analytics_id: string | null
           google_search_console: string | null
+          google_tag_manager_body: string | null
+          google_tag_manager_head: string | null
           google_tag_manager_id: string | null
           hotjar_id: string | null
           id: number
@@ -622,6 +624,8 @@ export type Database = {
           google_ads_id?: string | null
           google_analytics_id?: string | null
           google_search_console?: string | null
+          google_tag_manager_body?: string | null
+          google_tag_manager_head?: string | null
           google_tag_manager_id?: string | null
           hotjar_id?: string | null
           id?: number
@@ -653,6 +657,8 @@ export type Database = {
           google_ads_id?: string | null
           google_analytics_id?: string | null
           google_search_console?: string | null
+          google_tag_manager_body?: string | null
+          google_tag_manager_head?: string | null
           google_tag_manager_id?: string | null
           hotjar_id?: string | null
           id?: number

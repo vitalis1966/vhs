@@ -19,9 +19,10 @@ const INTEGRATION_CARDS: Array<{
   helpUrl: string;
   helpLabel: string;
   relatedKeys?: string[];
+  isGtm?: boolean;
 }> = [
   { key: "google_analytics_id", label: "Google Analytics 4", icon: "📊", description: "Track website traffic and user behavior.", helpUrl: "https://analytics.google.com", helpLabel: "analytics.google.com" },
-  { key: "google_tag_manager_id", label: "Google Tag Manager", icon: "🏷️", description: "Saving this ID automatically injects the GTM script in two places: (1) as the first script in <head>, and (2) as a noscript iframe immediately after <body> opens. You do not need to paste code manually — just save the ID here.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com" },
+  { key: "google_tag_manager_head", label: "Google Tag Manager", icon: "🏷️", description: "Paste the two GTM snippets exactly as provided by Google Tag Manager. No ID needed — just paste the full code blocks.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com", isGtm: true },
   { key: "google_search_console", label: "Search Console Verification", icon: "🔍", description: "Paste the content value only — not the full <meta> tag.", helpUrl: "https://search.google.com/search-console", helpLabel: "search.google.com" },
   { key: "google_ads_id", label: "Google Ads", icon: "📣", description: "Conversion tracking for Google Ads campaigns.", helpUrl: "https://ads.google.com", helpLabel: "ads.google.com", relatedKeys: ["google_ads_conversion_label"] },
   { key: "bing_verification", label: "Bing Webmaster", icon: "🅱️", description: "Verify site ownership for Bing Webmaster Tools.", helpUrl: "https://www.bing.com/webmasters", helpLabel: "bing.com/webmasters" },
@@ -70,7 +71,7 @@ export function GlobalTab() {
 
   if (isLoading) return <p className="text-muted-foreground p-4">Loading…</p>;
 
-  const hasGTM = !!(form.google_tag_manager_id as string);
+  const hasGTM = !!((form.google_tag_manager_head as string) || (form.google_tag_manager_body as string));
   const hasGA4 = !!(form.google_analytics_id as string);
 
   return (
@@ -126,7 +127,9 @@ export function GlobalTab() {
 
           {INTEGRATION_CARDS.map((card) => {
             const val = (form[card.key] as string) || "";
-            const isActive = !!val;
+            const isActive = card.isGtm
+              ? !!((form.google_tag_manager_head as string) || (form.google_tag_manager_body as string))
+              : !!val;
             return (
               <Card key={card.key} className="p-4 space-y-2">
                 <div className="flex items-center justify-between">
@@ -139,7 +142,36 @@ export function GlobalTab() {
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">{card.description}</p>
-                <Input value={val} onChange={(e) => updateField(card.key, e.target.value)} placeholder={`Enter ${card.label} ID`} className="font-mono text-sm" />
+
+                {card.isGtm ? (
+                  <>
+                    <div>
+                      <Label className="text-xs font-semibold">Paste in &lt;head&gt;</Label>
+                      <Textarea
+                        value={(form.google_tag_manager_head as string) || ""}
+                        onChange={(e) => updateField("google_tag_manager_head", e.target.value)}
+                        placeholder="Paste GTM head script here"
+                        rows={4}
+                        className="font-mono text-xs"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">From GTM: copy the script from Step 1 ("Paste this code as high in the &lt;head&gt; as possible") and paste it here.</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs font-semibold">Paste after &lt;body&gt;</Label>
+                      <Textarea
+                        value={(form.google_tag_manager_body as string) || ""}
+                        onChange={(e) => updateField("google_tag_manager_body", e.target.value)}
+                        placeholder="Paste GTM noscript body snippet here"
+                        rows={4}
+                        className="font-mono text-xs"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">From GTM: copy the noscript code from Step 2 ("Paste this code immediately after the opening &lt;body&gt; tag") and paste it here.</p>
+                    </div>
+                  </>
+                ) : (
+                  <Input value={val} onChange={(e) => updateField(card.key, e.target.value)} placeholder={`Enter ${card.label} ID`} className="font-mono text-sm" />
+                )}
+
                 {card.relatedKeys?.map((rk) => (
                   <div key={rk}>
                     <Label className="text-xs">Conversion Label</Label>

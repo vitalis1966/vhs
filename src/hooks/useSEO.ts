@@ -103,7 +103,7 @@ export function useGlobalScripts() {
     queryFn: async () => {
       const { data } = await supabase
         .from("seo_global")
-        .select("google_analytics_id, google_tag_manager_id, google_ads_id, google_ads_conversion_label, meta_pixel_id, linkedin_partner_id, hotjar_id, intercom_app_id, crisp_website_id, custom_head_script, custom_body_script")
+        .select("google_analytics_id, google_tag_manager_id, google_tag_manager_head, google_tag_manager_body, google_ads_id, google_ads_conversion_label, meta_pixel_id, linkedin_partner_id, hotjar_id, intercom_app_id, crisp_website_id, custom_head_script, custom_body_script")
         .eq("id", 1)
         .single();
       return data;
