@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import { SEORedirectHandler } from "@/components/SEORedirectHandler";
 import { SEOScripts } from "@/components/SEOScripts";
+import { SEOLayout } from "@/components/SEOLayout";
 
 const AdminGuard = lazy(() => import("@/components/AdminGuard").then(m => ({ default: m.AdminGuard })));
 const About = lazy(() => import("./pages/About"));
