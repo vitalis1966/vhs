@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Globe, Settings, FileCode, ArrowRightLeft, Image } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Globe, Settings, FileCode, ArrowRightLeft, Image, Download } from "lucide-react";
 import { PagesTab } from "@/components/admin/seo/PagesTab";
 import { GlobalTab } from "@/components/admin/seo/GlobalTab";
 import { SchemaTab } from "@/components/admin/seo/SchemaTab";
 import { RedirectsTab } from "@/components/admin/seo/RedirectsTab";
 import { FaviconsTab } from "@/components/admin/seo/FaviconsTab";
+import { supabase } from "@/integrations/supabase/client";
+import { generateSitemap } from "@/utils/generateSitemap";
+import { toast } from "@/hooks/use-toast";
 
 export default function SEOAdmin() {
   return (
