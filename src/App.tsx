@@ -60,7 +60,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <SEOScripts />
+          <GlobalScripts />
           <SEORedirectHandler />
           <SEOLayout>
           <Suspense fallback={<div className="min-h-screen" />}>
