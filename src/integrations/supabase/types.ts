@@ -635,6 +635,15 @@ export type Database = {
         }
         Returns: string
       }
+      upsert_response_by_token: {
+        Args: {
+          p_question_id: string
+          p_response_json?: Json
+          p_response_value?: string
+          p_token: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
