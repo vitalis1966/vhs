@@ -453,7 +453,7 @@ const Partners = () => {
                   <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-border/30">
                     <p className="text-xs font-semibold uppercase tracking-wider text-accent mb-3">{partner.category}</p>
                     {partner.logo ? (
-                      <div className="w-40 h-14 bg-card rounded-lg p-2 border border-border/30 flex items-center justify-center mb-4">
+                      <div className="w-40 h-14 flex items-center justify-center mb-4">
                         <img src={partner.logo} alt={partner.logoAlt} className="max-w-full max-h-full object-contain" />
                       </div>
                     ) : (
