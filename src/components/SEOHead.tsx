@@ -61,7 +61,7 @@ export function SEOHead({ fallbackTitle, fallbackDescription }: SEOHeadProps) {
       <meta name="theme-color" content={resolved.themeColor} />
 
       {/* Global schemas */}
-      {resolved.globalSchemas?.map((s: { id: string; schema_json: Record<string, unknown> }) => (
+      {resolved.globalSchemas?.map((s: { id: string; schema_json: unknown }) => (
         <script key={s.id} type="application/ld+json">
           {JSON.stringify(s.schema_json)}
         </script>
