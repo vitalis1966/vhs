@@ -1,14 +1,12 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 
-// Defer non-critical UI chrome until after first paint
-const Toaster = lazy(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
-const Sonner = lazy(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
-const TooltipProvider = lazy(() => import("@/components/ui/tooltip").then(m => ({ default: m.TooltipProvider })));
 const AdminGuard = lazy(() => import("@/components/AdminGuard").then(m => ({ default: m.AdminGuard })));
-
 const About = lazy(() => import("./pages/About"));
 const HowWeWork = lazy(() => import("./pages/HowWeWork"));
 const Solutions = lazy(() => import("./pages/Solutions"));
@@ -50,29 +48,14 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
-const DeferredChrome = () => {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const id = setTimeout(() => setReady(true), 100);
-    return () => clearTimeout(id);
-  }, []);
-  if (!ready) return null;
-  return (
-    <Suspense fallback={null}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
-    </Suspense>
-  );
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <DeferredChrome />
-    <BrowserRouter>
-      <Suspense fallback={<div className="min-h-screen" />}>
-        <Routes>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/about/mission-vision" element={<MissionVision />} />
@@ -115,6 +98,7 @@ const App = () => (
           </Routes>
         </Suspense>
       </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
