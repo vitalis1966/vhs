@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://vitalis-website-new.lovable.app/sitemap.xml
+Sitemap: https://www.vitalisstrategies.com/sitemap.xml
