@@ -16,15 +16,15 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "Admin Login", href: "/admin/login" },
   ],
-  Resources: [
-    { label: "Strategic Assessment", href: "/strategic-assessment" },
-    { label: "Insights", href: "/insights" },
-  ],
   Legal: [
     { label: "Terms & Conditions", href: "/terms" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Disclaimer", href: "/disclaimer" },
     { label: "Cookie Policy", href: "/cookies" },
+  ],
+  Resources: [
+    { label: "Strategic Assessment", href: "/strategic-assessment" },
+    { label: "Insights", href: "/insights" },
   ],
 };
 
