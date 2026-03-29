@@ -90,6 +90,10 @@ const App = () => (
             <Route path="/insights/:slug" element={<InsightArticle />} />
             <Route path="/admin/insights" element={<AdminGuard><InsightsAdmin /></AdminGuard>} />
             <Route path="/admin/insights/:id" element={<AdminGuard><InsightsEditor /></AdminGuard>} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/cookies" element={<Cookies />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
