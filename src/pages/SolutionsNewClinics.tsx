@@ -456,8 +456,8 @@ const SolutionsNewClinics = () => {
                   Non-Hospital Surgical Facilities and Chartered Surgical Facilities have a distinct regulatory, design, and financial planning process from standard medical, dental, or veterinary practice builds. CPSA accreditation, provincial surgical facility standards, and AHS facility contracting each require specific planning expertise.
                 </p>
               </div>
-              <Button variant="hero" size="lg" asChild className="flex-shrink-0">
-                <Link to="/solutions/nhsf">Explore NHSF Advisory → <ArrowRight className="ml-2 h-4 w-4" /></Link>
+               <Button variant="hero" size="lg" asChild className="flex-shrink-0 whitespace-normal h-auto py-3 text-center leading-snug">
+                <Link to="/solutions/nhsf">Explore NHSF Advisory <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></Link>
               </Button>
             </div>
           </motion.div>
