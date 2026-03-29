@@ -8,10 +8,14 @@ export function GlobalScripts() {
   const gtmId = scripts?.google_tag_manager_id || "";
   const customBody = scripts?.custom_body_script || "";
 
-  // GTM noscript body injection
+  // GTM noscript body injection — immediately after <body> opens
   useEffect(() => {
     if (!gtmId) return;
+    const existing = document.getElementById("gtm-noscript-container");
+    if (existing) existing.remove();
+
     const ns = document.createElement("noscript");
+    ns.id = "gtm-noscript-container";
     const iframe = document.createElement("iframe");
     iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
     iframe.height = "0";

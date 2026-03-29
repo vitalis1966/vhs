@@ -21,8 +21,8 @@ const INTEGRATION_CARDS: Array<{
   relatedKeys?: string[];
 }> = [
   { key: "google_analytics_id", label: "Google Analytics 4", icon: "📊", description: "Track website traffic and user behavior.", helpUrl: "https://analytics.google.com", helpLabel: "analytics.google.com" },
-  { key: "google_tag_manager_id", label: "Google Tag Manager", icon: "🏷️", description: "Container for all tracking tags. If set, GA4 fires through GTM.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com" },
-  { key: "google_search_console", label: "Search Console Verification", icon: "🔍", description: "Verify site ownership for Google Search Console.", helpUrl: "https://search.google.com/search-console", helpLabel: "search.google.com" },
+  { key: "google_tag_manager_id", label: "Google Tag Manager", icon: "🏷️", description: "Saving this ID automatically injects the GTM script in two places: (1) as the first script in <head>, and (2) as a noscript iframe immediately after <body> opens. You do not need to paste code manually — just save the ID here.", helpUrl: "https://tagmanager.google.com", helpLabel: "tagmanager.google.com" },
+  { key: "google_search_console", label: "Search Console Verification", icon: "🔍", description: "Paste the content value only — not the full <meta> tag.", helpUrl: "https://search.google.com/search-console", helpLabel: "search.google.com" },
   { key: "google_ads_id", label: "Google Ads", icon: "📣", description: "Conversion tracking for Google Ads campaigns.", helpUrl: "https://ads.google.com", helpLabel: "ads.google.com", relatedKeys: ["google_ads_conversion_label"] },
   { key: "bing_verification", label: "Bing Webmaster", icon: "🅱️", description: "Verify site ownership for Bing Webmaster Tools.", helpUrl: "https://www.bing.com/webmasters", helpLabel: "bing.com/webmasters" },
   { key: "pinterest_verification", label: "Pinterest Verification", icon: "📌", description: "Verify site ownership for Pinterest.", helpUrl: "https://business.pinterest.com", helpLabel: "business.pinterest.com" },
@@ -118,7 +118,9 @@ export function GlobalTab() {
 
           {hasGTM && hasGA4 && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-sm">
-              ⚠️ You have both GTM and GA4 configured. GA4 will not fire directly — fire it through GTM instead. Clear one of these fields.
+              ⚠️ GTM is active. GA4 will <strong>not</strong> fire directly. Configure GA4 as a tag inside your GTM container at{" "}
+              <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">tagmanager.google.com</a>.
+              The GA4 ID here is stored for reference only while GTM is active.
             </div>
           )}
 
