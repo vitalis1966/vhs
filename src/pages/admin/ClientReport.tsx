@@ -45,7 +45,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import vitalisLogo from "@/assets/vitalis-logo.webp";
+const vitalisLogo = "/vitalis-logo.webp";
 import BookingWidget from "@/components/BookingWidget";
 import {
   FindingsCategoryDonut,
