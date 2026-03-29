@@ -33,13 +33,31 @@ export function ImpactStatsSection() {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-6xl mx-auto">
-          {stats.map((stat, i) => (
+          {row1.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="rounded-xl border border-border bg-secondary/50 p-6"
+            >
+              <span className="block w-8 h-0.5 bg-accent mb-4" />
+              <p className="font-display text-3xl lg:text-4xl font-bold text-forest">{stat.value}</p>
+              <p className="font-semibold text-foreground text-sm mt-2">{stat.label}</p>
+              <p className="text-xs text-muted-foreground mt-1">{stat.context}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-[calc(6xl*4/5)] mx-auto mt-5" style={{ maxWidth: "calc(100% * 4 / 5)" }}>
+          {row2.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: (i + 5) * 0.05 }}
               className="rounded-xl border border-border bg-secondary/50 p-6"
             >
               <span className="block w-8 h-0.5 bg-accent mb-4" />
