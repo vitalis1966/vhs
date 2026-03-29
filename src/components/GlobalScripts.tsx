@@ -4,24 +4,9 @@ import { useGlobalScripts } from "@/hooks/useSEO";
 
 export function GlobalScripts() {
   const scripts = useGlobalScripts();
-  if (!scripts) return null;
 
-  const {
-    google_tag_manager_id: gtmId,
-    google_analytics_id: ga4Id,
-    google_ads_id: adsId,
-    meta_pixel_id: pixelId,
-    linkedin_partner_id: linkedinId,
-    hotjar_id: hotjarId,
-    intercom_app_id: intercomId,
-    crisp_website_id: crispId,
-    custom_head_script: customHead,
-    custom_body_script: customBody,
-  } = scripts;
-
-  const useGTM = !!gtmId;
-  const useGA4 = !!ga4Id && !gtmId; // Only direct-inject if no GTM
-  const useAds = !!adsId && !gtmId; // Only direct-inject if no GTM
+  const gtmId = scripts?.google_tag_manager_id || "";
+  const customBody = scripts?.custom_body_script || "";
 
   // GTM noscript body injection
   useEffect(() => {
@@ -55,6 +40,23 @@ export function GlobalScripts() {
     };
   }, [customBody]);
 
+  if (!scripts) return null;
+
+  const {
+    google_analytics_id: ga4Id,
+    google_ads_id: adsId,
+    meta_pixel_id: pixelId,
+    linkedin_partner_id: linkedinId,
+    hotjar_id: hotjarId,
+    intercom_app_id: intercomId,
+    crisp_website_id: crispId,
+    custom_head_script: customHead,
+  } = scripts;
+
+  const useGTM = !!gtmId;
+  const useGA4 = !!ga4Id && !gtmId;
+  const useAds = !!adsId && !gtmId;
+
   return (
     <Helmet>
       {/* GOOGLE TAG MANAGER */}
@@ -69,11 +71,9 @@ export function GlobalScripts() {
       {useGA4 && !useAds && (
         <script>{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');`}</script>
       )}
-      {/* GA4 + Google Ads merged init */}
       {useGA4 && useAds && (
         <script>{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');gtag('config','${adsId}');`}</script>
       )}
-      {/* Google Ads only (no GA4) */}
       {useAds && !useGA4 && (
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${adsId}`} />
       )}
