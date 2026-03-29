@@ -50,14 +50,30 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+const DeferredChrome = () => {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    // Defer tooltips/toasts until after first paint + idle
+    const id = requestIdleCallback(() => setReady(true), { timeout: 2000 });
+    return () => cancelIdleCallback(id);
+  }, []);
+  if (!ready) return null;
+  return (
+    <Suspense fallback={null}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </Suspense>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Suspense fallback={<div className="min-h-screen" />}>
-          <Routes>
+    <DeferredChrome />
+    <BrowserRouter>
+      <Suspense fallback={<div className="min-h-screen" />}>
+        <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/about/mission-vision" element={<MissionVision />} />
