@@ -5,10 +5,10 @@ const row1 = [
   { value: "31%", label: "Average Revenue Increase", context: "From pre-engagement baseline across active client portfolio" },
   { value: "34%", label: "Average EBITDA Improvement", context: "For practices completing a full operational engagement" },
   { value: "28%", label: "Average Overhead Reduction", context: "Across operational assessment engagements" },
-  { value: "41%", label: "Reduction in Current & Long-Term Liabilities", context: "For practices completing a financial restructuring engagement" },
 ];
 
 const row2 = [
+  { value: "41%", label: "Reduction in Current & Long-Term Liabilities", context: "For practices completing a financial restructuring engagement" },
   { value: "$410K", label: "Average Annual Billing Recovered", context: "Per revenue cycle engagement, from existing patient volume" },
   { value: "100+", label: "Physicians & Practitioners Partnered", context: "Across practices and facilities built, optimized, or advised" },
   { value: "25+", label: "New Facilities Built", context: "De novo clinic builds completed on time and on budget, concept through opening day" },
@@ -31,7 +31,7 @@ export function ImpactStatsSection() {
           </span>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-6xl mx-auto">
           {row1.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -49,7 +49,7 @@ export function ImpactStatsSection() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-5 max-w-[calc(6xl*3/5)] mx-auto mt-5" style={{ maxWidth: "calc(100% * 3 / 5)" }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-6xl mx-auto mt-5">
           {row2.map((stat, i) => (
             <motion.div
               key={stat.label}
