@@ -46,7 +46,7 @@ export function Footer() {
             <div key={category}>
               <p className="font-display text-sm font-semibold uppercase tracking-wider text-white/90 mb-4">
                 {category}
-              </h4>
+              </p>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
@@ -55,12 +55,11 @@ export function Footer() {
                       className="text-sm text-white hover:text-white/80 transition-colors"
                     >
                       {link.label}
-                </Link>
+                    </Link>
                   </li>
                 ))}
               </ul>
-            </p>
-          ))}
+            </div>
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
