@@ -88,18 +88,18 @@ export default function AssessmentClient() {
       // Load existing responses
       const { data: existingResponses } = await (supabase.from("assessment_responses" as any)
         .select("*")
-        .eq("session_id", sess.id) as any);
+        .eq("session_id", sess_data.id) as any);
 
       const resMap: Record<string, { value: string; json: any }> = {};
       for (const r of (existingResponses || [])) {
         resMap[r.question_id] = { value: r.response_value || "", json: r.response_json };
       }
 
-      setSession(sess);
+      setSession(sess_data);
       setAssessment(assess);
       setSections(sectionsWithQuestions);
       setResponses(resMap);
-      setCurrentIdx(sess.current_section_index || 0);
+      setCurrentIdx(sess_data.current_section_index || 0);
       setScreen("start");
     } catch {
       setScreen("error");
