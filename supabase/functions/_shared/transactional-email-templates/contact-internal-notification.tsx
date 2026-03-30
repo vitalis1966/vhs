@@ -29,10 +29,10 @@ interface Props {
   message?: string
 }
 
-const FieldRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
+const FieldRow = ({ label, value, isLast }: { label: string; value: React.ReactNode; isLast?: boolean }) => (
   <tr>
-    <td style={fieldLabel}>{label}</td>
-    <td style={fieldValue}>{value}</td>
+    <td style={{ ...fieldLabel, borderBottom: isLast ? 'none' : '1px solid #dde4e0' }}>{label}</td>
+    <td style={{ ...fieldValue, borderBottom: isLast ? 'none' : '1px solid #dde4e0' }}>{value}</td>
   </tr>
 )
 
@@ -48,6 +48,21 @@ const ContactInternalNotificationEmail = ({
     ? (INTEREST_LABELS[area_of_interest] || area_of_interest)
     : null
 
+  // Build field list to determine which is last
+  const fields: Array<{ label: string; value: React.ReactNode }> = [
+    { label: 'NAME', value: name },
+    { label: 'EMAIL', value: <Link href={`mailto:${email}`} style={goldLink}>{email}</Link> },
+  ]
+  if (phone) fields.push({ label: 'PHONE', value: phone })
+  if (organization) fields.push({ label: 'ORGANIZATION', value: organization })
+  if (interestLabel) {
+    fields.push({
+      label: 'INTEREST',
+      value: <span style={sageBadge}>{interestLabel}</span>,
+    })
+  }
+  fields.push({ label: 'MESSAGE', value: <span style={messageStyle}>{message}</span> })
+
   return (
     <Html lang="en" dir="ltr">
       <Head>
@@ -56,58 +71,78 @@ const ContactInternalNotificationEmail = ({
       <Preview>New contact form submission from {name}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with logo */}
+          {/* Dark green header with logo */}
           <Section style={header}>
-            <Img src={LOGO_URL} width="160" alt={SITE_NAME} style={logo} />
+            <Img
+              src={LOGO_URL}
+              width="180"
+              alt="Vitalis Health Strategies"
+              style={logo}
+            />
           </Section>
 
-          {/* Title bar */}
-          <Section style={titleBar}>
-            <Heading style={h1}>New Contact Form Submission</Heading>
-            <Text style={subtitle}>Submitted via vitalisstrategies.com/contact</Text>
+          {/* Gold accent bar */}
+          <Section style={goldBar} />
+
+          {/* Heading block */}
+          <Section style={headingBlock}>
+            <Heading style={h2}>New Contact Form Submission</Heading>
+            <Text style={subtitleText}>Submitted via vitalisstrategies.com/contact</Text>
           </Section>
 
           {/* Fields table */}
           <Section style={tableSection}>
             <table width="100%" cellPadding="0" cellSpacing="0" style={table}>
               <tbody>
-                <FieldRow label="Name" value={name} />
-                <FieldRow label="Email" value={
-                  <a href={`mailto:${email}`} style={linkStyle}>{email}</a>
-                } />
-                {phone && <FieldRow label="Phone" value={phone} />}
-                {organization && <FieldRow label="Organization" value={organization} />}
-                {interestLabel && (
-                  <FieldRow label="Interest" value={
-                    <span style={interestBadge}>{interestLabel}</span>
-                  } />
-                )}
-                <FieldRow label="Message" value={
-                  <span style={messageText}>{message}</span>
-                } />
+                {fields.map((field, i) => (
+                  <FieldRow
+                    key={field.label}
+                    label={field.label}
+                    value={field.value}
+                    isLast={i === fields.length - 1}
+                  />
+                ))}
               </tbody>
             </table>
           </Section>
 
           {/* CTA */}
           <Section style={ctaSection}>
-            <Button href={`mailto:${email}?subject=Re: Your Vitalis inquiry`} style={button}>
+            <Button
+              href={`mailto:${email}?subject=Re: Your Vitalis inquiry`}
+              style={ctaButton}
+            >
               Reply to {name} →
             </Button>
           </Section>
 
-          {/* Footer */}
-          <Section style={footerSection}>
-            <Hr style={divider} />
-            <Text style={footerCompany}>{SITE_NAME} Inc.</Text>
-            <Text style={footerContact}>
-              Calgary, Alberta, Canada{'   |   '}
-              <Link href="mailto:info@vitalisstrategies.com" style={linkStyle}>info@vitalisstrategies.com</Link>
+          {/* Sage divider */}
+          <Hr style={sageDivider} />
+
+          {/* Contact block */}
+          <Section style={contactBlock}>
+            <Text style={contactCompany}>{SITE_NAME} Inc.</Text>
+            <Text style={contactLocation}>Calgary, Alberta, Canada</Text>
+            <Text style={contactLinks}>
+              <Link href="mailto:info@vitalisstrategies.com" style={goldLink}>
+                info@vitalisstrategies.com
+              </Link>
               {'   |   '}
-              <Link href="https://vitalisstrategies.com" style={linkStyle}>vitalisstrategies.com</Link>
+              <Link href="https://vitalisstrategies.com" style={goldLink}>
+                vitalisstrategies.com
+              </Link>
             </Text>
-            <Text style={confidential}>
-              CONFIDENTIAL — This message is intended solely for authorized personnel of {SITE_NAME} Inc. It was generated automatically from a contact form submission on vitalisstrategies.com and contains personal information submitted by a prospective client. Do not forward, copy, or share without authorization. If received in error, delete immediately and contact info@vitalisstrategies.com.
+          </Section>
+
+          {/* Confidential footer */}
+          <Section style={legalFooter}>
+            <Text style={legalText}>
+              CONFIDENTIAL — This message is intended solely for authorized
+              personnel of {SITE_NAME} Inc. It was generated automatically from
+              a contact form submission on vitalisstrategies.com and contains
+              personal information submitted by a prospective client. Do not
+              forward, copy, or share without authorization. If received in
+              error, delete immediately and contact info@vitalisstrategies.com.
             </Text>
           </Section>
         </Container>
@@ -132,29 +167,137 @@ export const template = {
     phone: '+1 (403) 555-0199',
     organization: 'Mountain View Dental',
     area_of_interest: 'new-practice',
-    message: 'We are looking to open a second location in the Calgary area and would like to discuss the planning process.',
+    message:
+      'We are looking to open a second location in the Calgary area and would like to discuss the planning process.',
   },
 } satisfies TemplateEntry
 
-// Styles
-const main = { backgroundColor: '#f9f6f1', fontFamily: "'Montserrat', Arial, sans-serif", margin: '0', padding: '0' }
-const container = { maxWidth: '620px', margin: '0 auto', backgroundColor: '#ffffff', borderRadius: '8px', overflow: 'hidden' as const, border: '1px solid #dde4e0' }
-const header = { backgroundColor: '#173026', padding: '28px 32px', textAlign: 'center' as const }
-const logo = { margin: '0 auto' }
-const titleBar = { padding: '24px 32px 16px', borderBottom: '3px solid #c89741' }
-const h1 = { margin: '0', color: '#264a39', fontSize: '22px', fontWeight: '600' as const, fontFamily: "'Playfair Display', Georgia, serif" }
-const subtitle = { margin: '6px 0 0', color: '#5a7060', fontSize: '13px', fontWeight: '500' as const }
-const tableSection = { padding: '24px 32px 8px' }
+/* ─── Styles ─── */
+
+const main = {
+  backgroundColor: '#f9f6f1',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+  margin: '0',
+  padding: '20px 0',
+}
+const container = {
+  maxWidth: '620px',
+  margin: '0 auto',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  overflow: 'hidden' as const,
+}
+const header = {
+  backgroundColor: '#173026',
+  padding: '32px',
+  textAlign: 'center' as const,
+}
+const logo = { margin: '0 auto', display: 'block' as const }
+const goldBar = {
+  height: '4px',
+  backgroundColor: '#c89741',
+  margin: '0',
+  padding: '0',
+  lineHeight: '0' as const,
+  fontSize: '0' as const,
+}
+const headingBlock = { padding: '28px 40px 12px' }
+const h2 = {
+  margin: '0 0 6px',
+  color: '#264a39',
+  fontSize: '22px',
+  fontWeight: '600' as const,
+  fontFamily: "'Playfair Display', Georgia, serif",
+  lineHeight: '1.3',
+}
+const subtitleText = {
+  fontSize: '12px',
+  color: '#5a7060',
+  margin: '0',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const tableSection = { padding: '8px 40px 32px' }
 const table = { width: '100%' as const, borderCollapse: 'collapse' as const }
-const fieldLabel = { padding: '10px 14px', fontWeight: '600' as const, color: '#264a39', borderBottom: '1px solid #dde4e0', width: '130px', verticalAlign: 'top' as const, fontSize: '13px', backgroundColor: '#f9f6f1' }
-const fieldValue = { padding: '10px 14px', color: '#172620', borderBottom: '1px solid #dde4e0', fontSize: '14px', verticalAlign: 'top' as const }
-const linkStyle = { color: '#c89741', textDecoration: 'none' }
-const interestBadge = { display: 'inline-block' as const, backgroundColor: '#264a39', color: '#ffffff', padding: '3px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: '600' as const }
-const messageText = { whiteSpace: 'pre-wrap' as const }
-const ctaSection = { padding: '24px 32px', textAlign: 'center' as const }
-const button = { backgroundColor: '#c89741', color: '#ffffff', textDecoration: 'none', padding: '13px 32px', borderRadius: '6px', fontSize: '14px', fontWeight: '600' as const, display: 'inline-block' }
-const footerSection = { padding: '0 32px 28px' }
-const divider = { border: 'none', borderTop: '1px solid #dde4e0', margin: '0 0 20px' }
-const footerCompany = { fontSize: '13px', fontWeight: '600' as const, color: '#264a39', margin: '0 0 4px', textAlign: 'center' as const }
-const footerContact = { fontSize: '12px', color: '#5a7060', lineHeight: '1.6', margin: '0 0 16px', textAlign: 'center' as const }
-const confidential = { fontSize: '10px', color: '#5a7060', lineHeight: '1.5', margin: '0', fontStyle: 'italic' as const, backgroundColor: '#f9f6f1', padding: '12px 14px', borderRadius: '4px' }
+const fieldLabel = {
+  padding: '11px 14px',
+  fontSize: '11px',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.06em',
+  color: '#5a7060',
+  width: '140px',
+  verticalAlign: 'top' as const,
+  fontWeight: '600' as const,
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const fieldValue = {
+  padding: '11px 14px',
+  fontSize: '15px',
+  color: '#172620',
+  verticalAlign: 'top' as const,
+  fontFamily: "'Montserrat', Arial, sans-serif",
+  lineHeight: '1.5',
+}
+const goldLink = { color: '#c89741', textDecoration: 'none' }
+const sageBadge = {
+  display: 'inline-block' as const,
+  backgroundColor: '#A9B1A1',
+  color: '#ffffff',
+  fontSize: '12px',
+  fontWeight: '600' as const,
+  padding: '4px 12px',
+  borderRadius: '20px',
+}
+const messageStyle = { whiteSpace: 'pre-wrap' as const }
+const ctaSection = { padding: '0 40px 32px', textAlign: 'center' as const }
+const ctaButton = {
+  backgroundColor: '#264a39',
+  color: '#ffffff',
+  textDecoration: 'none',
+  padding: '13px 32px',
+  borderRadius: '6px',
+  fontSize: '14px',
+  fontWeight: '600' as const,
+  display: 'inline-block',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const sageDivider = {
+  border: 'none',
+  borderTop: '1px solid #dde4e0',
+  margin: '0',
+}
+const contactBlock = {
+  padding: '24px 40px 16px',
+  textAlign: 'center' as const,
+}
+const contactCompany = {
+  fontSize: '13px',
+  fontWeight: '700' as const,
+  color: '#264a39',
+  margin: '0 0 2px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const contactLocation = {
+  fontSize: '12px',
+  color: '#5a7060',
+  margin: '0 0 6px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const contactLinks = {
+  fontSize: '12px',
+  color: '#5a7060',
+  margin: '0',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const legalFooter = {
+  backgroundColor: '#f9f6f1',
+  borderTop: '1px solid #dde4e0',
+  padding: '20px 40px 28px',
+}
+const legalText = {
+  fontSize: '10px',
+  color: '#8a9e92',
+  lineHeight: '1.7',
+  margin: '0',
+  fontStyle: 'italic' as const,
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
