@@ -57,8 +57,10 @@ const Portfolio = () => {
 
   const selectedCase = allCases.find((c: any) => c.id === selectedCaseId) || null;
 
+  const hasExtended = (cs: any) => !!(cs.ext_situation || cs.ext_challenge || cs.ext_what_we_did || cs.ext_results);
+
   const handleCardClick = (cs: any) => {
-    if (cs.case_type !== "advisory") {
+    if (cs.case_type !== "advisory" && hasExtended(cs)) {
       setSelectedCaseId(cs.id);
     }
   };
