@@ -212,6 +212,33 @@ const StrategicAssessmentIntake = () => {
       // Send intake confirmation email
       EmailAutomationService.sendIntakeConfirmation(intakeId, form.full_name.trim(), form.email.trim());
 
+      // Also save to contact_submissions for CRM visibility
+      try {
+        const purposeLabel = assessmentPurposeOptions.find(o => o.value === form.assessment_purpose)?.label || form.assessment_purpose;
+        const operatingStatus = form.currently_operating === "yes" ? "Yes" : form.currently_operating === "no" ? "No" : form.currently_operating === "in_planning" ? "In Planning" : "Not specified";
+        const messageParts = [
+          "Strategic Assessment Intake",
+          `Specialty: ${form.specialty || "Not specified"}`,
+          `Practice Type: ${form.practice_type || "Not specified"}`,
+          `City: ${[form.city, form.province_state].filter(Boolean).join(", ") || "Not specified"}`,
+          `Operating Status: ${operatingStatus}`,
+          `Timeline: ${form.approximate_timeline || "Not specified"}`,
+          `Looking for: ${form.looking_for.trim() || "Not specified"}`,
+          `Additional notes: ${form.additional_notes.trim() || "None"}`,
+        ];
+        await supabase.from("contact_submissions").insert({
+          name: form.full_name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+          organization: form.organization_name.trim() || null,
+          area_of_interest: purposeLabel,
+          message: messageParts.join("\n"),
+          status: "new",
+        });
+      } catch (contactErr) {
+        console.error("Contact submission mirror failed (non-blocking):", contactErr);
+      }
+
       // Create assessment session if track is known
       let accessToken = "";
       let sessionId = "";
@@ -275,9 +302,13 @@ const StrategicAssessmentIntake = () => {
         }
       }
 
-      const params = new URLSearchParams({ track });
-      if (accessToken) params.set("token", accessToken);
-      navigate(`/strategic-assessment/confirmation?${params.toString()}`);
+      // Navigate directly to assessment if session created, otherwise confirmation
+      if (accessToken) {
+        navigate(`/assessment/${accessToken}`);
+      } else {
+        const params = new URLSearchParams({ track });
+        navigate(`/strategic-assessment/confirmation?${params.toString()}`);
+      }
     } catch (err: any) {
       console.error("Intake submission error:", err);
       toast({
