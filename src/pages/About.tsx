@@ -100,41 +100,7 @@ const About = () => {
       {/* Full credibility / differentiators — moved from homepage */}
       <CredibilitySection variant="full" />
 
-      <section className="py-20 lg:py-28 bg-gradient-section">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-            <div className="flex items-center gap-2 mb-4">
-            <span className="h-px w-12 bg-accent" />
-            <span className="text-accent font-semibold tracking-widest uppercase text-sm">Our Team</span>
-          </div>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">Experienced advisors with healthcare focus</h2>
-            <p className="mt-4 text-muted-foreground text-lg leading-relaxed max-w-3xl">Our team blends strategy, operations, and implementation expertise to support practitioners and healthcare leaders across Calgary and Canada.</p>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {team.map((member, i) => (
-              <motion.div key={member.name} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="bg-card rounded-2xl p-7 shadow-soft border border-border/40">
-                <Avatar className="h-20 w-20 mb-5">
-                  <AvatarImage src={member.image} alt={`${member.name} profile`} />
-                  <AvatarFallback>{member.fallback}</AvatarFallback>
-                </Avatar>
-                <h3 className="font-display text-xl font-bold text-foreground">{member.name}</h3>
-                <p className="text-sm font-medium text-accent mt-1">{member.title}</p>
-                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {member.expertise.map((area) => (
-                    <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-md">{area}</span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-10">
-            <Button variant="hero-outline" size="lg" asChild>
-              <Link to="/about/mission-vision">View Our Mission & Vision <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Our Team section hidden */}
 
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8 text-center">
