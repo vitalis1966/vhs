@@ -313,7 +313,7 @@ const caseStudies: CaseStudy[] = [
   },
 ];
 
-const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Growth", "M&A", "Technology", "People", "Advisory"];
+const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Technology", "People", "Advisory"];
 
 const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
