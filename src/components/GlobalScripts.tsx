@@ -5,9 +5,16 @@ import { useGlobalScripts } from "@/hooks/useSEO";
 export function GlobalScripts() {
   const scripts = useGlobalScripts();
 
-  const gtmHead = (scripts as any)?.google_tag_manager_head || "";
-  const gtmBody = (scripts as any)?.google_tag_manager_body || "";
+  const rawGtmHead = (scripts as any)?.google_tag_manager_head || "";
+  const rawGtmBody = (scripts as any)?.google_tag_manager_body || "";
   const customBody = scripts?.custom_body_script || "";
+
+  // Extract pure JS from GTM head snippet (strip HTML comments and <script> tags)
+  const gtmHead = rawGtmHead
+    .replace(/<!--.*?-->/gs, "")
+    .replace(/<\/?script[^>]*>/gi, "")
+    .trim();
+  const gtmBody = rawGtmBody.trim();
 
   // GTM noscript body injection — immediately after <body> opens
   useEffect(() => {
