@@ -581,6 +581,17 @@ export type Database = {
           case_type: string
           created_at: string | null
           description: string
+          ext_challenge: string | null
+          ext_results: string | null
+          ext_services: string[] | null
+          ext_situation: string | null
+          ext_stat_1_label: string | null
+          ext_stat_1_value: string | null
+          ext_stat_2_label: string | null
+          ext_stat_2_value: string | null
+          ext_stat_3_label: string | null
+          ext_stat_3_value: string | null
+          ext_what_we_did: string | null
           id: string
           location: string
           metric: string
@@ -597,6 +608,17 @@ export type Database = {
           case_type?: string
           created_at?: string | null
           description: string
+          ext_challenge?: string | null
+          ext_results?: string | null
+          ext_services?: string[] | null
+          ext_situation?: string | null
+          ext_stat_1_label?: string | null
+          ext_stat_1_value?: string | null
+          ext_stat_2_label?: string | null
+          ext_stat_2_value?: string | null
+          ext_stat_3_label?: string | null
+          ext_stat_3_value?: string | null
+          ext_what_we_did?: string | null
           id?: string
           location?: string
           metric: string
@@ -613,6 +635,17 @@ export type Database = {
           case_type?: string
           created_at?: string | null
           description?: string
+          ext_challenge?: string | null
+          ext_results?: string | null
+          ext_services?: string[] | null
+          ext_situation?: string | null
+          ext_stat_1_label?: string | null
+          ext_stat_1_value?: string | null
+          ext_stat_2_label?: string | null
+          ext_stat_2_value?: string | null
+          ext_stat_3_label?: string | null
+          ext_stat_3_value?: string | null
+          ext_what_we_did?: string | null
           id?: string
           location?: string
           metric?: string

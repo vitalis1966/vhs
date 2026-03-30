@@ -47,6 +47,7 @@ const InsightsEditor = lazy(() => import("./pages/admin/InsightsEditor"));
 const SEOAdmin = lazy(() => import("./pages/admin/SEOAdmin"));
 const PortfolioAdmin = lazy(() => import("./pages/admin/PortfolioAdmin"));
 const PortfolioEditor = lazy(() => import("./pages/admin/PortfolioEditor"));
+const PortfolioDetail = lazy(() => import("./pages/PortfolioDetail"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
@@ -95,6 +96,7 @@ const App = () => (
               <Route path="/admin/submissions/:sessionId/client-report" element={<AdminGuard><ClientReport /></AdminGuard>} />
               <Route path="/admin/seo" element={<AdminGuard><SEOAdmin /></AdminGuard>} />
               <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
               <Route path="/partners" element={<Partners />} />
               <Route path="/engagement" element={<Engagement />} />
               <Route path="/healthcare-it" element={<HealthcareIT />} />

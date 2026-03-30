@@ -47,7 +47,7 @@ const Portfolio = () => {
         .eq("status", "published")
         .order("sort_order", { ascending: true });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -166,10 +166,10 @@ const Portfolio = () => {
                             {cs.location}
                           </p>
                         )}
-                        {!isAdvisory && (
-                          <span className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1 mt-2">
+                        {!isAdvisory && !!(cs.ext_situation || cs.ext_challenge || cs.ext_what_we_did || cs.ext_results) && (
+                          <Link to={`/portfolio/${cs.slug}`} className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1 mt-2" onClick={e => e.stopPropagation()}>
                             Read more <ArrowRight className="w-3.5 h-3.5" />
-                          </span>
+                          </Link>
                         )}
                       </div>
                     </div>
