@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase } from "lucide-react";
+import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,12 @@ const adminPages = [
     description: "Create and manage portfolio case studies and advisory entries.",
     href: "/admin/portfolio",
     icon: Briefcase,
+  },
+  {
+    title: "Contact Submissions",
+    description: "View and manage incoming contact form submissions.",
+    href: "/admin/contacts",
+    icon: MessageSquare,
   },
   {
     title: "SEO Settings",
