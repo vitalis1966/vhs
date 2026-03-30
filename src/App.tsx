@@ -47,6 +47,7 @@ const InsightsEditor = lazy(() => import("./pages/admin/InsightsEditor"));
 const SEOAdmin = lazy(() => import("./pages/admin/SEOAdmin"));
 const PortfolioAdmin = lazy(() => import("./pages/admin/PortfolioAdmin"));
 const PortfolioEditor = lazy(() => import("./pages/admin/PortfolioEditor"));
+const ContactSubmissions = lazy(() => import("./pages/admin/ContactSubmissions"));
 const PortfolioDetail = lazy(() => import("./pages/PortfolioDetail"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
