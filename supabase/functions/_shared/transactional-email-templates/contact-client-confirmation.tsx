@@ -5,7 +5,7 @@ import {
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = 'Vitalis Health Strategies'
-const LOGO_URL = 'https://www.vitalisstrategies.com/vitalis-logo.webp'
+const LOGO_URL = 'https://www.vitalisstrategies.com/vitalis-logo-email.png'
 
 const INTEREST_LABELS: Record<string, string> = {
   'new-practice': 'New Practice Build',
@@ -45,7 +45,7 @@ const ContactClientConfirmationEmail = ({
       <Preview>Thank you for reaching out to {SITE_NAME}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Dark green header with logo */}
+          {/* White header with logo */}
           <Section style={header}>
             <Img
               src={LOGO_URL}
@@ -54,8 +54,6 @@ const ContactClientConfirmationEmail = ({
               alt="Vitalis Health Strategies"
               style={logoImg}
             />
-            {/* Text fallback visible if image fails */}
-            <Text style={logoFallback}>VITALIS HEALTH STRATEGIES</Text>
           </Section>
 
           {/* Gold accent bar */}
@@ -86,7 +84,7 @@ const ContactClientConfirmationEmail = ({
               <Text style={messageText}>{message}</Text>
             </Section>
 
-            <Text style={bodyText}>
+            <Text style={{ ...bodyText, marginTop: '20px' }}>
               If you have anything to add or questions in the meantime, simply
               reply to this email and it will reach our team directly.
             </Text>
@@ -100,11 +98,11 @@ const ContactClientConfirmationEmail = ({
             <Text style={contactCompany}>{SITE_NAME}</Text>
             <Text style={contactLocation}>Calgary, Alberta, Canada</Text>
             <Text style={contactLinks}>
-              <Link href="mailto:info@vitalisstrategies.com" style={goldLink}>
+              <Link href="mailto:info@vitalisstrategies.com" style={linkStyle}>
                 info@vitalisstrategies.com
               </Link>
               {'   |   '}
-              <Link href="https://vitalisstrategies.com" style={goldLink}>
+              <Link href="https://vitalisstrategies.com" style={linkStyle}>
                 vitalisstrategies.com
               </Link>
             </Text>
@@ -120,16 +118,16 @@ const ContactClientConfirmationEmail = ({
               you received this email in error, please disregard it and contact
               us at info@vitalisstrategies.com.
             </Text>
-            <Text style={legalText}>
+            <Text style={{ ...legalText, marginTop: '10px' }}>
               {SITE_NAME} Inc. is committed to protecting your privacy. We do
               not share, sell, or disclose your personal information to third
               parties. Your submission is stored securely and used solely to
-              respond to your inquiry. View our Privacy Policy:{' '}
-              <Link href="https://vitalisstrategies.com/privacy" style={goldLink}>
-                vitalisstrategies.com/privacy
+              respond to your inquiry. View our{' '}
+              <Link href="https://vitalisstrategies.com/privacy" style={linkStyle}>
+                Privacy Policy
               </Link>
             </Text>
-            <Text style={legalText}>
+            <Text style={{ ...legalText, marginTop: '8px' }}>
               © 2026 {SITE_NAME} Inc. All rights reserved. Calgary, Alberta,
               Canada
             </Text>
@@ -169,27 +167,16 @@ const container = {
   overflow: 'hidden' as const,
 }
 const header = {
-  backgroundColor: '#173026',
-  padding: '32px',
+  backgroundColor: '#ffffff',
+  borderBottom: '2px solid #A9B1A1',
+  padding: '28px 40px',
   textAlign: 'center' as const,
 }
 const logoImg = {
   margin: '0 auto',
   display: 'block' as const,
-  color: '#ffffff',
-  fontSize: '18px',
-  fontFamily: "'Playfair Display', Georgia, serif",
-  fontWeight: '600' as const,
-}
-const logoFallback = {
-  display: 'none' as const,
-  color: '#ffffff',
-  fontSize: '18px',
-  fontFamily: "'Playfair Display', Georgia, serif",
-  fontWeight: '600' as const,
-  letterSpacing: '0.08em',
-  textAlign: 'center' as const,
-  margin: '8px 0 0',
+  maxWidth: '180px',
+  width: '100%' as const,
 }
 const goldBar = {
   height: '4px',
@@ -277,7 +264,7 @@ const contactLinks = {
   margin: '0',
   fontFamily: "'Montserrat', Arial, sans-serif",
 }
-const goldLink = { color: '#c89741', textDecoration: 'none' }
+const linkStyle = { color: '#264a39', textDecoration: 'none' }
 const legalFooter = {
   backgroundColor: '#f9f6f1',
   borderTop: '1px solid #dde4e0',
@@ -287,6 +274,6 @@ const legalText = {
   fontSize: '10px',
   color: '#8a9e92',
   lineHeight: '1.7',
-  margin: '0 0 10px',
+  margin: '0',
   fontFamily: "'Montserrat', Arial, sans-serif",
 }
