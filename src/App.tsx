@@ -96,6 +96,7 @@ const App = () => (
               <Route path="/admin/submissions/:sessionId/client-report" element={<AdminGuard><ClientReport /></AdminGuard>} />
               <Route path="/admin/seo" element={<AdminGuard><SEOAdmin /></AdminGuard>} />
               <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
               <Route path="/partners" element={<Partners />} />
               <Route path="/engagement" element={<Engagement />} />
               <Route path="/healthcare-it" element={<HealthcareIT />} />
