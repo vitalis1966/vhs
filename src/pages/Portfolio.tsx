@@ -80,26 +80,6 @@ const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    id: "calgary-dental-dso-advisory",
-    title: "A Calgary dental group navigates a DSO acquisition on their own terms.",
-    tagline: "Three locations. An unsolicited acquisition offer. And no idea whether the number on the table was fair.",
-    location: "Calgary, Alberta",
-    type: ["M&A"],
-    specialty: "General Dentistry",
-    size: "3-location dental group, 4 dentists",
-    duration: "8 months",
-    overview: "A dental group with three Calgary locations (two general dental, one with a significant orthodontic component) received an unsolicited acquisition approach from a national DSO. The offer was substantial. The lead dentist and founder had been considering an exit within five years. On the surface, the timing seemed right.\n\nThe problem was that none of the three dentists understood how to evaluate the offer: whether the EBITDA multiple was appropriate, what earn-out provisions meant for their working arrangements, or whether their practice was worth more than the offer implied.",
-    challenge: "The DSO's offer was structured with a headline number that looked attractive but embedded an earn-out tied to a 3-year associate retention metric that the founding dentist had no practical ability to guarantee. The EBITDA multiple applied was at the lower end of the market range for a practice with the group's profitability profile. And the purchase price was calculated on unadjusted EBITDA that did not account for several above-market owner expenses that would normalize upward under new ownership.",
-    approach: "Vitalis was engaged two weeks after the initial offer was received. The financial model was rebuilt with normalized EBITDA, restating owner compensation, personal expenses run through the practice, and discretionary spending, which increased the defensible EBITDA figure by 31%. A comparable transaction analysis was conducted against current DSO acquisition multiples for Alberta multi-location dental practices.\n\nVitalis prepared a detailed counter-position and negotiated alongside the group's legal counsel through four rounds of discussion. The earn-out structure was restructured to remove the associate retention dependency. The headline purchase price was increased.",
-    outcome: "The final transaction closed at 23% above the original offer, a difference of approximately $680,000. The earn-out provisions were restructured to be based on practice revenue targets rather than staff retention. The founding dentist remained as an associate for 18 months post-close under terms he had agreed to, then transitioned out on the planned timeline.",
-    services: ["Practice Valuation", "EBITDA Normalization Analysis", "M&A Advisory and Negotiation Support", "Deal Structure Review", "Transition Planning"],
-    metrics: [
-      { label: "23% above original offer", value: "+23%", sublabel: "Final transaction price" },
-      { label: "~$680K additional value", value: "$680K", sublabel: "Recovered through negotiation" },
-      { label: "Earn-out restructured", value: "Revenue-based", sublabel: "Not staff retention" },
-    ],
-  },
-  {
     id: "ortho-sports-medicine-new-build",
     title: "A multi-specialty clinic builds a new facility, opens ahead of schedule, and under budget.",
     tagline: "Two practitioners. A shared facility concept. A timeline that couldn't slip.",
@@ -117,26 +97,6 @@ const caseStudies: CaseStudy[] = [
       { label: "5 weeks ahead of schedule", value: "5 weeks early", sublabel: "Revised opening timeline" },
       { label: "8% under budget", value: "-8%", sublabel: "Final buildout cost" },
       { label: "24% lower overhead per physician", value: "-24%", sublabel: "vs. individual practice costs" },
-    ],
-  },
-  {
-    id: "urgent-care-expansion",
-    title: "An independent urgent care network builds a growth plan and scales to five locations in just over two years.",
-    tagline: "Strong unit economics at two clinics. A growth plan that had never been written down.",
-    location: "Western Canada",
-    type: ["Growth", "Operations"],
-    specialty: "Urgent Care and Walk-In Medicine",
-    size: "2 to 5 locations, 14 to 31 physicians across network",
-    duration: "26 months, strategy through third location opening",
-    overview: "An urgent care operator with two well-performing clinics had strong patient volumes, solid physician relationships, and the operational confidence to grow. What they lacked was a documented growth framework: a financial model for expansion, a site selection methodology, a hiring model that could scale, and the technology infrastructure to manage a multi-site network.\n\nThe operator had been approached by two investment partners in the prior 18 months, had turned both down, and decided to grow independently. Vitalis was engaged to build and execute the expansion strategy.",
-    challenge: "The two existing clinics ran on slightly different operational models: different EMR configurations, different scheduling approaches, different fee structures for uninsured services. Quality and patient experience were consistent because the owner was physically present across both locations most days. A third location would make that impossible.\n\nThe financial model for expansion also had a significant gap: the operator had been modelling new location economics based on the performance of the existing two, which were both in high-density residential corridors with strong walk-in demand. The three identified target markets included one suburban commercial zone with meaningfully different demographics.",
-    approach: "Vitalis conducted demographic and competitive analysis for six potential expansion markets, producing a ranked site matrix with revenue projections, competition intensity, and infrastructure cost estimates for each. The three sites selected for expansion had materially stronger projected economics than the one the operator had initially favoured.\n\nA standardized operational model was designed for the network: common EMR configuration, common fee schedules, common scheduling protocols. This model could be replicated at each new location without the owner's daily presence. A hiring and credentialing model for new physicians was built, and a medical director structure was designed for each location.",
-    outcome: "Three additional locations opened over 26 months. All three reached operational break-even within the financial model's projected timeframe. Physician headcount across the network grew from 14 to 31. The owner was no longer the operational dependency at any individual location.",
-    services: ["Growth Strategy and Market Analysis", "Site Selection Methodology", "Financial Modeling for Multi-Site Operations", "Operational Standardization", "Technology and EMR Standardization", "Physician Recruitment Framework", "Medical Director Structure Design"],
-    metrics: [
-      { label: "3 new locations in 26 months", value: "3 locations", sublabel: "All within projected economics" },
-      { label: "14 to 31 physicians", value: "2.2x growth", sublabel: "Network headcount" },
-      { label: "Break-even on schedule", value: "On target", sublabel: "All three new locations" },
     ],
   },
   {
@@ -353,14 +313,12 @@ const caseStudies: CaseStudy[] = [
   },
 ];
 
-const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Growth", "M&A", "Technology", "People", "Advisory"];
+const filterOptions = ["All", "New Build", "Revenue & Billing", "Operations", "Technology", "People", "Advisory"];
 
 const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
   "Revenue & Billing": "#b5832a",
   "Operations": "#3b5a7a",
-  "Growth": "#c47c2b",
-  "M&A": "#6b3d5a",
   "Technology": "#2a6b6b",
   "People": "#8b4a3a",
   "Advisory": "#5a7a5a",
@@ -369,16 +327,14 @@ const borderColorMap: Record<string, string> = {
 const resultStatMap: Record<string, string> = {
   "calgary-ent-surgical-build": "+19% above projected volume",
   "edmonton-family-medicine-revenue": "$310K recovered annually",
-  "calgary-dental-dso-advisory": "+23% above original offer",
   "ortho-sports-medicine-new-build": "Opened ahead of schedule, under budget",
-  "urgent-care-expansion": "2 to 5 locations in 26 months",
   "vancouver-ophthalmology-nhsf": "First-attempt accreditation",
   "specialty-medicine-build": "Break-even 1 month ahead of plan",
   "cosmetic-medicine-expense": "31% overhead reduction",
   "psychology-group-expansion": "New location opened on time",
   "new-location-build-generic": "Opened within timeline and budget",
   "family-medicine-revenue-increase": "44% year-over-year revenue increase",
-  "multi-specialty-culture-retention": "Staff turnover reduced by 70 percent",
+  "multi-specialty-culture-retention": "Staff turnover reduced by 70%",
 };
 
 const Portfolio = () => {
