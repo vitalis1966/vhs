@@ -33,6 +33,12 @@ const adminPages = [
     icon: Briefcase,
   },
   {
+    title: "Contact Submissions",
+    description: "View and manage incoming contact form submissions.",
+    href: "/admin/contacts",
+    icon: MessageSquare,
+  },
+  {
     title: "SEO Settings",
     description: "Manage meta tags, Open Graph, schemas, tracking, and redirects for all pages.",
     href: "/admin/seo",
