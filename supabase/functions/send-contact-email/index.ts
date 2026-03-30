@@ -96,7 +96,7 @@ async function enqueueEmail(supabase: any, opts: {
     message_id: messageId,
     idempotency_key: opts.idempotencyKey,
     to: opts.to,
-    from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+    from: `${SITE_NAME} <${FROM_ADDRESS}>`,
     sender_domain: SENDER_DOMAIN,
     subject: resolvedSubject,
     html,
