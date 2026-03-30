@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "vitalis-website-new"
+const SITE_NAME = "Vitalis Health Strategies"
 const SENDER_DOMAIN = "notify.vitalisstrategies.com"
 const ROOT_DOMAIN = "vitalisstrategies.com"
 const FROM_DOMAIN = "vitalisstrategies.com" // Domain shown in From address (may be root or sender subdomain)
