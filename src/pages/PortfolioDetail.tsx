@@ -7,27 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-const serviceOptions = [
-  "Practice Feasibility and Financial Modeling",
-  "Regulatory Accreditation Preparation",
-  "Site Selection and Lease Advisory",
-  "Governance and Partnership Structure Design",
-  "Facility Design Input",
-  "Compliance Documentation",
-  "Operational Systems Design",
-  "Revenue Cycle Review",
-  "Billing Optimization",
-  "Staffing and Role Design",
-  "People and Culture Assessment",
-  "Technology and EMR Advisory",
-  "M&A and Transaction Advisory",
-  "Practice Valuation",
-  "Strategic Advisory",
-  "Financial Restructuring",
-  "Growth Planning",
-  "Recruitment Strategy",
-];
-
 const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
   "Revenue & Billing": "#b5832a",
@@ -57,7 +36,7 @@ const PortfolioDetail = () => {
         .eq("status", "published")
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     enabled: !!slug,
   });
@@ -66,9 +45,9 @@ const PortfolioDetail = () => {
     { value: c.ext_stat_1_value, label: c.ext_stat_1_label },
     { value: c.ext_stat_2_value, label: c.ext_stat_2_label },
     { value: c.ext_stat_3_value, label: c.ext_stat_3_label },
-  ].filter(s => s.value) : [];
+  ].filter((s: any) => s.value) : [];
 
-  const services: string[] = (c?.ext_services as string[] | null) || [];
+  const services: string[] = c?.ext_services || [];
 
   if (isLoading) {
     return (
@@ -106,87 +85,72 @@ const PortfolioDetail = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-
       <article className="pt-32 pb-20 lg:pt-40 lg:pb-28">
         <div className="container mx-auto px-4 max-w-[780px]">
-          {/* Back link */}
           <Link to="/portfolio" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-8">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Portfolio
           </Link>
 
-          {/* Tags */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2 flex-wrap mb-3">
-            {tags.map(t => (
-              <span key={t} className="text-xs text-foreground px-2.5 py-1 rounded-full border border-border" style={{ borderWidth: '0.5px' }}>
-                {t}
-              </span>
+            {tags.map((t: string) => (
+              <span key={t} className="text-xs text-foreground px-2.5 py-1 rounded-full border border-border" style={{ borderWidth: '0.5px' }}>{t}</span>
             ))}
           </motion.div>
 
-          {/* Specialty */}
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="text-xs text-muted-foreground uppercase tracking-widest mb-2">
             {c.specialty}
           </motion.p>
 
-          {/* Metric headline */}
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-4" style={{ color: '#1C3D2E' }}>
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="font-display text-3xl lg:text-4xl font-bold text-forest tracking-tight leading-tight mb-4">
             {c.metric}
           </motion.h1>
 
-          {/* Description */}
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-foreground/90 leading-relaxed text-lg mb-3">
             {c.description}
           </motion.p>
 
-          {/* Location */}
           {c.location && (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-sm text-muted-foreground flex items-center gap-1.5 mb-8">
               <MapPin className="w-3.5 h-3.5" /> {c.location}
             </motion.p>
           )}
 
-          {/* Gold divider */}
           <hr className="border-t mb-10" style={{ borderColor: '#B8860B' }} />
 
-          {/* Situation */}
           {c.ext_situation && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold mb-4" style={{ color: '#1C3D2E' }}>Situation</h2>
+              <h2 className="font-display text-xl font-bold text-forest mb-4">Situation</h2>
               {renderParagraphs(c.ext_situation)}
             </section>
           )}
 
-          {/* The Challenge */}
           {c.ext_challenge && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold mb-4" style={{ color: '#1C3D2E' }}>The Challenge</h2>
+              <h2 className="font-display text-xl font-bold text-forest mb-4">The Challenge</h2>
               {renderParagraphs(c.ext_challenge)}
             </section>
           )}
 
-          {/* What We Did */}
           {c.ext_what_we_did && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold mb-4" style={{ color: '#1C3D2E' }}>What We Did</h2>
+              <h2 className="font-display text-xl font-bold text-forest mb-4">What We Did</h2>
               {renderParagraphs(c.ext_what_we_did)}
             </section>
           )}
 
-          {/* Results */}
           {c.ext_results && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold mb-4" style={{ color: '#1C3D2E' }}>Results</h2>
+              <h2 className="font-display text-xl font-bold text-forest mb-4">Results</h2>
               {renderParagraphs(c.ext_results)}
             </section>
           )}
 
-          {/* Result Stats */}
           {stats.length > 0 && (
             <section className="mb-10">
               <div className={`grid gap-4 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                {stats.map((s, i) => (
+                {stats.map((s: any, i: number) => (
                   <div key={i} className="bg-muted/40 rounded-lg p-5 text-center border border-border">
-                    <p className="text-lg font-bold mb-1" style={{ color: '#1C3D2E' }}>{s.value}</p>
+                    <p className="text-lg font-bold text-forest mb-1">{s.value}</p>
                     {s.label && <p className="text-xs text-muted-foreground">{s.label}</p>}
                   </div>
                 ))}
@@ -194,21 +158,17 @@ const PortfolioDetail = () => {
             </section>
           )}
 
-          {/* Services */}
           {services.length > 0 && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold mb-4" style={{ color: '#1C3D2E' }}>Services in This Engagement</h2>
+              <h2 className="font-display text-xl font-bold text-forest mb-4">Services in This Engagement</h2>
               <div className="flex flex-wrap gap-2">
-                {services.map(s => (
-                  <span key={s} className="text-xs text-foreground px-3 py-1.5 rounded-full border border-border bg-muted/30">
-                    {s}
-                  </span>
+                {services.map((s: string) => (
+                  <span key={s} className="text-xs text-foreground px-3 py-1.5 rounded-full border border-border bg-muted/30">{s}</span>
                 ))}
               </div>
             </section>
           )}
 
-          {/* CTA */}
           <section className="pt-8 border-t border-border text-center">
             <p className="text-muted-foreground mb-5 text-lg">Want to discuss a similar engagement?</p>
             <Button variant="hero" size="lg" asChild>
@@ -217,7 +177,6 @@ const PortfolioDetail = () => {
           </section>
         </div>
       </article>
-
       <Footer />
     </div>
   );
