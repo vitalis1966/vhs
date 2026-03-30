@@ -8,6 +8,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Preview,
   Text,
@@ -27,6 +28,8 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>Vitalis Health Strategies</Text>
+        <Hr style={divider} />
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for {siteName}. Click
@@ -36,7 +39,7 @@ export const RecoveryEmail = ({
           Reset Password
         </Button>
         <Text style={footer}>
-          If you didn't request a password reset, you can safely ignore this
+          If you did not request a password reset, you can safely ignore this
           email. Your password will not be changed.
         </Text>
       </Container>
@@ -46,26 +49,37 @@ export const RecoveryEmail = ({
 
 export default RecoveryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Montserrat', 'Helvetica Neue', Arial, sans-serif" }
+const container = { padding: '40px 25px', maxWidth: '600px', margin: '0 auto' }
+const brand = {
+  fontSize: '20px',
+  fontFamily: "'Playfair Display', Georgia, serif",
+  color: '#264d38',
+  textAlign: 'center' as const,
+  margin: '0 0 8px',
+  fontWeight: '600' as const,
+}
+const divider = { borderColor: '#c8a03a', width: '60px', margin: '0 auto 32px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  fontFamily: "'Playfair Display', Georgia, serif",
+  color: '#172e24',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
+  fontSize: '15px',
+  color: '#607a6e',
+  lineHeight: '1.6',
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
+  backgroundColor: '#264d38',
+  color: '#f8f4ed',
+  fontSize: '15px',
+  fontWeight: '600' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '14px 32px',
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
