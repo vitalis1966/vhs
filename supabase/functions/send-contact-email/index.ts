@@ -6,7 +6,7 @@ import { template as clientTemplate } from '../_shared/transactional-email-templ
 
 const SITE_NAME = 'Vitalis Health Strategies'
 const SENDER_DOMAIN = 'notify.vitalisstrategies.com'
-const FROM_DOMAIN = 'vitalisstrategies.com'
+const FROM_ADDRESS = 'info@vitalisstrategies.com'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -96,7 +96,7 @@ async function enqueueEmail(supabase: any, opts: {
     message_id: messageId,
     idempotency_key: opts.idempotencyKey,
     to: opts.to,
-    from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+    from: `${SITE_NAME} <${FROM_ADDRESS}>`,
     sender_domain: SENDER_DOMAIN,
     subject: resolvedSubject,
     html,
@@ -187,11 +187,12 @@ Deno.serve(async (req) => {
     // Send internal notification
     await enqueueEmail(supabase, {
       to: 'info@vitalisstrategies.com',
-      subject: `New Contact Form Submission — ${name.trim()}`,
+      subject: `New Contact Submission — ${name.trim()}`,
       template: internalTemplate,
       templateData,
       idempotencyKey: `contact-internal-${submissionId}`,
       label: 'contact-internal-notification',
+      replyTo: 'info@vitalisstrategies.com',
     })
 
     // Send client confirmation
