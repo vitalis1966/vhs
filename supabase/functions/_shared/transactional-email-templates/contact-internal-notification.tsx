@@ -76,9 +76,12 @@ const ContactInternalNotificationEmail = ({
             <Img
               src={LOGO_URL}
               width="180"
+              height="auto"
               alt="Vitalis Health Strategies"
-              style={logo}
+              style={logoImg}
             />
+            {/* Text fallback visible if image fails */}
+            <Text style={logoFallback}>VITALIS HEALTH STRATEGIES</Text>
           </Section>
 
           {/* Gold accent bar */}
@@ -192,7 +195,24 @@ const header = {
   padding: '32px',
   textAlign: 'center' as const,
 }
-const logo = { margin: '0 auto', display: 'block' as const }
+const logoImg = {
+  margin: '0 auto',
+  display: 'block' as const,
+  color: '#ffffff',
+  fontSize: '18px',
+  fontFamily: "'Playfair Display', Georgia, serif",
+  fontWeight: '600' as const,
+}
+const logoFallback = {
+  display: 'none' as const,
+  color: '#ffffff',
+  fontSize: '18px',
+  fontFamily: "'Playfair Display', Georgia, serif",
+  fontWeight: '600' as const,
+  letterSpacing: '0.08em',
+  textAlign: 'center' as const,
+  margin: '8px 0 0',
+}
 const goldBar = {
   height: '4px',
   backgroundColor: '#c89741',
