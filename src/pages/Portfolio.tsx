@@ -319,8 +319,6 @@ const borderColorMap: Record<string, string> = {
   "New Build": "#264a39",
   "Revenue & Billing": "#b5832a",
   "Operations": "#3b5a7a",
-  "Growth": "#c47c2b",
-  "M&A": "#6b3d5a",
   "Technology": "#2a6b6b",
   "People": "#8b4a3a",
   "Advisory": "#5a7a5a",
