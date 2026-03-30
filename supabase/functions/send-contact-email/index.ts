@@ -1,16 +1,13 @@
-// SETUP REQUIRED:
-// 1. Create account at resend.com
-// 2. Verify vitalisstrategies.com domain in Resend dashboard
-// 3. Create API key in Resend dashboard
-// 4. Add to Supabase: Edge Functions → Secrets → RESEND_API_KEY = [your key]
-// 5. Deploy: supabase functions deploy send-contact-email
-
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
+
+const SITE_NAME = 'Vitalis Health Strategies'
+const SENDER_DOMAIN = 'notify.vitalisstrategies.com'
+const FROM_DOMAIN = 'vitalisstrategies.com'
 
 const INTEREST_LABELS: Record<string, string> = {
   'new-practice': 'New Practice Build',
@@ -155,12 +152,12 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Save to database
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
+    // Save to database
     const { error: dbError } = await supabase.from('contact_submissions').insert({
       name: name.trim(),
       email: email.trim(),
@@ -178,68 +175,81 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Send emails via Resend
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY not configured')
-      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
     const interestLabel = area_of_interest ? (INTEREST_LABELS[area_of_interest] || area_of_interest) : 'General'
 
-    // Send internal notification email
-    const internalRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Vitalis Health Strategies <noreply@vitalisstrategies.com>',
-        to: ['info@vitalisstrategies.com'],
-        subject: `New Contact Form Submission — ${name.trim()} (${interestLabel})`,
-        html: buildInternalEmailHtml({
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone?.trim(),
-          organization: organization?.trim(),
-          area_of_interest,
-          message: message.trim(),
-        }),
-      }),
+    // Build HTML for both emails
+    const internalHtml = buildInternalEmailHtml({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone?.trim(),
+      organization: organization?.trim(),
+      area_of_interest,
+      message: message.trim(),
     })
 
-    if (!internalRes.ok) {
-      const errBody = await internalRes.text()
-      console.error('Resend internal email error:', errBody)
+    const clientHtml = buildClientConfirmationHtml({
+      name: name.trim(),
+      area_of_interest,
+      message: message.trim(),
+    })
+
+    // Enqueue internal notification email
+    const internalMessageId = crypto.randomUUID()
+    await supabase.from('email_send_log').insert({
+      message_id: internalMessageId,
+      template_name: 'contact-internal-notification',
+      recipient_email: 'info@vitalisstrategies.com',
+      status: 'pending',
+    })
+
+    const { error: internalEnqueueErr } = await supabase.rpc('enqueue_email', {
+      queue_name: 'transactional_emails',
+      payload: {
+        message_id: internalMessageId,
+        to: 'info@vitalisstrategies.com',
+        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        sender_domain: SENDER_DOMAIN,
+        subject: `New Contact Form Submission — ${name.trim()} (${interestLabel})`,
+        html: internalHtml,
+        text: `New contact form submission from ${name.trim()} (${email.trim()})`,
+        purpose: 'transactional',
+        label: 'contact-internal-notification',
+        queued_at: new Date().toISOString(),
+      },
+    })
+
+    if (internalEnqueueErr) {
+      console.error('Failed to enqueue internal email:', internalEnqueueErr)
     }
 
-    // Send client confirmation email
-    const clientRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Vitalis Health Strategies <noreply@vitalisstrategies.com>',
-        to: [email.trim()],
-        reply_to: 'info@vitalisstrategies.com',
-        subject: 'We received your message — Vitalis Health Strategies',
-        html: buildClientConfirmationHtml({
-          name: name.trim(),
-          area_of_interest,
-          message: message.trim(),
-        }),
-      }),
+    // Enqueue client confirmation email
+    const clientMessageId = crypto.randomUUID()
+    await supabase.from('email_send_log').insert({
+      message_id: clientMessageId,
+      template_name: 'contact-client-confirmation',
+      recipient_email: email.trim(),
+      status: 'pending',
     })
 
-    if (!clientRes.ok) {
-      const errBody = await clientRes.text()
-      console.error('Resend client email error:', errBody)
+    const { error: clientEnqueueErr } = await supabase.rpc('enqueue_email', {
+      queue_name: 'transactional_emails',
+      payload: {
+        message_id: clientMessageId,
+        to: email.trim(),
+        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        reply_to: 'info@vitalisstrategies.com',
+        sender_domain: SENDER_DOMAIN,
+        subject: 'We received your message — Vitalis Health Strategies',
+        html: clientHtml,
+        text: `Hi ${name.trim()}, thank you for reaching out to Vitalis Health Strategies. A member of our team will be in touch within one business day.`,
+        purpose: 'transactional',
+        label: 'contact-client-confirmation',
+        queued_at: new Date().toISOString(),
+      },
+    })
+
+    if (clientEnqueueErr) {
+      console.error('Failed to enqueue client email:', clientEnqueueErr)
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -248,8 +258,8 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Contact form error:', error)
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return new Response(JSON.stringify({ error: message }), {
+    const msg = error instanceof Error ? error.message : 'Unknown error'
+    return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
