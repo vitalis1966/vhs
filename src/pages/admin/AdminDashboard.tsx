@@ -27,6 +27,12 @@ const adminPages = [
     icon: Newspaper,
   },
   {
+    title: "Portfolio",
+    description: "Create and manage portfolio case studies and advisory entries.",
+    href: "/admin/portfolio",
+    icon: Briefcase,
+  },
+  {
     title: "SEO Settings",
     description: "Manage meta tags, Open Graph, schemas, tracking, and redirects for all pages.",
     href: "/admin/seo",
