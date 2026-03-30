@@ -102,6 +102,8 @@ const App = () => (
               <Route path="/insights/:slug" element={<InsightArticle />} />
               <Route path="/admin/insights" element={<AdminGuard><InsightsAdmin /></AdminGuard>} />
               <Route path="/admin/insights/:id" element={<AdminGuard><InsightsEditor /></AdminGuard>} />
+              <Route path="/admin/portfolio" element={<AdminGuard><PortfolioAdmin /></AdminGuard>} />
+              <Route path="/admin/portfolio/:id" element={<AdminGuard><PortfolioEditor /></AdminGuard>} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/disclaimer" element={<Disclaimer />} />
