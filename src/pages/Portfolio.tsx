@@ -159,7 +159,7 @@ const Portfolio = () => {
                         <p className="text-sm font-bold mt-1.5 mb-2 pl-2" style={{ color: topBorderColor, borderLeft: `2px solid ${topBorderColor}` }}>{cs.metric}</p>
                       ) : null}
                       {/* Title */}
-                      <h3 className={`font-display font-semibold text-forest leading-[1.4] ${isAdvisory ? 'mt-2' : ''} ${isFirst ? "text-xl" : "text-base"} line-clamp-3`}>
+                      <h3 className={`font-display font-semibold text-forest leading-[1.4] ${isAdvisory ? 'mt-2' : ''} ${isFirst ? "text-xl" : "text-base"}`}>
                         {cs.title}
                       </h3>
                       <div className="mt-auto pt-3">
