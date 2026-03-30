@@ -47,7 +47,7 @@ const Portfolio = () => {
         .eq("status", "published")
         .order("sort_order", { ascending: true });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
