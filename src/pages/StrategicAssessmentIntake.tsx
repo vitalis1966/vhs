@@ -179,10 +179,12 @@ const StrategicAssessmentIntake = () => {
     const { track, reason } = determineTrack(form);
 
     try {
-      // Insert intake and get the id back
-      const { data: intakeData, error } = (await supabase
+      // Generate ID client-side to avoid needing SELECT after INSERT (no anon SELECT policy)
+      const intakeId = crypto.randomUUID();
+      const { error } = (await supabase
         .from("assessment_intakes")
         .insert({
+          id: intakeId,
           full_name: form.full_name.trim(),
           organization_name: form.organization_name.trim() || null,
           email: form.email.trim(),
@@ -203,9 +205,7 @@ const StrategicAssessmentIntake = () => {
           additional_notes: form.additional_notes.trim() || null,
           assigned_track: track,
           assignment_reason: reason,
-        } as any)
-        .select()
-        .single()) as any;
+        } as any)) as any;
 
       if (error) throw error;
 
