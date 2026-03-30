@@ -575,6 +575,57 @@ export type Database = {
           },
         ]
       }
+      portfolio_cases: {
+        Row: {
+          body: string | null
+          case_type: string
+          created_at: string | null
+          description: string
+          id: string
+          location: string
+          metric: string
+          slug: string
+          sort_order: number | null
+          specialty: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          case_type?: string
+          created_at?: string | null
+          description: string
+          id?: string
+          location?: string
+          metric: string
+          slug: string
+          sort_order?: number | null
+          specialty: string
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          case_type?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          location?: string
+          metric?: string
+          slug?: string
+          sort_order?: number | null
+          specialty?: string
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       seo_global: {
         Row: {
           bing_verification: string | null
