@@ -45,53 +45,90 @@ const ContactClientConfirmationEmail = ({
       <Preview>Thank you for reaching out to {SITE_NAME}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with logo */}
+          {/* Dark green header with logo */}
           <Section style={header}>
-            <Img src={LOGO_URL} width="160" alt={SITE_NAME} style={logo} />
+            <Img
+              src={LOGO_URL}
+              width="180"
+              alt="Vitalis Health Strategies"
+              style={logo}
+            />
           </Section>
 
-          {/* Title */}
-          <Section style={titleSection}>
-            <Heading style={h1}>We received your message.</Heading>
-          </Section>
+          {/* Gold accent bar */}
+          <Section style={goldBar} />
 
-          {/* Body content */}
-          <Section style={content}>
-            <Text style={greeting}>Hi {name},</Text>
-            <Text style={text}>
-              Thank you for reaching out to {SITE_NAME}. A member of our team will be in touch within one business day.
+          {/* White card body */}
+          <Section style={cardBody}>
+            <Heading style={h2}>We received your message.</Heading>
+
+            <Text style={bodyText}>Hi {name},</Text>
+
+            <Text style={bodyText}>
+              Thank you for reaching out to {SITE_NAME}. We have received your
+              message and a member of our team will be in touch within one
+              business day.
             </Text>
 
             {interestLabel && (
-              <Text style={text}>
+              <Text style={bodyText}>
                 You indicated interest in:{' '}
-                <strong style={{ color: '#264a39' }}>{interestLabel}</strong>
+                <span style={sageBadge}>{interestLabel}</span>
               </Text>
             )}
 
-            {message && (
-              <>
-                <Text style={messageLabel}>Your message:</Text>
-                <Section style={quoteBlock}>
-                  <Text style={quoteText}>{message}</Text>
-                </Section>
-              </>
-            )}
+            {/* Message echo block */}
+            <Section style={messageBlock}>
+              <Text style={messageLabel}>YOUR MESSAGE</Text>
+              <Text style={messageText}>{message}</Text>
+            </Section>
+
+            <Text style={bodyText}>
+              If you have anything to add or questions in the meantime, simply
+              reply to this email and it will reach our team directly.
+            </Text>
           </Section>
 
-          {/* Footer */}
-          <Section style={footerSection}>
-            <Hr style={divider} />
-            <Text style={footerCompany}>{SITE_NAME}</Text>
-            <Text style={footerContact}>
-              Calgary, Alberta, Canada
-              <br />
-              <Link href="mailto:info@vitalisstrategies.com" style={linkStyle}>info@vitalisstrategies.com</Link>
+          {/* Sage divider */}
+          <Hr style={sageDivider} />
+
+          {/* Contact block */}
+          <Section style={contactBlock}>
+            <Text style={contactCompany}>{SITE_NAME}</Text>
+            <Text style={contactLocation}>Calgary, Alberta, Canada</Text>
+            <Text style={contactLinks}>
+              <Link href="mailto:info@vitalisstrategies.com" style={goldLink}>
+                info@vitalisstrategies.com
+              </Link>
               {'   |   '}
-              <Link href="https://vitalisstrategies.com" style={linkStyle}>vitalisstrategies.com</Link>
+              <Link href="https://vitalisstrategies.com" style={goldLink}>
+                vitalisstrategies.com
+              </Link>
             </Text>
-            <Text style={disclaimer}>
-              This is an automated confirmation. Please do not reply directly to this email — replies are monitored and will be seen by our team.
+          </Section>
+
+          {/* Legal footer */}
+          <Section style={legalFooter}>
+            <Text style={legalText}>
+              This message and any information contained herein are confidential
+              and intended solely for the use of the named recipient. It was sent
+              in response to a contact form submission made at
+              vitalisstrategies.com. If you did not submit this form or believe
+              you received this email in error, please disregard it and contact
+              us at info@vitalisstrategies.com.
+            </Text>
+            <Text style={legalText}>
+              {SITE_NAME} Inc. is committed to protecting your privacy. We do
+              not share, sell, or disclose your personal information to third
+              parties. Your submission is stored securely and used solely to
+              respond to your inquiry. View our Privacy Policy:{' '}
+              <Link href="https://vitalisstrategies.com/privacy" style={goldLink}>
+                vitalisstrategies.com/privacy
+              </Link>
+            </Text>
+            <Text style={legalText}>
+              © 2026 {SITE_NAME} Inc. All rights reserved. Calgary, Alberta,
+              Canada
             </Text>
           </Section>
         </Container>
@@ -108,26 +145,128 @@ export const template = {
     name: 'Dr. Sarah Chen',
     email: 'sarah.chen@example.com',
     area_of_interest: 'new-practice',
-    message: 'We are looking to open a second location in the Calgary area and would like to discuss the planning process.',
+    message:
+      'We are looking to open a second location in the Calgary area and would like to discuss the planning process.',
   },
 } satisfies TemplateEntry
 
-// Styles
-const main = { backgroundColor: '#f9f6f1', fontFamily: "'Montserrat', Arial, sans-serif", margin: '0', padding: '0' }
-const container = { maxWidth: '620px', margin: '0 auto', backgroundColor: '#ffffff', borderRadius: '8px', overflow: 'hidden' as const, border: '1px solid #dde4e0' }
-const header = { backgroundColor: '#173026', padding: '28px 32px', textAlign: 'center' as const }
-const logo = { margin: '0 auto' }
-const titleSection = { padding: '28px 32px 0', borderBottom: '3px solid #c89741' }
-const h1 = { margin: '0 0 20px', color: '#264a39', fontSize: '24px', fontWeight: '600' as const, fontFamily: "'Playfair Display', Georgia, serif" }
-const content = { padding: '24px 32px' }
-const greeting = { fontSize: '15px', color: '#172620', lineHeight: '1.6', margin: '0 0 16px', fontWeight: '500' as const }
-const text = { fontSize: '14px', color: '#172620', lineHeight: '1.7', margin: '0 0 16px' }
-const messageLabel = { fontSize: '12px', color: '#5a7060', margin: '20px 0 8px', fontWeight: '600' as const, textTransform: 'uppercase' as const, letterSpacing: '0.5px' }
-const quoteBlock = { borderLeft: '3px solid #c89741', padding: '14px 18px', backgroundColor: '#f9f6f1', borderRadius: '0 6px 6px 0', margin: '0 0 16px' }
-const quoteText = { fontSize: '14px', color: '#172620', lineHeight: '1.6', margin: '0', whiteSpace: 'pre-wrap' as const }
-const footerSection = { padding: '0 32px 28px' }
-const divider = { border: 'none', borderTop: '1px solid #dde4e0', margin: '0 0 20px' }
-const footerCompany = { fontSize: '14px', fontWeight: '600' as const, color: '#264a39', margin: '0 0 4px', textAlign: 'center' as const }
-const footerContact = { fontSize: '12px', color: '#5a7060', lineHeight: '1.8', margin: '0 0 16px', textAlign: 'center' as const }
-const linkStyle = { color: '#c89741', textDecoration: 'none' }
-const disclaimer = { fontSize: '11px', color: '#5a7060', lineHeight: '1.5', margin: '0', textAlign: 'center' as const, fontStyle: 'italic' as const }
+/* ─── Styles ─── */
+
+const main = {
+  backgroundColor: '#f9f6f1',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+  margin: '0',
+  padding: '20px 0',
+}
+const container = {
+  maxWidth: '620px',
+  margin: '0 auto',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  overflow: 'hidden' as const,
+}
+const header = {
+  backgroundColor: '#173026',
+  padding: '32px',
+  textAlign: 'center' as const,
+}
+const logo = { margin: '0 auto', display: 'block' as const }
+const goldBar = {
+  height: '4px',
+  backgroundColor: '#c89741',
+  margin: '0',
+  padding: '0',
+  lineHeight: '0' as const,
+  fontSize: '0' as const,
+}
+const cardBody = { padding: '36px 40px' }
+const h2 = {
+  margin: '0 0 20px',
+  color: '#264a39',
+  fontSize: '24px',
+  fontWeight: '600' as const,
+  fontFamily: "'Playfair Display', Georgia, serif",
+  lineHeight: '1.3',
+}
+const bodyText = {
+  fontSize: '15px',
+  color: '#172620',
+  lineHeight: '1.75',
+  margin: '0 0 16px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const sageBadge = {
+  display: 'inline-block' as const,
+  backgroundColor: '#A9B1A1',
+  color: '#ffffff',
+  fontSize: '12px',
+  fontWeight: '600' as const,
+  padding: '4px 12px',
+  borderRadius: '20px',
+  verticalAlign: 'middle' as const,
+}
+const messageBlock = {
+  borderLeft: '4px solid #A9B1A1',
+  backgroundColor: '#f9f6f1',
+  padding: '16px 20px',
+  borderRadius: '0 6px 6px 0',
+  margin: '0 0 20px',
+}
+const messageLabel = {
+  fontSize: '10px',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.08em',
+  color: '#5a7060',
+  margin: '0 0 8px',
+  fontWeight: '600' as const,
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const messageText = {
+  fontSize: '14px',
+  color: '#172620',
+  lineHeight: '1.75',
+  margin: '0',
+  whiteSpace: 'pre-wrap' as const,
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const sageDivider = {
+  border: 'none',
+  borderTop: '1px solid #dde4e0',
+  margin: '0',
+}
+const contactBlock = {
+  padding: '24px 40px 16px',
+  textAlign: 'center' as const,
+}
+const contactCompany = {
+  fontSize: '13px',
+  fontWeight: '700' as const,
+  color: '#264a39',
+  margin: '0 0 2px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const contactLocation = {
+  fontSize: '12px',
+  color: '#5a7060',
+  margin: '0 0 6px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const contactLinks = {
+  fontSize: '12px',
+  color: '#5a7060',
+  margin: '0',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
+const goldLink = { color: '#c89741', textDecoration: 'none' }
+const legalFooter = {
+  backgroundColor: '#f9f6f1',
+  borderTop: '1px solid #dde4e0',
+  padding: '20px 40px 28px',
+}
+const legalText = {
+  fontSize: '10px',
+  color: '#8a9e92',
+  lineHeight: '1.7',
+  margin: '0 0 10px',
+  fontFamily: "'Montserrat', Arial, sans-serif",
+}
