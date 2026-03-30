@@ -230,19 +230,22 @@ const StrategicAssessmentIntake = () => {
 
         if (assessment) {
           accessToken = crypto.randomUUID();
-          const { data: sessionData } = await (supabase
+          sessionId = crypto.randomUUID();
+          const { error: sessionError } = await (supabase
             .from("assessment_sessions" as any)
             .insert({
+              id: sessionId,
               intake_id: intakeId,
               assessment_id: assessment.id,
               access_token: accessToken,
               status: "in_progress",
               current_section_index: 0,
-            })
-            .select()
-            .single() as any);
+            }) as any);
 
-          sessionId = sessionData?.id || "";
+          if (sessionError) {
+            console.error("Session creation error:", sessionError);
+            sessionId = "";
+          }
 
           // Update intake with session reference and lifecycle
           if (sessionId) {
