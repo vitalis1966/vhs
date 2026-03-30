@@ -76,9 +76,12 @@ const ContactInternalNotificationEmail = ({
             <Img
               src={LOGO_URL}
               width="180"
+              height="auto"
               alt="Vitalis Health Strategies"
-              style={logo}
+              style={logoImg}
             />
+            {/* Text fallback visible if image fails */}
+            <Text style={logoFallback}>VITALIS HEALTH STRATEGIES</Text>
           </Section>
 
           {/* Gold accent bar */}
