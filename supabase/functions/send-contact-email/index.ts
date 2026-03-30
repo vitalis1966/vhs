@@ -236,6 +236,7 @@ Deno.serve(async (req) => {
       queue_name: 'transactional_emails',
       payload: {
         message_id: clientMessageId,
+        idempotency_key: `contact-client-${clientMessageId}`,
         to: email.trim(),
         from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
         reply_to: 'info@vitalisstrategies.com',
