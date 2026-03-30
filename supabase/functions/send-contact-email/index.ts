@@ -187,11 +187,12 @@ Deno.serve(async (req) => {
     // Send internal notification
     await enqueueEmail(supabase, {
       to: 'info@vitalisstrategies.com',
-      subject: `New Contact Form Submission — ${name.trim()}`,
+      subject: `New Contact Submission — ${name.trim()}`,
       template: internalTemplate,
       templateData,
       idempotencyKey: `contact-internal-${submissionId}`,
       label: 'contact-internal-notification',
+      replyTo: 'info@vitalisstrategies.com',
     })
 
     // Send client confirmation
