@@ -119,7 +119,8 @@ const Portfolio = () => {
                 const topBorderColor = borderColorMap[tags[0]] || "#264a39";
                 const rowIndex = Math.floor(i / 3);
                 const isAltRow = rowIndex % 2 === 1;
-                return (
+                    const isClickable = !isAdvisory && hasExtended(cs);
+                    return (
                   <motion.div
                     key={cs.id}
                     layout
@@ -129,7 +130,7 @@ const Portfolio = () => {
                     transition={{ delay: i * 0.04, duration: 0.35 }}
                     className={`group bg-white rounded-lg overflow-hidden flex flex-col min-h-[200px] transition-all duration-300 hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)] ${
                       isFirst ? "lg:col-span-2" : ""
-                    } ${!isAdvisory ? "cursor-pointer" : ""}`}
+                    } ${isClickable ? "cursor-pointer" : ""}`}
                     style={{
                       borderTop: `3px solid ${topBorderColor}`,
                       border: `1px solid rgba(0,0,0,0.12)`,
@@ -137,10 +138,10 @@ const Portfolio = () => {
                       borderTopColor: topBorderColor,
                       background: isAltRow ? 'rgba(38, 74, 57, 0.02)' : 'white',
                     }}
-                    role={isAdvisory ? undefined : "button"}
-                    tabIndex={isAdvisory ? undefined : 0}
+                    role={isClickable ? "button" : undefined}
+                    tabIndex={isClickable ? 0 : undefined}
                     onClick={() => handleCardClick(cs)}
-                    onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !isAdvisory) { e.preventDefault(); setSelectedCaseId(cs.id); } }}
+                    onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && isClickable) { e.preventDefault(); setSelectedCaseId(cs.id); } }}
                   >
                     <div className="p-5 flex flex-col flex-1">
                       {/* Tags */}
