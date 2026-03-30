@@ -206,6 +206,7 @@ Deno.serve(async (req) => {
       queue_name: 'transactional_emails',
       payload: {
         message_id: internalMessageId,
+        idempotency_key: `contact-internal-${internalMessageId}`,
         to: 'info@vitalisstrategies.com',
         from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
         sender_domain: SENDER_DOMAIN,
