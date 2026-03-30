@@ -45,6 +45,8 @@ const InsightArticle = lazy(() => import("./pages/InsightArticle"));
 const InsightsAdmin = lazy(() => import("./pages/admin/InsightsAdmin"));
 const InsightsEditor = lazy(() => import("./pages/admin/InsightsEditor"));
 const SEOAdmin = lazy(() => import("./pages/admin/SEOAdmin"));
+const PortfolioAdmin = lazy(() => import("./pages/admin/PortfolioAdmin"));
+const PortfolioEditor = lazy(() => import("./pages/admin/PortfolioEditor"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
@@ -100,6 +102,8 @@ const App = () => (
               <Route path="/insights/:slug" element={<InsightArticle />} />
               <Route path="/admin/insights" element={<AdminGuard><InsightsAdmin /></AdminGuard>} />
               <Route path="/admin/insights/:id" element={<AdminGuard><InsightsEditor /></AdminGuard>} />
+              <Route path="/admin/portfolio" element={<AdminGuard><PortfolioAdmin /></AdminGuard>} />
+              <Route path="/admin/portfolio/:id" element={<AdminGuard><PortfolioEditor /></AdminGuard>} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/disclaimer" element={<Disclaimer />} />
