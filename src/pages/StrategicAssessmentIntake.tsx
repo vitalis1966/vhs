@@ -179,10 +179,12 @@ const StrategicAssessmentIntake = () => {
     const { track, reason } = determineTrack(form);
 
     try {
-      // Insert intake and get the id back
-      const { data: intakeData, error } = (await supabase
+      // Generate ID client-side to avoid needing SELECT after INSERT (no anon SELECT policy)
+      const intakeId = crypto.randomUUID();
+      const { error } = (await supabase
         .from("assessment_intakes")
         .insert({
+          id: intakeId,
           full_name: form.full_name.trim(),
           organization_name: form.organization_name.trim() || null,
           email: form.email.trim(),
@@ -203,16 +205,12 @@ const StrategicAssessmentIntake = () => {
           additional_notes: form.additional_notes.trim() || null,
           assigned_track: track,
           assignment_reason: reason,
-        } as any)
-        .select()
-        .single()) as any;
+        } as any)) as any;
 
       if (error) throw error;
 
       // Send intake confirmation email
-      if (intakeData?.id) {
-        EmailAutomationService.sendIntakeConfirmation(intakeData.id, form.full_name.trim(), form.email.trim());
-      }
+      EmailAutomationService.sendIntakeConfirmation(intakeId, form.full_name.trim(), form.email.trim());
 
       // Create assessment session if track is known
       let accessToken = "";
@@ -235,7 +233,7 @@ const StrategicAssessmentIntake = () => {
           const { data: sessionData } = await (supabase
             .from("assessment_sessions" as any)
             .insert({
-              intake_id: intakeData?.id || null,
+              intake_id: intakeId,
               assessment_id: assessment.id,
               access_token: accessToken,
               status: "in_progress",
@@ -247,7 +245,7 @@ const StrategicAssessmentIntake = () => {
           sessionId = sessionData?.id || "";
 
           // Update intake with session reference and lifecycle
-          if (intakeData?.id && sessionId) {
+          if (sessionId) {
             await (supabase
               .from("assessment_intakes" as any)
               .update({
@@ -255,19 +253,17 @@ const StrategicAssessmentIntake = () => {
                 lifecycle_status: "assessment_assigned",
                 last_activity_at: new Date().toISOString(),
               })
-              .eq("id", intakeData.id) as any);
+              .eq("id", intakeId) as any);
           }
 
           // Send assessment access email
-          if (intakeData?.id) {
-            EmailAutomationService.sendAssessmentAccess(
-              intakeData.id,
-              sessionId,
-              form.full_name.trim(),
-              form.email.trim(),
-              accessToken,
-            );
-          }
+          EmailAutomationService.sendAssessmentAccess(
+            intakeId,
+            sessionId,
+            form.full_name.trim(),
+            form.email.trim(),
+            accessToken,
+          );
 
           // Schedule reminders
           if (accessToken) {
