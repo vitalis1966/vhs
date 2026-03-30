@@ -329,16 +329,14 @@ const borderColorMap: Record<string, string> = {
 const resultStatMap: Record<string, string> = {
   "calgary-ent-surgical-build": "+19% above projected volume",
   "edmonton-family-medicine-revenue": "$310K recovered annually",
-  "calgary-dental-dso-advisory": "+23% above original offer",
   "ortho-sports-medicine-new-build": "Opened ahead of schedule, under budget",
-  "urgent-care-expansion": "2 to 5 locations in 26 months",
   "vancouver-ophthalmology-nhsf": "First-attempt accreditation",
   "specialty-medicine-build": "Break-even 1 month ahead of plan",
   "cosmetic-medicine-expense": "31% overhead reduction",
   "psychology-group-expansion": "New location opened on time",
   "new-location-build-generic": "Opened within timeline and budget",
   "family-medicine-revenue-increase": "44% year-over-year revenue increase",
-  "multi-specialty-culture-retention": "Staff turnover reduced by 70 percent",
+  "multi-specialty-culture-retention": "Staff turnover reduced by 70%",
 };
 
 const Portfolio = () => {
