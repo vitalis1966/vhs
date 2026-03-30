@@ -6,7 +6,7 @@ import { template as clientTemplate } from '../_shared/transactional-email-templ
 
 const SITE_NAME = 'Vitalis Health Strategies'
 const SENDER_DOMAIN = 'notify.vitalisstrategies.com'
-const FROM_DOMAIN = 'vitalisstrategies.com'
+const FROM_ADDRESS = 'info@vitalisstrategies.com'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
