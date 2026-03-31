@@ -250,6 +250,7 @@ export default function ClientReport() {
   const [reportSent, setReportSent] = useState(false);
   const [sentToEmail, setSentToEmail] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [linkTokens, setLinkTokens] = useState<any[]>([]);
 
   useEffect(() => {
     if (sessionId) loadAll();
@@ -262,11 +263,12 @@ export default function ClientReport() {
     setSession(sess);
     if (!sess) { setLoading(false); return; }
 
-    const [assessRes, intakeRes, reportRes, editsRes] = await Promise.all([
+    const [assessRes, intakeRes, reportRes, editsRes, tokensRes] = await Promise.all([
       supabase.from("assessments" as any).select("*").eq("id", sess.assessment_id).single() as any,
       sess.intake_id ? supabase.from("assessment_intakes" as any).select("*").eq("id", sess.intake_id).single() as any : Promise.resolve({ data: null }),
       supabase.from("internal_assessment_reports" as any).select("*").eq("session_id", sessionId).single() as any,
       supabase.from("client_report_edits" as any).select("*").eq("session_id", sessionId) as any,
+      supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any,
     ]);
 
     setAssessment(assessRes.data);
@@ -283,6 +285,7 @@ export default function ClientReport() {
     }
     setEdits(editMap);
     setOriginalEdits(origMap);
+    setLinkTokens(tokensRes.data || []);
 
     // Pre-fill send dialog
     if (intakeRes.data) {
@@ -817,7 +820,48 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
-          {/* Booking CTA */}
+          {/* Link Activity */}
+          {linkTokens.length > 0 && (
+            <div className="no-print">
+              <ClientReportCard title="Report Link Activity" icon={<FileText className="h-5 w-5" />}>
+                <div className="space-y-3">
+                  {linkTokens.map((t: any) => (
+                    <div key={t.id} className="flex items-center justify-between bg-secondary/20 rounded-xl p-4 text-sm">
+                      <div className="space-y-1">
+                        <p className="text-foreground font-medium">
+                          Link generated: {new Date(t.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          Last accessed: {t.accessed_at ? new Date(t.accessed_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                          {" · "}Views: {t.access_count || 0}
+                          {" · "}Expires: {new Date(t.expires_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                        </p>
+                      </div>
+                      <div>
+                        {t.is_revoked ? (
+                          <Badge variant="outline" className="text-destructive border-destructive/30">Revoked</Badge>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive border-destructive/30 hover:bg-destructive/10"
+                            onClick={async () => {
+                              await (supabase.from("client_report_tokens" as any).update({ is_revoked: true } as any).eq("id", t.id) as any);
+                              setLinkTokens(prev => prev.map(lt => lt.id === t.id ? { ...lt, is_revoked: true } : lt));
+                              toast({ title: "Link Revoked", description: "The client can no longer access this report link." });
+                            }}
+                          >
+                            Revoke Link
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ClientReportCard>
+            </div>
+          )}
+
           <div className="no-print space-y-4">
             <h3 className="font-display text-xl font-bold text-foreground text-center">
               Ready to get started? Book a discovery call
