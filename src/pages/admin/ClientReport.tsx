@@ -232,6 +232,9 @@ export default function ClientReport() {
   const [emailTo, setEmailTo] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
+  const [reportSent, setReportSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState("");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     if (sessionId) loadAll();
