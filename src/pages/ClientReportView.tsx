@@ -137,77 +137,33 @@ export default function ClientReportView() {
 
   const validateAndLoad = async () => {
     try {
-      // 1. Look up the token
-      const { data: tokenRecord, error: tokenErr } = await (supabase
-        .from("client_report_tokens" as any)
-        .select("session_id, expires_at, is_revoked, access_count, token")
-        .eq("token", token)
-        .single() as any);
+      const { data: result, error: rpcErr } = await supabase.rpc(
+        "get_report_by_token" as any,
+        { p_token: token } as any
+      );
 
-      if (tokenErr || !tokenRecord) {
+      if (rpcErr || !result) {
+        console.error("RPC error:", rpcErr);
         setError("invalid");
         setLoading(false);
         return;
       }
 
-      if (tokenRecord.is_revoked) {
-        setError("revoked");
+      const parsed = typeof result === "string" ? JSON.parse(result) : result;
+
+      if (parsed.error) {
+        setError(parsed.error as "invalid" | "expired" | "revoked");
         setLoading(false);
         return;
       }
 
-      if (new Date(tokenRecord.expires_at) < new Date()) {
-        setError("expired");
-        setLoading(false);
-        return;
-      }
+      setSession(parsed.session);
+      setAssessment(parsed.assessment);
+      setIntake(parsed.intake);
 
-      // 2. Record access (fire-and-forget)
-      (supabase
-        .from("client_report_tokens" as any)
-        .update({
-          accessed_at: new Date().toISOString(),
-          access_count: (tokenRecord.access_count || 0) + 1,
-        } as any)
-        .eq("token", token) as any).then(() => {});
-
-      // 3. Load report data
-      const sessionId = tokenRecord.session_id;
-
-      const { data: sess } = await (supabase
-        .from("assessment_sessions" as any)
-        .select("*")
-        .eq("id", sessionId)
-        .single() as any);
-
-      if (!sess) {
-        setError("invalid");
-        setLoading(false);
-        return;
-      }
-
-      const [assessRes, intakeRes, reportRes] = await Promise.all([
-        supabase.from("assessments" as any).select("*").eq("id", sess.assessment_id).single() as any,
-        sess.intake_id
-          ? (supabase.from("assessment_intakes" as any).select("*").eq("id", sess.intake_id).single() as any)
-          : Promise.resolve({ data: null }),
-        supabase.from("internal_assessment_reports" as any).select("*").eq("session_id", sessionId).single() as any,
-      ]);
-
-      // Also load client_report_edits to show admin-approved text
-      const { data: editsData } = await (supabase
-        .from("client_report_edits" as any)
-        .select("*")
-        .eq("session_id", sessionId) as any);
-
-      setSession(sess);
-      setAssessment(assessRes.data);
-      setIntake(intakeRes.data);
-
-      // Store report with edits merged
-      const reportData = reportRes.data;
+      const reportData = parsed.report;
       if (reportData) {
-        (reportData as any)._edits = editsData || [];
+        (reportData as any)._edits = parsed.edits || [];
       }
       setReport(reportData);
       setLoading(false);
