@@ -213,6 +213,21 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
+function getCleanAssessmentName(slug?: string, title?: string): string {
+  if (slug) {
+    if (slug.includes("new-build") || slug.includes("new-clinic")) return "Your Build Strategy Assessment";
+    if (slug.includes("existing")) return "Your Performance Assessment";
+    if (slug.includes("healthcare-it") || slug.includes("it")) return "Your Healthcare IT Assessment";
+  }
+  if (title) {
+    const t = title.toLowerCase();
+    if (t.includes("build") || t.includes("new clinic")) return "Your Build Strategy Assessment";
+    if (t.includes("performance") || t.includes("existing")) return "Your Performance Assessment";
+    if (t.includes("healthcare it") || t.includes(" it")) return "Your Healthcare IT Assessment";
+  }
+  return "Your Strategic Assessment";
+}
+
 export default function ClientReport() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { toast } = useToast();
@@ -272,7 +287,8 @@ export default function ClientReport() {
     // Pre-fill send dialog
     if (intakeRes.data) {
       setEmailTo(intakeRes.data.email || "");
-      setEmailSubject(`Your ${assessRes.data?.title || "Strategic Assessment"} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
+      const cleanAssessmentName = getCleanAssessmentName(assessRes.data?.slug, assessRes.data?.title);
+      setEmailSubject(`${cleanAssessmentName} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
       setEmailBody(`Dear ${intakeRes.data.full_name},\n\nPlease find attached the findings from your recent strategic assessment. We look forward to discussing these insights with you.\n\nWarm regards,\nVitalis Health Strategies`);
     }
 
@@ -298,6 +314,18 @@ export default function ClientReport() {
     toast({ title: "Reset Complete", description: "All edits have been restored to the generated version." });
   };
 
+  const getReportSections = (): string[] => {
+    const sections: string[] = [];
+    if (analysis.executive_summary) sections.push("Executive Summary");
+    if ((analysis.section_analyses || []).length > 0) sections.push("Detailed Findings");
+    if ((analysis.concerns || []).length > 0) sections.push("Key Findings");
+    if (extractFinancialData(analysis)) sections.push("Financial Overview");
+    if ((analysis.focus_areas || []).length > 0) sections.push("Priority Focus Areas");
+    if ((analysis.opportunities || []).length > 0) sections.push("Opportunities");
+    if ((analysis.recommended_next_steps || []).length > 0) sections.push("Recommended Next Steps");
+    return sections;
+  };
+
   const handleSendReport = async () => {
     setSending(true);
     setSendError("");
@@ -314,6 +342,7 @@ export default function ClientReport() {
             report_url: `${window.location.origin}/admin/submissions/${sessionId}/client-report`,
             subject_line: emailSubject,
             message_body: emailBody,
+            report_sections: getReportSections(),
           },
         },
       });
@@ -330,66 +359,109 @@ export default function ClientReport() {
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
-      const reportEl = document.getElementById("report-content");
-      if (!reportEl) { setIsGeneratingPDF(false); return; }
-      const canvas = await html2canvas(reportEl, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth - 20;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const totalPages = Math.ceil(imgHeight / (pageHeight - 25));
-      let pageNum = 1;
-      let srcY = 0;
-      const sliceHeight = ((pageHeight - 25) / imgWidth) * canvas.width;
+      const reportContainer = document.getElementById("report-content");
+      if (!reportContainer) { setIsGeneratingPDF(false); return; }
 
-      while (srcY < canvas.height) {
-        if (pageNum > 1) pdf.addPage();
-        // Header
-        pdf.setFontSize(8);
-        pdf.setTextColor(169, 177, 161);
-        pdf.text("CONFIDENTIAL — Vitalis Health Strategies Inc.", 10, 8);
-        pdf.text("vitalisstrategies.com", pageWidth - 10, 8, { align: "right" });
-        pdf.setDrawColor(200, 151, 65);
-        pdf.setLineWidth(0.5);
-        pdf.line(10, 10, pageWidth - 10, 10);
+      // Clone and remove no-print elements
+      const clone = reportContainer.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".no-print").forEach(el => el.remove());
+      clone.querySelectorAll(".print-footer-spacer").forEach(el => el.remove());
 
-        // Slice canvas for this page
-        const currentSliceHeight = Math.min(sliceHeight, canvas.height - srcY);
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = currentSliceHeight;
-        const ctx = pageCanvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(canvas, 0, srcY, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
+      // Remove booking section
+      Array.from(clone.querySelectorAll("h3")).forEach(el => {
+        if (el.textContent?.toLowerCase().includes("book") || el.textContent?.toLowerCase().includes("discovery")) {
+          const section = el.closest("[class*='bg-card']") || el.parentElement;
+          section?.remove();
         }
-        const sliceImgHeight = (currentSliceHeight * imgWidth) / canvas.width;
-        pdf.addImage(pageCanvas.toDataURL("image/png"), "PNG", 10, 15, imgWidth, sliceImgHeight);
+      });
 
-        // Footer
-        pdf.setFontSize(8);
+      // Mount clone off-screen for capture
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1200px;background:#f9f6f1;padding:40px;";
+      wrapper.appendChild(clone);
+      document.body.appendChild(wrapper);
+
+      await new Promise(r => setTimeout(r, 500));
+
+      const canvas = await html2canvas(wrapper, {
+        scale: 1.5,
+        useCORS: true,
+        backgroundColor: "#f9f6f1",
+        windowWidth: 1200,
+        scrollY: 0,
+        height: wrapper.scrollHeight,
+      });
+
+      document.body.removeChild(wrapper);
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const headerH = 14;
+      const footerH = 10;
+      const contentH = pageH - headerH - footerH - margin * 2;
+      const imgW = pageW - margin * 2;
+      const totalImgH = (canvas.height * imgW) / canvas.width;
+      const totalPages = Math.ceil(totalImgH / contentH);
+      const organization = intake?.organization_name || intake?.full_name || "Client";
+
+      const addHeaderFooter = (pageNum: number) => {
+        pdf.setFontSize(7);
         pdf.setTextColor(169, 177, 161);
-        const org = intake?.organization_name || intake?.full_name || "Client";
-        pdf.text(`Confidential — Prepared for ${org} by Vitalis Health Strategies Inc.`, 10, pageHeight - 8);
-        pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 10, pageHeight - 8, { align: "right" });
+        pdf.text("CONFIDENTIAL — Vitalis Health Strategies Inc.", margin, 8);
+        pdf.text("vitalisstrategies.com", pageW - margin, 8, { align: "right" });
+        pdf.setDrawColor(200, 151, 65);
+        pdf.setLineWidth(0.4);
+        pdf.line(margin, 10, pageW - margin, 10);
 
-        srcY += sliceHeight;
-        pageNum++;
+        pdf.setDrawColor(221, 228, 224);
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, pageH - footerH - 2, pageW - margin, pageH - footerH - 2);
+        pdf.setFontSize(7);
+        pdf.setTextColor(169, 177, 161);
+        pdf.text(`Confidential — Prepared for ${organization} by Vitalis Health Strategies Inc.`, margin, pageH - 6);
+        pdf.text(`Page ${pageNum} of ${totalPages}`, pageW - margin, pageH - 6, { align: "right" });
+      };
+
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) pdf.addPage();
+
+        const srcY = page * contentH * (canvas.height / totalImgH);
+        const srcH = Math.min(contentH * (canvas.height / totalImgH), canvas.height - srcY);
+
+        // Skip blank last page
+        if (srcH < 20) {
+          if (page > 0) {
+            // Remove the just-added blank page
+            const pageCount = (pdf as any).internal.getNumberOfPages();
+            if (pageCount > 1) (pdf as any).deletePage(pageCount);
+          }
+          continue;
+        }
+
+        addHeaderFooter(page + 1);
+
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = srcH;
+        const ctx = sliceCanvas.getContext("2d");
+        if (ctx) ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+
+        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+        const sliceH = (srcH * imgW) / canvas.width;
+        pdf.addImage(sliceData, "JPEG", margin, headerH + margin, imgW, sliceH);
       }
 
       const today = new Date().toISOString().split("T")[0];
-      const org = intake?.organization_name || intake?.full_name || "Client";
-      const filename = `Vitalis-Assessment-${org}-${today}.pdf`.replace(/[^a-zA-Z0-9-_.]/g, "-");
-      pdf.save(filename);
+      const safeName = organization.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-");
+      pdf.save(`Vitalis-Assessment-${safeName}-${today}.pdf`);
     } catch (err) {
-      console.error("PDF generation error:", err);
-      toast({ title: "Error", description: "Failed to generate PDF. Please try again.", variant: "destructive" });
+      console.error("PDF error:", err);
+      toast({ title: "PDF Error", description: "Could not generate PDF. Try again.", variant: "destructive" });
+    } finally {
+      setIsGeneratingPDF(false);
     }
-    setIsGeneratingPDF(false);
   };
 
   const formatDate = (d: string | null) =>

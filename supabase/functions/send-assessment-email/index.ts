@@ -35,10 +35,21 @@ async function sendViaResend(to: string, subject: string, html: string) {
 
 // ─── Email templates ───
 
-function buildClientReportHtml(data: { client_name: string; organization?: string; message_body: string; report_url: string }): string {
+function buildClientReportHtml(data: { client_name: string; organization?: string; message_body: string; report_url: string; report_sections?: string[] }): string {
   const clientName = esc(data.client_name)
   const org = data.organization ? esc(data.organization) : ''
   const messageHtml = esc(data.message_body).replace(/\n/g, '<br/>')
+
+  const sections = data.report_sections || [
+    'Executive Summary',
+    'Detailed Findings',
+    'Key Findings',
+    'Financial Overview',
+    'Priority Focus Areas',
+    'Opportunities',
+    'Recommended Next Steps',
+  ]
+  const sectionsHtml = sections.map(s => `&middot; ${esc(s)}`).join('<br/>\n')
 
   return `<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@400;500;600&display=swap');</style></head><body style="margin:0;padding:20px 0;background-color:#f9f6f1;font-family:'Montserrat',Arial,sans-serif;">
 <div style="display:none;overflow:hidden;max-height:0;">Your Strategic Assessment Report is ready for review</div>
@@ -66,7 +77,6 @@ function buildClientReportHtml(data: { client_name: string; organization?: strin
 <!-- Main heading & body -->
 <tr><td style="padding:28px 40px 0;">
 <h2 style="margin:0 0 20px;color:#264a39;font-size:24px;font-weight:600;font-family:'Playfair Display',Georgia,serif;line-height:1.3;">Your Strategic Assessment Report is Ready</h2>
-<p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 16px;font-family:'Montserrat',Arial,sans-serif;">Dear ${clientName},</p>
 <p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 20px;font-family:'Montserrat',Arial,sans-serif;">${messageHtml}</p>
 </td></tr>
 
@@ -76,11 +86,7 @@ function buildClientReportHtml(data: { client_name: string; organization?: strin
 <tr><td style="padding:20px 24px;">
 <p style="font-size:13px;font-weight:700;color:#264a39;margin:0 0 12px;font-family:'Montserrat',Arial,sans-serif;">What's in your report</p>
 <p style="font-size:13px;color:#172620;line-height:2;margin:0;font-family:'Montserrat',Arial,sans-serif;">
-&middot; Executive Summary — key findings and strategic outlook<br/>
-&middot; Detailed Findings — dimension-by-dimension analysis<br/>
-&middot; Priority Focus Areas — what needs attention first<br/>
-&middot; Recommended Next Steps — a sequenced action plan<br/>
-&middot; Financial Overview — cost and revenue considerations
+${sectionsHtml}
 </p>
 </td></tr>
 </table>
