@@ -763,39 +763,56 @@ export default function ClientReport() {
       </div>
 
       {/* Send Dialog */}
-      <Dialog open={sendOpen} onOpenChange={setSendOpen}>
+      <Dialog open={sendOpen} onOpenChange={(open) => { if (!reportSent) setSendOpen(open); else setSendOpen(false); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Send Report to Client</DialogTitle>
-            <DialogDescription>Send this client report via email or download as PDF.</DialogDescription>
+            <DialogTitle>{reportSent ? "Report Sent" : "Send Report to Client"}</DialogTitle>
+            <DialogDescription>{reportSent ? "The report has been delivered." : "Send this client report via email or download as PDF."}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">To</label>
-              <Input value={emailTo} onChange={e => setEmailTo(e.target.value)} placeholder="client@email.com" />
+          {reportSent ? (
+            <div className="py-4 space-y-3">
+              <div className="flex items-start gap-3 bg-accent/10 rounded-xl p-4 border border-accent/20">
+                <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Report sent to {sentToEmail}</p>
+                  <p className="text-xs text-muted-foreground mt-1">The client has been notified. A record has been logged. This page now shows "Report Sent ✓" to prevent duplicates.</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSendOpen(false)}>Close</Button>
+              </DialogFooter>
             </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Subject</label>
-              <Input value={emailSubject} onChange={e => setEmailSubject(e.target.value)} />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Message</label>
-              <Textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={4} />
-            </div>
-            {sendError && (
-              <p className="text-sm text-destructive">{sendError}</p>
-            )}
-          </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => { setSendOpen(false); window.print(); }}>
-              <Download className="mr-2 h-4 w-4" />
-              Download PDF Instead
-            </Button>
-            <Button onClick={handleSendReport} disabled={sending || !emailTo}>
-              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-              Send
-            </Button>
-          </DialogFooter>
+          ) : (
+            <>
+              <div className="space-y-4 py-2">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">To</label>
+                  <Input value={emailTo} onChange={e => setEmailTo(e.target.value)} placeholder="client@email.com" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Subject</label>
+                  <Input value={emailSubject} onChange={e => setEmailSubject(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Message</label>
+                  <Textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={4} />
+                </div>
+                {sendError && (
+                  <p className="text-sm text-destructive">{sendError}</p>
+                )}
+              </div>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <Button variant="outline" onClick={() => { setSendOpen(false); handleDownloadPDF(); }}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF Instead
+                </Button>
+                <Button onClick={handleSendReport} disabled={sending || !emailTo}>
+                  {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  Send
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
