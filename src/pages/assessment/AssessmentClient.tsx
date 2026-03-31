@@ -212,46 +212,17 @@ export default function AssessmentClient() {
     // Cancel pending reminders via secure RPC
     await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 
-    // Send completion emails via transactional system (non-blocking)
+    // Send completion emails via dedicated edge function (non-blocking)
     if (session.intake_id) {
       try {
-        // Fetch intake info for email addressing
-        const { data: intakeData } = await supabase.rpc("get_intake_for_session", { p_token: token || "" });
-        const intake = Array.isArray(intakeData) ? intakeData[0] : intakeData;
-
-        if (intake) {
-          const assessmentTitle = assessment?.title || "Strategic Assessment";
-
-          // Client thank-you email
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "assessment-completion-client",
-              recipientEmail: intake.email,
-              idempotencyKey: `completion-client-${session.id}`,
-              templateData: {
-                full_name: intake.full_name || "",
-                assessment_title: assessmentTitle,
-              },
-            },
-          });
-
-          // Internal notification email (template has to: set)
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "assessment-completion-internal",
-              recipientEmail: intake.email,
-              idempotencyKey: `completion-internal-${session.id}`,
-              templateData: {
-                full_name: intake.full_name || "",
-                email: intake.email,
-                organization_name: intake.organization_name || undefined,
-                assessment_title: assessmentTitle,
-                session_id: session.id,
-                submitted_at: new Date().toISOString(),
-              },
-            },
-          });
-        }
+        await supabase.functions.invoke("send-assessment-completion-emails", {
+          body: {
+            session_id: session.id,
+            intake_id: session.intake_id,
+            assessment_title: assessment?.title || "Strategic Assessment",
+            assessment_slug: assessment?.slug || "",
+          },
+        });
       } catch (emailErr) {
         console.error("Completion emails failed (non-blocking):", emailErr);
       }
