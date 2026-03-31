@@ -7,7 +7,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const FROM = 'Vitalis Health Strategies <info@mail.vitalisstrategies.com>'
 const REPLY_TO = 'info@vitalisstrategies.com'
 const INTERNAL_TO = 'info@vitalisstrategies.com'
-const LOGO_URL = 'https://www.vitalisstrategies.com/vitalis-logo-email.png'
+const LOGO_URL = 'https://vitalisstrategies.com/vitalis-logo-email.png'
 
 const INTEREST_LABELS: Record<string, string> = {
   'new-practice': 'New Practice Build',
