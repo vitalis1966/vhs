@@ -299,6 +299,18 @@ export default function ClientReport() {
     toast({ title: "Reset Complete", description: "All edits have been restored to the generated version." });
   };
 
+  const getReportSections = (): string[] => {
+    const sections: string[] = [];
+    if (analysis.executive_summary) sections.push("Executive Summary");
+    if ((analysis.section_analyses || []).length > 0) sections.push("Detailed Findings");
+    if ((analysis.concerns || []).length > 0) sections.push("Key Findings");
+    if (extractFinancialData(analysis)) sections.push("Financial Overview");
+    if ((analysis.focus_areas || []).length > 0) sections.push("Priority Focus Areas");
+    if ((analysis.opportunities || []).length > 0) sections.push("Opportunities");
+    if ((analysis.recommended_next_steps || []).length > 0) sections.push("Recommended Next Steps");
+    return sections;
+  };
+
   const handleSendReport = async () => {
     setSending(true);
     setSendError("");
@@ -315,6 +327,7 @@ export default function ClientReport() {
             report_url: `${window.location.origin}/admin/submissions/${sessionId}/client-report`,
             subject_line: emailSubject,
             message_body: emailBody,
+            report_sections: getReportSections(),
           },
         },
       });
