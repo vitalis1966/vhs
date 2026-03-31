@@ -77,7 +77,6 @@ function buildClientReportHtml(data: { client_name: string; organization?: strin
 <!-- Main heading & body -->
 <tr><td style="padding:28px 40px 0;">
 <h2 style="margin:0 0 20px;color:#264a39;font-size:24px;font-weight:600;font-family:'Playfair Display',Georgia,serif;line-height:1.3;">Your Strategic Assessment Report is Ready</h2>
-<p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 16px;font-family:'Montserrat',Arial,sans-serif;">Dear ${clientName},</p>
 <p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 20px;font-family:'Montserrat',Arial,sans-serif;">${messageHtml}</p>
 </td></tr>
 
