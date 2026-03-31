@@ -98,10 +98,14 @@ ${sectionsHtml}
 </td></tr>
 
 <!-- CTA & consultation -->
-<tr><td style="padding:0 40px 28px;">
+<tr><td style="padding:0 40px 12px;">
+${data.report_url ? `<div style="text-align:center;margin-bottom:20px;">
+<a href="${data.report_url}" style="display:inline-block;background-color:#264a39;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:6px;font-size:14px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;">View Your Strategic Assessment Report →</a>
+</div>
+<p style="font-size:11px;color:#5a7060;text-align:center;margin:0 0 20px;line-height:1.5;font-family:'Montserrat',Arial,sans-serif;">This link is private and prepared exclusively for you. Do not share it. Link expires in 90 days.</p>` : ''}
 <p style="font-size:14px;color:#172620;line-height:1.75;margin:0 0 20px;font-family:'Montserrat',Arial,sans-serif;">To discuss your report and explore how Vitalis can support your next steps, reply to this email or book a complimentary consultation with our team.</p>
 <div style="text-align:center;">
-<a href="https://vitalisstrategies.com/contact" style="display:inline-block;background-color:#264a39;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:6px;font-size:13px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;">Book a Consultation →</a>
+<a href="https://vitalisstrategies.com/contact" style="display:inline-block;background-color:transparent;color:#264a39;text-decoration:none;padding:11px 24px;border-radius:6px;font-size:13px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;border:2px solid #264a39;">Book a Consultation →</a>
 </div>
 </td></tr>
 
