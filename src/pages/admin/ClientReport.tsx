@@ -285,6 +285,7 @@ export default function ClientReport() {
     }
     setEdits(editMap);
     setOriginalEdits(origMap);
+    setLinkTokens(tokensRes.data || []);
 
     // Pre-fill send dialog
     if (intakeRes.data) {
