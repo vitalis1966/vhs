@@ -263,7 +263,31 @@ Deno.serve(async (req) => {
       }
     }
 
-    const { subject, html } = templateFn(template_data || {})
+    // For client_report emails, generate a secure report token and include it
+    let enrichedTemplateData = { ...(template_data || {}) }
+    if (email_type === 'client_report' && session_id) {
+      const reportToken = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '')
+      console.log('Generating client report token for session:', session_id)
+      
+      const { error: tokenErr } = await supabase
+        .from('client_report_tokens')
+        .insert({
+          session_id,
+          token: reportToken,
+          expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        })
+      
+      if (tokenErr) {
+        console.error('Failed to create report token:', tokenErr)
+      } else {
+        const reportUrl = `https://vitalisstrategies.com/report/${reportToken}`
+        enrichedTemplateData.report_url = reportUrl
+        enrichedTemplateData.report_token = reportToken
+        console.log('Report token created, URL:', reportUrl)
+      }
+    }
+
+    const { subject, html } = templateFn(enrichedTemplateData)
     console.log('Template resolved, sending via Resend:', { email_type, subject, to: recipient_email })
 
     // Send via Resend
