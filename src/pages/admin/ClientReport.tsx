@@ -318,12 +318,78 @@ export default function ClientReport() {
         },
       });
       if (res.error) throw new Error(res.error.message);
-      toast({ title: "Report Sent", description: `Report sent to ${emailTo}` });
-      setSendOpen(false);
+      setSentToEmail(emailTo);
+      setReportSent(true);
+      setSending(false);
     } catch (err: any) {
       setSendError(err.message || "Failed to send report. Please try again.");
+      setSending(false);
     }
-    setSending(false);
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const reportEl = document.getElementById("report-content");
+      if (!reportEl) { setIsGeneratingPDF(false); return; }
+      const canvas = await html2canvas(reportEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const totalPages = Math.ceil(imgHeight / (pageHeight - 25));
+      let pageNum = 1;
+      let srcY = 0;
+      const sliceHeight = ((pageHeight - 25) / imgWidth) * canvas.width;
+
+      while (srcY < canvas.height) {
+        if (pageNum > 1) pdf.addPage();
+        // Header
+        pdf.setFontSize(8);
+        pdf.setTextColor(169, 177, 161);
+        pdf.text("CONFIDENTIAL — Vitalis Health Strategies Inc.", 10, 8);
+        pdf.text("vitalisstrategies.com", pageWidth - 10, 8, { align: "right" });
+        pdf.setDrawColor(200, 151, 65);
+        pdf.setLineWidth(0.5);
+        pdf.line(10, 10, pageWidth - 10, 10);
+
+        // Slice canvas for this page
+        const currentSliceHeight = Math.min(sliceHeight, canvas.height - srcY);
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = currentSliceHeight;
+        const ctx = pageCanvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(canvas, 0, srcY, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
+        }
+        const sliceImgHeight = (currentSliceHeight * imgWidth) / canvas.width;
+        pdf.addImage(pageCanvas.toDataURL("image/png"), "PNG", 10, 15, imgWidth, sliceImgHeight);
+
+        // Footer
+        pdf.setFontSize(8);
+        pdf.setTextColor(169, 177, 161);
+        const org = intake?.organization_name || intake?.full_name || "Client";
+        pdf.text(`Confidential — Prepared for ${org} by Vitalis Health Strategies Inc.`, 10, pageHeight - 8);
+        pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 10, pageHeight - 8, { align: "right" });
+
+        srcY += sliceHeight;
+        pageNum++;
+      }
+
+      const today = new Date().toISOString().split("T")[0];
+      const org = intake?.organization_name || intake?.full_name || "Client";
+      const filename = `Vitalis-Assessment-${org}-${today}.pdf`.replace(/[^a-zA-Z0-9-_.]/g, "-");
+      pdf.save(filename);
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      toast({ title: "Error", description: "Failed to generate PDF. Please try again.", variant: "destructive" });
+    }
+    setIsGeneratingPDF(false);
   };
 
   const formatDate = (d: string | null) =>
