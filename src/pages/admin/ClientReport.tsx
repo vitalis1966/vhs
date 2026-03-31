@@ -213,6 +213,21 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
+function getCleanAssessmentName(slug?: string, title?: string): string {
+  if (slug) {
+    if (slug.includes("new-build") || slug.includes("new-clinic")) return "Your Build Strategy Assessment";
+    if (slug.includes("existing")) return "Your Performance Assessment";
+    if (slug.includes("healthcare-it") || slug.includes("it")) return "Your Healthcare IT Assessment";
+  }
+  if (title) {
+    const t = title.toLowerCase();
+    if (t.includes("build") || t.includes("new clinic")) return "Your Build Strategy Assessment";
+    if (t.includes("performance") || t.includes("existing")) return "Your Performance Assessment";
+    if (t.includes("healthcare it") || t.includes(" it")) return "Your Healthcare IT Assessment";
+  }
+  return "Your Strategic Assessment";
+}
+
 export default function ClientReport() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { toast } = useToast();
