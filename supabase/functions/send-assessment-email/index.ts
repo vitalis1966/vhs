@@ -86,11 +86,7 @@ function buildClientReportHtml(data: { client_name: string; organization?: strin
 <tr><td style="padding:20px 24px;">
 <p style="font-size:13px;font-weight:700;color:#264a39;margin:0 0 12px;font-family:'Montserrat',Arial,sans-serif;">What's in your report</p>
 <p style="font-size:13px;color:#172620;line-height:2;margin:0;font-family:'Montserrat',Arial,sans-serif;">
-&middot; Executive Summary — key findings and strategic outlook<br/>
-&middot; Detailed Findings — dimension-by-dimension analysis<br/>
-&middot; Priority Focus Areas — what needs attention first<br/>
-&middot; Recommended Next Steps — a sequenced action plan<br/>
-&middot; Financial Overview — cost and revenue considerations
+${sectionsHtml}
 </p>
 </td></tr>
 </table>
