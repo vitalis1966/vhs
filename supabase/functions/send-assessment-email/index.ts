@@ -243,21 +243,21 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    // Duplicate prevention for session-scoped emails
-    if (session_id) {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    // Duplicate prevention: only block if Resend confirmed delivery (provider_response has an id)
+    if (session_id && email_type === 'client_report') {
       const { data: existing } = await supabase
         .from('email_events')
-        .select('id')
+        .select('id, provider_response')
         .eq('session_id', session_id)
-        .eq('email_type', email_type)
+        .eq('email_type', 'client_report')
         .eq('status', 'sent')
-        .gte('sent_at', oneHourAgo)
+        .not('provider_response', 'is', null)
         .limit(1)
 
-      if (existing && existing.length > 0) {
-        console.log('Duplicate prevention: skipping', { email_type, session_id })
-        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'duplicate_prevention' }), {
+      const hasResendId = existing?.some((e: any) => e.provider_response?.id)
+      if (hasResendId) {
+        console.log('Duplicate prevention: already sent with confirmed Resend ID', { session_id })
+        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'already_sent' }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
       }
