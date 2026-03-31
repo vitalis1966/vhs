@@ -353,6 +353,9 @@ export default function ClientReport() {
       setSentToEmail(emailTo);
       setReportSent(true);
       setSending(false);
+      // Refresh tokens list after successful send
+      const { data: newTokens } = await (supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any);
+      setLinkTokens(newTokens || []);
     } catch (err: any) {
       setSendError(err.message || "Failed to send report. Please try again.");
       setSending(false);
