@@ -377,17 +377,28 @@ export default function ClientReport() {
 
       // Mount clone off-screen for capture
       const wrapper = document.createElement("div");
-      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1200px;background:#f9f6f1;padding:40px;";
+      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1100px;background:#f9f6f1;padding:16px 40px 40px;";
+
+      // Add styles for better PDF rendering of card sections
+      const pdfStyle = document.createElement("style");
+      pdfStyle.textContent = `
+        .bg-card {
+          border: 1px solid #dde4e0 !important;
+          margin-bottom: 16px !important;
+          page-break-inside: avoid !important;
+        }
+      `;
+      wrapper.appendChild(pdfStyle);
       wrapper.appendChild(clone);
       document.body.appendChild(wrapper);
 
       await new Promise(r => setTimeout(r, 500));
 
       const canvas = await html2canvas(wrapper, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         backgroundColor: "#f9f6f1",
-        windowWidth: 1200,
+        windowWidth: 1100,
         scrollY: 0,
         height: wrapper.scrollHeight,
       });
