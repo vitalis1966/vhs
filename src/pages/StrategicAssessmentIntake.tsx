@@ -209,15 +209,20 @@ const StrategicAssessmentIntake = () => {
 
       if (error) throw error;
 
-      // Send intake confirmation email
-      EmailAutomationService.sendIntakeConfirmation(intakeId, form.full_name.trim(), form.email.trim());
+      // Map track to human-readable assessment name for CRM
+      const trackNameMap: Record<string, string> = {
+        new_clinic_build: "Build Strategy Assessment",
+        existing_clinic: "Performance Assessment",
+        healthcare_it: "Healthcare IT Assessment",
+        needs_review: "Strategic Assessment (Needs Review)",
+      };
+      const assessmentName = trackNameMap[track] || "Strategic Assessment";
 
-      // Also save to contact_submissions for CRM visibility
+      // Save to contact_submissions for CRM visibility
       try {
-        const purposeLabel = assessmentPurposeOptions.find(o => o.value === form.assessment_purpose)?.label || form.assessment_purpose;
         const operatingStatus = form.currently_operating === "yes" ? "Yes" : form.currently_operating === "no" ? "No" : form.currently_operating === "in_planning" ? "In Planning" : "Not specified";
         const messageParts = [
-          "Strategic Assessment Intake",
+          `Assessment: ${assessmentName}`,
           `Specialty: ${form.specialty || "Not specified"}`,
           `Practice Type: ${form.practice_type || "Not specified"}`,
           `City: ${[form.city, form.province_state].filter(Boolean).join(", ") || "Not specified"}`,
@@ -231,12 +236,35 @@ const StrategicAssessmentIntake = () => {
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           organization: form.organization_name.trim() || null,
-          area_of_interest: purposeLabel,
+          area_of_interest: assessmentName,
           message: messageParts.join("\n"),
           status: "new",
         });
       } catch (contactErr) {
         console.error("Contact submission mirror failed (non-blocking):", contactErr);
+      }
+
+      // Send internal intake notification email (non-blocking)
+      try {
+        await supabase.functions.invoke("send-assessment-intake-notification", {
+          body: {
+            full_name: form.full_name.trim(),
+            email: form.email.trim(),
+            phone: form.phone.trim() || null,
+            organization_name: form.organization_name.trim() || null,
+            city: form.city.trim() || null,
+            province_state: form.province_state || null,
+            specialty: form.specialty || null,
+            practice_type: form.practice_type || null,
+            assessment_purpose: form.assessment_purpose,
+            approximate_timeline: form.approximate_timeline || null,
+            looking_for: form.looking_for.trim() || null,
+            additional_notes: form.additional_notes.trim() || null,
+            assigned_track: track,
+          },
+        });
+      } catch (emailErr) {
+        console.error("Intake notification email failed (non-blocking):", emailErr);
       }
 
       // Create assessment session if track is known
