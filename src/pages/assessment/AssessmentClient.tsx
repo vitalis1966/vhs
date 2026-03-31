@@ -215,29 +215,43 @@ export default function AssessmentClient() {
     // Send completion emails via transactional system (non-blocking)
     if (session.intake_id) {
       try {
-        const completionData = {
-          session_id: session.id,
-          assessment_title: assessment?.title || "Strategic Assessment",
-          submitted_at: new Date().toISOString(),
-        };
-        // Client thank-you email
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "assessment-completion-client",
-            recipientEmail: "__from_intake__", // template.to not set; we need intake email
-            idempotencyKey: `completion-client-${session.id}`,
-            templateData: { full_name: "", assessment_title: completionData.assessment_title, ...completionData },
-          },
-        });
-        // Internal notification email
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "assessment-completion-internal",
-            recipientEmail: "info@vitalisstrategies.com",
-            idempotencyKey: `completion-internal-${session.id}`,
-            templateData: completionData,
-          },
-        });
+        // Fetch intake info for email addressing
+        const { data: intakeData } = await supabase.rpc("get_intake_for_session", { p_token: token || "" });
+        const intake = Array.isArray(intakeData) ? intakeData[0] : intakeData;
+
+        if (intake) {
+          const assessmentTitle = assessment?.title || "Strategic Assessment";
+
+          // Client thank-you email
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "assessment-completion-client",
+              recipientEmail: intake.email,
+              idempotencyKey: `completion-client-${session.id}`,
+              templateData: {
+                full_name: intake.full_name || "",
+                assessment_title: assessmentTitle,
+              },
+            },
+          });
+
+          // Internal notification email (template has to: set)
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "assessment-completion-internal",
+              recipientEmail: intake.email,
+              idempotencyKey: `completion-internal-${session.id}`,
+              templateData: {
+                full_name: intake.full_name || "",
+                email: intake.email,
+                organization_name: intake.organization_name || undefined,
+                assessment_title: assessmentTitle,
+                session_id: session.id,
+                submitted_at: new Date().toISOString(),
+              },
+            },
+          });
+        }
       } catch (emailErr) {
         console.error("Completion emails failed (non-blocking):", emailErr);
       }
