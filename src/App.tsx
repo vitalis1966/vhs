@@ -90,6 +90,7 @@ const App = () => (
               <Route path="/strategic-assessment/confirmation" element={<StrategicAssessmentConfirmation />} />
               <Route path="/assessment/:token" element={<AssessmentClient />} />
               <Route path="/assessment/:token/report" element={<AssessmentReport />} />
+              <Route path="/report/:token" element={<ClientReportView />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/assessments" element={<AdminGuard><AssessmentList /></AdminGuard>} />
