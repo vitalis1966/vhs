@@ -304,6 +304,7 @@ const StrategicAssessmentIntake = () => {
           if (sessionError) {
             console.error("Session creation error:", sessionError);
             sessionId = "";
+            accessToken = "";
           }
 
           // Update intake with session reference and lifecycle

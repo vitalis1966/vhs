@@ -1115,6 +1115,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      intake_exists: { Args: { p_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
