@@ -404,6 +404,47 @@ export type Database = {
         }
         Relationships: []
       }
+      client_report_tokens: {
+        Row: {
+          access_count: number | null
+          accessed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_revoked: boolean | null
+          session_id: string
+          token: string
+        }
+        Insert: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_revoked?: boolean | null
+          session_id: string
+          token: string
+        }
+        Update: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_revoked?: boolean | null
+          session_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_report_tokens_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           area_of_interest: string | null
