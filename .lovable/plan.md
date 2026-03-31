@@ -1,22 +1,35 @@
 
 
-## Mobile Performance Optimization
+## Plan: Rewrite Assessment Intake Notification to Use Resend Directly
 
-### Changes to implement
+### Analysis
 
-1. **Delete `src/App.css`** — unused Vite scaffold file, dead CSS
+- **send-assessment-completion-emails** — Already calls Resend directly via `VHS_Website` secret, `from: 'Vitalis Health Strategies <info@mail.vitalisstrategies.com>'`. No changes needed.
+- **send-contact-email** — Already calls Resend directly. No changes needed.
+- **send-assessment-intake-notification** — Uses the broken Lovable `enqueue_email` RPC queue. This is the only function that needs rewriting.
 
-2. **Update `vite.config.ts`**
-   - Add `build.target: 'es2020'`
-   - Add `build.cssMinify: true`
-   - Add `build.modulePreload: { polyfill: false }` (~2KB savings)
-   - Keep `framer-motion` in `manualChunks` as-is (no change)
+### Change: Rewrite `send-assessment-intake-notification/index.ts`
 
-3. **Update `index.html`**
-   - Trim Google Fonts URL: remove Playfair Display weights 500 and italic variants (500i, 400i); remove Montserrat weight 300
-   - Add `<link rel="dns-prefetch" href="https://ilbhphreyvaoomhpvaxi.supabase.co">` for faster Supabase connections on lazy-loaded pages
+Replace the entire function with a direct Resend call, matching the `send-contact-email` pattern:
 
-### Not changing
-- `framer-motion` chunking strategy stays as-is per user request
-- Cache-Control headers (CDN-level, not in code)
+- Use `Deno.env.get('VHS_Website')` for the Resend API key
+- POST to `https://api.resend.com/emails` with `Authorization: Bearer ${apiKey}`
+- `from: 'Vitalis Health Strategies <info@mail.vitalisstrategies.com>'`
+- `to: ['info@vitalisstrategies.com']`
+- `reply_to: 'info@vitalisstrategies.com'`
+- Keep the React Email template rendering (it produces the branded HTML)
+- Remove all queue-related code: `enqueue_email` RPC, suppression checks, unsubscribe token logic, `email_send_log` inserts
+- Keep CORS headers and input validation
+
+### Confirmed `from` addresses after changes
+
+| Function | From |
+|---|---|
+| send-assessment-intake-notification | `Vitalis Health Strategies <info@mail.vitalisstrategies.com>` |
+| send-assessment-completion-emails | `Vitalis Health Strategies <info@mail.vitalisstrategies.com>` (already correct) |
+| send-contact-email | `Vitalis Health Strategies <info@mail.vitalisstrategies.com>` (no change) |
+
+### Deployment
+
+Redeploy `send-assessment-intake-notification` after the rewrite.
 
