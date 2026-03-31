@@ -254,6 +254,8 @@ export default function ClientReport() {
   const [sentToEmail, setSentToEmail] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [linkTokens, setLinkTokens] = useState<any[]>([]);
+  const [copiedTokenId, setCopiedTokenId] = useState<string | null>(null);
+  const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (sessionId) loadAll();
