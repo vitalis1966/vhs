@@ -1,9 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const RESEND_API_KEY = Deno.env.get('VHS_Website') || Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-
 const FROM = 'Vitalis Health Strategies <info@mail.vitalisstrategies.com>'
 const REPLY_TO = 'info@vitalisstrategies.com'
 const LOGO_URL = 'https://vitalisstrategies.com/vitalis-logo-email.png'
@@ -17,42 +15,29 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-async function sendViaResend(to: string, subject: string, html: string) {
-  if (!RESEND_API_KEY) {
-    throw new Error('No Resend API key found (checked VHS_Website and RESEND_API_KEY)')
-  }
-  console.log('sendViaResend: calling Resend API', { to, subject: subject.substring(0, 60), apiKeyPresent: !!RESEND_API_KEY })
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
-  })
-  const data = await res.json()
-  console.log('Resend response:', JSON.stringify({ status: res.status, ok: res.ok, data }))
-  if (!res.ok) {
-    throw new Error(`Resend error ${res.status}: ${data?.message || JSON.stringify(data)}`)
-  }
-  return data
+function ok(body: Record<string, unknown>, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 }
 
-// ─── Email templates ───
+function err(message: string, status = 500) {
+  return new Response(JSON.stringify({ error: message }), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+}
 
-function buildClientReportHtml(data: { client_name: string; organization?: string; message_body: string; report_url: string; report_sections?: string[] }): string {
+// ─── Email HTML builder ────────────────────────────────────────────────────────
+
+function buildClientReportHtml(data: {
+  client_name: string
+  organization?: string
+  message_body: string
+  report_url: string
+  report_sections?: string[]
+}): string {
   const clientName = esc(data.client_name)
   const org = data.organization ? esc(data.organization) : ''
   const messageHtml = esc(data.message_body).replace(/\n/g, '<br/>')
-
   const sections = data.report_sections || [
-    'Executive Summary',
-    'Detailed Findings',
-    'Key Findings',
-    'Financial Overview',
-    'Priority Focus Areas',
-    'Opportunities',
-    'Recommended Next Steps',
+    'Executive Summary', 'Detailed Findings', 'Key Findings',
+    'Financial Overview', 'Priority Focus Areas', 'Opportunities', 'Recommended Next Steps',
   ]
   const sectionsHtml = sections.map(s => `&middot; ${esc(s)}`).join('<br/>\n')
 
@@ -89,7 +74,7 @@ function buildClientReportHtml(data: { client_name: string; organization?: strin
 <tr><td style="padding:0 40px 20px;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9f6f1;border-radius:6px;border:1px solid #dde4e0;">
 <tr><td style="padding:20px 24px;">
-<p style="font-size:13px;font-weight:700;color:#264a39;margin:0 0 12px;font-family:'Montserrat',Arial,sans-serif;">What's in your report</p>
+<p style="font-size:10px;font-weight:700;color:#5a7060;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 12px;font-family:'Montserrat',Arial,sans-serif;">WHAT'S IN YOUR REPORT</p>
 <p style="font-size:13px;color:#172620;line-height:2;margin:0;font-family:'Montserrat',Arial,sans-serif;">
 ${sectionsHtml}
 </p>
@@ -97,12 +82,12 @@ ${sectionsHtml}
 </table>
 </td></tr>
 
-<!-- CTA & consultation -->
+<!-- CTA -->
 <tr><td style="padding:0 40px 12px;">
 ${data.report_url ? `<div style="text-align:center;margin-bottom:20px;">
-<a href="${data.report_url}" style="display:inline-block;background-color:#264a39;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:6px;font-size:14px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;">View Your Strategic Assessment Report →</a>
+<a href="${data.report_url}" style="display:inline-block;background-color:#264a39;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:6px;font-size:13px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;">View Your Report →</a>
 </div>
-<p style="font-size:11px;color:#5a7060;text-align:center;margin:0 0 20px;line-height:1.5;font-family:'Montserrat',Arial,sans-serif;">This link is private and prepared exclusively for you. Do not share it. Link expires in 90 days.</p>` : ''}
+<p style="font-size:11px;color:#5a7060;text-align:center;margin:0 0 20px;line-height:1.5;font-family:'Montserrat',Arial,sans-serif;font-style:italic;">This link is private and prepared exclusively for you. Do not share it. Link expires in 90 days.</p>` : ''}
 <p style="font-size:14px;color:#172620;line-height:1.75;margin:0 0 20px;font-family:'Montserrat',Arial,sans-serif;">To discuss your report and explore how Vitalis can support your next steps, reply to this email or book a complimentary consultation with our team.</p>
 <div style="text-align:center;">
 <a href="https://vitalisstrategies.com/contact" style="display:inline-block;background-color:transparent;color:#264a39;text-decoration:none;padding:11px 24px;border-radius:6px;font-size:13px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;border:2px solid #264a39;">Book a Consultation →</a>
@@ -152,7 +137,7 @@ ${data.cta_url ? `<div style="text-align:center;margin:32px 0;"><a href="${data.
 </table></td></tr></table></body></html>`
 }
 
-// ─── Template registry ───
+// ─── Template registry ─────────────────────────────────────────────────────────
 
 const templates: Record<string, (data: any) => { subject: string; html: string }> = {
   intake_confirmation: (data) => ({
@@ -209,7 +194,30 @@ const templates: Record<string, (data: any) => { subject: string; html: string }
   }),
 }
 
-// ─── Handler ───
+// ─── Resend sender ─────────────────────────────────────────────────────────────
+
+async function sendViaResend(to: string, subject: string, html: string) {
+  const apiKey = Deno.env.get('VHS_Website') || Deno.env.get('RESEND_API_KEY')
+  if (!apiKey) {
+    throw new Error('No Resend API key found (checked VHS_Website and RESEND_API_KEY)')
+  }
+  console.log('sendViaResend → calling Resend API', { to, subject: subject.substring(0, 60) })
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
+  })
+  const data = await res.json()
+  console.log('Resend response:', JSON.stringify({ status: res.status, ok: res.ok, id: data?.id, message: data?.message }))
+
+  if (!res.ok) {
+    throw new Error(`Resend error ${res.status}: ${data?.message || JSON.stringify(data)}`)
+  }
+  return data
+}
+
+// ─── Handler ───────────────────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -217,37 +225,28 @@ Deno.serve(async (req) => {
   }
 
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return err('Method not allowed', 405)
   }
 
   try {
-    const { email_type, recipient_email, template_data, session_id, intake_id } = await req.json()
+    const body = await req.json()
+    const { email_type, recipient_email, template_data, session_id, intake_id } = body
 
-    console.log('send-assessment-email called:', JSON.stringify({
-      email_type, recipient_email, session_id, intake_id,
-      has_template_data: !!template_data,
-    }))
+    console.log('=== send-assessment-email invoked ===')
+    console.log('Payload:', JSON.stringify({ email_type, recipient_email, session_id, intake_id, has_template_data: !!template_data }))
 
     if (!email_type || !recipient_email) {
-      console.log('Missing required fields:', { email_type, recipient_email })
-      return new Response(JSON.stringify({ error: 'email_type and recipient_email are required' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+      return err('email_type and recipient_email are required', 400)
     }
 
     const templateFn = templates[email_type]
     if (!templateFn) {
-      console.log('Unknown email_type:', email_type)
-      return new Response(JSON.stringify({ error: `Unknown email_type: ${email_type}` }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+      return err(`Unknown email_type: ${email_type}`, 400)
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    // Duplicate prevention: only block if Resend confirmed delivery (provider_response has an id)
+    // ── Duplicate prevention: only block if Resend confirmed delivery ──
     if (session_id && email_type === 'client_report') {
       const { data: existing } = await supabase
         .from('email_events')
@@ -261,18 +260,16 @@ Deno.serve(async (req) => {
       const hasResendId = existing?.some((e: any) => e.provider_response?.id)
       if (hasResendId) {
         console.log('Duplicate prevention: already sent with confirmed Resend ID', { session_id })
-        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'already_sent' }), {
-          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
+        return ok({ success: true, skipped: true, reason: 'already_sent' })
       }
     }
 
-    // For client_report emails, generate a secure report token and include it
+    // ── For client_report: generate secure token & report URL ──
     let enrichedTemplateData = { ...(template_data || {}) }
     if (email_type === 'client_report' && session_id) {
       const reportToken = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '')
-      console.log('Generating client report token for session:', session_id)
-      
+      console.log('Generating report token for session:', session_id)
+
       const { error: tokenErr } = await supabase
         .from('client_report_tokens')
         .insert({
@@ -280,25 +277,25 @@ Deno.serve(async (req) => {
           token: reportToken,
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
         })
-      
+
       if (tokenErr) {
-        console.error('Failed to create report token:', tokenErr)
+        console.error('Failed to create report token:', JSON.stringify(tokenErr))
       } else {
         const reportUrl = `https://vitalisstrategies.com/report/${reportToken}`
         enrichedTemplateData.report_url = reportUrl
-        enrichedTemplateData.report_token = reportToken
         console.log('Report token created, URL:', reportUrl)
       }
     }
 
+    // ── Build email from template ──
     const { subject, html } = templateFn(enrichedTemplateData)
-    console.log('Template resolved, sending via Resend:', { email_type, subject, to: recipient_email })
+    console.log('Template resolved:', { email_type, subject, to: recipient_email })
 
-    // Send via Resend
+    // ── Send via Resend ──
     const resendResult = await sendViaResend(recipient_email, subject, html)
-    console.log(`[EMAIL] Sent ${email_type} to ${recipient_email} via Resend`, { id: resendResult.id })
+    console.log(`[EMAIL] Sent ${email_type} to ${recipient_email}`, { id: resendResult.id })
 
-    // Log to email_events AFTER successful send
+    // ── Log to email_events AFTER confirmed send ──
     await supabase.from('email_events').insert({
       email_type,
       recipient_email,
@@ -310,7 +307,7 @@ Deno.serve(async (req) => {
       provider_response: resendResult,
     })
 
-    // Update lifecycle status if applicable
+    // ── Update lifecycle status if applicable ──
     if (intake_id && email_type === 'intake_confirmation') {
       await supabase.from('assessment_intakes').update({ lifecycle_status: 'intake_submitted', last_activity_at: new Date().toISOString() }).eq('id', intake_id)
     }
@@ -321,14 +318,10 @@ Deno.serve(async (req) => {
       await supabase.from('assessment_intakes').update({ lifecycle_status: 'assessment_completed', assessment_completion_date: new Date().toISOString(), last_activity_at: new Date().toISOString() }).eq('id', intake_id)
     }
 
-    return new Response(JSON.stringify({ success: true, sent: true }), {
-      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return ok({ success: true, sent: true, message_id: resendResult.id })
   } catch (error) {
     console.error('send-assessment-email error:', error)
     const msg = error instanceof Error ? error.message : 'Unknown error'
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return err(msg)
   }
 })
