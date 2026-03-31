@@ -35,10 +35,21 @@ async function sendViaResend(to: string, subject: string, html: string) {
 
 // ─── Email templates ───
 
-function buildClientReportHtml(data: { client_name: string; organization?: string; message_body: string; report_url: string }): string {
+function buildClientReportHtml(data: { client_name: string; organization?: string; message_body: string; report_url: string; report_sections?: string[] }): string {
   const clientName = esc(data.client_name)
   const org = data.organization ? esc(data.organization) : ''
   const messageHtml = esc(data.message_body).replace(/\n/g, '<br/>')
+
+  const sections = data.report_sections || [
+    'Executive Summary',
+    'Detailed Findings',
+    'Key Findings',
+    'Financial Overview',
+    'Priority Focus Areas',
+    'Opportunities',
+    'Recommended Next Steps',
+  ]
+  const sectionsHtml = sections.map(s => `&middot; ${esc(s)}`).join('<br/>\n')
 
   return `<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@400;500;600&display=swap');</style></head><body style="margin:0;padding:20px 0;background-color:#f9f6f1;font-family:'Montserrat',Arial,sans-serif;">
 <div style="display:none;overflow:hidden;max-height:0;">Your Strategic Assessment Report is ready for review</div>
