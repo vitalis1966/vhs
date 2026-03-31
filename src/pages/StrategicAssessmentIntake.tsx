@@ -231,7 +231,7 @@ const StrategicAssessmentIntake = () => {
           `Looking for: ${form.looking_for.trim() || "Not specified"}`,
           `Additional notes: ${form.additional_notes.trim() || "None"}`,
         ];
-        await supabase.from("contact_submissions").insert({
+        const { error: contactError } = await supabase.from("contact_submissions").insert({
           name: form.full_name.trim(),
           email: form.email.trim(),
           phone: form.phone.trim() || null,
@@ -240,6 +240,9 @@ const StrategicAssessmentIntake = () => {
           message: messageParts.join("\n"),
           status: "new",
         });
+        if (contactError) {
+          console.error("Contact submission mirror DB error:", contactError);
+        }
       } catch (contactErr) {
         console.error("Contact submission mirror failed (non-blocking):", contactErr);
       }
