@@ -45,6 +45,9 @@ import {
   ArrowRight,
   CheckCircle,
   AlertTriangle,
+  Copy,
+  Link as LinkIcon,
+  XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 const vitalisLogo = "/vitalis-logo.webp";
@@ -251,6 +254,8 @@ export default function ClientReport() {
   const [sentToEmail, setSentToEmail] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [linkTokens, setLinkTokens] = useState<any[]>([]);
+  const [copiedTokenId, setCopiedTokenId] = useState<string | null>(null);
+  const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (sessionId) loadAll();
@@ -353,6 +358,9 @@ export default function ClientReport() {
       setSentToEmail(emailTo);
       setReportSent(true);
       setSending(false);
+      // Refresh tokens list after successful send
+      const { data: newTokens } = await (supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any);
+      setLinkTokens(newTokens || []);
     } catch (err: any) {
       setSendError(err.message || "Failed to send report. Please try again.");
       setSending(false);
@@ -664,7 +672,121 @@ export default function ClientReport() {
           </div>
         </div>
 
-        {/* Header with Vitalis branding */}
+        {/* Report Links — top of page */}
+        <div className="no-print container mx-auto px-4 lg:px-8 max-w-5xl pt-6">
+          <div className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-border/40 bg-secondary/10">
+              <LinkIcon className="h-5 w-5 text-accent" />
+              <div>
+                <h3 className="font-display text-sm font-bold text-foreground">Report Links</h3>
+                <p className="text-xs text-muted-foreground">Each time you send the report, a new private link is generated for that recipient.</p>
+              </div>
+            </div>
+            <div className="p-4">
+              {linkTokens.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-2">No report links generated yet. Use "Send Report to Client" above to generate a link.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b border-border/40 text-muted-foreground uppercase tracking-wider">
+                        <th className="text-left py-2 px-2 font-medium">Sent To</th>
+                        <th className="text-left py-2 px-2 font-medium">Generated</th>
+                        <th className="text-left py-2 px-2 font-medium">Last Viewed</th>
+                        <th className="text-center py-2 px-2 font-medium">Views</th>
+                        <th className="text-center py-2 px-2 font-medium">Status</th>
+                        <th className="text-center py-2 px-2 font-medium">Link</th>
+                        <th className="text-center py-2 px-2 font-medium">Revoke</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {linkTokens.map((t: any) => {
+                        const isExpired = t.expires_at && new Date(t.expires_at) < new Date();
+                        const isRevoked = t.is_revoked;
+                        const isActive = !isExpired && !isRevoked;
+                        const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : null;
+
+                        return (
+                          <tr key={t.id} className="border-b border-border/20 last:border-0">
+                            <td className="py-2.5 px-2 text-foreground">{t.sent_to_email || "—"}</td>
+                            <td className="py-2.5 px-2 text-muted-foreground">{fmtDate(t.created_at) || "—"}</td>
+                            <td className="py-2.5 px-2 text-muted-foreground">{fmtDate(t.accessed_at) || "Never"}</td>
+                            <td className="py-2.5 px-2 text-center text-foreground font-medium">{t.access_count || 0}</td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isRevoked ? (
+                                <Badge variant="destructive" className="text-[10px]">Revoked</Badge>
+                              ) : isExpired ? (
+                                <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted-foreground/30">Expired</Badge>
+                              ) : (
+                                <Badge className="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white border-0">Active</Badge>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isActive ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 text-[11px] px-2"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(`https://vitalisstrategies.com/report/${t.token}`);
+                                    setCopiedTokenId(t.id);
+                                    setTimeout(() => setCopiedTokenId(null), 2000);
+                                  }}
+                                >
+                                  {copiedTokenId === t.id ? (
+                                    <><CheckCircle className="mr-1 h-3 w-3" />Copied!</>
+                                  ) : (
+                                    <><Copy className="mr-1 h-3 w-3" />Copy</>
+                                  )}
+                                </Button>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isActive ? (
+                                revokeConfirmId === t.id ? (
+                                  <div className="flex items-center gap-1 justify-center">
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-7 text-[11px] px-2"
+                                      onClick={async () => {
+                                        await (supabase.from("client_report_tokens" as any).update({ is_revoked: true } as any).eq("id", t.id) as any);
+                                        setLinkTokens(prev => prev.map(lt => lt.id === t.id ? { ...lt, is_revoked: true } : lt));
+                                        setRevokeConfirmId(null);
+                                        toast({ title: "Link Revoked", description: "The recipient can no longer access this report." });
+                                      }}
+                                    >
+                                      Confirm
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-7 text-[11px] px-2" onClick={() => setRevokeConfirmId(null)}>Cancel</Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-[11px] px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                                    onClick={() => setRevokeConfirmId(t.id)}
+                                  >
+                                    Revoke
+                                  </Button>
+                                )
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-card border-b border-border/40 print:border-b-2 print:border-accent">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-10 text-center">
             <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-12 mx-auto mb-4 print:h-10" />
@@ -820,47 +942,7 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
-          {/* Link Activity */}
-          {linkTokens.length > 0 && (
-            <div className="no-print">
-              <ClientReportCard title="Report Link Activity" icon={<FileText className="h-5 w-5" />}>
-                <div className="space-y-3">
-                  {linkTokens.map((t: any) => (
-                    <div key={t.id} className="flex items-center justify-between bg-secondary/20 rounded-xl p-4 text-sm">
-                      <div className="space-y-1">
-                        <p className="text-foreground font-medium">
-                          Link generated: {new Date(t.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          Last accessed: {t.accessed_at ? new Date(t.accessed_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Never"}
-                          {" · "}Views: {t.access_count || 0}
-                          {" · "}Expires: {new Date(t.expires_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
-                        </p>
-                      </div>
-                      <div>
-                        {t.is_revoked ? (
-                          <Badge variant="outline" className="text-destructive border-destructive/30">Revoked</Badge>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-destructive border-destructive/30 hover:bg-destructive/10"
-                            onClick={async () => {
-                              await (supabase.from("client_report_tokens" as any).update({ is_revoked: true } as any).eq("id", t.id) as any);
-                              setLinkTokens(prev => prev.map(lt => lt.id === t.id ? { ...lt, is_revoked: true } : lt));
-                              toast({ title: "Link Revoked", description: "The client can no longer access this report link." });
-                            }}
-                          >
-                            Revoke Link
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ClientReportCard>
-            </div>
-          )}
+          {/* Link Activity removed from here — moved to top */}
 
           <div className="no-print space-y-4">
             <h3 className="font-display text-xl font-bold text-foreground text-center">

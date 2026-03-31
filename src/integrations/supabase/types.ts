@@ -412,6 +412,7 @@ export type Database = {
           expires_at: string | null
           id: string
           is_revoked: boolean | null
+          sent_to_email: string | null
           session_id: string
           token: string
         }
@@ -422,6 +423,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           is_revoked?: boolean | null
+          sent_to_email?: string | null
           session_id: string
           token: string
         }
@@ -432,6 +434,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           is_revoked?: boolean | null
+          sent_to_email?: string | null
           session_id?: string
           token?: string
         }
