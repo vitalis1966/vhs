@@ -45,6 +45,9 @@ import {
   ArrowRight,
   CheckCircle,
   AlertTriangle,
+  Copy,
+  Link as LinkIcon,
+  XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 const vitalisLogo = "/vitalis-logo.webp";
