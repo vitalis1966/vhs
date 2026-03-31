@@ -63,7 +63,7 @@ function wrapEmail(previewText: string, bodyContent: string): string {
     '<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9f6f1;"><tr><td align="center">',
     '<table width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;">',
     '<!-- Header --><tr><td style="background-color:#ffffff;border-bottom:2px solid #A9B1A1;padding:28px 40px;text-align:center;">',
-    `<img src="${LOGO_URL}" alt="Vitalis Health Strategies" width="180" height="auto" style="display:block;margin:0 auto;max-width:180px;border:0;outline:none;text-decoration:none;"/>`,
+    `<img src="${LOGO_URL}" alt="Vitalis Health Strategies" width="216" height="auto" style="display:block;margin:0 auto;max-width:216px;border:0;outline:none;text-decoration:none;"/>`,
     '</td></tr>',
     '<!-- Gold bar --><tr><td style="height:4px;background-color:#c89741;font-size:0;line-height:0;">&nbsp;</td></tr>',
     bodyContent,
