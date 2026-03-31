@@ -744,10 +744,17 @@ export default function ClientReport() {
 
           {/* Bottom Send button */}
           <div className="no-print flex justify-center pt-4 pb-8">
-            <Button size="lg" onClick={() => setSendOpen(true)}>
-              <Send className="mr-2 h-4 w-4" />
-              Send Report to Client
-            </Button>
+            {reportSent ? (
+              <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Report Sent ✓
+              </Button>
+            ) : (
+              <Button size="lg" onClick={() => setSendOpen(true)}>
+                <Send className="mr-2 h-4 w-4" />
+                Send Report to Client
+              </Button>
+            )}
           </div>
 
           {/* Print spacer */}
