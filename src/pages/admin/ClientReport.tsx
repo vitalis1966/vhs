@@ -272,7 +272,8 @@ export default function ClientReport() {
     // Pre-fill send dialog
     if (intakeRes.data) {
       setEmailTo(intakeRes.data.email || "");
-      setEmailSubject(`Your ${assessRes.data?.title || "Strategic Assessment"} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
+      const cleanAssessmentName = getCleanAssessmentName(assessRes.data?.slug, assessRes.data?.title);
+      setEmailSubject(`${cleanAssessmentName} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
       setEmailBody(`Dear ${intakeRes.data.full_name},\n\nPlease find attached the findings from your recent strategic assessment. We look forward to discussing these insights with you.\n\nWarm regards,\nVitalis Health Strategies`);
     }
 
