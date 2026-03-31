@@ -246,23 +246,7 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    // ── Duplicate prevention: only block if Resend confirmed delivery ──
-    if (session_id && email_type === 'client_report') {
-      const { data: existing } = await supabase
-        .from('email_events')
-        .select('id, provider_response')
-        .eq('session_id', session_id)
-        .eq('email_type', 'client_report')
-        .eq('status', 'sent')
-        .not('provider_response', 'is', null)
-        .limit(1)
-
-      const hasResendId = existing?.some((e: any) => e.provider_response?.id)
-      if (hasResendId) {
-        console.log('Duplicate prevention: already sent with confirmed Resend ID', { session_id })
-        return ok({ success: true, skipped: true, reason: 'already_sent' })
-      }
-    }
+    // No duplicate prevention — each send generates a fresh report token
 
     // ── For client_report: generate secure token & report URL ──
     let enrichedTemplateData = { ...(template_data || {}) }
