@@ -216,7 +216,13 @@ Deno.serve(async (req) => {
   try {
     const { email_type, recipient_email, template_data, session_id, intake_id } = await req.json()
 
+    console.log('send-assessment-email called:', JSON.stringify({
+      email_type, recipient_email, session_id, intake_id,
+      has_template_data: !!template_data,
+    }))
+
     if (!email_type || !recipient_email) {
+      console.log('Missing required fields:', { email_type, recipient_email })
       return new Response(JSON.stringify({ error: 'email_type and recipient_email are required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -224,6 +230,7 @@ Deno.serve(async (req) => {
 
     const templateFn = templates[email_type]
     if (!templateFn) {
+      console.log('Unknown email_type:', email_type)
       return new Response(JSON.stringify({ error: `Unknown email_type: ${email_type}` }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -244,6 +251,7 @@ Deno.serve(async (req) => {
         .limit(1)
 
       if (existing && existing.length > 0) {
+        console.log('Duplicate prevention: skipping', { email_type, session_id })
         return new Response(JSON.stringify({ success: true, skipped: true, reason: 'duplicate_prevention' }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
@@ -251,12 +259,13 @@ Deno.serve(async (req) => {
     }
 
     const { subject, html } = templateFn(template_data || {})
+    console.log('Template resolved, sending via Resend:', { email_type, subject, to: recipient_email })
 
     // Send via Resend
     const resendResult = await sendViaResend(recipient_email, subject, html)
     console.log(`[EMAIL] Sent ${email_type} to ${recipient_email} via Resend`, { id: resendResult.id })
 
-    // Log to email_events
+    // Log to email_events AFTER successful send
     await supabase.from('email_events').insert({
       email_type,
       recipient_email,

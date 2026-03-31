@@ -459,7 +459,7 @@ export default function ClientReport() {
         const ctx = sliceCanvas.getContext("2d");
         if (ctx) ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
 
-        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
         const sliceH = (srcH * imgW) / canvas.width;
         pdf.addImage(sliceData, "JPEG", margin, headerH + margin, imgW, sliceH);
       }
