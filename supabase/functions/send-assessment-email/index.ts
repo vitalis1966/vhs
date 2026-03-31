@@ -18,6 +18,10 @@ function esc(s: string): string {
 }
 
 async function sendViaResend(to: string, subject: string, html: string) {
+  if (!RESEND_API_KEY) {
+    throw new Error('No Resend API key found (checked VHS_Website and RESEND_API_KEY)')
+  }
+  console.log('sendViaResend: calling Resend API', { to, subject: subject.substring(0, 60), apiKeyPresent: !!RESEND_API_KEY })
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -26,11 +30,12 @@ async function sendViaResend(to: string, subject: string, html: string) {
     },
     body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
   })
+  const data = await res.json()
+  console.log('Resend response:', JSON.stringify({ status: res.status, ok: res.ok, data }))
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Resend error: ${res.status} ${err}`)
+    throw new Error(`Resend error ${res.status}: ${data?.message || JSON.stringify(data)}`)
   }
-  return res.json()
+  return data
 }
 
 // ─── Email templates ───
