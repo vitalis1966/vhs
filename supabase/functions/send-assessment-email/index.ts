@@ -259,6 +259,7 @@ Deno.serve(async (req) => {
         .insert({
           session_id,
           token: reportToken,
+          sent_to_email: recipient_email,
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
         })
 
