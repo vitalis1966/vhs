@@ -35,7 +35,7 @@ import { usePageMeta } from "@/lib/seo";
 const fadeUp = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true } };
 
 const heroStats = [
-  { stat: "15+ Facility Builds Supported", context: "From concept to opening day across Canada" },
+  { stat: "25+ Facility Builds Supported", context: "From concept to opening day across Canada" },
   { stat: "Medical · Dental · Veterinary", context: "All practice types, all stages of development" },
   { stat: "Calgary & Edmonton Focus", context: "Deep local market knowledge with national reach" },
   { stat: "Concept to Opening Day", context: "Every planning dimension under one advisory relationship" },
