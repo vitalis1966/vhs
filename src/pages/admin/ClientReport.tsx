@@ -559,14 +559,21 @@ export default function ClientReport() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button variant="outline" size="sm" onClick={() => window.print()}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
+              <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
+                {isGeneratingPDF ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                {isGeneratingPDF ? "Generating PDF..." : "Download PDF"}
               </Button>
-              <Button size="sm" onClick={() => setSendOpen(true)}>
-                <Send className="mr-2 h-4 w-4" />
-                Send Report to Client
-              </Button>
+              {reportSent ? (
+                <Button size="sm" disabled className="bg-accent/20 text-accent border border-accent/30">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Report Sent ✓
+                </Button>
+              ) : (
+                <Button size="sm" onClick={() => setSendOpen(true)}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Report to Client
+                </Button>
+              )}
             </div>
           </div>
         </div>
