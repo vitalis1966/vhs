@@ -595,7 +595,7 @@ export default function ClientReport() {
         </div>
 
         {/* Report Body */}
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-8 space-y-8">
+        <div id="report-content" className="container mx-auto px-4 lg:px-8 max-w-5xl py-8 space-y-8">
 
           {/* Client Overview */}
           <ClientReportCard title="Overview" icon={<User className="h-5 w-5" />}>
