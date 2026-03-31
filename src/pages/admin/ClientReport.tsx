@@ -263,11 +263,12 @@ export default function ClientReport() {
     setSession(sess);
     if (!sess) { setLoading(false); return; }
 
-    const [assessRes, intakeRes, reportRes, editsRes] = await Promise.all([
+    const [assessRes, intakeRes, reportRes, editsRes, tokensRes] = await Promise.all([
       supabase.from("assessments" as any).select("*").eq("id", sess.assessment_id).single() as any,
       sess.intake_id ? supabase.from("assessment_intakes" as any).select("*").eq("id", sess.intake_id).single() as any : Promise.resolve({ data: null }),
       supabase.from("internal_assessment_reports" as any).select("*").eq("session_id", sessionId).single() as any,
       supabase.from("client_report_edits" as any).select("*").eq("session_id", sessionId) as any,
+      supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any,
     ]);
 
     setAssessment(assessRes.data);
