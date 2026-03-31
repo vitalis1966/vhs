@@ -411,7 +411,7 @@ export default function ClientReport() {
       const margin = 10;
       const headerH = 14;
       const footerH = 10;
-      const contentH = pageH - headerH - footerH - margin * 2;
+      const contentH = pageH - headerH - footerH - margin * 2 - 8;
       const imgW = pageW - margin * 2;
       const totalImgH = (canvas.height * imgW) / canvas.width;
       const totalPages = Math.ceil(totalImgH / contentH);
