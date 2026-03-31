@@ -212,15 +212,30 @@ export default function AssessmentClient() {
     // Cancel pending reminders via secure RPC
     await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 
-    // Send completion emails (client thank-you + internal notification) via edge function
+    // Send completion emails via transactional system (non-blocking)
     if (session.intake_id) {
       try {
-        await supabase.functions.invoke("send-assessment-completion-emails", {
+        const completionData = {
+          session_id: session.id,
+          assessment_title: assessment?.title || "Strategic Assessment",
+          submitted_at: new Date().toISOString(),
+        };
+        // Client thank-you email
+        await supabase.functions.invoke("send-transactional-email", {
           body: {
-            session_id: session.id,
-            intake_id: session.intake_id,
-            assessment_title: assessment?.title || "Strategic Assessment",
-            assessment_slug: assessment?.slug || "",
+            templateName: "assessment-completion-client",
+            recipientEmail: "__from_intake__", // template.to not set; we need intake email
+            idempotencyKey: `completion-client-${session.id}`,
+            templateData: { full_name: "", assessment_title: completionData.assessment_title, ...completionData },
+          },
+        });
+        // Internal notification email
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "assessment-completion-internal",
+            recipientEmail: "info@vitalisstrategies.com",
+            idempotencyKey: `completion-internal-${session.id}`,
+            templateData: completionData,
           },
         });
       } catch (emailErr) {

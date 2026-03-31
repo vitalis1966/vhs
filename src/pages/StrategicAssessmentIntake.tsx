@@ -244,23 +244,29 @@ const StrategicAssessmentIntake = () => {
         console.error("Contact submission mirror failed (non-blocking):", contactErr);
       }
 
-      // Send internal intake notification email (non-blocking)
+      // Send internal intake notification email via transactional system (non-blocking)
       try {
-        await supabase.functions.invoke("send-assessment-intake-notification", {
+        const intakeEmailData = {
+          full_name: form.full_name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim() || undefined,
+          organization_name: form.organization_name.trim() || undefined,
+          city: form.city.trim() || undefined,
+          province_state: form.province_state || undefined,
+          specialty: form.specialty || undefined,
+          practice_type: form.practice_type || undefined,
+          assessment_purpose: form.assessment_purpose,
+          approximate_timeline: form.approximate_timeline || undefined,
+          looking_for: form.looking_for.trim() || undefined,
+          additional_notes: form.additional_notes.trim() || undefined,
+          assigned_track: track,
+        };
+        await supabase.functions.invoke("send-transactional-email", {
           body: {
-            full_name: form.full_name.trim(),
-            email: form.email.trim(),
-            phone: form.phone.trim() || null,
-            organization_name: form.organization_name.trim() || null,
-            city: form.city.trim() || null,
-            province_state: form.province_state || null,
-            specialty: form.specialty || null,
-            practice_type: form.practice_type || null,
-            assessment_purpose: form.assessment_purpose,
-            approximate_timeline: form.approximate_timeline || null,
-            looking_for: form.looking_for.trim() || null,
-            additional_notes: form.additional_notes.trim() || null,
-            assigned_track: track,
+            templateName: "assessment-intake-notification",
+            recipientEmail: form.email.trim(),
+            idempotencyKey: `intake-notify-${intakeId}`,
+            templateData: intakeEmailData,
           },
         });
       } catch (emailErr) {
