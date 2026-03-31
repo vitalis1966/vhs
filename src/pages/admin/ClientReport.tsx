@@ -441,8 +441,8 @@ export default function ClientReport() {
         const srcY = page * contentH * (canvas.height / totalImgH);
         const srcH = Math.min(contentH * (canvas.height / totalImgH), canvas.height - srcY);
 
-        // Skip blank last page
-        if (srcH < 20) {
+        // Skip near-empty last page
+        if (srcH < 100) {
           if (page > 0) {
             // Remove the just-added blank page
             const pageCount = (pdf as any).internal.getNumberOfPages();
