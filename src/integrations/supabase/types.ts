@@ -1133,6 +1133,7 @@ export type Database = {
           organization_name: string
         }[]
       }
+      get_report_by_token: { Args: { p_token: string }; Returns: Json }
       get_responses_by_token: {
         Args: { p_token: string }
         Returns: {
