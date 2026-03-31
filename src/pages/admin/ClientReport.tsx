@@ -377,17 +377,28 @@ export default function ClientReport() {
 
       // Mount clone off-screen for capture
       const wrapper = document.createElement("div");
-      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1200px;background:#f9f6f1;padding:40px;";
+      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1100px;background:#f9f6f1;padding:16px 40px 40px;";
+
+      // Add styles for better PDF rendering of card sections
+      const pdfStyle = document.createElement("style");
+      pdfStyle.textContent = `
+        .bg-card {
+          border: 1px solid #dde4e0 !important;
+          margin-bottom: 16px !important;
+          page-break-inside: avoid !important;
+        }
+      `;
+      wrapper.appendChild(pdfStyle);
       wrapper.appendChild(clone);
       document.body.appendChild(wrapper);
 
       await new Promise(r => setTimeout(r, 500));
 
       const canvas = await html2canvas(wrapper, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         backgroundColor: "#f9f6f1",
-        windowWidth: 1200,
+        windowWidth: 1100,
         scrollY: 0,
         height: wrapper.scrollHeight,
       });
@@ -400,7 +411,7 @@ export default function ClientReport() {
       const margin = 10;
       const headerH = 14;
       const footerH = 10;
-      const contentH = pageH - headerH - footerH - margin * 2;
+      const contentH = pageH - headerH - footerH - margin * 2 - 8;
       const imgW = pageW - margin * 2;
       const totalImgH = (canvas.height * imgW) / canvas.width;
       const totalPages = Math.ceil(totalImgH / contentH);
@@ -430,8 +441,8 @@ export default function ClientReport() {
         const srcY = page * contentH * (canvas.height / totalImgH);
         const srcH = Math.min(contentH * (canvas.height / totalImgH), canvas.height - srcY);
 
-        // Skip blank last page
-        if (srcH < 20) {
+        // Skip near-empty last page
+        if (srcH < 100) {
           if (page > 0) {
             // Remove the just-added blank page
             const pageCount = (pdf as any).internal.getNumberOfPages();
@@ -448,7 +459,7 @@ export default function ClientReport() {
         const ctx = sliceCanvas.getContext("2d");
         if (ctx) ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
 
-        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
         const sliceH = (srcH * imgW) / canvas.width;
         pdf.addImage(sliceData, "JPEG", margin, headerH + margin, imgW, sliceH);
       }
