@@ -11,8 +11,14 @@ export interface TemplateEntry {
 
 import { template as contactInternalNotification } from './contact-internal-notification.tsx'
 import { template as contactClientConfirmation } from './contact-client-confirmation.tsx'
+import { template as assessmentIntakeNotification } from './assessment-intake-notification.tsx'
+import { template as assessmentCompletionClient } from './assessment-completion-client.tsx'
+import { template as assessmentCompletionInternal } from './assessment-completion-internal.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-internal-notification': contactInternalNotification,
   'contact-client-confirmation': contactClientConfirmation,
+  'assessment-intake-notification': assessmentIntakeNotification,
+  'assessment-completion-client': assessmentCompletionClient,
+  'assessment-completion-internal': assessmentCompletionInternal,
 }
