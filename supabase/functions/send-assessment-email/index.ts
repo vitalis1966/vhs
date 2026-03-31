@@ -1,6 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const RESEND_API_KEY = Deno.env.get('VHS_Website')!
+const RESEND_API_KEY = Deno.env.get('VHS_Website') || Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
@@ -18,6 +18,10 @@ function esc(s: string): string {
 }
 
 async function sendViaResend(to: string, subject: string, html: string) {
+  if (!RESEND_API_KEY) {
+    throw new Error('No Resend API key found (checked VHS_Website and RESEND_API_KEY)')
+  }
+  console.log('sendViaResend: calling Resend API', { to, subject: subject.substring(0, 60), apiKeyPresent: !!RESEND_API_KEY })
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -26,11 +30,12 @@ async function sendViaResend(to: string, subject: string, html: string) {
     },
     body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
   })
+  const data = await res.json()
+  console.log('Resend response:', JSON.stringify({ status: res.status, ok: res.ok, data }))
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Resend error: ${res.status} ${err}`)
+    throw new Error(`Resend error ${res.status}: ${data?.message || JSON.stringify(data)}`)
   }
-  return res.json()
+  return data
 }
 
 // ─── Email templates ───
@@ -238,21 +243,21 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    // Duplicate prevention for session-scoped emails
-    if (session_id) {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    // Duplicate prevention: only block if Resend confirmed delivery (provider_response has an id)
+    if (session_id && email_type === 'client_report') {
       const { data: existing } = await supabase
         .from('email_events')
-        .select('id')
+        .select('id, provider_response')
         .eq('session_id', session_id)
-        .eq('email_type', email_type)
+        .eq('email_type', 'client_report')
         .eq('status', 'sent')
-        .gte('sent_at', oneHourAgo)
+        .not('provider_response', 'is', null)
         .limit(1)
 
-      if (existing && existing.length > 0) {
-        console.log('Duplicate prevention: skipping', { email_type, session_id })
-        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'duplicate_prevention' }), {
+      const hasResendId = existing?.some((e: any) => e.provider_response?.id)
+      if (hasResendId) {
+        console.log('Duplicate prevention: already sent with confirmed Resend ID', { session_id })
+        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'already_sent' }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
       }

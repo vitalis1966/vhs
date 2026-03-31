@@ -1,0 +1,1 @@
+DELETE FROM email_events WHERE email_type = 'client_report' AND session_id IN ('2561635d-bc98-4d46-ab5f-b80f9097954f', '51937abf-ad5c-42f8-816b-3c790b584b63');
