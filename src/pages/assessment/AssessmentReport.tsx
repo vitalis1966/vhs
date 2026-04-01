@@ -17,26 +17,55 @@ export default function AssessmentReport() {
       return;
     }
 
-    const resolve = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("resolve-assessment-report", {
-          body: { access_token: token },
-        });
+    let cancelled = false;
 
-        if (error || !data?.report_token) {
-          console.error("Failed to resolve assessment report token:", error || data);
+    const resolve = async () => {
+      const MAX_RETRIES = 10;
+      const RETRY_INTERVAL = 3000;
+
+      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        if (cancelled) return;
+
+        try {
+          const { data, error } = await supabase.functions.invoke("resolve-assessment-report", {
+            body: { access_token: token },
+          });
+
+          if (error) {
+            console.error("Network/invoke error resolving report:", error);
+            setStatus("error");
+            return;
+          }
+
+          if (data?.report_token) {
+            navigate(`/report/${data.report_token}`, { replace: true });
+            return;
+          }
+
+          // Retryable "no_report" case — report not generated yet
+          if (data?.error === "no_report") {
+            if (attempt < MAX_RETRIES - 1) {
+              await new Promise((r) => setTimeout(r, RETRY_INTERVAL));
+              continue;
+            }
+          }
+
+          // Non-retryable error or final attempt
+          console.error("Failed to resolve assessment report token:", data);
+          setStatus("error");
+          return;
+        } catch (err) {
+          console.error("Error resolving assessment report:", err);
           setStatus("error");
           return;
         }
-
-        navigate(`/report/${data.report_token}`, { replace: true });
-      } catch (err) {
-        console.error("Error resolving assessment report:", err);
-        setStatus("error");
       }
+
+      if (!cancelled) setStatus("error");
     };
 
     resolve();
+    return () => { cancelled = true; };
   }, [token, navigate]);
 
   if (status === "error") {
