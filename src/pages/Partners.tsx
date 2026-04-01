@@ -371,15 +371,6 @@ const Partners = () => {
             </div>
           </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="mt-12 text-center text-muted-foreground text-lg"
-          >
-            One relationship with Vitalis connects you to all of them.
-          </motion.p>
         </div>
       </section>
 
