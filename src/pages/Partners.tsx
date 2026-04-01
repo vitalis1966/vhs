@@ -119,10 +119,10 @@ const featuredPartners = [
   {
     category: "FINANCIAL PARTNER",
     name: "ATB Financial",
-    subtitle: "Healthcare & Private Wealth",
+    subtitle: "Healthcare & Wealth",
     hook: "The financial institution that understands what it actually costs to build and run a healthcare practice.",
     description:
-      "ATB's Healthcare and Private Wealth teams support physicians and healthcare organizations with financing, capital planning, and financial strategy. They understand the unique financial needs of healthcare ventures — from clinic development financing to practice acquisition and long-term wealth planning.",
+      "ATB's Healthcare and Wealth teams support physicians and healthcare organizations with financing, capital planning, and financial strategy. They understand the unique financial needs of healthcare ventures — from clinic development financing to practice acquisition and long-term wealth planning.",
     bullets: [
       "Clinic development financing",
       "Facility builds and expansion",
@@ -136,7 +136,7 @@ const featuredPartners = [
   {
     category: "ARCHITECTURE & DESIGN",
     name: "Holland Design",
-    subtitle: "Healthcare Environments",
+    subtitle: "Healthcare Environments & Facilities",
     hook: "The design team that knows clinical environments don't just need to look good — they need to work.",
     description:
       "Holland Design specializes in healthcare facility planning and design. They create clinical environments that balance patient experience, operational efficiency, regulatory compliance, and long-term flexibility for growth.",
