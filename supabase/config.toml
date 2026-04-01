@@ -33,3 +33,5 @@ project_id = "ilbhphreyvaoomhpvaxi"
     verify_jwt = false
   [functions.handle-email-suppression]
     verify_jwt = false
+  [functions.resolve-assessment-report]
+    verify_jwt = false

@@ -60,7 +60,7 @@ export const EmailAutomationService = {
     intakeId: string | null,
     clientName: string,
     email: string,
-    accessToken: string
+    _accessToken: string
   ) {
     return this.sendEmail({
       email_type: "completion_confirmation",
@@ -69,7 +69,6 @@ export const EmailAutomationService = {
       intake_id: intakeId || undefined,
       template_data: {
         client_name: clientName,
-        report_url: `${BASE_URL}/assessment/${accessToken}/report`,
       },
     });
   },

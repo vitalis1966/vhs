@@ -251,8 +251,8 @@ Deno.serve(async (req) => {
     // ── For client_report: generate secure token & report URL ──
     let enrichedTemplateData = { ...(template_data || {}) }
     if (email_type === 'client_report' && session_id) {
-      const reportToken = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '')
-      console.log('Generating report token for session:', session_id)
+      const reportToken = crypto.randomUUID()
+      console.log('Generating report token for session:', session_id, 'token:', reportToken)
 
       const { error: tokenErr } = await supabase
         .from('client_report_tokens')
@@ -265,11 +265,12 @@ Deno.serve(async (req) => {
 
       if (tokenErr) {
         console.error('Failed to create report token:', JSON.stringify(tokenErr))
-      } else {
-        const reportUrl = `https://vitalisstrategies.com/report/${reportToken}`
-        enrichedTemplateData.report_url = reportUrl
-        console.log('Report token created, URL:', reportUrl)
+        return err('Could not generate report link. Please try again.', 500)
       }
+
+      const reportUrl = `https://vitalisstrategies.com/report/${reportToken}`
+      enrichedTemplateData.report_url = reportUrl
+      console.log('Report token created, URL:', reportUrl)
     }
 
     // ── Build email from template ──
