@@ -20,48 +20,31 @@ export default function AssessmentReport() {
     let cancelled = false;
 
     const resolve = async () => {
-      const MAX_RETRIES = 10;
-      const RETRY_INTERVAL = 3000;
+      try {
+        const { data, error } = await supabase.functions.invoke("prepare-assessment-report", {
+          body: { access_token: token },
+        });
 
-      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
         if (cancelled) return;
 
-        try {
-          const { data, error } = await supabase.functions.invoke("resolve-assessment-report", {
-            body: { access_token: token },
-          });
-
-          if (error) {
-            console.error("Network/invoke error resolving report:", error);
-            setStatus("error");
-            return;
-          }
-
-          if (data?.report_token) {
-            navigate(`/report/${data.report_token}`, { replace: true });
-            return;
-          }
-
-          // Retryable "no_report" case — report not generated yet
-          if (data?.error === "no_report") {
-            if (attempt < MAX_RETRIES - 1) {
-              await new Promise((r) => setTimeout(r, RETRY_INTERVAL));
-              continue;
-            }
-          }
-
-          // Non-retryable error or final attempt
-          console.error("Failed to resolve assessment report token:", data);
-          setStatus("error");
-          return;
-        } catch (err) {
-          console.error("Error resolving assessment report:", err);
+        if (error) {
+          console.error("Network/invoke error preparing report:", error);
           setStatus("error");
           return;
         }
-      }
 
-      if (!cancelled) setStatus("error");
+        if (data?.report_token) {
+          navigate(`/report/${data.report_token}`, { replace: true });
+          return;
+        }
+
+        console.error("Failed to prepare assessment report token:", data);
+        setStatus("error");
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Error preparing assessment report:", err);
+        setStatus("error");
+      }
     };
 
     resolve();
@@ -95,7 +78,7 @@ export default function AssessmentReport() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center">
       <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 mb-6" />
       <Loader2 className="h-6 w-6 animate-spin text-accent mb-3" />
-      <p className="text-sm text-muted-foreground">Loading your report...</p>
+      <p className="text-sm text-muted-foreground">Your report is being prepared, please wait...</p>
     </div>
   );
 }

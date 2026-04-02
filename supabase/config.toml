@@ -29,6 +29,8 @@ project_id = "ilbhphreyvaoomhpvaxi"
     verify_jwt = true
   [functions.preview-transactional-email]
     verify_jwt = false
+  [functions.prepare-assessment-report]
+    verify_jwt = false
   [functions.handle-email-unsubscribe]
     verify_jwt = false
   [functions.handle-email-suppression]
