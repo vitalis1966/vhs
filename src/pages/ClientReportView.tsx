@@ -121,68 +121,116 @@ function ErrorPage({ icon, title, message }: { icon: React.ReactNode; title: str
 }
 
 // ─── Main Component ───
+//
+// ⚠️  REGRESSION-PREVENTION NOTE — DO NOT REMOVE THE POLLING LOGIC BELOW  ⚠️
+//
+// A valid client_report_tokens row can exist BEFORE the matching
+// internal_assessment_reports row is ready (analysis runs asynchronously).
+// The RPC get_report_by_token now returns { status: "pending" } in that case.
+//
+// This component MUST poll on "pending" instead of falling through to the
+// "Report Not Available" error screen.  The polling is tied to route mount
+// so it also works correctly after a full page refresh.
+//
+// If you change the loading / error flow, make sure "pending" is still
+// handled as a retryable state with a branded waiting screen.
+
+const POLL_INTERVAL_MS = 5_000;
+const MAX_POLL_DURATION_MS = 120_000; // 2 minutes
 
 export default function ClientReportView() {
   const { token } = useParams<{ token: string }>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<"invalid" | "expired" | "revoked" | null>(null);
+  const [phase, setPhase] = useState<"loading" | "preparing">("loading");
+  const [error, setError] = useState<"invalid" | "expired" | "revoked" | "timeout" | null>(null);
   const [session, setSession] = useState<any>(null);
   const [intake, setIntake] = useState<any>(null);
   const [report, setReport] = useState<any>(null);
   const [assessment, setAssessment] = useState<any>(null);
 
   useEffect(() => {
-    if (token) validateAndLoad();
+    if (!token) return;
+    let cancelled = false;
+    const startedAt = Date.now();
+
+    const poll = async () => {
+      while (!cancelled) {
+        try {
+          const { data: result, error: rpcErr } = await supabase.rpc(
+            "get_report_by_token" as any,
+            { p_token: token } as any,
+          );
+
+          if (cancelled) return;
+
+          if (rpcErr || !result) {
+            console.error("RPC error:", rpcErr);
+            setError("invalid");
+            return;
+          }
+
+          const parsed = typeof result === "string" ? JSON.parse(result) : result;
+
+          // Terminal errors — stop immediately
+          if (parsed.error) {
+            setError(parsed.error as "invalid" | "expired" | "revoked");
+            return;
+          }
+
+          // Report still being generated — poll again
+          if (parsed.status === "pending") {
+            setPhase("preparing");
+            if (Date.now() - startedAt >= MAX_POLL_DURATION_MS) {
+              setError("timeout");
+              return;
+            }
+            await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+            continue;
+          }
+
+          // Report is ready
+          setSession(parsed.session);
+          setAssessment(parsed.assessment);
+          setIntake(parsed.intake);
+          const reportData = parsed.report;
+          if (reportData) {
+            (reportData as any)._edits = parsed.edits || [];
+          }
+          setReport(reportData);
+          setPhase("loading"); // reset — will fall through to render
+          return;
+        } catch (err) {
+          console.error("ClientReportView error:", err);
+          if (!cancelled) setError("invalid");
+          return;
+        }
+      }
+    };
+
+    poll();
+    return () => { cancelled = true; };
   }, [token]);
-
-  const validateAndLoad = async () => {
-    try {
-      const { data: result, error: rpcErr } = await supabase.rpc(
-        "get_report_by_token" as any,
-        { p_token: token } as any
-      );
-
-      if (rpcErr || !result) {
-        console.error("RPC error:", rpcErr);
-        setError("invalid");
-        setLoading(false);
-        return;
-      }
-
-      const parsed = typeof result === "string" ? JSON.parse(result) : result;
-
-      if (parsed.error) {
-        setError(parsed.error as "invalid" | "expired" | "revoked");
-        setLoading(false);
-        return;
-      }
-
-      setSession(parsed.session);
-      setAssessment(parsed.assessment);
-      setIntake(parsed.intake);
-
-      const reportData = parsed.report;
-      if (reportData) {
-        (reportData as any)._edits = parsed.edits || [];
-      }
-      setReport(reportData);
-      setLoading(false);
-    } catch (err) {
-      console.error("ClientReportView error:", err);
-      setError("invalid");
-      setLoading(false);
-    }
-  };
 
   const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—";
 
-  if (loading) {
+  // Loading state — initial fetch
+  if (!error && !report && phase === "loading") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
         <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 mb-6" />
         <Loader2 className="h-6 w-6 animate-spin text-accent mb-3" />
-        <p className="text-sm text-muted-foreground">Loading your report...</p>
+        <p className="text-sm text-muted-foreground">Loading your report…</p>
+      </div>
+    );
+  }
+
+  // Preparing state — token valid but report still generating
+  if (!error && !report && phase === "preparing") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 mb-6" />
+        <Loader2 className="h-6 w-6 animate-spin text-accent mb-3" />
+        <p className="text-sm text-muted-foreground">Your report is being prepared, please wait…</p>
       </div>
     );
   }
@@ -217,12 +265,12 @@ export default function ClientReportView() {
     );
   }
 
-  if (!report || !session) {
+  if (error === "timeout" || !report || !session) {
     return (
       <ErrorPage
         icon={<AlertCircle className="h-7 w-7 text-destructive" />}
         title="Report Not Available"
-        message="This report is not yet available. Please contact info@vitalisstrategies.com."
+        message="This report is not yet available. Please try again in a few minutes or contact info@vitalisstrategies.com."
       />
     );
   }
