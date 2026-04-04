@@ -213,12 +213,24 @@ export default function ClientReportView() {
   const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—";
 
-  if (loading) {
+  // Loading state — initial fetch
+  if (!error && !report && phase === "loading") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
         <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 mb-6" />
         <Loader2 className="h-6 w-6 animate-spin text-accent mb-3" />
-        <p className="text-sm text-muted-foreground">Loading your report...</p>
+        <p className="text-sm text-muted-foreground">Loading your report…</p>
+      </div>
+    );
+  }
+
+  // Preparing state — token valid but report still generating
+  if (!error && !report && phase === "preparing") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-10 mb-6" />
+        <Loader2 className="h-6 w-6 animate-spin text-accent mb-3" />
+        <p className="text-sm text-muted-foreground">Your report is being prepared, please wait…</p>
       </div>
     );
   }
@@ -253,12 +265,12 @@ export default function ClientReportView() {
     );
   }
 
-  if (!report || !session) {
+  if (error === "timeout" || !report || !session) {
     return (
       <ErrorPage
         icon={<AlertCircle className="h-7 w-7 text-destructive" />}
         title="Report Not Available"
-        message="This report is not yet available. Please contact info@vitalisstrategies.com."
+        message="This report is not yet available. Please try again in a few minutes or contact info@vitalisstrategies.com."
       />
     );
   }
