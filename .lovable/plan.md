@@ -1,52 +1,63 @@
 
+Goal: stop the public report page from showing “Report Not Available” while a valid report token exists but the report payload is still being generated.
 
-## Plan: Fix Report Link Validation
+What I found
+- The real submit flow is:
+```text
+/assessment/:accessToken/report
+  -> AssessmentReport.tsx calls prepare-assessment-report
+  -> redirects to /report/:reportToken
+  -> ClientReportView.tsx loads the report
+```
+- The regression is mainly in `src/pages/ClientReportView.tsx`, not the route config.
+- `ClientReportView` already has an initial loading spinner, but after the first RPC completes it treats `valid token + no report row yet` as a terminal error:
+  - `get_report_by_token` returns session/intake data even when `report` is null
+  - the component then hits `if (!report || !session) -> "Report Not Available"`
+- There is also a backend analytics issue: `get_report_by_token` currently increments `access_count` before confirming the report exists, so naive polling would falsely count retries as real opens.
 
-### Root Cause
+Implementation plan
+1. Update `public.get_report_by_token` in one SQL migration
+   - Keep invalid / expired / revoked behavior as-is.
+   - Treat `valid token but no report yet` as an explicit pending state instead of a generic empty payload.
+   - Move access tracking so `access_count` / `accessed_at` only update when a real report is returned, not during pending retries.
+   - Add a clear log for the pending case to help diagnose slow report generation.
 
-Two separate issues cause "This Link Is Not Valid":
+2. Update `src/pages/ClientReportView.tsx`
+   - Replace the current one-shot load with mount-safe polling.
+   - Poll every 5 seconds for up to 2 minutes.
+   - State model:
+     - `loading`: first fetch
+     - `preparing`: valid token, report still pending
+     - `ready`: render report
+     - terminal errors: invalid / expired / revoked / timeout / unexpected failure
+   - Retry only for the explicit pending state.
+   - Stop immediately for invalid, expired, revoked, or unexpected RPC/network errors.
+   - On timeout, show the existing “Report Not Available” UI unchanged.
 
-1. **Token format**: `send-assessment-email` generates composite tokens (`UUID-UUID_no_dashes`). These are stored and emailed correctly, but the format is unnecessarily fragile. Simplify to a single UUID.
+3. Keep the UI minimal and branded
+   - Reuse the current spinner/logo layout.
+   - Initial copy: “Loading your report…”
+   - Pending copy after first pending response: “Your report is being prepared, please wait…”
+   - Do not change the existing error screen design.
 
-2. **Legacy redirect is broken**: `/assessment/:token/report` blindly redirects the assessment `access_token` into `/report/:token`, but `/report/:token` expects a `client_report_tokens.token` — a completely different token system. This always fails.
+4. Add a regression-prevention comment in `ClientReportView.tsx`
+   - Explain that a valid report token can exist before the report row is ready.
+   - Explain that this route must poll instead of falling through to the error screen immediately.
+   - Explain that polling is intentionally tied to route mount so it also works after page refresh.
 
-### Changes
+5. Validation
+   - Submit an assessment and open the report immediately: page should stay in loading/preparing, then render once ready.
+   - Refresh `/report/:token` during preparation: it should resume polling and still recover.
+   - Test invalid, expired, and revoked tokens: they should still show their current error screens immediately.
+   - Verify link activity remains accurate: pending retries should not inflate access counts.
 
-**1. Simplify token generation** (`supabase/functions/send-assessment-email/index.ts`)
-- Replace `crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '')` with `crypto.randomUUID()`
-- Make token insert mandatory: if it fails, return an error instead of sending a broken link
-- Existing composite tokens already stored in the database remain valid (no backfill needed)
+Files to change
+- `src/pages/ClientReportView.tsx`
+- `supabase/migrations/...sql` (update `public.get_report_by_token`)
 
-**2. Create edge function `resolve-assessment-report`** (new file: `supabase/functions/resolve-assessment-report/index.ts`)
-- Accepts POST `{ access_token: string }`
-- Uses service role to look up `assessment_sessions` by `access_token` → get `session_id`
-- Queries `client_report_tokens` for that `session_id` where `is_revoked = false` and `expires_at > now()`, ordered by `created_at desc`, limit 1
-- Returns `{ report_token: "..." }` or `{ error: "no_report" }`
-- No JWT required (public endpoint, same as the report page itself)
-- No token join logic exposed to the browser
-
-**3. Update `AssessmentReport.tsx`** — replace the blind `<Navigate to="/report/:token">` redirect with:
-- Call the `resolve-assessment-report` edge function with the assessment access token
-- If a valid report token is returned, redirect to `/report/<report_token>`
-- If not, show an error state ("Report not available yet")
-
-**4. Add server-side diagnostics to `get_report_by_token`** (SQL migration)
-- Add `RAISE LOG` statements for: token not found, token revoked, token expired, session not found, report not found
-- No behavior change; just logging for future debugging
-
-**5. Update `EmailAutomationService.ts`** — fix `sendCompletionConfirmation` so it no longer builds `/assessment/:token/report` URLs (these are broken). Remove the `report_url` from completion confirmation template data, since the actual report link is sent separately via `client_report` email type.
-
-### Files to change
-- `supabase/functions/send-assessment-email/index.ts` — simplify token format, mandatory insert
-- `supabase/functions/resolve-assessment-report/index.ts` — new edge function
-- `supabase/config.toml` — register new function with `verify_jwt = false`
-- `src/pages/assessment/AssessmentReport.tsx` — call edge function instead of blind redirect
-- `src/services/EmailAutomationService.ts` — remove broken report URL construction
-- One SQL migration — add RAISE LOG to `get_report_by_token`
-
-### What does NOT change
-- Report content, PDF generation, admin pages
-- `/report/:token` public page (ClientReportView.tsx)
-- Email HTML templates
-- Any other edge functions
-
+What I would not change
+- `prepare-assessment-report`
+- `AssessmentReport.tsx` unless testing reveals a separate pre-redirect failure
+- report layout/content
+- email templates
+- admin pages
