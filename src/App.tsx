@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import { RedirectHandler } from "@/components/RedirectHandler";
@@ -117,6 +117,10 @@ const App = () => (
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/builds" element={<Navigate replace to="/solutions/new-clinics" />} />
+              <Route path="/areas-of-expertise" element={<Navigate replace to="/how-we-work" />} />
+              <Route path="/fractional-and-advisory-consulting" element={<Navigate replace to="/solutions/existing-clinics" />} />
+              <Route path="/strategic-analysis" element={<Navigate replace to="/solutions/existing-clinics" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
