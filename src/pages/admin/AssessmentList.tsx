@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Assessment } from "@/types/assessment";
-import { ClipboardList, ArrowRight, Loader2 } from "lucide-react";
+import { ClipboardList, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
