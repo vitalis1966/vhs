@@ -159,7 +159,7 @@ export function PagesTab() {
   const saveMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
       const { _autoOgTitle, _autoOgDesc, _autoTwitterTitle, _autoTwitterDesc, ...rest } = values;
-      const { error } = await supabase.from("seo_pages").update(rest as Record<string, string>).eq("id", rest.id as string);
+      const { error } = await supabase.from("seo_pages").update(rest as any).eq("id", rest.id as string);
       if (error) throw error;
     },
     onSuccess: () => {
