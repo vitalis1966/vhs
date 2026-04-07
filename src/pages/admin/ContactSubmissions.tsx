@@ -192,7 +192,7 @@ export default function ContactSubmissions() {
                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Organization</th>
                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Area of Interest</th>
                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Status</th>
-                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground">View</th>
+                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,9 +216,14 @@ export default function ContactSubmissions() {
                         </button>
                       </td>
                       <td className="px-4 py-3">
-                        <Button variant="ghost" size="sm" onClick={() => setSelected(sub)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => setSelected(sub)}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteTarget(sub)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
