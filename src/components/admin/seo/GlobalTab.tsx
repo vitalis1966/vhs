@@ -55,7 +55,7 @@ export function GlobalTab() {
 
   const saveMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
-      const { error } = await supabase.from("seo_global").update(values).eq("id", 1);
+      const { error } = await supabase.from("seo_global").update(values as any).eq("id", 1);
       if (error) throw error;
     },
     onSuccess: () => {
