@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +45,9 @@ import {
   ArrowRight,
   CheckCircle,
   AlertTriangle,
+  Copy,
+  Link as LinkIcon,
+  XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 const vitalisLogo = "/vitalis-logo.webp";
@@ -211,6 +216,21 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
+function getCleanAssessmentName(slug?: string, title?: string): string {
+  if (slug) {
+    if (slug.includes("new-build") || slug.includes("new-clinic")) return "Your Build Strategy Assessment";
+    if (slug.includes("existing")) return "Your Performance Assessment";
+    if (slug.includes("healthcare-it") || slug.includes("it")) return "Your Healthcare IT Assessment";
+  }
+  if (title) {
+    const t = title.toLowerCase();
+    if (t.includes("build") || t.includes("new clinic")) return "Your Build Strategy Assessment";
+    if (t.includes("performance") || t.includes("existing")) return "Your Performance Assessment";
+    if (t.includes("healthcare it") || t.includes(" it")) return "Your Healthcare IT Assessment";
+  }
+  return "Your Strategic Assessment";
+}
+
 export default function ClientReport() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { toast } = useToast();
@@ -230,6 +250,12 @@ export default function ClientReport() {
   const [emailTo, setEmailTo] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
+  const [reportSent, setReportSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState("");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [linkTokens, setLinkTokens] = useState<any[]>([]);
+  const [copiedTokenId, setCopiedTokenId] = useState<string | null>(null);
+  const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (sessionId) loadAll();
@@ -242,11 +268,12 @@ export default function ClientReport() {
     setSession(sess);
     if (!sess) { setLoading(false); return; }
 
-    const [assessRes, intakeRes, reportRes, editsRes] = await Promise.all([
+    const [assessRes, intakeRes, reportRes, editsRes, tokensRes] = await Promise.all([
       supabase.from("assessments" as any).select("*").eq("id", sess.assessment_id).single() as any,
       sess.intake_id ? supabase.from("assessment_intakes" as any).select("*").eq("id", sess.intake_id).single() as any : Promise.resolve({ data: null }),
       supabase.from("internal_assessment_reports" as any).select("*").eq("session_id", sessionId).single() as any,
       supabase.from("client_report_edits" as any).select("*").eq("session_id", sessionId) as any,
+      supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any,
     ]);
 
     setAssessment(assessRes.data);
@@ -263,11 +290,13 @@ export default function ClientReport() {
     }
     setEdits(editMap);
     setOriginalEdits(origMap);
+    setLinkTokens(tokensRes.data || []);
 
     // Pre-fill send dialog
     if (intakeRes.data) {
       setEmailTo(intakeRes.data.email || "");
-      setEmailSubject(`Your ${assessRes.data?.title || "Strategic Assessment"} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
+      const cleanAssessmentName = getCleanAssessmentName(assessRes.data?.slug, assessRes.data?.title);
+      setEmailSubject(`${cleanAssessmentName} — ${intakeRes.data.organization_name || intakeRes.data.full_name}`);
       setEmailBody(`Dear ${intakeRes.data.full_name},\n\nPlease find attached the findings from your recent strategic assessment. We look forward to discussing these insights with you.\n\nWarm regards,\nVitalis Health Strategies`);
     }
 
@@ -293,6 +322,18 @@ export default function ClientReport() {
     toast({ title: "Reset Complete", description: "All edits have been restored to the generated version." });
   };
 
+  const getReportSections = (): string[] => {
+    const sections: string[] = [];
+    if (analysis.executive_summary) sections.push("Executive Summary");
+    if ((analysis.section_analyses || []).length > 0) sections.push("Detailed Findings");
+    if ((analysis.concerns || []).length > 0) sections.push("Key Findings");
+    if (extractFinancialData(analysis)) sections.push("Financial Overview");
+    if ((analysis.focus_areas || []).length > 0) sections.push("Priority Focus Areas");
+    if ((analysis.opportunities || []).length > 0) sections.push("Opportunities");
+    if ((analysis.recommended_next_steps || []).length > 0) sections.push("Recommended Next Steps");
+    return sections;
+  };
+
   const handleSendReport = async () => {
     setSending(true);
     setSendError("");
@@ -309,16 +350,140 @@ export default function ClientReport() {
             report_url: `${window.location.origin}/admin/submissions/${sessionId}/client-report`,
             subject_line: emailSubject,
             message_body: emailBody,
+            report_sections: getReportSections(),
           },
         },
       });
       if (res.error) throw new Error(res.error.message);
-      toast({ title: "Report Sent", description: `Report sent to ${emailTo}` });
-      setSendOpen(false);
+      setSentToEmail(emailTo);
+      setReportSent(true);
+      setSending(false);
+      // Refresh tokens list after successful send
+      const { data: newTokens } = await (supabase.from("client_report_tokens" as any).select("*").eq("session_id", sessionId).order("created_at", { ascending: false }) as any);
+      setLinkTokens(newTokens || []);
     } catch (err: any) {
       setSendError(err.message || "Failed to send report. Please try again.");
+      setSending(false);
     }
-    setSending(false);
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const reportContainer = document.getElementById("report-content");
+      if (!reportContainer) { setIsGeneratingPDF(false); return; }
+
+      // Clone and remove no-print elements
+      const clone = reportContainer.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".no-print").forEach(el => el.remove());
+      clone.querySelectorAll(".print-footer-spacer").forEach(el => el.remove());
+
+      // Remove booking section
+      Array.from(clone.querySelectorAll("h3")).forEach(el => {
+        if (el.textContent?.toLowerCase().includes("book") || el.textContent?.toLowerCase().includes("discovery")) {
+          const section = el.closest("[class*='bg-card']") || el.parentElement;
+          section?.remove();
+        }
+      });
+
+      // Mount clone off-screen for capture
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = "position:fixed;top:-9999px;left:0;width:1100px;background:#f9f6f1;padding:16px 40px 40px;";
+
+      // Add styles for better PDF rendering of card sections
+      const pdfStyle = document.createElement("style");
+      pdfStyle.textContent = `
+        .bg-card {
+          border: 1px solid #dde4e0 !important;
+          margin-bottom: 16px !important;
+          page-break-inside: avoid !important;
+        }
+      `;
+      wrapper.appendChild(pdfStyle);
+      wrapper.appendChild(clone);
+      document.body.appendChild(wrapper);
+
+      await new Promise(r => setTimeout(r, 500));
+
+      const canvas = await html2canvas(wrapper, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f9f6f1",
+        windowWidth: 1100,
+        scrollY: 0,
+        height: wrapper.scrollHeight,
+      });
+
+      document.body.removeChild(wrapper);
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const headerH = 14;
+      const footerH = 10;
+      const contentH = pageH - headerH - footerH - margin * 2 - 8;
+      const imgW = pageW - margin * 2;
+      const totalImgH = (canvas.height * imgW) / canvas.width;
+      const totalPages = Math.ceil(totalImgH / contentH);
+      const organization = intake?.organization_name || intake?.full_name || "Client";
+
+      const addHeaderFooter = (pageNum: number) => {
+        pdf.setFontSize(7);
+        pdf.setTextColor(169, 177, 161);
+        pdf.text("CONFIDENTIAL — Vitalis Health Strategies Inc.", margin, 8);
+        pdf.text("vitalisstrategies.com", pageW - margin, 8, { align: "right" });
+        pdf.setDrawColor(200, 151, 65);
+        pdf.setLineWidth(0.4);
+        pdf.line(margin, 10, pageW - margin, 10);
+
+        pdf.setDrawColor(221, 228, 224);
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, pageH - footerH - 2, pageW - margin, pageH - footerH - 2);
+        pdf.setFontSize(7);
+        pdf.setTextColor(169, 177, 161);
+        pdf.text(`Confidential — Prepared for ${organization} by Vitalis Health Strategies Inc.`, margin, pageH - 6);
+        pdf.text(`Page ${pageNum} of ${totalPages}`, pageW - margin, pageH - 6, { align: "right" });
+      };
+
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) pdf.addPage();
+
+        const srcY = page * contentH * (canvas.height / totalImgH);
+        const srcH = Math.min(contentH * (canvas.height / totalImgH), canvas.height - srcY);
+
+        // Skip near-empty last page
+        if (srcH < 100) {
+          if (page > 0) {
+            // Remove the just-added blank page
+            const pageCount = (pdf as any).internal.getNumberOfPages();
+            if (pageCount > 1) (pdf as any).deletePage(pageCount);
+          }
+          continue;
+        }
+
+        addHeaderFooter(page + 1);
+
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = srcH;
+        const ctx = sliceCanvas.getContext("2d");
+        if (ctx) ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+
+        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
+        const sliceH = (srcH * imgW) / canvas.width;
+        pdf.addImage(sliceData, "JPEG", margin, headerH + margin, imgW, sliceH);
+      }
+
+      const today = new Date().toISOString().split("T")[0];
+      const safeName = organization.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-");
+      pdf.save(`Vitalis-Assessment-${safeName}-${today}.pdf`);
+    } catch (err) {
+      console.error("PDF error:", err);
+      toast({ title: "PDF Error", description: "Could not generate PDF. Try again.", variant: "destructive" });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const formatDate = (d: string | null) =>
@@ -488,19 +653,140 @@ export default function ClientReport() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button variant="outline" size="sm" onClick={() => window.print()}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
+              <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
+                {isGeneratingPDF ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                {isGeneratingPDF ? "Generating PDF..." : "Download PDF"}
               </Button>
-              <Button size="sm" onClick={() => setSendOpen(true)}>
-                <Send className="mr-2 h-4 w-4" />
-                Send Report to Client
-              </Button>
+              {reportSent ? (
+                <Button size="sm" disabled className="bg-accent/20 text-accent border border-accent/30">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Report Sent ✓
+                </Button>
+              ) : (
+                <Button size="sm" onClick={() => setSendOpen(true)}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Report to Client
+                </Button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Header with Vitalis branding */}
+        {/* Report Links — top of page */}
+        <div className="no-print container mx-auto px-4 lg:px-8 max-w-5xl pt-6">
+          <div className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-border/40 bg-secondary/10">
+              <LinkIcon className="h-5 w-5 text-accent" />
+              <div>
+                <h3 className="font-display text-sm font-bold text-foreground">Report Links</h3>
+                <p className="text-xs text-muted-foreground">Each time you send the report, a new private link is generated for that recipient.</p>
+              </div>
+            </div>
+            <div className="p-4">
+              {linkTokens.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-2">No report links generated yet. Use "Send Report to Client" above to generate a link.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b border-border/40 text-muted-foreground uppercase tracking-wider">
+                        <th className="text-left py-2 px-2 font-medium">Sent To</th>
+                        <th className="text-left py-2 px-2 font-medium">Generated</th>
+                        <th className="text-left py-2 px-2 font-medium">Last Viewed</th>
+                        <th className="text-center py-2 px-2 font-medium">Views</th>
+                        <th className="text-center py-2 px-2 font-medium">Status</th>
+                        <th className="text-center py-2 px-2 font-medium">Link</th>
+                        <th className="text-center py-2 px-2 font-medium">Revoke</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {linkTokens.map((t: any) => {
+                        const isExpired = t.expires_at && new Date(t.expires_at) < new Date();
+                        const isRevoked = t.is_revoked;
+                        const isActive = !isExpired && !isRevoked;
+                        const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : null;
+
+                        return (
+                          <tr key={t.id} className="border-b border-border/20 last:border-0">
+                            <td className="py-2.5 px-2 text-foreground">{t.sent_to_email || "—"}</td>
+                            <td className="py-2.5 px-2 text-muted-foreground">{fmtDate(t.created_at) || "—"}</td>
+                            <td className="py-2.5 px-2 text-muted-foreground">{fmtDate(t.accessed_at) || "Never"}</td>
+                            <td className="py-2.5 px-2 text-center text-foreground font-medium">{t.access_count || 0}</td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isRevoked ? (
+                                <Badge variant="destructive" className="text-[10px]">Revoked</Badge>
+                              ) : isExpired ? (
+                                <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted-foreground/30">Expired</Badge>
+                              ) : (
+                                <Badge className="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white border-0">Active</Badge>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isActive ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 text-[11px] px-2"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(`https://vitalisstrategies.com/report/${t.token}`);
+                                    setCopiedTokenId(t.id);
+                                    setTimeout(() => setCopiedTokenId(null), 2000);
+                                  }}
+                                >
+                                  {copiedTokenId === t.id ? (
+                                    <><CheckCircle className="mr-1 h-3 w-3" />Copied!</>
+                                  ) : (
+                                    <><Copy className="mr-1 h-3 w-3" />Copy</>
+                                  )}
+                                </Button>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center">
+                              {isActive ? (
+                                revokeConfirmId === t.id ? (
+                                  <div className="flex items-center gap-1 justify-center">
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-7 text-[11px] px-2"
+                                      onClick={async () => {
+                                        await (supabase.from("client_report_tokens" as any).update({ is_revoked: true } as any).eq("id", t.id) as any);
+                                        setLinkTokens(prev => prev.map(lt => lt.id === t.id ? { ...lt, is_revoked: true } : lt));
+                                        setRevokeConfirmId(null);
+                                        toast({ title: "Link Revoked", description: "The recipient can no longer access this report." });
+                                      }}
+                                    >
+                                      Confirm
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-7 text-[11px] px-2" onClick={() => setRevokeConfirmId(null)}>Cancel</Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-[11px] px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                                    onClick={() => setRevokeConfirmId(t.id)}
+                                  >
+                                    Revoke
+                                  </Button>
+                                )
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-card border-b border-border/40 print:border-b-2 print:border-accent">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-10 text-center">
             <img src={vitalisLogo} alt="Vitalis Health Strategies" className="h-12 mx-auto mb-4 print:h-10" />
@@ -517,7 +803,7 @@ export default function ClientReport() {
         </div>
 
         {/* Report Body */}
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-8 space-y-8">
+        <div id="report-content" className="container mx-auto px-4 lg:px-8 max-w-5xl py-8 space-y-8">
 
           {/* Client Overview */}
           <ClientReportCard title="Overview" icon={<User className="h-5 w-5" />}>
@@ -656,7 +942,8 @@ export default function ClientReport() {
             </ClientReportCard>
           )}
 
-          {/* Booking CTA */}
+          {/* Link Activity removed from here — moved to top */}
+
           <div className="no-print space-y-4">
             <h3 className="font-display text-xl font-bold text-foreground text-center">
               Ready to get started? Book a discovery call
@@ -666,10 +953,17 @@ export default function ClientReport() {
 
           {/* Bottom Send button */}
           <div className="no-print flex justify-center pt-4 pb-8">
-            <Button size="lg" onClick={() => setSendOpen(true)}>
-              <Send className="mr-2 h-4 w-4" />
-              Send Report to Client
-            </Button>
+            {reportSent ? (
+              <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Report Sent ✓
+              </Button>
+            ) : (
+              <Button size="lg" onClick={() => setSendOpen(true)}>
+                <Send className="mr-2 h-4 w-4" />
+                Send Report to Client
+              </Button>
+            )}
           </div>
 
           {/* Print spacer */}
@@ -678,39 +972,56 @@ export default function ClientReport() {
       </div>
 
       {/* Send Dialog */}
-      <Dialog open={sendOpen} onOpenChange={setSendOpen}>
+      <Dialog open={sendOpen} onOpenChange={(open) => { if (!reportSent) setSendOpen(open); else setSendOpen(false); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Send Report to Client</DialogTitle>
-            <DialogDescription>Send this client report via email or download as PDF.</DialogDescription>
+            <DialogTitle>{reportSent ? "Report Sent" : "Send Report to Client"}</DialogTitle>
+            <DialogDescription>{reportSent ? "The report has been delivered." : "Send this client report via email or download as PDF."}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">To</label>
-              <Input value={emailTo} onChange={e => setEmailTo(e.target.value)} placeholder="client@email.com" />
+          {reportSent ? (
+            <div className="py-4 space-y-3">
+              <div className="flex items-start gap-3 bg-accent/10 rounded-xl p-4 border border-accent/20">
+                <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Report sent to {sentToEmail}</p>
+                  <p className="text-xs text-muted-foreground mt-1">The client has been notified. A record has been logged. This page now shows "Report Sent ✓" to prevent duplicates.</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSendOpen(false)}>Close</Button>
+              </DialogFooter>
             </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Subject</label>
-              <Input value={emailSubject} onChange={e => setEmailSubject(e.target.value)} />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Message</label>
-              <Textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={4} />
-            </div>
-            {sendError && (
-              <p className="text-sm text-destructive">{sendError}</p>
-            )}
-          </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => { setSendOpen(false); window.print(); }}>
-              <Download className="mr-2 h-4 w-4" />
-              Download PDF Instead
-            </Button>
-            <Button onClick={handleSendReport} disabled={sending || !emailTo}>
-              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-              Send
-            </Button>
-          </DialogFooter>
+          ) : (
+            <>
+              <div className="space-y-4 py-2">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">To</label>
+                  <Input value={emailTo} onChange={e => setEmailTo(e.target.value)} placeholder="client@email.com" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Subject</label>
+                  <Input value={emailSubject} onChange={e => setEmailSubject(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Message</label>
+                  <Textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={4} />
+                </div>
+                {sendError && (
+                  <p className="text-sm text-destructive">{sendError}</p>
+                )}
+              </div>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <Button variant="outline" onClick={() => { setSendOpen(false); handleDownloadPDF(); }}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF Instead
+                </Button>
+                <Button onClick={handleSendReport} disabled={sending || !emailTo}>
+                  {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  Send
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>

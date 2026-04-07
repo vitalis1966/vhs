@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { ClipboardList, FileSearch, LogOut } from "lucide-react";
+import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,30 @@ const adminPages = [
     description: "Review submitted assessments, run AI analysis, and generate internal reports.",
     href: "/admin/submissions",
     icon: FileSearch,
+  },
+  {
+    title: "Insights",
+    description: "Create and manage blog articles and insights content.",
+    href: "/admin/insights",
+    icon: Newspaper,
+  },
+  {
+    title: "Portfolio",
+    description: "Create and manage portfolio case studies and advisory entries.",
+    href: "/admin/portfolio",
+    icon: Briefcase,
+  },
+  {
+    title: "Contact Submissions",
+    description: "View and manage incoming contact form submissions.",
+    href: "/admin/contacts",
+    icon: MessageSquare,
+  },
+  {
+    title: "SEO Settings",
+    description: "Manage meta tags, Open Graph, schemas, tracking, and redirects for all pages.",
+    href: "/admin/seo",
+    icon: Search,
   },
 ];
 

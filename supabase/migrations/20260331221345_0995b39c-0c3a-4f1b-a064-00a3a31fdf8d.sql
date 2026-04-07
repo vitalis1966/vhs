@@ -1,0 +1,1 @@
+ALTER TABLE public.client_report_tokens ADD COLUMN IF NOT EXISTS sent_to_email text;

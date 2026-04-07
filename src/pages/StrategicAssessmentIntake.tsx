@@ -179,10 +179,12 @@ const StrategicAssessmentIntake = () => {
     const { track, reason } = determineTrack(form);
 
     try {
-      // Insert intake and get the id back
-      const { data: intakeData, error } = (await supabase
+      // Generate ID client-side to avoid needing SELECT after INSERT (no anon SELECT policy)
+      const intakeId = crypto.randomUUID();
+      const { error } = (await supabase
         .from("assessment_intakes")
         .insert({
+          id: intakeId,
           full_name: form.full_name.trim(),
           organization_name: form.organization_name.trim() || null,
           email: form.email.trim(),
@@ -203,15 +205,70 @@ const StrategicAssessmentIntake = () => {
           additional_notes: form.additional_notes.trim() || null,
           assigned_track: track,
           assignment_reason: reason,
-        } as any)
-        .select()
-        .single()) as any;
+        } as any)) as any;
 
       if (error) throw error;
 
-      // Send intake confirmation email
-      if (intakeData?.id) {
-        EmailAutomationService.sendIntakeConfirmation(intakeData.id, form.full_name.trim(), form.email.trim());
+      // Map track to human-readable assessment name for CRM
+      const trackNameMap: Record<string, string> = {
+        new_clinic_build: "Build Strategy Assessment",
+        existing_clinic: "Performance Assessment",
+        healthcare_it: "Healthcare IT Assessment",
+        needs_review: "Strategic Assessment (Needs Review)",
+      };
+      const assessmentName = trackNameMap[track] || "Strategic Assessment";
+
+      // Save to contact_submissions for CRM visibility
+      try {
+        const operatingStatus = form.currently_operating === "yes" ? "Yes" : form.currently_operating === "no" ? "No" : form.currently_operating === "in_planning" ? "In Planning" : "Not specified";
+        const messageParts = [
+          `Assessment: ${assessmentName}`,
+          `Specialty: ${form.specialty || "Not specified"}`,
+          `Practice Type: ${form.practice_type || "Not specified"}`,
+          `City: ${[form.city, form.province_state].filter(Boolean).join(", ") || "Not specified"}`,
+          `Operating Status: ${operatingStatus}`,
+          `Timeline: ${form.approximate_timeline || "Not specified"}`,
+          `Looking for: ${form.looking_for.trim() || "Not specified"}`,
+          `Additional notes: ${form.additional_notes.trim() || "None"}`,
+        ];
+        const { error: contactError } = await supabase.from("contact_submissions").insert({
+          name: form.full_name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+          organization: form.organization_name.trim() || null,
+          area_of_interest: assessmentName,
+          message: messageParts.join("\n"),
+          status: "new",
+        });
+        if (contactError) {
+          console.error("Contact submission mirror DB error:", contactError);
+        }
+      } catch (contactErr) {
+        console.error("Contact submission mirror failed (non-blocking):", contactErr);
+      }
+
+      // Send internal intake notification email (non-blocking)
+      try {
+        await supabase.functions.invoke("send-assessment-intake-notification", {
+          body: {
+            full_name: form.full_name.trim(),
+            email: form.email.trim(),
+            phone: form.phone.trim() || undefined,
+            organization_name: form.organization_name.trim() || undefined,
+            city: form.city.trim() || undefined,
+            province_state: form.province_state || undefined,
+            specialty: form.specialty || undefined,
+            practice_type: form.practice_type || undefined,
+            assessment_purpose: form.assessment_purpose,
+            approximate_timeline: form.approximate_timeline || undefined,
+            looking_for: form.looking_for.trim() || undefined,
+            additional_notes: form.additional_notes.trim() || undefined,
+            assigned_track: track,
+            idempotencyKey: `intake-notify-${intakeId}`,
+          },
+        });
+      } catch (emailErr) {
+        console.error("Intake notification email failed (non-blocking):", emailErr);
       }
 
       // Create assessment session if track is known
@@ -232,22 +289,26 @@ const StrategicAssessmentIntake = () => {
 
         if (assessment) {
           accessToken = crypto.randomUUID();
-          const { data: sessionData } = await (supabase
+          sessionId = crypto.randomUUID();
+          const { error: sessionError } = await (supabase
             .from("assessment_sessions" as any)
             .insert({
-              intake_id: intakeData?.id || null,
+              id: sessionId,
+              intake_id: intakeId,
               assessment_id: assessment.id,
               access_token: accessToken,
               status: "in_progress",
               current_section_index: 0,
-            })
-            .select()
-            .single() as any);
+            }) as any);
 
-          sessionId = sessionData?.id || "";
+          if (sessionError) {
+            console.error("Session creation error:", sessionError);
+            sessionId = "";
+            accessToken = "";
+          }
 
           // Update intake with session reference and lifecycle
-          if (intakeData?.id && sessionId) {
+          if (sessionId) {
             await (supabase
               .from("assessment_intakes" as any)
               .update({
@@ -255,19 +316,17 @@ const StrategicAssessmentIntake = () => {
                 lifecycle_status: "assessment_assigned",
                 last_activity_at: new Date().toISOString(),
               })
-              .eq("id", intakeData.id) as any);
+              .eq("id", intakeId) as any);
           }
 
           // Send assessment access email
-          if (intakeData?.id) {
-            EmailAutomationService.sendAssessmentAccess(
-              intakeData.id,
-              sessionId,
-              form.full_name.trim(),
-              form.email.trim(),
-              accessToken,
-            );
-          }
+          EmailAutomationService.sendAssessmentAccess(
+            intakeId,
+            sessionId,
+            form.full_name.trim(),
+            form.email.trim(),
+            accessToken,
+          );
 
           // Schedule reminders
           if (accessToken) {
@@ -276,9 +335,13 @@ const StrategicAssessmentIntake = () => {
         }
       }
 
-      const params = new URLSearchParams({ track });
-      if (accessToken) params.set("token", accessToken);
-      navigate(`/strategic-assessment/confirmation?${params.toString()}`);
+      // Navigate directly to assessment if session created, otherwise confirmation
+      if (accessToken) {
+        navigate(`/assessment/${accessToken}`);
+      } else {
+        const params = new URLSearchParams({ track });
+        navigate(`/strategic-assessment/confirmation?${params.toString()}`);
+      }
     } catch (err: any) {
       console.error("Intake submission error:", err);
       toast({

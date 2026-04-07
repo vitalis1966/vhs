@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionRenderer } from "@/components/assessment/QuestionRenderer";
-import { EmailAutomationService } from "@/services/EmailAutomationService";
+
 import type {
   Assessment,
   AssessmentSession,
@@ -212,35 +212,19 @@ export default function AssessmentClient() {
     // Cancel pending reminders via secure RPC
     await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 
-    // Send completion email and admin notification
-    // Use secure RPC to get intake info (avoids direct table access to PII)
+    // Send completion emails via dedicated edge function (non-blocking)
     if (session.intake_id) {
-      const { data: intakeData } = await supabase.rpc("get_intake_for_session", { p_token: token || "" });
-      const intake = Array.isArray(intakeData) ? intakeData[0] : intakeData;
-
-      if (intake) {
-        // Client completion email
-        EmailAutomationService.sendCompletionConfirmation(
-          session.id,
-          session.intake_id,
-          intake.full_name || "",
-          intake.email,
-          token || ""
-        );
-
-        // Admin notification
-        const assessmentType = assessment?.title || "Strategic Assessment";
-        EmailAutomationService.sendAdminNotification(
-          session.id,
-          intake.full_name || "Unknown",
-          intake.organization_name || "—",
-          assessmentType,
-          new Date().toISOString(),
-          "admin@vitalishealth.com"
-        );
-
-        // Update lifecycle status via edge function email service
-        // (intake table no longer directly writable by anon)
+      try {
+        await supabase.functions.invoke("send-assessment-completion-emails", {
+          body: {
+            session_id: session.id,
+            intake_id: session.intake_id,
+            assessment_title: assessment?.title || "Strategic Assessment",
+            assessment_slug: assessment?.slug || "",
+          },
+        });
+      } catch (emailErr) {
+        console.error("Completion emails failed (non-blocking):", emailErr);
       }
     }
 

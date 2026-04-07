@@ -1,8 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/home/HeroSection";
-import { usePageMeta } from "@/lib/seo";
-import { JsonLd, organizationSchema, websiteSchema } from "@/components/JsonLd";
+import { SEOHead } from "@/components/SEOHead";
 import { useLazySection } from "@/hooks/useLazySection";
 
 const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
@@ -14,17 +13,11 @@ const CredibilitySection = lazy(() => import("@/components/home/CredibilitySecti
 const FinalCtaSection = lazy(() => import("@/components/home/FinalCtaSection").then(m => ({ default: m.FinalCtaSection })));
 
 const Index = () => {
-  usePageMeta(
-    "Healthcare Consulting for Medical, Dental & Veterinary Practices | Vitalis Health Strategies | Calgary, Alberta",
-    "Vitalis Health Strategies helps medical, dental, and veterinary practices plan, build, grow, and optimize. Clinician-led consulting across Canada."
-  );
-
   const [belowFoldRef, showBelowFold] = useLazySection("400px");
 
   return (
     <div className="min-h-screen">
-      <JsonLd data={organizationSchema} />
-      <JsonLd data={websiteSchema} />
+      <SEOHead />
       <Navbar />
       <main>
         <HeroSection />

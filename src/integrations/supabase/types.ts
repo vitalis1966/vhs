@@ -404,6 +404,86 @@ export type Database = {
         }
         Relationships: []
       }
+      client_report_tokens: {
+        Row: {
+          access_count: number | null
+          accessed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_revoked: boolean | null
+          sent_to_email: string | null
+          session_id: string
+          token: string
+        }
+        Insert: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_revoked?: boolean | null
+          sent_to_email?: string | null
+          session_id: string
+          token: string
+        }
+        Update: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_revoked?: boolean | null
+          sent_to_email?: string | null
+          session_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_report_tokens_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_submissions: {
+        Row: {
+          area_of_interest: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          organization: string | null
+          phone: string | null
+          status: string | null
+          submitted_at: string | null
+        }
+        Insert: {
+          area_of_interest?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          organization?: string | null
+          phone?: string | null
+          status?: string | null
+          submitted_at?: string | null
+        }
+        Update: {
+          area_of_interest?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          organization?: string | null
+          phone?: string | null
+          status?: string | null
+          submitted_at?: string | null
+        }
+        Relationships: []
+      }
       email_events: {
         Row: {
           created_at: string
@@ -457,6 +537,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_send_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          message_id: string | null
+          metadata: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email?: string
+          status?: string
+          template_name?: string
+        }
+        Relationships: []
+      }
+      email_send_state: {
+        Row: {
+          auth_email_ttl_minutes: number
+          batch_size: number
+          id: number
+          retry_after_until: string | null
+          send_delay_ms: number
+          transactional_email_ttl_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_unsubscribe_tokens: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
       }
       insights_articles: {
         Row: {
@@ -575,12 +742,389 @@ export type Database = {
           },
         ]
       }
+      portfolio_cases: {
+        Row: {
+          body: string | null
+          case_type: string
+          created_at: string | null
+          description: string
+          ext_challenge: string | null
+          ext_results: string | null
+          ext_services: string[] | null
+          ext_situation: string | null
+          ext_stat_1_label: string | null
+          ext_stat_1_value: string | null
+          ext_stat_2_label: string | null
+          ext_stat_2_value: string | null
+          ext_stat_3_label: string | null
+          ext_stat_3_value: string | null
+          ext_what_we_did: string | null
+          id: string
+          location: string
+          metric: string
+          slug: string
+          sort_order: number | null
+          specialty: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          case_type?: string
+          created_at?: string | null
+          description: string
+          ext_challenge?: string | null
+          ext_results?: string | null
+          ext_services?: string[] | null
+          ext_situation?: string | null
+          ext_stat_1_label?: string | null
+          ext_stat_1_value?: string | null
+          ext_stat_2_label?: string | null
+          ext_stat_2_value?: string | null
+          ext_stat_3_label?: string | null
+          ext_stat_3_value?: string | null
+          ext_what_we_did?: string | null
+          id?: string
+          location?: string
+          metric: string
+          slug: string
+          sort_order?: number | null
+          specialty: string
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          case_type?: string
+          created_at?: string | null
+          description?: string
+          ext_challenge?: string | null
+          ext_results?: string | null
+          ext_services?: string[] | null
+          ext_situation?: string | null
+          ext_stat_1_label?: string | null
+          ext_stat_1_value?: string | null
+          ext_stat_2_label?: string | null
+          ext_stat_2_value?: string | null
+          ext_stat_3_label?: string | null
+          ext_stat_3_value?: string | null
+          ext_what_we_did?: string | null
+          id?: string
+          location?: string
+          metric?: string
+          slug?: string
+          sort_order?: number | null
+          specialty?: string
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_global: {
+        Row: {
+          bing_verification: string | null
+          crisp_website_id: string | null
+          custom_body_script: string | null
+          custom_head_script: string | null
+          default_description: string | null
+          default_og_image: string | null
+          default_robots: string | null
+          default_title: string | null
+          facebook_app_id: string | null
+          facebook_page_url: string | null
+          google_ads_conversion_label: string | null
+          google_ads_id: string | null
+          google_analytics_id: string | null
+          google_search_console: string | null
+          google_tag_manager_body: string | null
+          google_tag_manager_head: string | null
+          google_tag_manager_id: string | null
+          hotjar_id: string | null
+          id: number
+          instagram_url: string | null
+          intercom_app_id: string | null
+          linkedin_partner_id: string | null
+          linkedin_url: string | null
+          meta_pixel_id: string | null
+          pinterest_verification: string | null
+          site_locale: string | null
+          site_name: string | null
+          site_url: string | null
+          theme_color: string | null
+          twitter_handle: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bing_verification?: string | null
+          crisp_website_id?: string | null
+          custom_body_script?: string | null
+          custom_head_script?: string | null
+          default_description?: string | null
+          default_og_image?: string | null
+          default_robots?: string | null
+          default_title?: string | null
+          facebook_app_id?: string | null
+          facebook_page_url?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
+          google_analytics_id?: string | null
+          google_search_console?: string | null
+          google_tag_manager_body?: string | null
+          google_tag_manager_head?: string | null
+          google_tag_manager_id?: string | null
+          hotjar_id?: string | null
+          id?: number
+          instagram_url?: string | null
+          intercom_app_id?: string | null
+          linkedin_partner_id?: string | null
+          linkedin_url?: string | null
+          meta_pixel_id?: string | null
+          pinterest_verification?: string | null
+          site_locale?: string | null
+          site_name?: string | null
+          site_url?: string | null
+          theme_color?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bing_verification?: string | null
+          crisp_website_id?: string | null
+          custom_body_script?: string | null
+          custom_head_script?: string | null
+          default_description?: string | null
+          default_og_image?: string | null
+          default_robots?: string | null
+          default_title?: string | null
+          facebook_app_id?: string | null
+          facebook_page_url?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
+          google_analytics_id?: string | null
+          google_search_console?: string | null
+          google_tag_manager_body?: string | null
+          google_tag_manager_head?: string | null
+          google_tag_manager_id?: string | null
+          hotjar_id?: string | null
+          id?: number
+          instagram_url?: string | null
+          intercom_app_id?: string | null
+          linkedin_partner_id?: string | null
+          linkedin_url?: string | null
+          meta_pixel_id?: string | null
+          pinterest_verification?: string | null
+          site_locale?: string | null
+          site_name?: string | null
+          site_url?: string | null
+          theme_color?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_pages: {
+        Row: {
+          article_author: string | null
+          article_modified: string | null
+          article_published: string | null
+          article_section: string | null
+          article_tags: string[] | null
+          breadcrumbs: Json | null
+          canonical_override: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          keywords: string | null
+          noindex: boolean | null
+          og_description: string | null
+          og_image: string | null
+          og_image_alt: string | null
+          og_image_height: string | null
+          og_image_width: string | null
+          og_title: string | null
+          og_type: string | null
+          page_label: string
+          robots: string | null
+          route: string
+          schema_json: Json | null
+          schema_type: string | null
+          title: string | null
+          twitter_card: string | null
+          twitter_description: string | null
+          twitter_image: string | null
+          twitter_image_alt: string | null
+          twitter_title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          article_author?: string | null
+          article_modified?: string | null
+          article_published?: string | null
+          article_section?: string | null
+          article_tags?: string[] | null
+          breadcrumbs?: Json | null
+          canonical_override?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string | null
+          noindex?: boolean | null
+          og_description?: string | null
+          og_image?: string | null
+          og_image_alt?: string | null
+          og_image_height?: string | null
+          og_image_width?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_label: string
+          robots?: string | null
+          route: string
+          schema_json?: Json | null
+          schema_type?: string | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_image_alt?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          article_author?: string | null
+          article_modified?: string | null
+          article_published?: string | null
+          article_section?: string | null
+          article_tags?: string[] | null
+          breadcrumbs?: Json | null
+          canonical_override?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string | null
+          noindex?: boolean | null
+          og_description?: string | null
+          og_image?: string | null
+          og_image_alt?: string | null
+          og_image_height?: string | null
+          og_image_width?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_label?: string
+          robots?: string | null
+          route?: string
+          schema_json?: Json | null
+          schema_type?: string | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_image_alt?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_redirects: {
+        Row: {
+          created_at: string | null
+          from_path: string
+          id: string
+          is_active: boolean | null
+          note: string | null
+          redirect_type: number | null
+          to_path: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_path: string
+          id?: string
+          is_active?: boolean | null
+          note?: string | null
+          redirect_type?: number | null
+          to_path: string
+        }
+        Update: {
+          created_at?: string | null
+          from_path?: string
+          id?: string
+          is_active?: boolean | null
+          note?: string | null
+          redirect_type?: number | null
+          to_path?: string
+        }
+        Relationships: []
+      }
+      seo_schema_global: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          label: string
+          schema_json: Json
+          updated_at: string | null
+        }
+        Insert: {
+          id: string
+          is_active?: boolean | null
+          label: string
+          schema_json: Json
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          schema_json?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      suppressed_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
+      delete_email: {
+        Args: { message_id: number; queue_name: string }
+        Returns: boolean
+      }
+      enqueue_email: {
+        Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
       get_intake_for_session: {
         Args: { p_token: string }
         Returns: {
@@ -589,6 +1133,7 @@ export type Database = {
           organization_name: string
         }[]
       }
+      get_report_by_token: { Args: { p_token: string }; Returns: Json }
       get_responses_by_token: {
         Args: { p_token: string }
         Returns: {
@@ -613,6 +1158,24 @@ export type Database = {
           status: string
           submitted_at: string
           updated_at: string
+        }[]
+      }
+      intake_exists: { Args: { p_id: string }; Returns: boolean }
+      move_to_dlq: {
+        Args: {
+          dlq_name: string
+          message_id: number
+          payload: Json
+          source_queue: string
+        }
+        Returns: number
+      }
+      read_email_batch: {
+        Args: { batch_size: number; queue_name: string; vt: number }
+        Returns: {
+          message: Json
+          msg_id: number
+          read_ct: number
         }[]
       }
       schedule_reminder_by_token: {
