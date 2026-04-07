@@ -223,6 +223,9 @@ export default function SubmissionsDashboard() {
       <section className="pt-32 pb-10 lg:pt-40 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
           <motion.div {...fadeUp}>
+            <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-2">
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Admin
+            </Link>
             <div className="flex items-center gap-2 mb-4">
             <span className="h-px w-12 bg-accent" />
             <span className="text-accent font-semibold tracking-widest uppercase text-sm">Internal Admin</span>
