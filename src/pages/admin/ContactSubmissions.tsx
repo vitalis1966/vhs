@@ -83,6 +83,8 @@ export default function ContactSubmissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Submission | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Submission | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchSubmissions = async () => {
     const { data, error } = await supabase
