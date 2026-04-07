@@ -163,8 +163,8 @@ export default function ContactSubmissions() {
       <section className="pt-32 pb-10 lg:pt-40 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+            <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-2">
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Admin
             </Link>
             <div className="flex items-center gap-2 mb-4">
               <span className="h-px w-12 bg-accent" />
