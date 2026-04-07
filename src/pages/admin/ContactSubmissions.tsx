@@ -139,6 +139,24 @@ export default function ContactSubmissions() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    const { error } = await supabase
+      .from("contact_submissions")
+      .delete()
+      .eq("id", deleteTarget.id);
+    if (error) {
+      toast.error("Failed to delete submission");
+    } else {
+      toast.success("Submission deleted");
+      setSubmissions((prev) => prev.filter((s) => s.id !== deleteTarget.id));
+      if (selected?.id === deleteTarget.id) setSelected(null);
+    }
+    setDeleting(false);
+    setDeleteTarget(null);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
