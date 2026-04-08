@@ -58,13 +58,13 @@ export function usePageSEO() {
 
   // Resolve with fallbacks: page → global → hardcoded default
   const resolved = {
-    title: pageSEO?.title || globalSEO?.default_title || "Vitalis Health Strategies",
-    description: pageSEO?.description || globalSEO?.default_description || "",
+    title: pageSEO?.title || fallback.title || globalSEO?.default_title || "Vitalis Health Strategies",
+    description: pageSEO?.description || fallback.description || globalSEO?.default_description || "",
     keywords: pageSEO?.keywords || "",
     robots: pageSEO?.noindex ? "noindex, follow" : (pageSEO?.robots || globalSEO?.default_robots || "index, follow"),
     canonical,
-    ogTitle: pageSEO?.og_title || pageSEO?.title || globalSEO?.default_title || "",
-    ogDescription: pageSEO?.og_description || pageSEO?.description || "",
+    ogTitle: pageSEO?.og_title || pageSEO?.title || fallback.title || globalSEO?.default_title || "",
+    ogDescription: pageSEO?.og_description || pageSEO?.description || fallback.description || "",
     ogImage: `${SITE_URL}${pageSEO?.og_image || globalSEO?.default_og_image || "/og-default.jpg"}`,
     ogImageAlt: pageSEO?.og_image_alt || pageSEO?.title || "",
     ogImageWidth: pageSEO?.og_image_width || "1200",
