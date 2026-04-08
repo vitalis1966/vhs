@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { usePageSEOFallback } from "@/contexts/PageSEOContext";
 
 export function usePageSEO() {
+  const { fallback } = usePageSEOFallback();
   const { pathname } = useLocation();
 
   // Normalize path: strip trailing slash, lowercase
@@ -56,21 +58,21 @@ export function usePageSEO() {
 
   // Resolve with fallbacks: page → global → hardcoded default
   const resolved = {
-    title: pageSEO?.title || globalSEO?.default_title || "Vitalis Health Strategies",
-    description: pageSEO?.description || globalSEO?.default_description || "",
+    title: pageSEO?.title || fallback.title || globalSEO?.default_title || "Vitalis Health Strategies",
+    description: pageSEO?.description || fallback.description || globalSEO?.default_description || "",
     keywords: pageSEO?.keywords || "",
     robots: pageSEO?.noindex ? "noindex, follow" : (pageSEO?.robots || globalSEO?.default_robots || "index, follow"),
     canonical,
-    ogTitle: pageSEO?.og_title || pageSEO?.title || globalSEO?.default_title || "",
-    ogDescription: pageSEO?.og_description || pageSEO?.description || "",
+    ogTitle: pageSEO?.og_title || pageSEO?.title || fallback.title || globalSEO?.default_title || "",
+    ogDescription: pageSEO?.og_description || pageSEO?.description || fallback.description || "",
     ogImage: `${SITE_URL}${pageSEO?.og_image || globalSEO?.default_og_image || "/og-default.jpg"}`,
     ogImageAlt: pageSEO?.og_image_alt || pageSEO?.title || "",
     ogImageWidth: pageSEO?.og_image_width || "1200",
     ogImageHeight: pageSEO?.og_image_height || "630",
     ogType: pageSEO?.og_type || "website",
     twitterCard: pageSEO?.twitter_card || "summary_large_image",
-    twitterTitle: pageSEO?.twitter_title || pageSEO?.og_title || pageSEO?.title || "",
-    twitterDescription: pageSEO?.twitter_description || pageSEO?.og_description || pageSEO?.description || "",
+    twitterTitle: pageSEO?.twitter_title || pageSEO?.og_title || pageSEO?.title || fallback.title || "",
+    twitterDescription: pageSEO?.twitter_description || pageSEO?.og_description || pageSEO?.description || fallback.description || "",
     twitterImage: `${SITE_URL}${pageSEO?.twitter_image || pageSEO?.og_image || globalSEO?.default_og_image || "/og-default.jpg"}`,
     twitterImageAlt: pageSEO?.twitter_image_alt || pageSEO?.og_image_alt || "",
     twitterHandle: globalSEO?.twitter_handle || "",
