@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { usePageSEOFallback } from "@/contexts/PageSEOContext";
 
 export function usePageSEO() {
+  const { fallback } = usePageSEOFallback();
   const { pathname } = useLocation();
 
   // Normalize path: strip trailing slash, lowercase
