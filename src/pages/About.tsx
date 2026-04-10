@@ -55,7 +55,8 @@ const contentBlocks = [
 const About = () => {
   usePageMeta(
     "About Vitalis Health Strategies | Clinician-Led Practice Consulting | Calgary, Alberta",
-    "Founded by clinicians and healthcare executives. Vitalis brings operational experience — not just advice — to every practice engagement."
+    "Founded by clinicians and healthcare executives. Vitalis brings operational experience — not just advice — to every practice engagement.",
+    "/og-about.jpg"
   );
 
   return (

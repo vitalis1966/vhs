@@ -45,7 +45,8 @@ const InsightArticle = () => {
 
   usePageMeta(
     article?.meta_title || article?.title || "Insight | Vitalis",
-    article?.meta_description || article?.excerpt || ""
+    article?.meta_description || article?.excerpt || "",
+    article?.featured_image_url || "/og-insights.jpg"
   );
 
   const handleCopyLink = () => {

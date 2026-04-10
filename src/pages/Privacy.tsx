@@ -46,7 +46,8 @@ const P = ({ children }: { children: React.ReactNode }) => (
 const Privacy = () => {
   usePageMeta(
     "Privacy Policy | Vitalis Health Strategies",
-    "Privacy policy for Vitalis Health Strategies Inc. detailing how we collect, use, and protect your personal information."
+    "Privacy policy for Vitalis Health Strategies Inc. detailing how we collect, use, and protect your personal information.",
+    "/og-privacy.jpg"
   );
 
   const retentionData = [

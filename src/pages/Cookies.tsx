@@ -46,7 +46,8 @@ const P = ({ children }: { children: React.ReactNode }) => (
 const Cookies = () => {
   usePageMeta(
     "Cookie Policy | Vitalis Health Strategies",
-    "Cookie policy for Vitalis Health Strategies Inc. explaining how we use cookies and tracking technologies on our website."
+    "Cookie policy for Vitalis Health Strategies Inc. explaining how we use cookies and tracking technologies on our website.",
+    "/og-cookies.jpg"
   );
 
   const cookieTableData = [

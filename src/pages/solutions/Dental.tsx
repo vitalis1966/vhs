@@ -126,7 +126,8 @@ const existingDimensions = [
 export default function Dental() {
   usePageMeta(
     "Dental Practice Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides comprehensive consulting for dental practices across Canada — with deep focus on Calgary and Edmonton. New office planning, revenue optimization, operations, technology, recruitment, expansion, and M&A advisory."
+    "Vitalis Health Strategies provides comprehensive consulting for dental practices across Canada — with deep focus on Calgary and Edmonton. New office planning, revenue optimization, operations, technology, recruitment, expansion, and M&A advisory.",
+    "/og-dental.jpg"
   );
 
   return (

@@ -91,7 +91,8 @@ function SampleRadarChart() {
 const StrategicAssessment = () => {
   usePageMeta(
     "Strategic Assessment | Operational & Financial Analysis | Vitalis Health Strategies",
-    "A structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first."
+    "A structured assessment across 7 dimensions of practice performance. See where your practice stands and where to focus first.",
+    "/og-strategic-assessment.jpg"
   );
 
   return (

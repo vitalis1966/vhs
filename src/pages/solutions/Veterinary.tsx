@@ -131,7 +131,8 @@ const existingDimensions = [
 export default function Veterinary() {
   usePageMeta(
     "Veterinary Practice Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides comprehensive consulting for veterinary practices across Canada — with deep focus on Calgary, Edmonton, and Alberta. New clinic builds, practice optimization, revenue, staffing, technology, expansion, and M&A advisory."
+    "Vitalis Health Strategies provides comprehensive consulting for veterinary practices across Canada — with deep focus on Calgary, Edmonton, and Alberta. New clinic builds, practice optimization, revenue, staffing, technology, expansion, and M&A advisory.",
+    "/og-veterinary.jpg"
   );
 
   return (

@@ -25,7 +25,8 @@ const Insights = () => {
 
   usePageMeta(
     "Insights — Canadian Healthcare Practice | Vitalis",
-    "The Vitalis team shares insights on the operational, financial, and strategic decisions facing medical, dental, and veterinary practices across Canada."
+    "The Vitalis team shares insights on the operational, financial, and strategic decisions facing medical, dental, and veterinary practices across Canada.",
+    "/og-insights.jpg"
   );
 
   const { data: articles = [], isLoading } = useQuery({

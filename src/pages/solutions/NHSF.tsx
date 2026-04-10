@@ -124,7 +124,8 @@ const cases = [
 export default function NHSF() {
   usePageMeta(
     "Non-Hospital Surgical Facility Consulting Canada | NHSF Build, Accreditation & Operations | Vitalis Health Strategies",
-    "Vitalis Health Strategies guides surgical facility builds from concept to accreditation across every Canadian province — medical, dental, and veterinary surgical facilities, all service types, full regulatory compliance with the College of Physicians and Surgeons."
+    "Vitalis Health Strategies guides surgical facility builds from concept to accreditation across every Canadian province — medical, dental, and veterinary surgical facilities, all service types, full regulatory compliance with the College of Physicians and Surgeons.",
+    "/og-nhsf.jpg"
   );
 
   return (

@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SEOHead } from "@/components/SEOHead";
 import { useLazySection } from "@/hooks/useLazySection";
+import { usePageMeta } from "@/lib/seo";
 
 const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
 
@@ -13,6 +14,11 @@ const CredibilitySection = lazy(() => import("@/components/home/CredibilitySecti
 const FinalCtaSection = lazy(() => import("@/components/home/FinalCtaSection").then(m => ({ default: m.FinalCtaSection })));
 
 const Index = () => {
+  usePageMeta(
+    "Vitalis Health Strategies | Healthcare Practice Consulting | Calgary, Canada",
+    "Full-lifecycle consulting for medical, dental, and veterinary practices across Canada. From new builds to M&A — clinician-led strategy that drives measurable outcomes.",
+    "/og-home.jpg"
+  );
   const [belowFoldRef, showBelowFold] = useLazySection("400px");
 
   return (
