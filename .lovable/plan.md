@@ -1,63 +1,47 @@
 
-Goal: stop the public report page from showing “Report Not Available” while a valid report token exists but the report payload is still being generated.
 
-What I found
-- The real submit flow is:
-```text
-/assessment/:accessToken/report
-  -> AssessmentReport.tsx calls prepare-assessment-report
-  -> redirects to /report/:reportToken
-  -> ClientReportView.tsx loads the report
-```
-- The regression is mainly in `src/pages/ClientReportView.tsx`, not the route config.
-- `ClientReportView` already has an initial loading spinner, but after the first RPC completes it treats `valid token + no report row yet` as a terminal error:
-  - `get_report_by_token` returns session/intake data even when `report` is null
-  - the component then hits `if (!report || !session) -> "Report Not Available"`
-- There is also a backend analytics issue: `get_report_by_token` currently increments `access_count` before confirming the report exists, so naive polling would falsely count retries as real opens.
+## Plan: Per-Page Open Graph Meta Tags
 
-Implementation plan
-1. Update `public.get_report_by_token` in one SQL migration
-   - Keep invalid / expired / revoked behavior as-is.
-   - Treat `valid token but no report yet` as an explicit pending state instead of a generic empty payload.
-   - Move access tracking so `access_count` / `accessed_at` only update when a real report is returned, not during pending retries.
-   - Add a clear log for the pending case to help diagnose slow report generation.
+### Current State
+- `SEOHead` (in `SEOLayout`, wrapping all routes) already renders all OG and Twitter meta tags via `react-helmet-async`
+- `usePageMeta(title, description)` sets fallback values via context, used when no DB record exists in `seo_pages`
+- **Gap 1**: `usePageMeta` only accepts `title` and `description` — no `ogImage` or `ogUrl` support
+- **Gap 2**: The Homepage (`Index.tsx`) never calls `usePageMeta`, so it has no hardcoded fallback
+- All other pages already call `usePageMeta` with unique title/description — OG title/description already derive from those
 
-2. Update `src/pages/ClientReportView.tsx`
-   - Replace the current one-shot load with mount-safe polling.
-   - Poll every 5 seconds for up to 2 minutes.
-   - State model:
-     - `loading`: first fetch
-     - `preparing`: valid token, report still pending
-     - `ready`: render report
-     - terminal errors: invalid / expired / revoked / timeout / unexpected failure
-   - Retry only for the explicit pending state.
-   - Stop immediately for invalid, expired, revoked, or unexpected RPC/network errors.
-   - On timeout, show the existing “Report Not Available” UI unchanged.
+### Changes
 
-3. Keep the UI minimal and branded
-   - Reuse the current spinner/logo layout.
-   - Initial copy: “Loading your report…”
-   - Pending copy after first pending response: “Your report is being prepared, please wait…”
-   - Do not change the existing error screen design.
+**1. Extend `PageSEOContext` to include `ogImage`**
+- Add optional `ogImage` field to the `PageSEOFallback` interface
+- Update `setFallback` comparison to include `ogImage`
 
-4. Add a regression-prevention comment in `ClientReportView.tsx`
-   - Explain that a valid report token can exist before the report row is ready.
-   - Explain that this route must poll instead of falling through to the error screen immediately.
-   - Explain that polling is intentionally tied to route mount so it also works after page refresh.
+**2. Update `usePageMeta` to accept optional `ogImage`**
+- Change signature to `usePageMeta(title, description, ogImage?)`
+- Pass `ogImage` into context
 
-5. Validation
-   - Submit an assessment and open the report immediately: page should stay in loading/preparing, then render once ready.
-   - Refresh `/report/:token` during preparation: it should resume polling and still recover.
-   - Test invalid, expired, and revoked tokens: they should still show their current error screens immediately.
-   - Verify link activity remains accurate: pending retries should not inflate access counts.
+**3. Update `useSEO.ts` resolved values**
+- Use `fallback.ogImage` in the ogImage/twitterImage resolution chain (after DB value, before global default)
 
-Files to change
-- `src/pages/ClientReportView.tsx`
-- `supabase/migrations/...sql` (update `public.get_report_by_token`)
+**4. Add `usePageMeta` to Index.tsx**
+- Add the call with homepage-specific title, description, and default OG image
 
-What I would not change
-- `prepare-assessment-report`
-- `AssessmentReport.tsx` unless testing reveals a separate pre-redirect failure
-- report layout/content
-- email templates
-- admin pages
+**5. Add `ogImage` to Medical Solutions page**
+- Pass `/og-medical.jpg` as the third argument to `usePageMeta`
+
+**6. Add unique `ogImage` placeholders to all other pages**
+- Each page gets a distinct placeholder path (e.g. `/og-about.jpg`, `/og-contact.jpg`, etc.)
+- Pages: About, HowWeWork, Solutions, SolutionsNewClinics, SolutionsExistingClinics, Contact, ClinicAudit, StrategicAssessment, Engagement, HealthcareIT, Partners, Portfolio, MissionVision, Insights, Dental, Veterinary, NHSF, Terms, Privacy, Disclaimer, Cookies
+
+### Files Modified
+- `src/contexts/PageSEOContext.tsx` — add `ogImage` to interface
+- `src/lib/seo.ts` — accept optional third param
+- `src/hooks/useSEO.ts` — use `fallback.ogImage` in resolution
+- `src/pages/Index.tsx` — add `usePageMeta` call
+- `src/pages/solutions/Medical.tsx` — add ogImage param
+- ~20 other page files — add ogImage param to existing `usePageMeta` calls
+
+### No structural changes needed
+- `HelmetProvider` already wraps the app in `App.tsx`
+- `SEOHead` already renders all OG/Twitter tags
+- DB values from admin panel will continue to take priority over these hardcoded fallbacks
+
