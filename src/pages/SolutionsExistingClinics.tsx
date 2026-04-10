@@ -125,7 +125,8 @@ const SolutionsExistingClinics = () => {
 
   usePageMeta(
     "Practice Operations, Growth & Advisory | Existing Practice Consulting Canada | Vitalis Health Strategies",
-    "Vitalis Health Strategies helps established medical, dental, and veterinary practices optimize operations, improve revenue performance, plan strategic growth, and navigate ownership transitions — across Canada."
+    "Vitalis Health Strategies helps established medical, dental, and veterinary practices optimize operations, improve revenue performance, plan strategic growth, and navigate ownership transitions — across Canada.",
+    "/og-existing-clinics.jpg"
   );
 
   useEffect(() => {

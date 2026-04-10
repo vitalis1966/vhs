@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 interface PageSEOFallback {
   title: string;
   description: string;
+  ogImage?: string;
 }
 
 interface PageSEOContextValue {
@@ -20,7 +21,7 @@ export function PageSEOProvider({ children }: { children: ReactNode }) {
 
   const setFallback = useCallback((f: PageSEOFallback) => {
     setFallbackState((prev) =>
-      prev.title === f.title && prev.description === f.description ? prev : f
+      prev.title === f.title && prev.description === f.description && prev.ogImage === f.ogImage ? prev : f
     );
   }, []);
 

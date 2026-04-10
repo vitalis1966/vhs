@@ -46,7 +46,8 @@ const P = ({ children }: { children: React.ReactNode }) => (
 const Disclaimer = () => {
   usePageMeta(
     "Disclaimer | Vitalis Health Strategies",
-    "Disclaimer for Vitalis Health Strategies Inc. governing the use of our website content, results, and third-party links."
+    "Disclaimer for Vitalis Health Strategies Inc. governing the use of our website content, results, and third-party links.",
+    "/og-disclaimer.jpg"
   );
 
   return (

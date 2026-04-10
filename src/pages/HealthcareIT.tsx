@@ -61,7 +61,8 @@ const processSteps = [
 const HealthcareIT = () => {
   usePageMeta(
     "Digital Transformation for Healthcare Practices | EMR & Technology Consulting | Vitalis",
-    "Modernize your practice management systems, EMR setup, and digital workflows with Vitalis technology consulting."
+    "Modernize your practice management systems, EMR setup, and digital workflows with Vitalis technology consulting.",
+    "/og-healthcare-it.jpg"
   );
 
   return (

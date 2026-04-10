@@ -18,7 +18,8 @@ const phases = [
 const Engagement = () => {
   usePageMeta(
     "Fractional Healthcare Leadership & Advisory Consulting | Vitalis Health Strategies",
-    "On-demand executive leadership for growing practices. Vitalis provides fractional CMO, COO, and CFO support across healthcare."
+    "On-demand executive leadership for growing practices. Vitalis provides fractional CMO, COO, and CFO support across healthcare.",
+    "/og-engagement.jpg"
   );
   return (
     <div className="min-h-screen">

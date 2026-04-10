@@ -49,7 +49,8 @@ const organizations = [
 const Solutions = () => {
   usePageMeta(
     "Healthcare Consulting Solutions | Full-Cycle Strategic Advisory | Vitalis Health Strategies",
-    "Full-cycle strategic advisory for healthcare organizations. Vitalis supports practices from initial concept through long-term growth."
+    "Full-cycle strategic advisory for healthcare organizations. Vitalis supports practices from initial concept through long-term growth.",
+    "/og-solutions.jpg"
   );
   return (
     <div className="min-h-screen">

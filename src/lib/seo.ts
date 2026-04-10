@@ -6,10 +6,10 @@ import { usePageSEOFallback } from "@/contexts/PageSEOContext";
  * These are used by SEOHead as fallbacks when no DB record exists.
  * Does NOT directly manipulate the DOM — SEOHead (react-helmet-async) handles all meta tags.
  */
-export function usePageMeta(title: string, description: string) {
+export function usePageMeta(title: string, description: string, ogImage?: string) {
   const { setFallback } = usePageSEOFallback();
 
   useEffect(() => {
-    setFallback({ title, description });
-  }, [title, description, setFallback]);
+    setFallback({ title, description, ogImage });
+  }, [title, description, ogImage, setFallback]);
 }

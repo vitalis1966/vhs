@@ -119,7 +119,8 @@ const SolutionsNewClinics = () => {
 
   usePageMeta(
     "Practice Planning & Development | New Clinic Build Consulting Canada | Vitalis Health Strategies",
-    "Vitalis Health Strategies guides medical, dental, and veterinary practices through every stage of planning and development — feasibility, financial modeling, facility design, regulatory compliance, people strategy, and technology setup across Canada."
+    "Vitalis Health Strategies guides medical, dental, and veterinary practices through every stage of planning and development — feasibility, financial modeling, facility design, regulatory compliance, people strategy, and technology setup across Canada.",
+    "/og-new-clinics.jpg"
   );
 
   useEffect(() => {
