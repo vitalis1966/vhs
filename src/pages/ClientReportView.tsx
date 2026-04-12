@@ -375,8 +375,7 @@ export default function ClientReportView() {
         <div className="bg-secondary/30 border border-border/40 rounded-xl p-4">
           <p className="text-[10px] font-bold text-accent uppercase tracking-[0.15em] mb-1">CONFIDENTIAL</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            This report has been prepared exclusively for <strong className="text-foreground">{intake?.full_name || "you"}</strong>
-            {intake?.organization_name && <> / <strong className="text-foreground">{intake.organization_name}</strong></>} by Vitalis Health Strategies Inc. Do not distribute or share without written authorization.
+            This report has been prepared exclusively for <strong className="text-foreground">{orgName}</strong> by Vitalis Health Strategies Inc. Do not distribute or share without written authorization.
           </p>
         </div>
       </div>
