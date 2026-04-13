@@ -105,11 +105,11 @@ serve(async (req) => {
       staffMemberIds,
       start: {
         dateTime: `${date}T${time}:00.0000000`,
-        timeZone: "UTC",
+        timeZone: "America/Edmonton",
       },
       end: {
         dateTime: `${date}T${endTime}:00.0000000`,
-        timeZone: "UTC",
+        timeZone: "America/Edmonton",
       },
       customerName: name,
       customerEmailAddress: email,
