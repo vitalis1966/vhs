@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Loader2, Calendar, CheckCircle, AlertTriangle, RotateCcw } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Loader2, Calendar as CalendarIcon, CheckCircle, AlertTriangle, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface Slot {
   time: string;
@@ -28,10 +29,9 @@ interface BookingWidgetProps {
 export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProps) {
   const { toast } = useToast();
 
-  const [days, setDays] = useState<DaySlots[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [daySlots, setDaySlots] = useState<DaySlots | null>(null);
+  const [loading, setLoading] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   // Form
@@ -44,29 +44,50 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
   const [submitting, setSubmitting] = useState(false);
   const [booked, setBooked] = useState<{ date: string; time: string } | null>(null);
 
-  const fetchSlots = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("get-booking-slots");
-      if (fnError) throw new Error(fnError.message);
-      if (data?.error) throw new Error(data.error);
-      setDays(data || []);
-      setSelectedDay(0);
-      setSelectedTime(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to load available slots.");
-    }
-    setLoading(false);
+  // Calendar constraints
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endOfYear = new Date(today.getFullYear(), 11, 31);
+
+  const isWeekend = (date: Date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6;
   };
 
+  const fetchSlotsForDate = useCallback(async (date: Date) => {
+    setLoading(true);
+    setDaySlots(null);
+    setSelectedTime(null);
+    try {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      const dateStr = `${y}-${m}-${d}`;
+
+      const { data, error: fnError } = await supabase.functions.invoke("get-booking-slots", {
+        body: { date: dateStr },
+      });
+      if (fnError) throw new Error(fnError.message);
+      if (data?.error) throw new Error(data.error);
+
+      const days: DaySlots[] = data || [];
+      setDaySlots(days.length > 0 ? days[0] : { date: dateStr, dayLabel: date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }), slots: [] });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to load slots.", variant: "destructive" });
+      setDaySlots(null);
+    }
+    setLoading(false);
+  }, [toast]);
+
   useEffect(() => {
-    fetchSlots();
-  }, []);
+    if (selectedDate) {
+      fetchSlotsForDate(selectedDate);
+    }
+  }, [selectedDate, fetchSlotsForDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedTime || !days[selectedDay]) return;
+    if (!selectedTime || !daySlots) return;
 
     setSubmitting(true);
     try {
@@ -75,7 +96,7 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
           name,
           email,
           organization,
-          date: days[selectedDay].date,
+          date: daySlots.date,
           time: selectedTime,
           note,
         },
@@ -83,9 +104,8 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
 
-      setBooked({ date: days[selectedDay].dayLabel, time: selectedTime });
+      setBooked({ date: daySlots.dayLabel, time: selectedTime });
 
-      // Track meeting booking on the session
       if (sessionId) {
         await supabase
           .from("assessment_sessions" as any)
@@ -93,7 +113,7 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
           .eq("id", sessionId);
       }
 
-      toast({ title: "Call Booked", description: `Your discovery call is confirmed for ${days[selectedDay].dayLabel} at ${formatTime(selectedTime)}.` });
+      toast({ title: "Call Booked", description: `Your discovery call is confirmed for ${daySlots.dayLabel} at ${formatTime(selectedTime)}.` });
     } catch (err: any) {
       toast({ title: "Booking Failed", description: err.message || "Could not complete booking. Please try again.", variant: "destructive" });
     }
@@ -125,108 +145,76 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
     );
   }
 
-  // ── Loading state ──
-  if (loading) {
-    return (
-      <Card className="border border-border/40 shadow-soft">
-        <CardContent className="py-10 flex items-center justify-center gap-3">
-          <Loader2 className="h-5 w-5 animate-spin text-accent" />
-          <span className="text-sm text-muted-foreground">Loading available times…</span>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // ── Error state ──
-  if (error) {
-    return (
-      <Card className="border border-border/40 shadow-soft">
-        <CardContent className="py-10 text-center space-y-4">
-          <AlertTriangle className="h-8 w-8 text-destructive mx-auto" />
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <Button variant="outline" size="sm" onClick={fetchSlots}>
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Try Again
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // ── No availability ──
-  if (days.length === 0) {
-    return (
-      <Card className="border border-border/40 shadow-soft">
-        <CardContent className="py-10 text-center space-y-3">
-          <Calendar className="h-8 w-8 text-muted-foreground mx-auto" />
-          <p className="text-sm text-muted-foreground">No available slots in the next 7 days. Please check back soon.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const currentDay = days[selectedDay];
-  const availableSlots = currentDay?.slots.filter((s) => s.available) || [];
+  const availableSlots = daySlots?.slots.filter((s) => s.available) || [];
 
   return (
     <Card className="border border-border/40 shadow-soft overflow-hidden">
       <CardHeader className="border-b border-border/40 bg-secondary/10">
         <div className="flex items-center gap-3">
-          <span className="text-accent"><Calendar className="h-5 w-5" /></span>
+          <span className="text-accent"><CalendarIcon className="h-5 w-5" /></span>
           <CardTitle className="font-display text-lg font-bold text-foreground">Book a Discovery Call</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
-        {/* Day selector */}
+        {/* Calendar picker */}
         <div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Select a Day</p>
-          <div className="flex flex-wrap gap-2">
-            {days.map((day, i) => (
-              <Badge
-                key={day.date}
-                variant={i === selectedDay ? "default" : "outline"}
-                className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${
-                  i === selectedDay
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "hover:bg-secondary"
-                }`}
-                onClick={() => { setSelectedDay(i); setSelectedTime(null); }}
-              >
-                {day.dayLabel}
-              </Badge>
-            ))}
-          </div>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Select a Date</p>
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            disabled={(date) => {
+              const d = new Date(date);
+              d.setHours(0, 0, 0, 0);
+              return d < today || d > endOfYear || isWeekend(d);
+            }}
+            fromDate={today}
+            toDate={endOfYear}
+            className={cn("rounded-md border pointer-events-auto")}
+          />
         </div>
 
         {/* Time slots */}
-        <div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-            Available Times — {currentDay?.dayLabel}
-          </p>
-          {availableSlots.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No available slots on this day.</p>
-          ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-              {currentDay.slots.map((slot) => (
-                <Button
-                  key={slot.time}
-                  variant={selectedTime === slot.time ? "default" : "outline"}
-                  size="sm"
-                  disabled={!slot.available}
-                  className={`text-xs ${
-                    !slot.available ? "line-through opacity-40 cursor-not-allowed" : ""
-                  } ${selectedTime === slot.time ? "" : ""}`}
-                  onClick={() => setSelectedTime(slot.time)}
-                >
-                  {formatTime(slot.time)}
-                </Button>
-              ))}
-            </div>
-          )}
-        </div>
+        {selectedDate && (
+          <div>
+            {loading ? (
+              <div className="flex items-center justify-center gap-3 py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-accent" />
+                <span className="text-sm text-muted-foreground">Loading available times…</span>
+              </div>
+            ) : daySlots ? (
+              <>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                  Available Times — {daySlots.dayLabel}
+                </p>
+                {availableSlots.length === 0 ? (
+                  <div className="text-center py-4 space-y-2">
+                    <AlertTriangle className="h-6 w-6 text-muted-foreground mx-auto" />
+                    <p className="text-sm text-muted-foreground">No available slots on this day.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                    {daySlots.slots.map((slot) => (
+                      <Button
+                        key={slot.time}
+                        variant={selectedTime === slot.time ? "default" : "outline"}
+                        size="sm"
+                        disabled={!slot.available}
+                        className={`text-xs ${!slot.available ? "line-through opacity-40 cursor-not-allowed" : ""}`}
+                        onClick={() => setSelectedTime(slot.time)}
+                      >
+                        {formatTime(slot.time)}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : null}
+          </div>
+        )}
 
         {/* Form — shown when a time is selected */}
-        {selectedTime && (
+        {selectedTime && daySlots && (
           <form onSubmit={handleSubmit} className="space-y-4 border-t border-border/40 pt-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -247,8 +235,8 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="Anything we should know before the call?" />
             </div>
             <Button type="submit" disabled={submitting || !name || !email} className="w-full">
-              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Calendar className="mr-2 h-4 w-4" />}
-              {submitting ? "Booking…" : `Confirm — ${currentDay.dayLabel} at ${formatTime(selectedTime)}`}
+              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CalendarIcon className="mr-2 h-4 w-4" />}
+              {submitting ? "Booking…" : `Confirm — ${daySlots.dayLabel} at ${formatTime(selectedTime)}`}
             </Button>
           </form>
         )}
