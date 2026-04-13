@@ -1,29 +1,24 @@
 
 
-## Plan: Upgrade Vite from v5 to v6
+## Plan: Add `_redirects` for Cloudflare Pages & Verify Image Paths
 
-### Summary
-Upgrade Vite from `^5.4.19` to `^6.x` and update the companion plugin `@vitejs/plugin-react-swc` to its Vite 6-compatible version.
+### Context
+Lovable's built-in hosting already handles SPA routing automatically, so this file has no effect on Lovable previews or published sites. However, if you're deploying to **Cloudflare Pages**, this file is needed for client-side routing to work on page refresh/deep links.
 
 ### Changes
 
-**1. Update `package.json`**
-- `vite`: `^5.4.19` → `^6.0.0`
-- `@vitejs/plugin-react-swc`: `^3.11.0` → `^4.0.0` (required for Vite 6 compatibility)
+**1. Create `public/_redirects`**
+- Single line: `/* /index.html 200`
+- This tells Cloudflare Pages to serve `index.html` for all non-file routes
 
-**2. Update `vite.config.ts`**
-- No breaking config changes expected — the current config uses standard options that are compatible with Vite 6
-- Verify `build.target: 'es2020'` and `modulePreload` settings still work (they do in Vite 6)
+**2. Verify image references**
+I searched the codebase — image references already use relative paths starting with `/`:
+- `/vitalis-logo.webp` — used in Footer, AssessmentReport, BookingWidget, index.html, etc.
+- `/favicon.ico`, `/placeholder.svg` — already relative
+- The only absolute image URLs are the Open Graph social images hosted on Google Cloud Storage (`https://storage.googleapis.com/...`) in `index.html` meta tags — these must stay absolute since they need to be reachable by social media crawlers
 
-**3. Update `vitest.config.ts`**
-- No changes needed — Vitest 3.x already supports Vite 6
+No image path changes needed.
 
-**4. Reinstall dependencies**
-- Run `bun install` to update the lockfile
-
-**5. Verify build**
-- Run `bun run build` to confirm no breaking changes
-
-### Risk
-Low risk — this project uses standard Vite features with no custom plugins beyond `lovable-tagger` and `react-swc`. The main breaking change in Vite 6 is the new Environment API (internal) and some minor defaults changes that don't affect this config.
+### Files
+- **Create**: `public/_redirects`
 
