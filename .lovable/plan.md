@@ -1,63 +1,38 @@
 
-Goal: stop the public report page from showing “Report Not Available” while a valid report token exists but the report payload is still being generated.
 
-What I found
-- The real submit flow is:
-```text
-/assessment/:accessToken/report
-  -> AssessmentReport.tsx calls prepare-assessment-report
-  -> redirects to /report/:reportToken
-  -> ClientReportView.tsx loads the report
-```
-- The regression is mainly in `src/pages/ClientReportView.tsx`, not the route config.
-- `ClientReportView` already has an initial loading spinner, but after the first RPC completes it treats `valid token + no report row yet` as a terminal error:
-  - `get_report_by_token` returns session/intake data even when `report` is null
-  - the component then hits `if (!report || !session) -> "Report Not Available"`
-- There is also a backend analytics issue: `get_report_by_token` currently increments `access_count` before confirming the report exists, so naive polling would falsely count retries as real opens.
+## Plan: Fix Booking Widget — Calendar Sync & Time Zone
 
-Implementation plan
-1. Update `public.get_report_by_token` in one SQL migration
-   - Keep invalid / expired / revoked behavior as-is.
-   - Treat `valid token but no report yet` as an explicit pending state instead of a generic empty payload.
-   - Move access tracking so `access_count` / `accessed_at` only update when a real report is returned, not during pending retries.
-   - Add a clear log for the pending case to help diagnose slow report generation.
+### Problem 1: Staff calendar not synced
+The `get-booking-slots` function uses `calendarView` which only shows existing **Bookings** appointments — it does **not** check each staff member's personal Outlook calendar for meetings, blocks, or out-of-office events. So a slot that's blocked on a staff member's calendar still appears as available.
 
-2. Update `src/pages/ClientReportView.tsx`
-   - Replace the current one-shot load with mount-safe polling.
-   - Poll every 5 seconds for up to 2 minutes.
-   - State model:
-     - `loading`: first fetch
-     - `preparing`: valid token, report still pending
-     - `ready`: render report
-     - terminal errors: invalid / expired / revoked / timeout / unexpected failure
-   - Retry only for the explicit pending state.
-   - Stop immediately for invalid, expired, revoked, or unexpected RPC/network errors.
-   - On timeout, show the existing “Report Not Available” UI unchanged.
+**Fix:** Replace `calendarView` with the Microsoft Graph `getStaffAvailability` endpoint (`POST /solutions/bookingBusinesses/{id}/getStaffAvailability`). This endpoint checks the staff's actual Outlook calendar and returns available time windows, respecting all calendar events, not just Bookings appointments.
 
-3. Keep the UI minimal and branded
-   - Reuse the current spinner/logo layout.
-   - Initial copy: “Loading your report…”
-   - Pending copy after first pending response: “Your report is being prepared, please wait…”
-   - Do not change the existing error screen design.
+### Problem 2: UTC instead of MST
+The `create-booking` function hardcodes `timeZone: "UTC"` in the appointment payload. The confirmation email from Microsoft then shows UTC. The business is configured for MST (America/Edmonton).
 
-4. Add a regression-prevention comment in `ClientReportView.tsx`
-   - Explain that a valid report token can exist before the report row is ready.
-   - Explain that this route must poll instead of falling through to the error screen immediately.
-   - Explain that polling is intentionally tied to route mount so it also works after page refresh.
+**Fix:** Change `timeZone` from `"UTC"` to `"America/Edmonton"` in both the `start` and `end` objects of the appointment payload in `create-booking`. Also update `get-booking-slots` to generate and compare slots in MST.
 
-5. Validation
-   - Submit an assessment and open the report immediately: page should stay in loading/preparing, then render once ready.
-   - Refresh `/report/:token` during preparation: it should resume polling and still recover.
-   - Test invalid, expired, and revoked tokens: they should still show their current error screens immediately.
-   - Verify link activity remains accurate: pending retries should not inflate access counts.
+### Changes
 
-Files to change
-- `src/pages/ClientReportView.tsx`
-- `supabase/migrations/...sql` (update `public.get_report_by_token`)
+**1. Rewrite `get-booking-slots/index.ts`**
+- Fetch staff members list
+- Call `POST .../getStaffAvailability` with the 7-day window and `timeZone: "America/Edmonton"`
+- Parse the returned `availabilityItems` to build the slot grid — only slots within returned available windows are marked available
+- Generate day labels and slot times in MST context
+- Remove the old `calendarView` approach entirely
 
-What I would not change
-- `prepare-assessment-report`
-- `AssessmentReport.tsx` unless testing reveals a separate pre-redirect failure
-- report layout/content
-- email templates
-- admin pages
+**2. Update `create-booking/index.ts`**
+- Change `timeZone: "UTC"` → `timeZone: "America/Edmonton"` in both `start` and `end` objects
+- This ensures the confirmation email Microsoft sends shows Mountain Time
+
+**3. Update `BookingWidget.tsx`**
+- Change the timezone label from `(ET)` to `(MT)` in the confirmation display
+
+### Files Modified
+- `supabase/functions/get-booking-slots/index.ts` — rewrite slot generation using `getStaffAvailability`
+- `supabase/functions/create-booking/index.ts` — fix timezone to `America/Edmonton`
+- `src/components/BookingWidget.tsx` — update timezone label display
+
+### Deployment
+- Both edge functions will be redeployed after changes
+

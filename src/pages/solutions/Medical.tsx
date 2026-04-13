@@ -134,7 +134,8 @@ const existingDimensions = [
 export default function Medical() {
   usePageMeta(
     "Medical Clinic Consulting Canada | Calgary, Edmonton & Nationwide | Vitalis Health Strategies",
-    "Vitalis Health Strategies provides end-to-end consulting for medical clinics across Canada — with deep focus on Calgary, Edmonton, and Alberta. New builds, revenue cycle, operations, recruitment, technology, and M&A advisory."
+    "Vitalis Health Strategies provides end-to-end consulting for medical clinics across Canada — with deep focus on Calgary, Edmonton, and Alberta. New builds, revenue cycle, operations, recruitment, technology, and M&A advisory.",
+    "/og-medical.jpg"
   );
 
   return (

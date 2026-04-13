@@ -24,7 +24,8 @@ const assessments = [
 const ClinicAudit = () => {
   usePageMeta(
     "Strategic Assessment | Healthcare Consulting | Vitalis Health Strategies",
-    "Start with clarity. Our strategic assessment gives you an actionable roadmap for your medical, dental, or veterinary practice."
+    "Start with clarity. Our strategic assessment gives you an actionable roadmap for your medical, dental, or veterinary practice.",
+    "/og-clinic-audit.jpg"
   );
   return (
     <div className="min-h-screen">

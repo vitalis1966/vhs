@@ -16,6 +16,7 @@ const Contact = () => {
   usePageMeta(
     "Contact Vitalis Health Strategies | Healthcare Consulting Calgary",
     "Connect with Vitalis Health Strategies to discuss your practice goals, challenges, or opportunities. Calgary-based healthcare consulting.",
+    "/og-contact.jpg"
   );
   const [formData, setFormData] = useState({
     name: "",

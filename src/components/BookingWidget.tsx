@@ -115,7 +115,7 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
           <CheckCircle className="h-10 w-10 text-accent mx-auto" />
           <h4 className="font-display text-lg font-bold text-foreground">Discovery Call Confirmed</h4>
           <p className="text-sm text-muted-foreground">
-            {booked.date} at {formatTime(booked.time)} (ET)
+            {booked.date} at {formatTime(booked.time)} (MT)
           </p>
           <p className="text-sm text-muted-foreground">
             You'll receive a confirmation email with meeting details shortly.

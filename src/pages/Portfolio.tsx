@@ -35,7 +35,8 @@ const Portfolio = () => {
 
   usePageMeta(
     "Healthcare Consulting Portfolio & Case Studies | Vitalis",
-    "A selection of healthcare consulting engagements across practice builds, revenue optimization, M&A advisory, and digital transformation."
+    "A selection of healthcare consulting engagements across practice builds, revenue optimization, M&A advisory, and digital transformation.",
+    "/og-portfolio.jpg"
   );
 
   const { data: allCases = [] } = useQuery({

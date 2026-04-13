@@ -172,7 +172,8 @@ const featuredPartners = [
 const Partners = () => {
   usePageMeta(
     "The Vitalis Ecosystem | Strategic Healthcare Advisory Partners | Vitalis Health Strategies",
-    "The Vitalis Ecosystem connects medical, dental, and veterinary practices with trusted financial, legal, design, and technology partners — coordinated through one strategic relationship."
+    "The Vitalis Ecosystem connects medical, dental, and veterinary practices with trusted financial, legal, design, and technology partners — coordinated through one strategic relationship.",
+    "/og-partners.jpg"
   );
 
   /* ── Hub-and-spoke line calculation ── */

@@ -6,6 +6,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const TIMEZONE = "Mountain Standard Time"; // Windows timezone name for Graph API
+const IANA_TZ = "America/Edmonton";
+
 async function getAccessToken(): Promise<string> {
   const tenantId = Deno.env.get("AZURE_TENANT_ID")!;
   const clientId = Deno.env.get("AZURE_CLIENT_ID")!;
@@ -32,6 +35,20 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
+/** Get current date/time in America/Edmonton as a Date-like object */
+function nowInMST(): Date {
+  const nowStr = new Date().toLocaleString("en-US", { timeZone: IANA_TZ });
+  return new Date(nowStr);
+}
+
+/** Format a date as YYYY-MM-DD in MST */
+function formatDateMST(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -41,64 +58,108 @@ serve(async (req) => {
     const token = await getAccessToken();
     const businessId = Deno.env.get("BOOKING_BUSINESS_ID")!;
 
-    const now = new Date();
-    const start = now.toISOString();
-    const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const now = nowInMST();
 
-    // Fetch calendar view for the next 7 days
-    // Permissions required: Bookings.Read.All, BookingsAppointment.ReadWrite.All
-    const calRes = await fetch(
-      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/calendarView?start=${start}&end=${end}`,
+    // Build 7-day window in MST
+    const startDate = formatDateMST(now);
+    const endDateObj = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const endDate = formatDateMST(endDateObj);
+
+    // 1. Fetch staff members
+    const staffRes = await fetch(
+      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/staffMembers`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
+    if (!staffRes.ok) throw new Error(`Failed to fetch staff: ${await staffRes.text()}`);
+    const staffMembers = (await staffRes.json()).value || [];
+    const staffIds = staffMembers.map((s: any) => s.id);
 
-    if (!calRes.ok) {
-      const errText = await calRes.text();
-      throw new Error(`Graph API error (${calRes.status}): ${errText}`);
+    if (staffIds.length === 0) {
+      return new Response(JSON.stringify([]), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const calData = await calRes.json();
-    const appointments = calData.value || [];
+    // 2. Call getStaffAvailability
+    const availRes = await fetch(
+      `https://graph.microsoft.com/v1.0/solutions/bookingBusinesses/${businessId}/getStaffAvailability`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          staffIds,
+          startDateTime: {
+            dateTime: `${startDate}T00:00:00`,
+            timeZone: TIMEZONE,
+          },
+          endDateTime: {
+            dateTime: `${endDate}T23:59:59`,
+            timeZone: TIMEZONE,
+          },
+        }),
+      }
+    );
 
-    // Build a map of booked slots by date
-    const bookedByDate: Record<string, Set<string>> = {};
-    for (const appt of appointments) {
-      if (appt.start?.dateTime) {
-        const dt = new Date(appt.start.dateTime);
-        const dateKey = dt.toISOString().split("T")[0];
-        const timeKey = dt.toISOString().split("T")[1].substring(0, 5); // HH:MM
-        if (!bookedByDate[dateKey]) bookedByDate[dateKey] = new Set();
-        bookedByDate[dateKey].add(timeKey);
+    if (!availRes.ok) {
+      const errText = await availRes.text();
+      throw new Error(`getStaffAvailability error (${availRes.status}): ${errText}`);
+    }
+
+    const availData = await availRes.json();
+    const staffAvailItems = availData.staffAvailabilityItem || availData.value || [];
+
+    // 3. Merge availability across all staff — a slot is available if ANY staff member is free
+    // Build a set of available 30-min slots from the availability windows
+    const availableSlots = new Set<string>(); // "YYYY-MM-DD|HH:MM"
+
+    for (const staffItem of staffAvailItems) {
+      const items = staffItem.availabilityItems || [];
+      for (const item of items) {
+        if (item.status !== "available") continue;
+        // Parse the start/end times — these are in the requested timezone (MST)
+        const slotStart = new Date(item.startDateTime?.dateTime || item.startDateTime);
+        const slotEnd = new Date(item.endDateTime?.dateTime || item.endDateTime);
+
+        // Generate 30-min slots within this window
+        let cursor = new Date(slotStart);
+        while (cursor.getTime() + 30 * 60 * 1000 <= slotEnd.getTime()) {
+          const dateKey = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}-${String(cursor.getDate()).padStart(2, "0")}`;
+          const timeKey = `${String(cursor.getHours()).padStart(2, "0")}:${String(cursor.getMinutes()).padStart(2, "0")}`;
+          availableSlots.add(`${dateKey}|${timeKey}`);
+          cursor = new Date(cursor.getTime() + 30 * 60 * 1000);
+        }
       }
     }
 
-    // Generate slots for the next 7 days (9 AM – 5 PM, 30-min intervals, America/Toronto)
+    // 4. Build the response grid for the next 7 days (weekdays, 9 AM – 5 PM MST)
     const businessHoursStart = 9;
     const businessHoursEnd = 17;
     const slotMinutes = 30;
     const result: { date: string; dayLabel: string; slots: { time: string; available: boolean }[] }[] = [];
 
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
     for (let d = 0; d < 7; d++) {
       const day = new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
       const dayOfWeek = day.getDay();
-      // Skip weekends
-      if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+      if (dayOfWeek === 0 || dayOfWeek === 6) continue; // skip weekends
 
-      const dateKey = day.toISOString().split("T")[0];
+      const dateKey = formatDateMST(day);
       const dayLabel = day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-      const booked = bookedByDate[dateKey] || new Set();
       const slots: { time: string; available: boolean }[] = [];
 
       for (let h = businessHoursStart; h < businessHoursEnd; h++) {
         for (let m = 0; m < 60; m += slotMinutes) {
+          // Skip past slots for today
+          if (d === 0 && (h < currentHour || (h === currentHour && m <= currentMinute))) continue;
+
           const time = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-          // If today, skip slots that are in the past
-          if (d === 0) {
-            const slotDate = new Date(day);
-            slotDate.setHours(h, m, 0, 0);
-            if (slotDate <= now) continue;
-          }
-          slots.push({ time, available: !booked.has(time) });
+          const key = `${dateKey}|${time}`;
+          slots.push({ time, available: availableSlots.has(key) });
         }
       }
 

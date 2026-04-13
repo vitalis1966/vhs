@@ -47,7 +47,8 @@ const P = ({ children }: { children: React.ReactNode }) => (
 const Terms = () => {
   usePageMeta(
     "Terms & Conditions | Vitalis Health Strategies",
-    "Terms and conditions governing the use of the Vitalis Health Strategies website and services. Effective January 1, 2026."
+    "Terms and conditions governing the use of the Vitalis Health Strategies website and services. Effective January 1, 2026.",
+    "/og-terms.jpg"
   );
 
   return (
