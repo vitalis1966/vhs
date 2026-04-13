@@ -161,6 +161,7 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Select a Date</p>
           <Calendar
             mode="single"
+            numberOfMonths={2}
             selected={selectedDate}
             onSelect={setSelectedDate}
             disabled={(date) => {
@@ -170,7 +171,7 @@ export default function BookingWidget({ sessionId, bookedBy }: BookingWidgetProp
             }}
             fromDate={today}
             toDate={endOfYear}
-            className={cn("rounded-md border pointer-events-auto")}
+            className={cn("rounded-md border pointer-events-auto w-full")}
           />
         </div>
 
