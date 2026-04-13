@@ -91,6 +91,18 @@ if (typeof document === 'undefined') {
   trySet(globalThis.window, 'scrollTo', noop)
   trySet(globalThis.window, 'innerWidth', 1280)
   trySet(globalThis.window, 'innerHeight', 800)
+  trySet(globalThis.window, 'history', {
+    length: 0,
+    scrollRestoration: 'auto',
+    state: null,
+    back: noop,
+    forward: noop,
+    go: noop,
+    pushState: noop,
+    replaceState: noop,
+  })
+  trySet(globalThis.window, 'dispatchEvent', () => true)
+  trySet(globalThis.window, 'CustomEvent', class CustomEvent { constructor() {} })
 
   if (typeof globalThis.HTMLElement === 'undefined') {
     ;(globalThis as any).HTMLElement = class HTMLElement {}
