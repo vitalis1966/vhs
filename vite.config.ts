@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  ssgOptions: {
+    script: 'async',
+    formatting: 'minify',
+    crittersOptions: false,
+  },
   build: {
     target: 'es2020',
     cssMinify: true,
