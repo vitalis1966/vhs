@@ -23,6 +23,10 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
     formatting: 'minify',
     crittersOptions: false,
   },
+  ssr: {
+    // Bundle these into SSR so browser polyfills in main.tsx run before they evaluate
+    noExternal: ['react-router-dom', '@remix-run/router', '@supabase/supabase-js', '@supabase/gotrue-js', '@supabase/postgrest-js', '@supabase/realtime-js', '@supabase/storage-js', '@supabase/functions-js'],
+  },
   build: {
     target: 'es2020',
     cssMinify: true,
