@@ -1,0 +1,29 @@
+# Vitalis Health Strategies
+
+> Physician-led healthcare consulting firm based in Calgary,
+> Alberta. We serve medical, dental, and veterinary practices
+> across Canada with clinic builds, operational optimization,
+> revenue cycle improvement, physician recruitment,
+> accreditation support, and mergers and acquisitions.
+
+## Pages
+
+- Homepage: https://www.vitalisstrategies.com/
+- About: https://www.vitalisstrategies.com/about
+- Mission & Vision: https://www.vitalisstrategies.com/about/mission-vision
+- How We Work: https://www.vitalisstrategies.com/how-we-work
+- Engagement: https://www.vitalisstrategies.com/engagement
+- Solutions: https://www.vitalisstrategies.com/solutions
+- New Clinics: https://www.vitalisstrategies.com/solutions/new-clinics
+- Existing Clinics: https://www.vitalisstrategies.com/solutions/existing-clinics
+- Medical: https://www.vitalisstrategies.com/solutions/medical
+- Dental: https://www.vitalisstrategies.com/solutions/dental
+- Veterinary: https://www.vitalisstrategies.com/solutions/veterinary
+- Non-Hospital Surgical Facilities: https://www.vitalisstrategies.com/solutions/nhsf
+- Portfolio: https://www.vitalisstrategies.com/portfolio
+- Partners: https://www.vitalisstrategies.com/partners
+- Insights: https://www.vitalisstrategies.com/insights
+- Healthcare IT: https://www.vitalisstrategies.com/healthcare-it
+- Contact: https://www.vitalisstrategies.com/contact
+- Clinic Audit: https://www.vitalisstrategies.com/clinic-audit
+- Strategic Assessment: https://www.vitalisstrategies.com/strategic-assessment
