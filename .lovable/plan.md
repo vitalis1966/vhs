@@ -1,47 +1,38 @@
 
 
-## Plan: Per-Page Open Graph Meta Tags
+## Plan: Fix Booking Widget — Calendar Sync & Time Zone
 
-### Current State
-- `SEOHead` (in `SEOLayout`, wrapping all routes) already renders all OG and Twitter meta tags via `react-helmet-async`
-- `usePageMeta(title, description)` sets fallback values via context, used when no DB record exists in `seo_pages`
-- **Gap 1**: `usePageMeta` only accepts `title` and `description` — no `ogImage` or `ogUrl` support
-- **Gap 2**: The Homepage (`Index.tsx`) never calls `usePageMeta`, so it has no hardcoded fallback
-- All other pages already call `usePageMeta` with unique title/description — OG title/description already derive from those
+### Problem 1: Staff calendar not synced
+The `get-booking-slots` function uses `calendarView` which only shows existing **Bookings** appointments — it does **not** check each staff member's personal Outlook calendar for meetings, blocks, or out-of-office events. So a slot that's blocked on a staff member's calendar still appears as available.
+
+**Fix:** Replace `calendarView` with the Microsoft Graph `getStaffAvailability` endpoint (`POST /solutions/bookingBusinesses/{id}/getStaffAvailability`). This endpoint checks the staff's actual Outlook calendar and returns available time windows, respecting all calendar events, not just Bookings appointments.
+
+### Problem 2: UTC instead of MST
+The `create-booking` function hardcodes `timeZone: "UTC"` in the appointment payload. The confirmation email from Microsoft then shows UTC. The business is configured for MST (America/Edmonton).
+
+**Fix:** Change `timeZone` from `"UTC"` to `"America/Edmonton"` in both the `start` and `end` objects of the appointment payload in `create-booking`. Also update `get-booking-slots` to generate and compare slots in MST.
 
 ### Changes
 
-**1. Extend `PageSEOContext` to include `ogImage`**
-- Add optional `ogImage` field to the `PageSEOFallback` interface
-- Update `setFallback` comparison to include `ogImage`
+**1. Rewrite `get-booking-slots/index.ts`**
+- Fetch staff members list
+- Call `POST .../getStaffAvailability` with the 7-day window and `timeZone: "America/Edmonton"`
+- Parse the returned `availabilityItems` to build the slot grid — only slots within returned available windows are marked available
+- Generate day labels and slot times in MST context
+- Remove the old `calendarView` approach entirely
 
-**2. Update `usePageMeta` to accept optional `ogImage`**
-- Change signature to `usePageMeta(title, description, ogImage?)`
-- Pass `ogImage` into context
+**2. Update `create-booking/index.ts`**
+- Change `timeZone: "UTC"` → `timeZone: "America/Edmonton"` in both `start` and `end` objects
+- This ensures the confirmation email Microsoft sends shows Mountain Time
 
-**3. Update `useSEO.ts` resolved values**
-- Use `fallback.ogImage` in the ogImage/twitterImage resolution chain (after DB value, before global default)
-
-**4. Add `usePageMeta` to Index.tsx**
-- Add the call with homepage-specific title, description, and default OG image
-
-**5. Add `ogImage` to Medical Solutions page**
-- Pass `/og-medical.jpg` as the third argument to `usePageMeta`
-
-**6. Add unique `ogImage` placeholders to all other pages**
-- Each page gets a distinct placeholder path (e.g. `/og-about.jpg`, `/og-contact.jpg`, etc.)
-- Pages: About, HowWeWork, Solutions, SolutionsNewClinics, SolutionsExistingClinics, Contact, ClinicAudit, StrategicAssessment, Engagement, HealthcareIT, Partners, Portfolio, MissionVision, Insights, Dental, Veterinary, NHSF, Terms, Privacy, Disclaimer, Cookies
+**3. Update `BookingWidget.tsx`**
+- Change the timezone label from `(ET)` to `(MT)` in the confirmation display
 
 ### Files Modified
-- `src/contexts/PageSEOContext.tsx` — add `ogImage` to interface
-- `src/lib/seo.ts` — accept optional third param
-- `src/hooks/useSEO.ts` — use `fallback.ogImage` in resolution
-- `src/pages/Index.tsx` — add `usePageMeta` call
-- `src/pages/solutions/Medical.tsx` — add ogImage param
-- ~20 other page files — add ogImage param to existing `usePageMeta` calls
+- `supabase/functions/get-booking-slots/index.ts` — rewrite slot generation using `getStaffAvailability`
+- `supabase/functions/create-booking/index.ts` — fix timezone to `America/Edmonton`
+- `src/components/BookingWidget.tsx` — update timezone label display
 
-### No structural changes needed
-- `HelmetProvider` already wraps the app in `App.tsx`
-- `SEOHead` already renders all OG/Twitter tags
-- DB values from admin panel will continue to take priority over these hardcoded fallbacks
+### Deployment
+- Both edge functions will be redeployed after changes
 
