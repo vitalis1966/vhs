@@ -1,38 +1,32 @@
 
 
-## Plan: Fix Booking Widget — Calendar Sync & Time Zone
+## Plan: Replace Day Badges with a Full Calendar Picker
 
-### Problem 1: Staff calendar not synced
-The `get-booking-slots` function uses `calendarView` which only shows existing **Bookings** appointments — it does **not** check each staff member's personal Outlook calendar for meetings, blocks, or out-of-office events. So a slot that's blocked on a staff member's calendar still appears as available.
-
-**Fix:** Replace `calendarView` with the Microsoft Graph `getStaffAvailability` endpoint (`POST /solutions/bookingBusinesses/{id}/getStaffAvailability`). This endpoint checks the staff's actual Outlook calendar and returns available time windows, respecting all calendar events, not just Bookings appointments.
-
-### Problem 2: UTC instead of MST
-The `create-booking` function hardcodes `timeZone: "UTC"` in the appointment payload. The confirmation email from Microsoft then shows UTC. The business is configured for MST (America/Edmonton).
-
-**Fix:** Change `timeZone` from `"UTC"` to `"America/Edmonton"` in both the `start` and `end` objects of the appointment payload in `create-booking`. Also update `get-booking-slots` to generate and compare slots in MST.
+### Current State
+The "Select a Day" section uses small Badge chips showing only the next 7 weekdays. Users cannot browse further into the future.
 
 ### Changes
 
-**1. Rewrite `get-booking-slots/index.ts`**
-- Fetch staff members list
-- Call `POST .../getStaffAvailability` with the 7-day window and `timeZone: "America/Edmonton"`
-- Parse the returned `availabilityItems` to build the slot grid — only slots within returned available windows are marked available
-- Generate day labels and slot times in MST context
-- Remove the old `calendarView` approach entirely
+**1. Update `BookingWidget.tsx`**
+- Replace the Badge-based day selector with the shadcn `Calendar` component (already in the project)
+- Use a Popover or inline calendar showing a full month view
+- Disable past dates and dates beyond December 31 of the current year
+- Disable weekends (Saturday/Sunday) since slots are only generated for weekdays
+- When a date is selected, fetch slots for that specific date from the edge function
+- Add `selectedDate` state (a `Date`) instead of `selectedDay` index
 
-**2. Update `create-booking/index.ts`**
-- Change `timeZone: "UTC"` → `timeZone: "America/Edmonton"` in both `start` and `end` objects
-- This ensures the confirmation email Microsoft sends shows Mountain Time
+**2. Update `get-booking-slots/index.ts`**
+- Accept an optional `date` parameter (YYYY-MM-DD) in the request body
+- When provided, fetch staff availability for just that single date instead of a 7-day window
+- When no date is provided, keep the existing 7-day behavior as fallback
+- This allows the calendar to request slots for any future date the user picks
 
-**3. Update `BookingWidget.tsx`**
-- Change the timezone label from `(ET)` to `(MT)` in the confirmation display
+**3. UI Layout**
+- Show the calendar inline (not in a popover) within the card, replacing the day badges
+- Once a date is picked, show the time slots grid below it (same as current behavior)
+- The calendar will visually highlight the selected date
 
 ### Files Modified
-- `supabase/functions/get-booking-slots/index.ts` — rewrite slot generation using `getStaffAvailability`
-- `supabase/functions/create-booking/index.ts` — fix timezone to `America/Edmonton`
-- `src/components/BookingWidget.tsx` — update timezone label display
-
-### Deployment
-- Both edge functions will be redeployed after changes
+- `src/components/BookingWidget.tsx` — replace day badges with Calendar component, add date-based slot fetching
+- `supabase/functions/get-booking-slots/index.ts` — accept optional `date` param for single-day queries
 
