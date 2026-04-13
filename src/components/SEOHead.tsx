@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { Head } from "vite-react-ssg";
 import { usePageSEO } from "@/hooks/useSEO";
 
 export function SEOHead() {
@@ -47,7 +47,7 @@ export function SEOHead() {
   };
 
   return (
-    <Helmet>
+    <Head>
       {/* CHARSET & COMPAT */}
       <meta charSet="UTF-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -177,6 +177,6 @@ export function SEOHead() {
       <script type="application/ld+json">
         {JSON.stringify(buildPageSchema())}
       </script>
-    </Helmet>
+    </Head>
   );
 }

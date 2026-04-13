@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { Head } from "vite-react-ssg";
 import { useGlobalScripts } from "@/hooks/useSEO";
 
 export function GlobalScripts() {
@@ -70,7 +70,7 @@ export function GlobalScripts() {
   const useAds = !!adsId && !hasGTM;
 
   return (
-    <Helmet>
+    <Head>
       {/* GOOGLE TAG MANAGER — raw head snippet */}
       {hasGTM && (
         <script>{gtmHead}</script>
@@ -120,6 +120,6 @@ export function GlobalScripts() {
 
       {/* CUSTOM HEAD SCRIPT */}
       {customHead && <script>{customHead}</script>}
-    </Helmet>
+    </Head>
   );
 }
