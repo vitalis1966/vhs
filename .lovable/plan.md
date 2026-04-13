@@ -1,32 +1,29 @@
 
 
-## Plan: Replace Day Badges with a Full Calendar Picker
+## Plan: Upgrade Vite from v5 to v6
 
-### Current State
-The "Select a Day" section uses small Badge chips showing only the next 7 weekdays. Users cannot browse further into the future.
+### Summary
+Upgrade Vite from `^5.4.19` to `^6.x` and update the companion plugin `@vitejs/plugin-react-swc` to its Vite 6-compatible version.
 
 ### Changes
 
-**1. Update `BookingWidget.tsx`**
-- Replace the Badge-based day selector with the shadcn `Calendar` component (already in the project)
-- Use a Popover or inline calendar showing a full month view
-- Disable past dates and dates beyond December 31 of the current year
-- Disable weekends (Saturday/Sunday) since slots are only generated for weekdays
-- When a date is selected, fetch slots for that specific date from the edge function
-- Add `selectedDate` state (a `Date`) instead of `selectedDay` index
+**1. Update `package.json`**
+- `vite`: `^5.4.19` → `^6.0.0`
+- `@vitejs/plugin-react-swc`: `^3.11.0` → `^4.0.0` (required for Vite 6 compatibility)
 
-**2. Update `get-booking-slots/index.ts`**
-- Accept an optional `date` parameter (YYYY-MM-DD) in the request body
-- When provided, fetch staff availability for just that single date instead of a 7-day window
-- When no date is provided, keep the existing 7-day behavior as fallback
-- This allows the calendar to request slots for any future date the user picks
+**2. Update `vite.config.ts`**
+- No breaking config changes expected — the current config uses standard options that are compatible with Vite 6
+- Verify `build.target: 'es2020'` and `modulePreload` settings still work (they do in Vite 6)
 
-**3. UI Layout**
-- Show the calendar inline (not in a popover) within the card, replacing the day badges
-- Once a date is picked, show the time slots grid below it (same as current behavior)
-- The calendar will visually highlight the selected date
+**3. Update `vitest.config.ts`**
+- No changes needed — Vitest 3.x already supports Vite 6
 
-### Files Modified
-- `src/components/BookingWidget.tsx` — replace day badges with Calendar component, add date-based slot fetching
-- `supabase/functions/get-booking-slots/index.ts` — accept optional `date` param for single-day queries
+**4. Reinstall dependencies**
+- Run `bun install` to update the lockfile
+
+**5. Verify build**
+- Run `bun run build` to confirm no breaking changes
+
+### Risk
+Low risk — this project uses standard Vite features with no custom plugins beyond `lovable-tagger` and `react-swc`. The main breaking change in Vite 6 is the new Environment API (internal) and some minor defaults changes that don't affect this config.
 
