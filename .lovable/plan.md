@@ -1,24 +1,26 @@
 
 
-## Plan: Add `_redirects` for Cloudflare Pages & Verify Image Paths
+## Plan: Create Cloudflare Pages Middleware for Crawler Pre-rendering
 
-### Context
-Lovable's built-in hosting already handles SPA routing automatically, so this file has no effect on Lovable previews or published sites. However, if you're deploying to **Cloudflare Pages**, this file is needed for client-side routing to work on page refresh/deep links.
+### What this does
+Creates a Cloudflare Pages middleware file that intercepts requests from search engine and social media crawlers, routing them to a pre-rendering service (via `env.PRERENDER` binding) so they receive fully rendered HTML. Non-crawler requests pass through unchanged.
+
+### Note on runtime error
+There is a `react-helmet-async` error ("Cannot read properties of undefined (reading 'add')") indicating a missing `HelmetProvider` wrapper. This is a separate issue from the middleware file -- I will investigate and fix it alongside the file creation.
 
 ### Changes
 
-**1. Create `public/_redirects`**
-- Single line: `/* /index.html 200`
-- This tells Cloudflare Pages to serve `index.html` for all non-file routes
+**1. Create `functions/_middleware.js`**
+- Place at project root level (next to `package.json`)
+- Contains the exact code you provided: crawler detection, static asset bypass, and pre-render proxy logic
 
-**2. Verify image references**
-I searched the codebase — image references already use relative paths starting with `/`:
-- `/vitalis-logo.webp` — used in Footer, AssessmentReport, BookingWidget, index.html, etc.
-- `/favicon.ico`, `/placeholder.svg` — already relative
-- The only absolute image URLs are the Open Graph social images hosted on Google Cloud Storage (`https://storage.googleapis.com/...`) in `index.html` meta tags — these must stay absolute since they need to be reachable by social media crawlers
+**2. Fix HelmetProvider runtime error**
+- The `HelmetProvider` appears to be missing from the component tree (likely lost during the SSG revert). Will verify `App.tsx` includes it and restore if needed.
 
-No image path changes needed.
+### Important: Prerender service binding required
+The middleware references `env.PRERENDER` -- this is a Cloudflare service binding that must be configured in your Cloudflare Pages dashboard (Settings > Functions > Service Bindings). Without it, the middleware will catch the error and fall through to `next()`.
 
 ### Files
-- **Create**: `public/_redirects`
+- **Create**: `functions/_middleware.js`
+- **Possibly fix**: `src/App.tsx` (restore HelmetProvider if missing)
 
