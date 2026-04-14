@@ -17,6 +17,7 @@ const CRAWLER_USER_AGENTS = [
   'rogerbot',
   'vkshare',
   'pinterest',
+  'screaming frog',
 ];
 
 const IGNORE_EXTENSIONS = [
