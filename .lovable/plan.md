@@ -1,77 +1,26 @@
 
 
-## Plan: Static Site Generation with `vite-react-ssg`
+## Plan: Create Cloudflare Pages Middleware for Crawler Pre-rendering
 
-### What this achieves
-Every static page will have its full HTML (content + meta tags) baked into the build output. Crawlers receive rendered HTML without executing JavaScript.
+### What this does
+Creates a Cloudflare Pages middleware file that intercepts requests from search engine and social media crawlers, routing them to a pre-rendering service (via `env.PRERENDER` binding) so they receive fully rendered HTML. Non-crawler requests pass through unchanged.
 
-### Correction to the original request
-- `vite-ssg` is **Vue-only**. The correct React package is **`vite-react-ssg`** (same concept, React Router v6 compatible).
-- The route format uses React Router v6 data route objects, not Vue Router's `RouteRecordRaw`.
+### Note on runtime error
+There is a `react-helmet-async` error ("Cannot read properties of undefined (reading 'add')") indicating a missing `HelmetProvider` wrapper. This is a separate issue from the middleware file -- I will investigate and fix it alongside the file creation.
 
-### Important caveat: Supabase data at build time
-The current SEO system fetches meta tags from Supabase (`seo_pages`, `seo_global`) at runtime. During SSG build, these queries will execute server-side against the live database. This means the pre-rendered HTML will contain whatever SEO data exists in the database at build time. This is actually ideal -- the meta tags will be baked into the static HTML.
+### Changes
 
----
+**1. Create `functions/_middleware.js`**
+- Place at project root level (next to `package.json`)
+- Contains the exact code you provided: crawler detection, static asset bypass, and pre-render proxy logic
 
-### Step 1 -- Install `vite-react-ssg`
-Add `vite-react-ssg` as a dev dependency.
+**2. Fix HelmetProvider runtime error**
+- The `HelmetProvider` appears to be missing from the component tree (likely lost during the SSG revert). Will verify `App.tsx` includes it and restore if needed.
 
-### Step 2 -- Create `src/routes.tsx` with route definitions as a data array
-Convert all routes from JSX `<Route>` elements to React Router v6 data route objects. Static routes get `lazy` imports. Dynamic routes (`:token`, `:slug`, `:id`) and admin routes are included but will only be client-side rendered (no `getStaticPaths`).
+### Important: Prerender service binding required
+The middleware references `env.PRERENDER` -- this is a Cloudflare service binding that must be configured in your Cloudflare Pages dashboard (Settings > Functions > Service Bindings). Without it, the middleware will catch the error and fall through to `next()`.
 
-Static routes to pre-render (~30 pages):
-```
-/, /about, /team, /about/mission-vision, /how-we-work, /solutions,
-/solutions/new-clinics, /solutions/existing-clinics, /solutions/medical,
-/solutions/dental, /solutions/veterinary, /solutions/nhsf, /contact,
-/clinic-audit, /strategic-assessment, /strategic-assessment/intake,
-/strategic-assessment/confirmation, /portfolio, /partners, /engagement,
-/healthcare-it, /insights, /terms, /privacy, /disclaimer, /cookies,
-/unsubscribe
-```
-
-Admin and dynamic routes remain but are not pre-rendered.
-
-### Step 3 -- Create a root layout component
-Extract the providers (HelmetProvider, QueryClientProvider, TooltipProvider, Toaster, Sonner, GlobalScripts, RedirectHandler, SEOLayout) into a layout component that wraps all routes via an `<Outlet />`.
-
-### Step 4 -- Update `src/main.tsx`
-Replace `createRoot` with `ViteReactSSG`:
-```ts
-import { ViteReactSSG } from 'vite-react-ssg'
-import { routes } from './routes'
-
-export const createRoot = ViteReactSSG({ routes })
-```
-
-### Step 5 -- Update `src/App.tsx`
-Simplify to re-export routes or remove entirely (the layout + routes array replaces it).
-
-### Step 6 -- Update `package.json` build script
-Change `"build": "vite build"` to `"build": "vite-react-ssg build"`. Keep `"dev": "vite"` for CSR during development.
-
-### Step 7 -- Update `vite.config.ts`
-Add `ssgOptions` if needed (formatting, script async). No Puppeteer config.
-
-### Step 8 -- Update `public/robots.txt`
-Replace with the expanded version covering Googlebot, GPTBot, ClaudeBot, PerplexityBot, LinkedInBot.
-
-### Step 9 -- Create `public/llms.txt`
-Add the AI crawler guidance file with site structure.
-
-### Step 10 -- Verify build
-Run `vite-react-ssg build` and confirm `dist/` contains per-route `index.html` files with rendered content and meta tags.
-
----
-
-### Risks and mitigations
-- **Supabase at build time**: The SSG build will call Supabase to fetch SEO data. If the Supabase project is unreachable during build, pages will use hardcoded fallback meta tags (which already exist in each page via `usePageMeta`).
-- **`react-helmet-async` compatibility**: `vite-react-ssg` supports `react-helmet-async` for injecting `<head>` content during SSR. The existing SEOHead component should work without changes.
-- **framer-motion**: May need minor handling for SSR (it generally works, but animations are skipped server-side).
-
-### Files changed
-- **Install**: `vite-react-ssg` (dev dependency)
-- **Create**: `src/routes.tsx`, `src/components/RootLayout.tsx`, `public/llms.txt`
-- **Modify**: `src/main.tsx`, `src/App.tsx`, `package.json` (build script), `vite.config.ts`, `public/robots.txt`
+### Files
+- **Create**: `functions/_middleware.js`
+- **Possibly fix**: `src/App.tsx` (restore HelmetProvider if missing)
 
