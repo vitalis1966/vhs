@@ -159,6 +159,11 @@ export function PagesTab() {
   const saveMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
       const { _autoOgTitle, _autoOgDesc, _autoTwitterTitle, _autoTwitterDesc, ...rest } = values;
+      // Auto-sync: if OG/Twitter fields are empty, populate from title/description
+      if (!rest.og_title && rest.title) rest.og_title = rest.title;
+      if (!rest.og_description && rest.description) rest.og_description = rest.description;
+      if (!rest.twitter_title && rest.title) rest.twitter_title = rest.og_title || rest.title;
+      if (!rest.twitter_description && rest.description) rest.twitter_description = rest.og_description || rest.description;
       const { error } = await supabase.from("seo_pages").update(rest as any).eq("id", rest.id as string);
       if (error) throw error;
     },

@@ -1,26 +1,44 @@
 
 
-## Plan: Create Cloudflare Pages Middleware for Crawler Pre-rendering
+## Plan: Fix Identical Meta Descriptions and OG Fields
 
-### What this does
-Creates a Cloudflare Pages middleware file that intercepts requests from search engine and social media crawlers, routing them to a pre-rendering service (via `env.PRERENDER` binding) so they receive fully rendered HTML. Non-crawler requests pass through unchanged.
+### Root Cause
 
-### Note on runtime error
-There is a `react-helmet-async` error ("Cannot read properties of undefined (reading 'add')") indicating a missing `HelmetProvider` wrapper. This is a separate issue from the middleware file -- I will investigate and fix it alongside the file creation.
+The database has `og_title`, `og_description`, `twitter_title`, and `twitter_description` set to NULL for every page. While the fallback chain in `useSEO.ts` *should* resolve to `pageSEO?.title` and `pageSEO?.description`, there are two issues:
+
+1. **`.single()` can silently fail** — if PostgREST returns a 406 (no matching row), the entire `pageSEO` object becomes null, causing all fields to fall through to global defaults. Using `.maybeSingle()` is safer.
+
+2. **NULL OG/Twitter fields** — all 18 pages have `og_title`, `og_description`, `twitter_title`, and `twitter_description` as NULL. Populating these directly makes the DB the explicit source of truth and eliminates any fallback chain ambiguity.
 
 ### Changes
 
-**1. Create `functions/_middleware.js`**
-- Place at project root level (next to `package.json`)
-- Contains the exact code you provided: crawler detection, static asset bypass, and pre-render proxy logic
+**1. Database migration — populate OG and Twitter fields from existing Title/Description**
 
-**2. Fix HelmetProvider runtime error**
-- The `HelmetProvider` appears to be missing from the component tree (likely lost during the SSG revert). Will verify `App.tsx` includes it and restore if needed.
+```sql
+UPDATE seo_pages
+SET og_title = title
+WHERE og_title IS NULL AND title IS NOT NULL;
 
-### Important: Prerender service binding required
-The middleware references `env.PRERENDER` -- this is a Cloudflare service binding that must be configured in your Cloudflare Pages dashboard (Settings > Functions > Service Bindings). Without it, the middleware will catch the error and fall through to `next()`.
+UPDATE seo_pages
+SET og_description = description
+WHERE og_description IS NULL AND description IS NOT NULL;
 
-### Files
-- **Create**: `functions/_middleware.js`
-- **Possibly fix**: `src/App.tsx` (restore HelmetProvider if missing)
+UPDATE seo_pages
+SET twitter_title = title
+WHERE twitter_title IS NULL AND title IS NOT NULL;
+
+UPDATE seo_pages
+SET twitter_description = description
+WHERE twitter_description IS NULL AND description IS NOT NULL;
+```
+
+This seeds all 18 pages with explicit values.
+
+**2. `src/hooks/useSEO.ts` — change `.single()` to `.maybeSingle()`**
+
+On the `seo_pages` query (line 20), replace `.single()` with `.maybeSingle()` to prevent silent 406 errors when a page has no DB record. This ensures `pageSEO` is `null` (not an error) for unregistered routes, and correctly returns data for registered routes.
+
+**3. No other file changes needed**
+
+The fallback chain logic, `SEOHead` component, and `PagesTab` auto-sync (already implemented) are all correct. The issue is purely data + query method.
 

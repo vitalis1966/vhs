@@ -17,8 +17,7 @@ export function usePageSEO() {
         .from("seo_pages")
         .select("*")
         .eq("route", route)
-        .eq("is_active", true)
-        .single();
+        .maybeSingle();
       return data;
     },
     staleTime: 5 * 60 * 1000,
@@ -61,7 +60,7 @@ export function usePageSEO() {
     title: pageSEO?.title || fallback.title || globalSEO?.default_title || "Vitalis Health Strategies",
     description: pageSEO?.description || fallback.description || globalSEO?.default_description || "",
     keywords: pageSEO?.keywords || "",
-    robots: pageSEO?.noindex ? "noindex, follow" : (pageSEO?.robots || globalSEO?.default_robots || "index, follow"),
+    robots: (pageSEO?.is_active === false || pageSEO?.noindex) ? "noindex, follow" : (pageSEO?.robots || globalSEO?.default_robots || "index, follow"),
     canonical,
     ogTitle: pageSEO?.og_title || pageSEO?.title || fallback.title || globalSEO?.default_title || "",
     ogDescription: pageSEO?.og_description || pageSEO?.description || fallback.description || "",
