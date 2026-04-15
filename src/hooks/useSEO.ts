@@ -17,7 +17,7 @@ export function usePageSEO() {
         .from("seo_pages")
         .select("*")
         .eq("route", route)
-        .single();
+        .maybeSingle();
       return data;
     },
     staleTime: 5 * 60 * 1000,
