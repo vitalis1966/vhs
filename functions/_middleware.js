@@ -26,13 +26,6 @@ const IGNORE_EXTENSIONS = [
   '.woff2', '.ttf',
 ];
 
-// 301 redirects for old/renamed URLs
-const REDIRECTS = {
-  '/team': '/about',
-  '/strategic-analysis': '/strategic-assessment',
-  '/solutions_': '/solutions',
-};
-
 function isCrawler(userAgent) {
   if (!userAgent) return false;
   const ua = userAgent.toLowerCase();
@@ -47,23 +40,14 @@ function shouldIgnore(url) {
 export async function onRequest(context) {
   const { request, next, env } = context;
   const userAgent = request.headers.get('user-agent') || '';
-  const url = new URL(request.url);
-  const path = url.pathname;
+  const url = request.url;
 
-  // Handle 301 redirects first — before anything else
-  if (REDIRECTS[path]) {
-    const target = `https://www.vitalisstrategies.com${REDIRECTS[path]}`;
-    return Response.redirect(target, 301);
-  }
-
-  // Pass through normal users immediately
-  if (!isCrawler(userAgent) || shouldIgnore(request.url)) {
+  if (!isCrawler(userAgent) || shouldIgnore(url)) {
     return next();
   }
 
-  // Forward crawler requests to prerender Worker
   try {
-    const prerenderRequest = new Request(request.url, {
+    const prerenderRequest = new Request(url, {
       method: 'GET',
       headers: {
         'user-agent': userAgent,
