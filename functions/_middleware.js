@@ -42,8 +42,12 @@ export async function onRequest(context) {
   const userAgent = request.headers.get('user-agent') || '';
   const url = request.url;
 
-  if (!isCrawler(userAgent) || shouldIgnore(url)) {
-    return next();
+if (!isCrawler(userAgent) || shouldIgnore(url)) {
+    try {
+      return await next();
+    } catch (err) {
+      return new Response('Not found', { status: 404 });
+    }
   }
 
   try {
