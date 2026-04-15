@@ -1,44 +1,28 @@
 
 
-## Plan: Fix Identical Meta Descriptions and OG Fields
+## Plan: Fix Duplicate Static Meta Tags in index.html
 
 ### Root Cause
-
-The database has `og_title`, `og_description`, `twitter_title`, and `twitter_description` set to NULL for every page. While the fallback chain in `useSEO.ts` *should* resolve to `pageSEO?.title` and `pageSEO?.description`, there are two issues:
-
-1. **`.single()` can silently fail** — if PostgREST returns a 406 (no matching row), the entire `pageSEO` object becomes null, causing all fields to fall through to global defaults. Using `.maybeSingle()` is safer.
-
-2. **NULL OG/Twitter fields** — all 18 pages have `og_title`, `og_description`, `twitter_title`, and `twitter_description` as NULL. Populating these directly makes the DB the explicit source of truth and eliminates any fallback chain ambiguity.
+`index.html` contains hardcoded meta tags (lines 30-52) that duplicate what `react-helmet-async` injects dynamically. SEO crawlers see the static tags first, which are identical on every page. The dynamic Helmet tags are added alongside (not replacing) the static ones because Helmet only manages tags it created (tracked via `data-rh` attributes).
 
 ### Changes
 
-**1. Database migration — populate OG and Twitter fields from existing Title/Description**
+**File: `index.html`**
+Remove lines 30-52 (the hardcoded SEO meta tags):
+- Line 30: `<title>Healthcare Consulting...</title>`
+- Line 31: `<meta name="description" ...>`
+- Line 32: `<meta name="author" ...>`
+- Lines 36-52: All `og:type`, `og:title`, `og:description`, `og:image`, `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` tags
 
-```sql
-UPDATE seo_pages
-SET og_title = title
-WHERE og_title IS NULL AND title IS NOT NULL;
+Keep only the structural tags (charset, viewport, preconnects, fonts, critical CSS). Helmet will inject all SEO tags dynamically with proper per-page values.
 
-UPDATE seo_pages
-SET og_description = description
-WHERE og_description IS NULL AND description IS NOT NULL;
+Add a minimal fallback `<title>` tag (e.g., just "Vitalis Health Strategies") so the HTML shell isn't titleless during the brief period before React hydrates.
 
-UPDATE seo_pages
-SET twitter_title = title
-WHERE twitter_title IS NULL AND title IS NOT NULL;
+### Why this works
+- `SEOHead` via `react-helmet-async` already renders all these tags with correct per-page data from the database
+- Removing the static duplicates ensures crawlers see only the Helmet-managed tags
+- The DB query and fallback chain in `useSEO.ts` are confirmed working correctly (verified via network requests and direct DB query)
 
-UPDATE seo_pages
-SET twitter_description = description
-WHERE twitter_description IS NULL AND description IS NOT NULL;
-```
-
-This seeds all 18 pages with explicit values.
-
-**2. `src/hooks/useSEO.ts` — change `.single()` to `.maybeSingle()`**
-
-On the `seo_pages` query (line 20), replace `.single()` with `.maybeSingle()` to prevent silent 406 errors when a page has no DB record. This ensures `pageSEO` is `null` (not an error) for unregistered routes, and correctly returns data for registered routes.
-
-**3. No other file changes needed**
-
-The fallback chain logic, `SEOHead` component, and `PagesTab` auto-sync (already implemented) are all correct. The issue is purely data + query method.
+### No other file changes needed
+The `useSEO.ts` hook, `SEOHead` component, and database data are all correct. This is purely a static HTML duplication issue.
 
