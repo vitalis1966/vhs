@@ -1,26 +1,47 @@
 
 
-## Plan: Create Cloudflare Pages Middleware for Crawler Pre-rendering
+## Plan: Connect SEO Admin Data to Page Meta Tags
 
-### What this does
-Creates a Cloudflare Pages middleware file that intercepts requests from search engine and social media crawlers, routing them to a pre-rendering service (via `env.PRERENDER` binding) so they receive fully rendered HTML. Non-crawler requests pass through unchanged.
+### Current State (already working)
 
-### Note on runtime error
-There is a `react-helmet-async` error ("Cannot read properties of undefined (reading 'add')") indicating a missing `HelmetProvider` wrapper. This is a separate issue from the middleware file -- I will investigate and fix it alongside the file creation.
+After reviewing the full codebase, the SEO system is **already mostly wired up**:
+
+- `SEOLayout` wraps all routes in `App.tsx` (line 71-127)
+- `SEOHead` renders all meta tags using data from `usePageSEO()` hook
+- `usePageSEO()` in `useSEO.ts` fetches from `seo_pages` (matched by route) and `seo_global` (fallback defaults)
+- The fallback chain is: DB page data → component fallback (via `usePageMeta`) → global defaults → hardcoded defaults
+- Schema JSON is already injected as `<script type="application/ld+json">`
+- `RedirectHandler` already reads `seo_redirects` and handles redirects via React Router
+- Global scripts (GA4, GTM, Meta Pixel, etc.) are already injected via `SEOScripts` / `GlobalScripts`
+
+The database has data for all 18 pages with titles and descriptions populated.
+
+### What actually needs fixing
+
+There are only a few small gaps:
+
+**1. `is_active = false` should force noindex** 
+Currently, when `is_active` is false, `useSEO.ts` filters it out (`eq("is_active", true)`), so no page record is found and the page falls back to global defaults. Instead, when `is_active` is OFF, the robots tag should be set to `noindex, follow`.
+
+**2. Auto-sync OG Title/Description into DB on save**
+Currently, if `og_title` is null in the DB, the fallback chain fills it from `title` at render time — functionally correct. But the user wants: when saving in PagesTab, if `og_title` is empty, auto-populate it with `title` in the saved record. This makes the DB the explicit source of truth.
+
+**3. Verify no stale cache issues**
+The `staleTime` is 5 minutes — changes in admin won't reflect for up to 5 min on the live site. The save mutation already invalidates the `seo-page` query key, which is correct for the admin preview but worth noting.
 
 ### Changes
 
-**1. Create `functions/_middleware.js`**
-- Place at project root level (next to `package.json`)
-- Contains the exact code you provided: crawler detection, static asset bypass, and pre-render proxy logic
+**File 1: `src/hooks/useSEO.ts`**
+- Add a secondary query for pages where `is_active = false` to detect disabled pages
+- OR: remove the `is_active` filter and handle it in the resolved logic: if `is_active` is false, force `robots` to `noindex, follow`
 
-**2. Fix HelmetProvider runtime error**
-- The `HelmetProvider` appears to be missing from the component tree (likely lost during the SSG revert). Will verify `App.tsx` includes it and restore if needed.
+**File 2: `src/components/admin/seo/PagesTab.tsx`**
+- In the `saveMutation`, before saving: if `og_title` is empty, set it to `title`; if `og_description` is empty, set it to `description`. Same for `twitter_title` and `twitter_description`.
 
-### Important: Prerender service binding required
-The middleware references `env.PRERENDER` -- this is a Cloudflare service binding that must be configured in your Cloudflare Pages dashboard (Settings > Functions > Service Bindings). Without it, the middleware will catch the error and fall through to `next()`.
+No other files need changes. The SEO system is already connected and functioning. The meta tags, OG tags, Twitter cards, schema, redirects, and global defaults all work through the existing `SEOHead` → `usePageSEO` → database pipeline.
 
-### Files
-- **Create**: `functions/_middleware.js`
-- **Possibly fix**: `src/App.tsx` (restore HelmetProvider if missing)
+### Technical details
+- Modify `useSEO.ts` query to remove `.eq("is_active", true)` and handle `is_active` in the resolved object
+- Add auto-fill logic in PagesTab save handler (4-6 lines)
+- No new dependencies, no database changes, no new components
 
