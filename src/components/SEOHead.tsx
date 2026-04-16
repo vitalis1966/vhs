@@ -154,9 +154,7 @@ export function SEOHead() {
       <link rel="shortcut icon" href="/favicon.ico" />
       <link rel="manifest" href="/site.webmanifest" />
 
-      {/* PRECONNECT */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      {/* PRECONNECT — fonts already preconnected in index.html */}
       <link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://www.google-analytics.com" />
       <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
