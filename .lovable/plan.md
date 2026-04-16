@@ -1,33 +1,33 @@
 
-## Plan: Reduce Render-Blocking CSS
+## Plan: Deduplicate Preconnect Tags
+
+### Current state
+- **`index.html`**: Has preconnects for `fonts.googleapis.com`, `fonts.gstatic.com`, and dns-prefetch for `supabase.co`
+- **`SEOHead.tsx`**: Has preconnects for `fonts.googleapis.com`, `fonts.gstatic.com`, `supabase.co`, plus dns-prefetch for analytics/marketing origins
 
 ### Changes
 
-**1. `vite.config.ts`** — Add CSS code splitting and asset naming to the existing `build` config:
-```ts
-build: {
-  target: 'es2020',
-  cssMinify: true,
-  cssCodeSplit: true,              // NEW
-  modulePreload: { polyfill: false },
-  rollupOptions: {
-    output: {
-      assetFileNames: 'assets/[name]-[hash][extname]',  // NEW
-      manualChunks: { /* unchanged */ },
-    },
-  },
-},
-```
-
-**2. `index.html`** — Replace the current two-link Google Fonts pattern (preload + print-media stylesheet swap) with the simpler non-blocking preload + onload swap pattern:
+**1. `index.html`** — Keep only the two font preconnects (already present, no change needed):
 ```html
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+```
+Remove the existing `dns-prefetch` for supabase (since SEOHead will own it).
+
+**2. `src/components/SEOHead.tsx`** — Remove the duplicated font preconnects, keep only the Supabase preconnect and the marketing dns-prefetches:
+```tsx
+{/* PRECONNECT — fonts already preconnected in index.html */}
+<link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossOrigin="anonymous" />
+<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+<link rel="dns-prefetch" href="https://connect.facebook.net" />
+<link rel="dns-prefetch" href="https://snap.licdn.com" />
 ```
 
-The existing `<noscript>` fallback is preserved. No other changes.
+### Result
+Exactly 3 preconnect tags total, each appearing once:
+- `fonts.googleapis.com` → index.html
+- `fonts.gstatic.com` → index.html  
+- `supabase.co` → SEOHead
 
-### Why this works
-- `cssCodeSplit: true` allows route-level CSS to be split out of the main bundle, shrinking the critical CSS path.
-- The fonts swap from `media="print"` trick → `onload` swap is functionally equivalent but matches the requested pattern exactly.
-- All app logic, providers, and SEO behavior are untouched.
+DNS-prefetch tags for analytics/marketing origins remain in SEOHead unchanged (they are not preconnects and were not flagged).
