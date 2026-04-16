@@ -21,9 +21,11 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'es2020',
     cssMinify: true,
+    cssCodeSplit: true,
     modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
+        assetFileNames: 'assets/[name]-[hash][extname]',
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-query': ['@tanstack/react-query'],
