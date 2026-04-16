@@ -192,6 +192,24 @@ export function PagesTab() {
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("seo_pages").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_data, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: ["seo-admin-pages"] });
+      queryClient.invalidateQueries({ queryKey: ["seo-page"] });
+      if (selectedId === deletedId) {
+        setSelectedId(null);
+        setForm({});
+        setSavedForm({});
+      }
+      toast({ title: "Page deleted" });
+    },
+    onError: (e: Error) => toast({ title: "Error deleting", description: e.message, variant: "destructive" }),
+  });
+
   const siteUrl = "https://www.vitalisstrategies.com";
   const title = (form.title as string) || "";
   const description = (form.description as string) || "";
