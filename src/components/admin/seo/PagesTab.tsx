@@ -321,7 +321,8 @@ export function PagesTab() {
               <legend className="text-sm font-semibold px-2">Identity</legend>
               <div>
                 <Label>Page Route</Label>
-                <Input value={route} disabled className="bg-muted font-mono" />
+                <Input value={route} onChange={(e) => updateField("route", e.target.value)} className="font-mono" placeholder="/about" />
+                <p className="text-xs text-muted-foreground mt-1">Changing this will update which URL this SEO config applies to.</p>
               </div>
               <div>
                 <Label>Page Label</Label>
