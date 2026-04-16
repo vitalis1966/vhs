@@ -247,25 +247,45 @@ export function PagesTab() {
           {pages.map((p) => {
             const isNoindex = p.noindex || (p.robots && p.robots.includes("noindex"));
             return (
-              <button
-                key={p.id}
-                onClick={() => {
-                  if (isDirty && !confirm("You have unsaved changes. Discard?")) return;
-                  selectPage(p as Record<string, unknown>);
-                }}
-                className={cn(
-                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                  selectedId === p.id ? "bg-primary/10 border border-primary/20" : "hover:bg-muted"
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <span className={cn("w-2 h-2 rounded-full shrink-0", isNoindex ? "bg-gray-400" : "bg-green-500")} />
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{p.page_label}</p>
-                    <p className="text-xs text-muted-foreground truncate">{p.route}</p>
+              <div key={p.id} className="group flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    if (isDirty && !confirm("You have unsaved changes. Discard?")) return;
+                    selectPage(p as Record<string, unknown>);
+                  }}
+                  className={cn(
+                    "flex-1 text-left px-3 py-2 rounded-lg text-sm transition-colors min-w-0",
+                    selectedId === p.id ? "bg-primary/10 border border-primary/20" : "hover:bg-muted"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={cn("w-2 h-2 rounded-full shrink-0", isNoindex ? "bg-gray-400" : "bg-green-500")} />
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{p.page_label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{p.route}</p>
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Trash2 className="h-3 w-3 text-destructive" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete "{p.page_label}"?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently remove the SEO settings for <span className="font-mono">{p.route}</span>. The page itself will still exist but will use global defaults.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => deleteMutation.mutate(p.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             );
           })}
         </div>
