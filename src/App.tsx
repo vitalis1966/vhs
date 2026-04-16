@@ -57,7 +57,47 @@ const Cookies = lazy(() => import("./pages/Cookies"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+import { supabase } from "@/integrations/supabase/client";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  },
+});
+
+// Prefetch SEO data in parallel at app init so meta tags are ready before render.
+Promise.all([
+  queryClient.prefetchQuery({
+    queryKey: ["seo-global"],
+    queryFn: async () => (await supabase.from("seo_global").select("*").eq("id", 1).single()).data,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  }),
+  queryClient.prefetchQuery({
+    queryKey: ["seo-schema-global"],
+    queryFn: async () => (await supabase.from("seo_schema_global").select("*").eq("is_active", true)).data || [],
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  }),
+  queryClient.prefetchQuery({
+    queryKey: ["seo-redirects"],
+    queryFn: async () => (await supabase.from("seo_redirects").select("from_path, to_path, redirect_type").eq("is_active", true)).data || [],
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  }),
+  queryClient.prefetchQuery({
+    queryKey: ["seo-global-scripts"],
+    queryFn: async () => (await supabase
+      .from("seo_global")
+      .select("google_analytics_id, google_tag_manager_id, google_tag_manager_head, google_tag_manager_body, google_ads_id, google_ads_conversion_label, meta_pixel_id, linkedin_partner_id, hotjar_id, intercom_app_id, crisp_website_id, custom_head_script, custom_body_script")
+      .eq("id", 1).single()).data,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  }),
+]);
 
 const App = () => (
   <HelmetProvider>
