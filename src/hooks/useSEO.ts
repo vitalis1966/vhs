@@ -20,8 +20,8 @@ export function usePageSEO() {
         .maybeSingle();
       return data;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
   const { data: globalSEO } = useQuery({
@@ -34,8 +34,8 @@ export function usePageSEO() {
         .single();
       return data;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
   const { data: globalSchemas } = useQuery({
@@ -47,8 +47,8 @@ export function usePageSEO() {
         .eq("is_active", true);
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
   const SITE_URL = globalSEO?.site_url || "https://www.vitalisstrategies.com";
@@ -109,7 +109,8 @@ export function useGlobalScripts() {
         .single();
       return data;
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
   return data;
 }
