@@ -1,33 +1,48 @@
 
-## Plan: Deduplicate Preconnect Tags
+## Plan: Reduce Render-Blocking CSS Further
 
 ### Current state
-- **`index.html`**: Has preconnects for `fonts.googleapis.com`, `fonts.gstatic.com`, and dns-prefetch for `supabase.co`
-- **`SEOHead.tsx`**: Has preconnects for `fonts.googleapis.com`, `fonts.gstatic.com`, `supabase.co`, plus dns-prefetch for analytics/marketing origins
+- `index.html` already has critical CSS inlined (nav, hero, hero gradient, container, animate-fade-in)
+- `vite.config.ts` already has `cssCodeSplit: true`, `cssMinify: true`, `target: 'es2020'`
+- Main `assets/index.css` (~16 KiB) is still render-blocking because Vite's build emits `<link rel="stylesheet">` for the entry CSS
+
+### Root cause
+Vite injects the entry CSS as a synchronous `<link rel="stylesheet">` and there's no built-in flag to make it non-blocking. We need a small Vite plugin that, in the `transformIndexHtml` hook, rewrites the emitted stylesheet link to use the `media="print"` → `onload` swap pattern (same trick already used for Google Fonts).
 
 ### Changes
 
-**1. `index.html`** — Keep only the two font preconnects (already present, no change needed):
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+**1. `vite.config.ts`** — Add a tiny inline plugin that post-processes the built `index.html`:
+
+```ts
+const nonBlockingCSS = (): Plugin => ({
+  name: 'non-blocking-css',
+  apply: 'build',
+  transformIndexHtml(html) {
+    return html.replace(
+      /<link rel="stylesheet"([^>]*?)href="(\/assets\/[^"]+\.css)"([^>]*)>/g,
+      (_m, before, href, after) =>
+        `<link rel="preload" as="style"${before}href="${href}"${after} onload="this.onload=null;this.rel='stylesheet'">` +
+        `<noscript><link rel="stylesheet"${before}href="${href}"${after}></noscript>`
+    );
+  },
+});
 ```
-Remove the existing `dns-prefetch` for supabase (since SEOHead will own it).
 
-**2. `src/components/SEOHead.tsx`** — Remove the duplicated font preconnects, keep only the Supabase preconnect and the marketing dns-prefetches:
-```tsx
-{/* PRECONNECT — fonts already preconnected in index.html */}
-<link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossOrigin="anonymous" />
-<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-<link rel="dns-prefetch" href="https://connect.facebook.net" />
-<link rel="dns-prefetch" href="https://snap.licdn.com" />
-```
+Add it to the `plugins` array (build-only, won't affect dev HMR).
 
-### Result
-Exactly 3 preconnect tags total, each appearing once:
-- `fonts.googleapis.com` → index.html
-- `fonts.gstatic.com` → index.html  
-- `supabase.co` → SEOHead
+Also add `cssTarget: 'chrome61'` to the existing `build` block as requested.
 
-DNS-prefetch tags for analytics/marketing origins remain in SEOHead unchanged (they are not preconnects and were not flagged).
+**2. `index.html`** — No changes needed. Critical CSS is already inlined for nav + hero. The `transformIndexHtml` plugin handles the rewrite at build time.
+
+### Why this works
+- Only runs at build (`apply: 'build'`), so dev mode and HMR are untouched.
+- Regex targets only Vite-emitted `/assets/*.css` links, leaving any other stylesheets alone.
+- Browser fetches the CSS in parallel without blocking render; `onload` swaps it to `rel="stylesheet"` once loaded.
+- `<noscript>` fallback preserves accessibility for non-JS environments.
+- Inlined critical CSS in `index.html` already covers above-the-fold paint, so users see the hero immediately.
+
+### Files modified
+- `vite.config.ts` (add plugin + `cssTarget`)
+
+### Risk
+Low. The plugin is build-only, scoped to `/assets/*.css`, and the swap pattern is identical to the one already in use for Google Fonts.
