@@ -1,48 +1,37 @@
 
-## Plan: Reduce Render-Blocking CSS Further
+## Plan: Add srcset to Navbar Logo
 
-### Current state
-- `index.html` already has critical CSS inlined (nav, hero, hero gradient, container, animate-fade-in)
-- `vite.config.ts` already has `cssCodeSplit: true`, `cssMinify: true`, `target: 'es2020'`
-- Main `assets/index.css` (~16 KiB) is still render-blocking because Vite's build emits `<link rel="stylesheet">` for the entry CSS
-
-### Root cause
-Vite injects the entry CSS as a synchronous `<link rel="stylesheet">` and there's no built-in flag to make it non-blocking. We need a small Vite plugin that, in the `transformIndexHtml` hook, rewrites the emitted stylesheet link to use the `media="print"` → `onload` swap pattern (same trick already used for Google Fonts).
+### Investigation needed
+- Confirm Navbar logo usage and current dimensions
+- Check `index.html` static shell logo too (also uses `/vitalis-logo.webp`)
+- Note: I can't generate a real resized WebP image in plan mode, but in default mode I can create a 1x version using image tools
 
 ### Changes
 
-**1. `vite.config.ts`** — Add a tiny inline plugin that post-processes the built `index.html`:
+**1. `public/vitalis-logo-1x.webp`** — Generate a 215×48px (1x density) version of the existing logo using ImageMagick/cwebp from the source `/public/vitalis-logo.webp`. The current file will serve as the 2x asset.
 
-```ts
-const nonBlockingCSS = (): Plugin => ({
-  name: 'non-blocking-css',
-  apply: 'build',
-  transformIndexHtml(html) {
-    return html.replace(
-      /<link rel="stylesheet"([^>]*?)href="(\/assets\/[^"]+\.css)"([^>]*)>/g,
-      (_m, before, href, after) =>
-        `<link rel="preload" as="style"${before}href="${href}"${after} onload="this.onload=null;this.rel='stylesheet'">` +
-        `<noscript><link rel="stylesheet"${before}href="${href}"${after}></noscript>`
-    );
-  },
-});
+**2. `src/components/Navbar.tsx`** — Update the `<img>` tag to add `srcset`:
+```tsx
+<img
+  src="/vitalis-logo.webp"
+  srcset="/vitalis-logo.webp 2x, /vitalis-logo-1x.webp 1x"
+  alt="Vitalis Health Strategies"
+  width="120"
+  height="48"
+/>
 ```
 
-Add it to the `plugins` array (build-only, won't affect dev HMR).
+**3. `index.html`** (static shell + preload) — Apply the same `srcset` to the shell `<img>` so the FCP logo also benefits, and update the `<link rel="preload">` to use `imagesrcset`/`imagesizes` so the browser preloads the correct density:
+```html
+<link rel="preload" as="image"
+  imagesrcset="/vitalis-logo.webp 2x, /vitalis-logo-1x.webp 1x"
+  href="/vitalis-logo-1x.webp"
+  fetchpriority="high" type="image/webp" />
+```
 
-Also add `cssTarget: 'chrome61'` to the existing `build` block as requested.
-
-**2. `index.html`** — No changes needed. Critical CSS is already inlined for nav + hero. The `transformIndexHtml` plugin handles the rewrite at build time.
-
-### Why this works
-- Only runs at build (`apply: 'build'`), so dev mode and HMR are untouched.
-- Regex targets only Vite-emitted `/assets/*.css` links, leaving any other stylesheets alone.
-- Browser fetches the CSS in parallel without blocking render; `onload` swaps it to `rel="stylesheet"` once loaded.
-- `<noscript>` fallback preserves accessibility for non-JS environments.
-- Inlined critical CSS in `index.html` already covers above-the-fold paint, so users see the hero immediately.
-
-### Files modified
-- `vite.config.ts` (add plugin + `cssTarget`)
+### Out of scope
+- Footer logo (`brightness-0 invert`, different context) — not requested
+- Other pages referencing the logo
 
 ### Risk
-Low. The plugin is build-only, scoped to `/assets/*.css`, and the swap pattern is identical to the one already in use for Google Fonts.
+Low. If the 1x file generation fails, fallback `src` still loads the existing 2x asset.
