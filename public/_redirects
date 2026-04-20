@@ -1,8 +1,11 @@
+# Force HTTPS + www (must be first)
+https://vitalisstrategies.com/* https://www.vitalisstrategies.com/:splat 301
+http://vitalisstrategies.com/* https://www.vitalisstrategies.com/:splat 301
+http://www.vitalisstrategies.com/* https://www.vitalisstrategies.com/:splat 301
+
+# Page redirects
 /team /about 301
 /strategic-analysis /strategic-assessment 301
 /solutions_ /solutions 301
 /home / 301
-https://vitalisstrategies.com/ https://www.vitalisstrategies.com/ 301
-https://vitalisstrategies.com/about https://www.vitalisstrategies.com/about 301
-https://vitalisstrategies.com/portfolio https://www.vitalisstrategies.com/portfolio 301
 /insights/tag/Budget /insights 301
