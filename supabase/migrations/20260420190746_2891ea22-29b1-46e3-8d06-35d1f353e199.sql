@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone can read report tokens" ON public.client_report_tokens;
