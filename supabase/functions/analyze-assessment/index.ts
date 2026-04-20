@@ -11,14 +11,37 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { session_id } = await req.json();
-    if (!session_id) throw new Error("session_id is required");
-
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    // --- AuthZ: require either the service role key (server-to-server) or a
+    // valid authenticated user JWT (admin UI). Reject anonymous callers. ---
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
+
+    let authorized = false;
+    if (bearer && bearer === supabaseKey) {
+      authorized = true; // server-to-server call (e.g. prepare-assessment-report)
+    } else if (bearer) {
+      const authClient = createClient(supabaseUrl, supabaseKey);
+      const { data: userData, error: userErr } = await authClient.auth.getUser(bearer);
+      if (!userErr && userData?.user) {
+        authorized = true;
+      }
+    }
+
+    if (!authorized) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { session_id } = await req.json();
+    if (!session_id) throw new Error("session_id is required");
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Load session
