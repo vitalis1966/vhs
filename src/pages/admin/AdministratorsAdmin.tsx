@@ -85,6 +85,29 @@ function AdministratorsAdminInner() {
     setResetRow(row);
     setResetPassword("");
     setResetConfirm("");
+    setShowResetPassword(false);
+    setGenerated(false);
+  };
+
+  const generatePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    let out = "";
+    for (let i = 0; i < bytes.length; i++) out += chars[bytes[i] % chars.length];
+    setResetPassword(out);
+    setResetConfirm(out);
+    setShowResetPassword(true);
+    setGenerated(true);
+  };
+
+  const copyPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(resetPassword);
+      toast({ title: "Password copied" });
+    } catch {
+      toast({ title: "Copy failed", variant: "destructive" });
+    }
   };
 
   const confirmResetPassword = async () => {
