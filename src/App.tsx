@@ -55,6 +55,13 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const AdministratorsAdmin = lazy(() => import("./pages/admin/AdministratorsAdmin"));
+const LoggingAdmin = lazy(() => import("./pages/admin/LoggingAdmin"));
+const ClientManagement = lazy(() => import("./pages/admin/ClientManagement"));
+const ClientUsersAdmin = lazy(() => import("./pages/admin/ClientUsersAdmin"));
+const ClientDocumentsAdmin = lazy(() => import("./pages/admin/ClientDocumentsAdmin"));
+const ClientDocumentsPortal = lazy(() => import("./pages/portal/ClientDocuments"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 import { supabase } from "@/integrations/supabase/client";
@@ -160,6 +167,13 @@ const App = () => (
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin/administrators" element={<AdministratorsAdmin />} />
+              <Route path="/admin/logging" element={<LoggingAdmin />} />
+              <Route path="/admin/client-management" element={<ClientManagement />} />
+              <Route path="/admin/client-management/users" element={<ClientUsersAdmin />} />
+              <Route path="/admin/client-management/documents" element={<ClientDocumentsAdmin />} />
+              <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
               <Route path="/builds" element={<Navigate replace to="/solutions/new-clinics" />} />
               <Route path="/areas-of-expertise" element={<Navigate replace to="/how-we-work" />} />
               <Route path="/fractional-and-advisory-consulting" element={<Navigate replace to="/solutions/existing-clinics" />} />

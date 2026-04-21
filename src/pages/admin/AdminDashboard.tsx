@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare } from "lucide-react";
+import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare, ShieldCheck, ScrollText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +43,24 @@ const adminPages = [
     description: "Manage meta tags, Open Graph, schemas, tracking, and redirects for all pages.",
     href: "/admin/seo",
     icon: Search,
+  },
+  {
+    title: "Administrators",
+    description: "Create and manage admin accounts. Reset passwords, toggle access, and protect the built-in administrator.",
+    href: "/admin/administrators",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Logging",
+    description: "View login attempts, file activity, and password change events across the platform.",
+    href: "/admin/logging",
+    icon: ScrollText,
+  },
+  {
+    title: "Client Management",
+    description: "Manage client portal users and review documentation submissions.",
+    href: "/admin/client-management",
+    icon: Users,
   },
 ];
 
