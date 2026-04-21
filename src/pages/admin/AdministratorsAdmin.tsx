@@ -31,6 +31,10 @@ function AdministratorsAdminInner() {
   const [addOpen, setAddOpen] = useState(false);
   const [editRow, setEditRow] = useState<AdminRow | null>(null);
   const [deleteRow, setDeleteRow] = useState<AdminRow | null>(null);
+  const [resetRow, setResetRow] = useState<AdminRow | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetting, setResetting] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -75,18 +79,32 @@ function AdministratorsAdminInner() {
     fetchRows();
   };
 
-  const handleResetPassword = async (row: AdminRow) => {
-    const { data: users } = await (supabase as any).from("user_roles").select("user_id, role");
-    // Find auth user id by email via list
-    const { data: authList } = await (supabase as any).auth.admin?.listUsers?.() || { data: null };
-    let userId: string | null = null;
-    if (!authList) {
-      // We don't have admin from client. Use edge function. Lookup user_id by querying user_roles + admin email mapping is complex; pass email to a helper.
+  const openResetPassword = (row: AdminRow) => {
+    setResetRow(row);
+    setResetPassword("");
+    setResetConfirm("");
+  };
+
+  const confirmResetPassword = async () => {
+    if (!resetRow) return;
+    if (resetPassword.length < 8) {
+      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      return;
     }
-    // Use the email to find user id via a helper RPC isn't built; use admin function with email lookup
-    const { error } = await (supabase as any).functions.invoke("admin-reset-password", { body: { email: row.email, kind: "admin" } });
+    if (resetPassword !== resetConfirm) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setResetting(true);
+    const { error } = await (supabase as any).functions.invoke("admin-reset-password", {
+      body: { email: resetRow.email, kind: "admin", password: resetPassword },
+    });
+    setResetting(false);
     if (error) { toast({ title: "Reset failed", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "Password reset", description: `New temp password emailed to ${row.email}.` });
+    toast({ title: "Password reset", description: `New password emailed to ${resetRow.email}.` });
+    setResetRow(null);
+    setResetPassword("");
+    setResetConfirm("");
   };
 
   const handleDelete = async () => {
@@ -144,7 +162,7 @@ function AdministratorsAdminInner() {
       cell: (r) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => setEditRow(r)} title="Edit"><Pencil className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => handleResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => openResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteRow(r)} disabled={r.is_builtin} title={r.is_builtin ? "Built-in admin cannot be deleted" : "Delete"}>
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -219,6 +237,40 @@ function AdministratorsAdminInner() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRow(null)}>Cancel</Button>
             <Button variant="hero" onClick={handleEdit} disabled={submitting}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!resetRow} onOpenChange={(o) => { if (!o) { setResetRow(null); setResetPassword(""); setResetConfirm(""); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetRow?.email}. Once confirmed, the new credentials will be emailed to them.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>New Password</Label>
+              <Input type="password" autoComplete="new-password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="Minimum 8 characters" />
+            </div>
+            <div className="space-y-2">
+              <Label>Confirm Password</Label>
+              <Input type="password" autoComplete="new-password" value={resetConfirm} onChange={(e) => setResetConfirm(e.target.value)} />
+            </div>
+            {resetPassword && resetConfirm && resetPassword !== resetConfirm && (
+              <p className="text-sm text-destructive">Passwords do not match.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetRow(null)} disabled={resetting}>Cancel</Button>
+            <Button
+              variant="hero"
+              onClick={confirmResetPassword}
+              disabled={resetting || resetPassword.length < 8 || resetPassword !== resetConfirm}
+            >
+              {resetting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Confirm & Send
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -22,9 +22,14 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const { kind } = body
     let { user_id } = body
-    const { email } = body
+    const { email, password: customPassword } = body
     if (!kind || (!user_id && !email)) {
       return new Response(JSON.stringify({ error: 'user_id or email and kind required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }
+    if (customPassword !== undefined && customPassword !== null && customPassword !== '') {
+      if (typeof customPassword !== 'string' || customPassword.length < 8 || customPassword.length > 128) {
+        return new Response(JSON.stringify({ error: 'Password must be between 8 and 128 characters' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
     }
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
     if (!user_id && email) {
@@ -33,7 +38,7 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: 'User not found in auth' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       }
     }
-    const tempPassword = generateTempPassword()
+    const tempPassword = customPassword && customPassword.length >= 8 ? customPassword : generateTempPassword()
     const { error: uErr } = await admin.auth.admin.updateUserById(user_id, { password: tempPassword })
     if (uErr) {
       await admin.from('activity_logs').insert({ user_name: caller.email || 'admin', action: 'Password Changed', status: 'Failed' })
