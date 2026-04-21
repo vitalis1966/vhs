@@ -1133,6 +1133,41 @@ export type Database = {
           organization_name: string
         }[]
       }
+      get_public_seo_global: {
+        Args: never
+        Returns: {
+          bing_verification: string
+          crisp_website_id: string
+          custom_body_script: string
+          custom_head_script: string
+          default_description: string
+          default_og_image: string
+          default_robots: string
+          default_title: string
+          facebook_app_id: string
+          facebook_page_url: string
+          google_ads_conversion_label: string
+          google_ads_id: string
+          google_analytics_id: string
+          google_search_console: string
+          google_tag_manager_body: string
+          google_tag_manager_head: string
+          google_tag_manager_id: string
+          hotjar_id: string
+          id: number
+          instagram_url: string
+          intercom_app_id: string
+          linkedin_partner_id: string
+          linkedin_url: string
+          meta_pixel_id: string
+          pinterest_verification: string
+          site_locale: string
+          site_name: string
+          site_url: string
+          theme_color: string
+          twitter_handle: string
+        }[]
+      }
       get_report_by_token: { Args: { p_token: string }; Returns: Json }
       get_responses_by_token: {
         Args: { p_token: string }
