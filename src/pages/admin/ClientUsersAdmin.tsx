@@ -268,6 +268,70 @@ function Inner() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!resetRow} onOpenChange={(o) => { if (!o) { setResetRow(null); setResetPassword(""); setResetConfirm(""); setShowResetPassword(false); setGenerated(false); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetRow?.email}, or generate a strong one. Once confirmed, the new credentials will be emailed to them.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Button type="button" variant="outline" size="sm" onClick={generatePassword} className="w-full">
+              <Wand2 className="h-4 w-4 mr-2" />Generate Strong Password
+            </Button>
+            <div className="space-y-2">
+              <Label>New Password</Label>
+              <div className="relative">
+                <Input
+                  type={showResetPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={resetPassword}
+                  onChange={(e) => { setResetPassword(e.target.value); setGenerated(false); }}
+                  placeholder="Minimum 8 characters"
+                  className="pr-20"
+                />
+                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowResetPassword((s) => !s)} title={showResetPassword ? "Hide" : "Show"}>
+                    {showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                  {resetPassword && (
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={copyPassword} title="Copy">
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Confirm Password</Label>
+              <Input
+                type={showResetPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={resetConfirm}
+                onChange={(e) => { setResetConfirm(e.target.value); setGenerated(false); }}
+              />
+            </div>
+            {resetPassword && resetConfirm && resetPassword !== resetConfirm && (
+              <p className="text-sm text-destructive">Passwords do not match.</p>
+            )}
+            {generated && (
+              <p className="text-sm text-muted-foreground">A strong password has been generated and filled in. Copy it if you want a record before sending.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetRow(null)} disabled={resetting}>Cancel</Button>
+            <Button
+              variant="hero"
+              onClick={confirmResetPassword}
+              disabled={resetting || resetPassword.length < 8 || resetPassword !== resetConfirm}
+            >
+              {resetting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Confirm & Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteRow} onOpenChange={(o) => !o && setDeleteRow(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
