@@ -73,14 +73,26 @@ export function emailFooter(): string {
 
 export async function requireAdmin(req: Request) {
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader) throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
   const token = authHeader.replace('Bearer ', '')
+  // Use a user-context client so getClaims() works with ES256 signing-keys JWTs
+  const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: authHeader } },
+  })
+  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token)
+  if (claimsError || !claimsData?.claims?.sub) {
+    throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+  const userId = claimsData.claims.sub as string
+  const userEmail = (claimsData.claims.email as string | undefined) ?? ''
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-  const { data: { user }, error } = await supabase.auth.getUser(token)
-  if (error || !user) throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-  const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' })
-  if (!isAdmin) throw new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-  return { user, supabase }
+  const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  if (!isAdmin) {
+    throw new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+  return { user: { id: userId, email: userEmail }, supabase }
 }
 
 export function buildCredentialsEmail(opts: { name: string; email: string; tempPassword: string; role: 'Administrator' | 'Client' }): string {
