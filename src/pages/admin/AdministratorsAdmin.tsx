@@ -79,18 +79,32 @@ function AdministratorsAdminInner() {
     fetchRows();
   };
 
-  const handleResetPassword = async (row: AdminRow) => {
-    const { data: users } = await (supabase as any).from("user_roles").select("user_id, role");
-    // Find auth user id by email via list
-    const { data: authList } = await (supabase as any).auth.admin?.listUsers?.() || { data: null };
-    let userId: string | null = null;
-    if (!authList) {
-      // We don't have admin from client. Use edge function. Lookup user_id by querying user_roles + admin email mapping is complex; pass email to a helper.
+  const openResetPassword = (row: AdminRow) => {
+    setResetRow(row);
+    setResetPassword("");
+    setResetConfirm("");
+  };
+
+  const confirmResetPassword = async () => {
+    if (!resetRow) return;
+    if (resetPassword.length < 8) {
+      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      return;
     }
-    // Use the email to find user id via a helper RPC isn't built; use admin function with email lookup
-    const { error } = await (supabase as any).functions.invoke("admin-reset-password", { body: { email: row.email, kind: "admin" } });
+    if (resetPassword !== resetConfirm) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setResetting(true);
+    const { error } = await (supabase as any).functions.invoke("admin-reset-password", {
+      body: { email: resetRow.email, kind: "admin", password: resetPassword },
+    });
+    setResetting(false);
     if (error) { toast({ title: "Reset failed", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "Password reset", description: `New temp password emailed to ${row.email}.` });
+    toast({ title: "Password reset", description: `New password emailed to ${resetRow.email}.` });
+    setResetRow(null);
+    setResetPassword("");
+    setResetConfirm("");
   };
 
   const handleDelete = async () => {
