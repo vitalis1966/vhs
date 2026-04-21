@@ -446,6 +446,7 @@ export function Navbar() {
           </div>
         </div>
       )}
+      <ClientLoginDialog open={clientLoginOpen} onOpenChange={setClientLoginOpen} />
     </nav>
   );
 }
