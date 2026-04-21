@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ColumnDef, SortableFilterableTable } from "@/components/admin/SortableFilterableTable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Download, Upload, KeyRound, Pencil, Trash2, Loader2, ArrowLeft } from "lucide-react";
+import { Plus, Download, Upload, KeyRound, Pencil, Trash2, Loader2, ArrowLeft, Wand2, Eye, EyeOff, Copy } from "lucide-react";
 import { downloadCsv, parseCsv, toCsv } from "@/lib/csv";
 import { Link } from "react-router-dom";
 
