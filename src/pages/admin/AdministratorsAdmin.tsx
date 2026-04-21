@@ -241,6 +241,40 @@ function AdministratorsAdminInner() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!resetRow} onOpenChange={(o) => { if (!o) { setResetRow(null); setResetPassword(""); setResetConfirm(""); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetRow?.email}. Once confirmed, the new credentials will be emailed to them.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>New Password</Label>
+              <Input type="password" autoComplete="new-password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="Minimum 8 characters" />
+            </div>
+            <div className="space-y-2">
+              <Label>Confirm Password</Label>
+              <Input type="password" autoComplete="new-password" value={resetConfirm} onChange={(e) => setResetConfirm(e.target.value)} />
+            </div>
+            {resetPassword && resetConfirm && resetPassword !== resetConfirm && (
+              <p className="text-sm text-destructive">Passwords do not match.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetRow(null)} disabled={resetting}>Cancel</Button>
+            <Button
+              variant="hero"
+              onClick={confirmResetPassword}
+              disabled={resetting || resetPassword.length < 8 || resetPassword !== resetConfirm}
+            >
+              {resetting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Confirm & Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteRow} onOpenChange={(o) => !o && setDeleteRow(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
