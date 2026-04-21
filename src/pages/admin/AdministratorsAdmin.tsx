@@ -35,6 +35,8 @@ function AdministratorsAdminInner() {
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirm, setResetConfirm] = useState("");
   const [resetting, setResetting] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
