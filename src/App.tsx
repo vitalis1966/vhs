@@ -168,11 +168,11 @@ const App = () => (
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/admin/administrators" element={<AdministratorsAdmin />} />
-              <Route path="/admin/logging" element={<LoggingAdmin />} />
-              <Route path="/admin/client-management" element={<ClientManagement />} />
-              <Route path="/admin/client-management/users" element={<ClientUsersAdmin />} />
-              <Route path="/admin/client-management/documents" element={<ClientDocumentsAdmin />} />
+              <Route path="/admin/administrators" element={<AdminGuard><AdministratorsAdmin /></AdminGuard>} />
+              <Route path="/admin/logging" element={<AdminGuard><LoggingAdmin /></AdminGuard>} />
+              <Route path="/admin/client-management" element={<AdminGuard><ClientManagement /></AdminGuard>} />
+              <Route path="/admin/client-management/users" element={<AdminGuard><ClientUsersAdmin /></AdminGuard>} />
+              <Route path="/admin/client-management/documents" element={<AdminGuard><ClientDocumentsAdmin /></AdminGuard>} />
               <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
               <Route path="/builds" element={<Navigate replace to="/solutions/new-clinics" />} />
               <Route path="/areas-of-expertise" element={<Navigate replace to="/how-we-work" />} />
