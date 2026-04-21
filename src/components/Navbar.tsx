@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Stethoscope, Smile, PawPrint, Building2, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ClientLoginDialog } from "@/components/ClientLoginDialog";
 const vitalisLogo = "/vitalis-logo.webp";
 
 const practiceTypes = [
@@ -282,6 +283,13 @@ export function Navbar() {
                 <span className="hidden 2xl:inline">Speak With Our Team</span>
               </Link>
             </Button>
+            <ClientLoginDialog
+              trigger={
+                <Button variant="hero" size="sm" className="whitespace-nowrap text-[10px] h-8 px-2 xl:max-w-[128px] 2xl:text-[13px] 2xl:h-9 2xl:px-3 2xl:max-w-none">
+                  Client Login
+                </Button>
+              }
+            />
           </div>
         </div>
 
@@ -425,6 +433,13 @@ export function Navbar() {
             <Button variant="hero" size="lg" asChild>
               <Link to="/contact" onClick={() => setMobileOpen(false)}>Speak With Our Team</Link>
             </Button>
+            <ClientLoginDialog
+              trigger={
+                <Button variant="hero" size="lg" className="w-full" onClick={() => setMobileOpen(false)}>
+                  Client Login
+                </Button>
+              }
+            />
           </div>
         </div>
       )}
