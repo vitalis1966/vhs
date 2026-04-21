@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ColumnDef, SortableFilterableTable } from "@/components/admin/SortableFilterableTable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Download, Upload, KeyRound, Pencil, Trash2, Loader2, ArrowLeft } from "lucide-react";
+import { Plus, Download, Upload, KeyRound, Pencil, Trash2, Loader2, ArrowLeft, Wand2, Eye, EyeOff, Copy } from "lucide-react";
 import { downloadCsv, parseCsv, toCsv } from "@/lib/csv";
 import { Link } from "react-router-dom";
 
@@ -32,6 +32,12 @@ function Inner() {
   const [addOpen, setAddOpen] = useState(false);
   const [editRow, setEditRow] = useState<ClientRow | null>(null);
   const [deleteRow, setDeleteRow] = useState<ClientRow | null>(null);
+  const [resetRow, setResetRow] = useState<ClientRow | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", business_name: "" });
   const [submitting, setSubmitting] = useState(false);
 
@@ -73,10 +79,55 @@ function Inner() {
     fetchRows();
   };
 
-  const handleResetPassword = async (row: ClientRow) => {
-    const { error } = await (supabase as any).functions.invoke("admin-reset-password", { body: { user_id: row.id, kind: "client" } });
+  const openResetPassword = (row: ClientRow) => {
+    setResetRow(row);
+    setResetPassword("");
+    setResetConfirm("");
+    setShowResetPassword(false);
+    setGenerated(false);
+  };
+
+  const generatePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    let out = "";
+    for (let i = 0; i < bytes.length; i++) out += chars[bytes[i] % chars.length];
+    setResetPassword(out);
+    setResetConfirm(out);
+    setShowResetPassword(true);
+    setGenerated(true);
+  };
+
+  const copyPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(resetPassword);
+      toast({ title: "Password copied" });
+    } catch {
+      toast({ title: "Copy failed", variant: "destructive" });
+    }
+  };
+
+  const confirmResetPassword = async () => {
+    if (!resetRow) return;
+    if (resetPassword.length < 8) {
+      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    if (resetPassword !== resetConfirm) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setResetting(true);
+    const { error } = await (supabase as any).functions.invoke("admin-reset-password", {
+      body: { user_id: resetRow.id, kind: "client", password: resetPassword },
+    });
+    setResetting(false);
     if (error) { toast({ title: "Reset failed", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "Password reset", description: `New temp password emailed to ${row.email}.` });
+    toast({ title: "Password reset", description: `New password emailed to ${resetRow.email}.` });
+    setResetRow(null);
+    setResetPassword("");
+    setResetConfirm("");
   };
 
   const handleDelete = async () => {
@@ -136,7 +187,7 @@ function Inner() {
       cell: (r) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => setEditRow(r)} title="Edit"><Pencil className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => handleResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => openResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteRow(r)} title="Delete user"><Trash2 className="h-4 w-4" /></Button>
         </div>
       ),
@@ -213,6 +264,70 @@ function Inner() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRow(null)}>Cancel</Button>
             <Button variant="hero" onClick={handleEdit} disabled={submitting}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!resetRow} onOpenChange={(o) => { if (!o) { setResetRow(null); setResetPassword(""); setResetConfirm(""); setShowResetPassword(false); setGenerated(false); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetRow?.email}, or generate a strong one. Once confirmed, the new credentials will be emailed to them.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Button type="button" variant="outline" size="sm" onClick={generatePassword} className="w-full">
+              <Wand2 className="h-4 w-4 mr-2" />Generate Strong Password
+            </Button>
+            <div className="space-y-2">
+              <Label>New Password</Label>
+              <div className="relative">
+                <Input
+                  type={showResetPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={resetPassword}
+                  onChange={(e) => { setResetPassword(e.target.value); setGenerated(false); }}
+                  placeholder="Minimum 8 characters"
+                  className="pr-20"
+                />
+                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowResetPassword((s) => !s)} title={showResetPassword ? "Hide" : "Show"}>
+                    {showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                  {resetPassword && (
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={copyPassword} title="Copy">
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Confirm Password</Label>
+              <Input
+                type={showResetPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={resetConfirm}
+                onChange={(e) => { setResetConfirm(e.target.value); setGenerated(false); }}
+              />
+            </div>
+            {resetPassword && resetConfirm && resetPassword !== resetConfirm && (
+              <p className="text-sm text-destructive">Passwords do not match.</p>
+            )}
+            {generated && (
+              <p className="text-sm text-muted-foreground">A strong password has been generated and filled in. Copy it if you want a record before sending.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetRow(null)} disabled={resetting}>Cancel</Button>
+            <Button
+              variant="hero"
+              onClick={confirmResetPassword}
+              disabled={resetting || resetPassword.length < 8 || resetPassword !== resetConfirm}
+            >
+              {resetting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Confirm & Send
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
