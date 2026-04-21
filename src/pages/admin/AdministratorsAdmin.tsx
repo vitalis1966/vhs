@@ -31,6 +31,10 @@ function AdministratorsAdminInner() {
   const [addOpen, setAddOpen] = useState(false);
   const [editRow, setEditRow] = useState<AdminRow | null>(null);
   const [deleteRow, setDeleteRow] = useState<AdminRow | null>(null);
+  const [resetRow, setResetRow] = useState<AdminRow | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetting, setResetting] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
