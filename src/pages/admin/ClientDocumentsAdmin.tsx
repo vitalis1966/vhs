@@ -8,10 +8,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ColumnDef, SortableFilterableTable } from "@/components/admin/SortableFilterableTable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Loader2, ArrowLeft } from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { mimeLabel } from "@/lib/mimeLabel";
 import { formatBytes } from "@/lib/formatBytes";
+import JSZip from "jszip";
 
 type DocRow = {
   id: string;
