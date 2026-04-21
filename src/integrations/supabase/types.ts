@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          status: string
+          user_name: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          status: string
+          user_name: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
+      administrators: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          is_builtin: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          is_builtin?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          is_builtin?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assessment_intakes: {
         Row: {
           additional_notes: string | null
@@ -448,6 +502,39 @@ export type Database = {
           },
         ]
       }
+      client_users: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          email: string
+          id: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           area_of_interest: string | null
@@ -483,6 +570,47 @@ export type Database = {
           submitted_at?: string | null
         }
         Relationships: []
+      }
+      documents: {
+        Row: {
+          client_user_id: string
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          client_user_id: string
+          created_at?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          client_user_id?: string
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_client_user_id_fkey"
+            columns: ["client_user_id"]
+            isOneToOne: false
+            referencedRelation: "client_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_events: {
         Row: {
@@ -1111,6 +1239,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1195,6 +1344,13 @@ export type Database = {
           updated_at: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       intake_exists: { Args: { p_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
@@ -1244,7 +1400,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1371,6 +1527,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "client"],
+    },
   },
 } as const

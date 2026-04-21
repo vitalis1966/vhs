@@ -37,3 +37,13 @@ project_id = "ilbhphreyvaoomhpvaxi"
     verify_jwt = false
   [functions.resolve-assessment-report]
     verify_jwt = false
+  [functions.admin-create-administrator]
+    verify_jwt = false
+  [functions.admin-create-client-user]
+    verify_jwt = false
+  [functions.admin-reset-password]
+    verify_jwt = false
+  [functions.admin-delete-user]
+    verify_jwt = false
+  [functions.notify-document-event]
+    verify_jwt = false
