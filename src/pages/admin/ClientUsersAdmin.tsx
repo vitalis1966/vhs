@@ -32,6 +32,12 @@ function Inner() {
   const [addOpen, setAddOpen] = useState(false);
   const [editRow, setEditRow] = useState<ClientRow | null>(null);
   const [deleteRow, setDeleteRow] = useState<ClientRow | null>(null);
+  const [resetRow, setResetRow] = useState<ClientRow | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", business_name: "" });
   const [submitting, setSubmitting] = useState(false);
 
