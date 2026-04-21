@@ -72,7 +72,10 @@ const queryClient = new QueryClient({
 Promise.all([
   queryClient.prefetchQuery({
     queryKey: ["seo-global"],
-    queryFn: async () => (await supabase.from("seo_global").select("*").eq("id", 1).single()).data,
+    queryFn: async () => {
+      const { data } = await (supabase as any).rpc("get_public_seo_global");
+      return Array.isArray(data) ? data[0] ?? null : data;
+    },
     staleTime: 30 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
   }),
