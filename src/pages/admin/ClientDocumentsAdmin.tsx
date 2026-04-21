@@ -29,6 +29,7 @@ type DocRow = {
 function Inner() {
   const [rows, setRows] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteOne, setDeleteOne] = useState<DocRow | null>(null);
