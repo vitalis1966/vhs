@@ -45,6 +45,66 @@ function Inner() {
   };
   useEffect(() => { fetchRows(); }, []);
 
+  const downloadBlob = (blob: Blob, name: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadOne = async (row: DocRow) => {
+    const { data, error } = await (supabase as any).storage.from("client-documents").download(row.storage_path);
+    if (error || !data) {
+      toast({ title: "Download failed", description: error?.message, variant: "destructive" });
+      return;
+    }
+    downloadBlob(data, row.file_name);
+  };
+
+  const handleDownloadMany = async (target: DocRow[]) => {
+    if (target.length === 0) return;
+    if (target.length === 1) { await handleDownloadOne(target[0]); return; }
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const used = new Map<string, number>();
+      const results = await Promise.all(
+        target.map(async (r) => {
+          const { data, error } = await (supabase as any).storage.from("client-documents").download(r.storage_path);
+          return { r, data, error };
+        })
+      );
+      let failed = 0;
+      for (const { r, data, error } of results) {
+        if (error || !data) { failed++; continue; }
+        const folder = (r.business_name || "Unassigned").replace(/[^a-zA-Z0-9._ -]/g, "_");
+        const key = `${folder}/${r.file_name}`;
+        let name = r.file_name;
+        const count = used.get(key) || 0;
+        if (count > 0) {
+          const dot = name.lastIndexOf(".");
+          name = dot > 0 ? `${name.slice(0, dot)} (${count})${name.slice(dot)}` : `${name} (${count})`;
+        }
+        used.set(key, count + 1);
+        zip.folder(folder)!.file(name, data);
+      }
+      if (failed === target.length) {
+        toast({ title: "Download failed", description: "Could not retrieve any files.", variant: "destructive" });
+        return;
+      }
+      const blob = await zip.generateAsync({ type: "blob" });
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadBlob(blob, `client-documents-${stamp}.zip`);
+      if (failed > 0) toast({ title: "Partial download", description: `${failed} file(s) could not be included.` });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const removeDocs = async (toDelete: DocRow[]) => {
     if (toDelete.length === 0) return;
     const paths = toDelete.map((d) => d.storage_path);
