@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-export function AdminGuard({ children }: { children: React.ReactNode }) {
+export function ClientGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const navigate = useNavigate();
@@ -13,18 +13,18 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
     const check = async (session: any) => {
       if (!session) {
-        navigate("/admin/login", { replace: true });
+        navigate("/", { replace: true });
         if (!cancelled) setLoading(false);
         return;
       }
       const { data, error } = await (supabase as any).rpc("has_role", {
         _user_id: session.user.id,
-        _role: "admin",
+        _role: "client",
       });
       if (cancelled) return;
       if (error || !data) {
         await supabase.auth.signOut();
-        navigate("/admin/login", { replace: true });
+        navigate("/", { replace: true });
         setAuthorized(false);
       } else {
         setAuthorized(true);
