@@ -38,12 +38,12 @@ project_id = "ilbhphreyvaoomhpvaxi"
   [functions.resolve-assessment-report]
     verify_jwt = false
   [functions.admin-create-administrator]
-    verify_jwt = true
+    verify_jwt = false
   [functions.admin-create-client-user]
-    verify_jwt = true
+    verify_jwt = false
   [functions.admin-reset-password]
-    verify_jwt = true
+    verify_jwt = false
   [functions.admin-delete-user]
-    verify_jwt = true
+    verify_jwt = false
   [functions.notify-document-event]
-    verify_jwt = true
+    verify_jwt = false
