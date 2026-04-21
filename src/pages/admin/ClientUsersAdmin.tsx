@@ -79,10 +79,55 @@ function Inner() {
     fetchRows();
   };
 
-  const handleResetPassword = async (row: ClientRow) => {
-    const { error } = await (supabase as any).functions.invoke("admin-reset-password", { body: { user_id: row.id, kind: "client" } });
+  const openResetPassword = (row: ClientRow) => {
+    setResetRow(row);
+    setResetPassword("");
+    setResetConfirm("");
+    setShowResetPassword(false);
+    setGenerated(false);
+  };
+
+  const generatePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    let out = "";
+    for (let i = 0; i < bytes.length; i++) out += chars[bytes[i] % chars.length];
+    setResetPassword(out);
+    setResetConfirm(out);
+    setShowResetPassword(true);
+    setGenerated(true);
+  };
+
+  const copyPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(resetPassword);
+      toast({ title: "Password copied" });
+    } catch {
+      toast({ title: "Copy failed", variant: "destructive" });
+    }
+  };
+
+  const confirmResetPassword = async () => {
+    if (!resetRow) return;
+    if (resetPassword.length < 8) {
+      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    if (resetPassword !== resetConfirm) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setResetting(true);
+    const { error } = await (supabase as any).functions.invoke("admin-reset-password", {
+      body: { user_id: resetRow.id, kind: "client", password: resetPassword },
+    });
+    setResetting(false);
     if (error) { toast({ title: "Reset failed", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "Password reset", description: `New temp password emailed to ${row.email}.` });
+    toast({ title: "Password reset", description: `New password emailed to ${resetRow.email}.` });
+    setResetRow(null);
+    setResetPassword("");
+    setResetConfirm("");
   };
 
   const handleDelete = async () => {
