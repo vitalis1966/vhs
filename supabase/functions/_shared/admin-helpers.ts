@@ -71,28 +71,51 @@ export function emailFooter(): string {
 </td></tr>`
 }
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    const padded = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padding = padded.length % 4 === 0 ? '' : '='.repeat(4 - (padded.length % 4))
+    const json = atob(padded + padding)
+    return JSON.parse(json)
+  } catch (_e) {
+    return null
+  }
+}
+
 export async function requireAdmin(req: Request) {
   const authHeader = req.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) {
+    console.error('requireAdmin: missing/invalid Authorization header')
     throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
-  const token = authHeader.replace('Bearer ', '')
-  // Use a user-context client so getClaims() works with ES256 signing-keys JWTs
-  const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
-    global: { headers: { Authorization: authHeader } },
-  })
-  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token)
-  if (claimsError || !claimsData?.claims?.sub) {
+  const token = authHeader.replace('Bearer ', '').trim()
+  const payload = decodeJwtPayload(token)
+  if (!payload || typeof payload.sub !== 'string') {
+    console.error('requireAdmin: failed to decode JWT payload')
     throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
-  const userId = claimsData.claims.sub as string
-  const userEmail = (claimsData.claims.email as string | undefined) ?? ''
+  const exp = typeof payload.exp === 'number' ? payload.exp : 0
+  if (exp && exp * 1000 < Date.now()) {
+    console.error('requireAdmin: token expired')
+    throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+  const userId = payload.sub as string
+  const userEmail = (payload.email as string | undefined) ?? ''
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-  const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  // Verify the user actually exists in auth (proves token corresponds to a real user)
+  const { data: authUser, error: authErr } = await supabase.auth.admin.getUserById(userId)
+  if (authErr || !authUser?.user) {
+    console.error('requireAdmin: user lookup failed', authErr?.message)
+    throw new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+  const { data: isAdmin, error: roleErr } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  if (roleErr) console.error('requireAdmin: has_role error', roleErr.message)
   if (!isAdmin) {
     throw new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
-  return { user: { id: userId, email: userEmail }, supabase }
+  return { user: { id: userId, email: userEmail || authUser.user.email || '' }, supabase }
 }
 
 export function buildCredentialsEmail(opts: { name: string; email: string; tempPassword: string; role: 'Administrator' | 'Client' }): string {
