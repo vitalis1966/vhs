@@ -189,9 +189,20 @@ function Inner() {
               <Checkbox checked={allSelected} onCheckedChange={(v) => setSelected(v ? new Set(rows.map((r) => r.id)) : new Set())} />
               <span className="text-sm text-muted-foreground">{selected.size} selected</span>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setDeleteOpen(true)} disabled={selected.size === 0}>
-              <Trash2 className="h-4 w-4 mr-2" />Delete Selected
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadMany(selected.size > 0 ? rows.filter((r) => selected.has(r.id)) : rows)}
+                disabled={downloading || rows.length === 0}
+              >
+                {downloading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                {selected.size > 0 ? `Download Selected (${selected.size})` : "Download All"}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setDeleteOpen(true)} disabled={selected.size === 0}>
+                <Trash2 className="h-4 w-4 mr-2" />Delete Selected
+              </Button>
+            </div>
           </div>
 
           {loading ? (
