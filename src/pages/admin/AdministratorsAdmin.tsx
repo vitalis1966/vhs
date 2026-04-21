@@ -162,7 +162,7 @@ function AdministratorsAdminInner() {
       cell: (r) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => setEditRow(r)} title="Edit"><Pencil className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => handleResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => openResetPassword(r)} title="Reset Password"><KeyRound className="h-4 w-4" /></Button>
           <Button variant="ghost" size="icon" onClick={() => setDeleteRow(r)} disabled={r.is_builtin} title={r.is_builtin ? "Built-in admin cannot be deleted" : "Delete"}>
             <Trash2 className="h-4 w-4" />
           </Button>
