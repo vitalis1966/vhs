@@ -8,10 +8,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ColumnDef, SortableFilterableTable } from "@/components/admin/SortableFilterableTable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Loader2, ArrowLeft } from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { mimeLabel } from "@/lib/mimeLabel";
 import { formatBytes } from "@/lib/formatBytes";
+import JSZip from "jszip";
 
 type DocRow = {
   id: string;
@@ -28,6 +29,7 @@ type DocRow = {
 function Inner() {
   const [rows, setRows] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteOne, setDeleteOne] = useState<DocRow | null>(null);
@@ -42,6 +44,66 @@ function Inner() {
     setLoading(false);
   };
   useEffect(() => { fetchRows(); }, []);
+
+  const downloadBlob = (blob: Blob, name: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadOne = async (row: DocRow) => {
+    const { data, error } = await (supabase as any).storage.from("client-documents").download(row.storage_path);
+    if (error || !data) {
+      toast({ title: "Download failed", description: error?.message, variant: "destructive" });
+      return;
+    }
+    downloadBlob(data, row.file_name);
+  };
+
+  const handleDownloadMany = async (target: DocRow[]) => {
+    if (target.length === 0) return;
+    if (target.length === 1) { await handleDownloadOne(target[0]); return; }
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const used = new Map<string, number>();
+      const results = await Promise.all(
+        target.map(async (r) => {
+          const { data, error } = await (supabase as any).storage.from("client-documents").download(r.storage_path);
+          return { r, data, error };
+        })
+      );
+      let failed = 0;
+      for (const { r, data, error } of results) {
+        if (error || !data) { failed++; continue; }
+        const folder = (r.business_name || "Unassigned").replace(/[^a-zA-Z0-9._ -]/g, "_");
+        const key = `${folder}/${r.file_name}`;
+        let name = r.file_name;
+        const count = used.get(key) || 0;
+        if (count > 0) {
+          const dot = name.lastIndexOf(".");
+          name = dot > 0 ? `${name.slice(0, dot)} (${count})${name.slice(dot)}` : `${name} (${count})`;
+        }
+        used.set(key, count + 1);
+        zip.folder(folder)!.file(name, data);
+      }
+      if (failed === target.length) {
+        toast({ title: "Download failed", description: "Could not retrieve any files.", variant: "destructive" });
+        return;
+      }
+      const blob = await zip.generateAsync({ type: "blob" });
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadBlob(blob, `client-documents-${stamp}.zip`);
+      if (failed > 0) toast({ title: "Partial download", description: `${failed} file(s) could not be included.` });
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const removeDocs = async (toDelete: DocRow[]) => {
     if (toDelete.length === 0) return;
@@ -96,7 +158,10 @@ function Inner() {
     {
       key: "actions", header: "", sortable: false, filterable: false,
       cell: (r) => (
-        <Button variant="ghost" size="icon" onClick={() => setDeleteOne(r)} title="Delete"><Trash2 className="h-4 w-4" /></Button>
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="ghost" size="icon" onClick={() => handleDownloadOne(r)} title="Download"><Download className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setDeleteOne(r)} title="Delete"><Trash2 className="h-4 w-4" /></Button>
+        </div>
       ),
     },
   ];
@@ -124,9 +189,20 @@ function Inner() {
               <Checkbox checked={allSelected} onCheckedChange={(v) => setSelected(v ? new Set(rows.map((r) => r.id)) : new Set())} />
               <span className="text-sm text-muted-foreground">{selected.size} selected</span>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setDeleteOpen(true)} disabled={selected.size === 0}>
-              <Trash2 className="h-4 w-4 mr-2" />Delete Selected
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadMany(selected.size > 0 ? rows.filter((r) => selected.has(r.id)) : rows)}
+                disabled={downloading || rows.length === 0}
+              >
+                {downloading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                {selected.size > 0 ? `Download Selected (${selected.size})` : "Download All"}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setDeleteOpen(true)} disabled={selected.size === 0}>
+                <Trash2 className="h-4 w-4 mr-2" />Delete Selected
+              </Button>
+            </div>
           </div>
 
           {loading ? (
