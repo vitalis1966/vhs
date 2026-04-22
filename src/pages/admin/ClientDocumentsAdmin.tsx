@@ -56,6 +56,15 @@ function Inner() {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpen = async (row: DocRow) => {
+    const { data, error } = await (supabase as any).storage.from("client-documents").createSignedUrl(row.storage_path, 60);
+    if (error || !data?.signedUrl) {
+      toast({ title: "Could not open document", description: error?.message, variant: "destructive" });
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
   const handleDownloadOne = async (row: DocRow) => {
     const { data, error } = await (supabase as any).storage.from("client-documents").download(row.storage_path);
     if (error || !data) {
@@ -137,7 +146,18 @@ function Inner() {
       ),
       headerClassName: "w-12",
     },
-    { key: "file_name", header: "Document Name", accessor: (r) => r.file_name },
+    {
+      key: "file_name", header: "Document Name", accessor: (r) => r.file_name,
+      cell: (r) => (
+        <button
+          type="button"
+          onClick={() => handleOpen(r)}
+          className="text-primary hover:underline text-left"
+        >
+          {r.file_name}
+        </button>
+      ),
+    },
     { key: "business_name", header: "Business", accessor: (r) => r.business_name || "—" },
     {
       key: "created_at", header: "Created",

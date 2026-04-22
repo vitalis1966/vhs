@@ -110,6 +110,15 @@ function Inner() {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpen = async (row: DocRow) => {
+    const { data, error } = await (supabase as any).storage.from("client-documents").createSignedUrl(row.storage_path, 60);
+    if (error || !data?.signedUrl) {
+      toast({ title: "Could not open document", description: error?.message, variant: "destructive" });
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
   const handleDownloadOne = async (row: DocRow) => {
     const { data, error } = await (supabase as any).storage.from("client-documents").download(row.storage_path);
     if (error || !data) {
@@ -210,7 +219,18 @@ function Inner() {
         />
       ),
     },
-    { key: "file_name", header: "Document Name", accessor: (r) => r.file_name },
+    {
+      key: "file_name", header: "Document Name", accessor: (r) => r.file_name,
+      cell: (r) => (
+        <button
+          type="button"
+          onClick={() => handleOpen(r)}
+          className="text-primary hover:underline text-left"
+        >
+          {r.file_name}
+        </button>
+      ),
+    },
     {
       key: "created_at", header: "Created",
       accessor: (r) => new Date(r.created_at),
@@ -238,7 +258,6 @@ function Inner() {
     },
   ];
 
-  const title = businessName ? `${businessName} Documentation Submissions` : "Documentation Submissions";
   const selectedRows = rows.filter((r) => selected.has(r.id));
 
   return (
@@ -252,8 +271,9 @@ function Inner() {
                 <span className="h-px w-12 bg-accent" />
                 <span className="text-accent font-semibold tracking-widest uppercase text-sm">Client Portal</span>
               </div>
-              <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">{title}</h1>
-              {userEmail && <p className="text-sm text-muted-foreground mt-2">Signed in as {userEmail}</p>}
+              <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">Documentation Submissions</h1>
+              {businessName && <p className="text-lg text-muted-foreground mt-2">{businessName}</p>}
+              {userEmail && <p className="text-sm text-muted-foreground mt-1">Signed in as {userEmail}</p>}
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}><LogOut className="h-4 w-4 mr-2" />Sign Out</Button>
           </div>

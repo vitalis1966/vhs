@@ -1,5 +1,5 @@
 import { ReactNode, useMemo, useState } from "react";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Filter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -40,6 +40,7 @@ export function SortableFilterableTable<T>({
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [openFilterKey, setOpenFilterKey] = useState<string | null>(null);
 
   const accessorFor = (col: ColumnDef<T>) => col.accessor || ((row: any) => row[col.key]);
 
@@ -90,46 +91,71 @@ export function SortableFilterableTable<T>({
     }
   };
 
+  const toggleFilter = (key: string) => {
+    setOpenFilterKey((cur) => (cur === key ? null : key));
+  };
+
   return (
     <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              {columns.map((col) => (
-                <TableHead key={col.key} className={cn("align-top", col.headerClassName)}>
-                  <div className="flex flex-col gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => col.sortable !== false && toggleSort(col.key)}
-                      className={cn(
-                        "flex items-center gap-1 text-left font-semibold text-foreground",
-                        col.sortable !== false && "hover:text-primary cursor-pointer"
+              {columns.map((col) => {
+                const hasActiveFilter = !!filters[col.key]?.trim();
+                const isOpen = openFilterKey === col.key;
+                return (
+                  <TableHead key={col.key} className={cn("align-top", col.headerClassName)}>
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => col.sortable !== false && toggleSort(col.key)}
+                          className={cn(
+                            "flex items-center gap-1 text-left font-semibold text-foreground",
+                            col.sortable !== false && "hover:text-primary cursor-pointer"
+                          )}
+                          disabled={col.sortable === false}
+                        >
+                          {col.header}
+                          {col.sortable !== false && (
+                            sortKey === col.key
+                              ? sortDir === "asc"
+                                ? <ArrowUp className="h-3 w-3" />
+                                : <ArrowDown className="h-3 w-3" />
+                              : <ArrowUpDown className="h-3 w-3 opacity-40" />
+                          )}
+                        </button>
+                        {col.filterable !== false && (
+                          <button
+                            type="button"
+                            onClick={() => toggleFilter(col.key)}
+                            className={cn(
+                              "transition-colors",
+                              hasActiveFilter
+                                ? "text-primary opacity-100"
+                                : "opacity-40 hover:opacity-100"
+                            )}
+                            aria-label={`Filter ${col.header}`}
+                            title={hasActiveFilter ? "Filter active" : "Filter"}
+                          >
+                            <Filter className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                      {col.filterable !== false && isOpen && (
+                        <Input
+                          autoFocus
+                          value={filters[col.key] || ""}
+                          onChange={(e) => setFilters((f) => ({ ...f, [col.key]: e.target.value }))}
+                          placeholder="Filter…"
+                          className="h-7 text-xs font-normal"
+                        />
                       )}
-                      disabled={col.sortable === false}
-                    >
-                      {col.header}
-                      {col.sortable !== false && (
-                        sortKey === col.key
-                          ? sortDir === "asc"
-                            ? <ArrowUp className="h-3 w-3" />
-                            : <ArrowDown className="h-3 w-3" />
-                          : <ArrowUpDown className="h-3 w-3 opacity-40" />
-                      )}
-                    </button>
-                    {col.filterable !== false ? (
-                      <Input
-                        value={filters[col.key] || ""}
-                        onChange={(e) => setFilters((f) => ({ ...f, [col.key]: e.target.value }))}
-                        placeholder="Filter…"
-                        className="h-7 text-xs font-normal"
-                      />
-                    ) : (
-                      <div className="h-7" />
-                    )}
-                  </div>
-                </TableHead>
-              ))}
+                    </div>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>
