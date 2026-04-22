@@ -154,11 +154,17 @@ export function SEOHead() {
       <link rel="shortcut icon" href="/favicon.ico" />
       <link rel="manifest" href="/site.webmanifest" />
 
-      {/* DNS-PREFETCH only — preconnects for fonts/supabase already in index.html to avoid duplicates */}
+      {/* PRECONNECT */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://www.google-analytics.com" />
       <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
       <link rel="dns-prefetch" href="https://connect.facebook.net" />
       <link rel="dns-prefetch" href="https://snap.licdn.com" />
+
+      {/* PRELOAD */}
+      <link rel="preload" href="/vitalis-logo.webp" as="image" type="image/webp" />
 
       {/* GLOBAL SCHEMA — Organization & Website */}
       {r.globalSchemas.map((schema: { id: string; schema_json: unknown }) => (
