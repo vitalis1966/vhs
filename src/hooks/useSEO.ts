@@ -96,7 +96,7 @@ export function usePageSEO() {
 
 export function useGlobalScripts() {
   const { data } = useQuery({
-    queryKey: ["seo-global-scripts"],
+    queryKey: ["seo-global"],
     queryFn: async () => {
       const { data } = await (supabase as any).rpc("get_public_seo_global");
       return Array.isArray(data) ? data[0] ?? null : data;
