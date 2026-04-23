@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,10 +48,12 @@ export function GlobalTab() {
   const [form, setForm] = useState<Record<string, unknown>>({});
   const [initialized, setInitialized] = useState(false);
 
-  if (global && !initialized) {
-    setForm(global);
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (global && !initialized) {
+      setForm(global);
+      setInitialized(true);
+    }
+  }, [global, initialized]);
 
   const saveMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
