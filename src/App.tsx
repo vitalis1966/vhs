@@ -178,6 +178,7 @@ const App = () => (
               <Route path="/areas-of-expertise" element={<Navigate replace to="/how-we-work" />} />
               <Route path="/fractional-and-advisory-consulting" element={<Navigate replace to="/solutions/existing-clinics" />} />
               <Route path="/strategic-analysis" element={<Navigate replace to="/solutions/existing-clinics" />} />
+              <Route path="/home" element={<Navigate replace to="/" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
