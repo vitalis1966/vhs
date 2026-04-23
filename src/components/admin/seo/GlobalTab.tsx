@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,19 +39,21 @@ export function GlobalTab() {
   const { data: global, isLoading } = useQuery({
     queryKey: ["seo-admin-global"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("seo_global").select("*").eq("id", 1).single();
+      const { data, error } = await (supabase as any).rpc("get_public_seo_global");
       if (error) throw error;
-      return data as Record<string, unknown>;
+      return (Array.isArray(data) ? data[0] ?? null : data) as Record<string, unknown> | null;
     },
   });
 
   const [form, setForm] = useState<Record<string, unknown>>({});
   const [initialized, setInitialized] = useState(false);
 
-  if (global && !initialized) {
-    setForm(global);
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (global && !initialized) {
+      setForm(global);
+      setInitialized(true);
+    }
+  }, [global, initialized]);
 
   const saveMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
