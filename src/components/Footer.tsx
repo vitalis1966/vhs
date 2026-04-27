@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useSocialLinks } from "@/hooks/useSocialLinks";
+import { SocialIconRender, PLATFORM_META } from "@/components/admin/seo/SocialIconRender";
 const vitalisLogo = "/vitalis-logo.webp";
 
 const footerLinks = {
@@ -30,6 +32,7 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const { data: socialLinks = [] } = useSocialLinks();
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-20">
@@ -70,7 +73,34 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
+        {socialLinks.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-white/20 flex justify-center md:justify-start gap-5">
+            {socialLinks.map((s) => {
+              const meta = PLATFORM_META[s.platform];
+              const label = s.display_label || `Follow us on ${meta?.label ?? s.platform}`;
+              return (
+                <a
+                  key={s.id}
+                  href={s.profile_url!}
+                  title={label}
+                  aria-label={label}
+                  {...(s.open_in_new_tab
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
+                  <SocialIconRender
+                    platform={s.platform}
+                    iconStyle={s.icon_style}
+                    size={22}
+                  />
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        <div className={`${socialLinks.length > 0 ? "mt-8 pt-8" : "mt-16 pt-8"} border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4`}>
           <p className="text-sm text-white/80">
             © 2026 Vitalis Health Strategies Inc. All rights reserved.
           </p>
