@@ -31,7 +31,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { SocialIconRender, PLATFORM_META } from "./SocialIconRender";
 
-type IconStyle = "filled" | "outline" | "monochrome";
+type IconStyle = "original" | "filled" | "outline" | "monochrome";
 
 interface SocialRow {
   id: string;
@@ -133,6 +133,7 @@ function SortableCard({
               >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="original">Original (brand colors)</SelectItem>
                   <SelectItem value="filled">Filled</SelectItem>
                   <SelectItem value="outline">Outline</SelectItem>
                   <SelectItem value="monochrome">Monochrome</SelectItem>

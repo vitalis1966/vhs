@@ -2,7 +2,7 @@ import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { XIcon, TikTokIcon, PinterestIcon, BlueskyIcon } from "@/components/icons/SocialIcons";
 import { cn } from "@/lib/utils";
 
-export type IconStyle = "filled" | "outline" | "monochrome";
+export type IconStyle = "original" | "filled" | "outline" | "monochrome";
 
 export const PLATFORM_META: Record<
   string,
@@ -44,33 +44,28 @@ export function SocialIconRender({ platform, iconStyle, size = 20, className }: 
   const Lucide = (LucideMap as any)[platform];
   const Custom = (CustomMap as any)[platform];
 
-  // Style mapping
-  const styleProps =
-    iconStyle === "filled" && meta
-      ? { color: meta.color, fill: meta.color, strokeWidth: 0 }
-      : iconStyle === "outline"
-      ? { fill: "none", strokeWidth: 1.75 }
-      : { /* monochrome: inherit currentColor */ };
+  // "original" = authentic brand color scheme (same visual as filled brand color, kept as a distinct intent)
+  const isBrandColored = (iconStyle === "filled" || iconStyle === "original") && meta;
 
   if (Lucide) {
-    // lucide icons are stroke-based; for filled use brand color stroke + fill
-    const lucideProps =
-      iconStyle === "filled" && meta
-        ? { color: meta.color, fill: meta.color, strokeWidth: 0 }
-        : iconStyle === "outline"
-        ? { fill: "none", strokeWidth: 1.75 }
-        : {};
+    const lucideProps = isBrandColored
+      ? { color: meta!.color, fill: meta!.color, strokeWidth: 0 }
+      : iconStyle === "outline"
+      ? { fill: "none", strokeWidth: 1.75 }
+      : {};
     return <Lucide size={size} className={cn("transition-colors", className)} {...lucideProps} />;
   }
 
   if (Custom) {
-    // Custom SVGs use currentColor + fill
-    const colorStyle: React.CSSProperties =
-      iconStyle === "filled" && meta ? { color: meta.color } : {};
+    const colorStyle: React.CSSProperties = isBrandColored ? { color: meta!.color } : {};
     return (
       <Custom
         size={size}
-        className={cn("transition-colors", iconStyle === "outline" && "[&_path]:fill-none [&_path]:stroke-current [&_path]:stroke-[1.5]", className)}
+        className={cn(
+          "transition-colors",
+          iconStyle === "outline" && "[&_path]:fill-none [&_path]:stroke-current [&_path]:stroke-[1.5]",
+          className,
+        )}
         style={colorStyle}
       />
     );
