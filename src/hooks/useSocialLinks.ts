@@ -7,7 +7,7 @@ export interface SocialLink {
   is_active: boolean;
   profile_url: string | null;
   display_label: string | null;
-  icon_style: "filled" | "outline" | "monochrome";
+  icon_style: "original" | "filled" | "outline" | "monochrome";
   open_in_new_tab: boolean;
   sort_order: number;
 }
