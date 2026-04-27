@@ -4,12 +4,13 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Globe, Settings, FileCode, ArrowRightLeft, Image, Download } from "lucide-react";
+import { ArrowLeft, Globe, Settings, FileCode, ArrowRightLeft, Image, Download, Share2 } from "lucide-react";
 import { PagesTab } from "@/components/admin/seo/PagesTab";
 import { GlobalTab } from "@/components/admin/seo/GlobalTab";
 import { SchemaTab } from "@/components/admin/seo/SchemaTab";
 import { RedirectsTab } from "@/components/admin/seo/RedirectsTab";
 import { FaviconsTab } from "@/components/admin/seo/FaviconsTab";
+import { SocialMediaTab } from "@/components/admin/seo/SocialMediaTab";
 import { supabase } from "@/integrations/supabase/client";
 import { generateSitemap } from "@/utils/generateSitemap";
 import { toast } from "@/hooks/use-toast";
@@ -70,12 +71,14 @@ export default function SEOAdmin() {
               <TabsTrigger value="schema" className="gap-1"><FileCode className="h-4 w-4" />Schema</TabsTrigger>
               <TabsTrigger value="redirects" className="gap-1"><ArrowRightLeft className="h-4 w-4" />Redirects</TabsTrigger>
               <TabsTrigger value="favicons" className="gap-1"><Image className="h-4 w-4" />Favicons & OG Images</TabsTrigger>
+              <TabsTrigger value="social" className="gap-1"><Share2 className="h-4 w-4" />Social Media</TabsTrigger>
             </TabsList>
             <TabsContent value="pages"><PagesTab /></TabsContent>
             <TabsContent value="global"><GlobalTab /></TabsContent>
             <TabsContent value="schema"><SchemaTab /></TabsContent>
             <TabsContent value="redirects"><RedirectsTab /></TabsContent>
             <TabsContent value="favicons"><FaviconsTab /></TabsContent>
+            <TabsContent value="social"><SocialMediaTab /></TabsContent>
           </Tabs>
         </div>
       </section>

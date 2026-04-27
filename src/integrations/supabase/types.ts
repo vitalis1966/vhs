@@ -1215,6 +1215,45 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_social_links: {
+        Row: {
+          created_at: string
+          display_label: string | null
+          icon_style: string
+          id: string
+          is_active: boolean
+          open_in_new_tab: boolean
+          platform: string
+          profile_url: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_label?: string | null
+          icon_style?: string
+          id?: string
+          is_active?: boolean
+          open_in_new_tab?: boolean
+          platform: string
+          profile_url?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_label?: string | null
+          icon_style?: string
+          id?: string
+          is_active?: boolean
+          open_in_new_tab?: boolean
+          platform?: string
+          profile_url?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
