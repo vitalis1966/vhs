@@ -123,7 +123,6 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
-              <Route path="/team" element={<About />} />
               <Route path="/about/mission-vision" element={<MissionVision />} />
               <Route path="/how-we-work" element={<HowWeWork />} />
               <Route path="/solutions" element={<Solutions />} />
@@ -174,11 +173,6 @@ const App = () => (
               <Route path="/admin/client-management/users" element={<AdminGuard><ClientUsersAdmin /></AdminGuard>} />
               <Route path="/admin/client-management/documents" element={<AdminGuard><ClientDocumentsAdmin /></AdminGuard>} />
               <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
-              <Route path="/builds" element={<Navigate replace to="/solutions/new-clinics" />} />
-              <Route path="/areas-of-expertise" element={<Navigate replace to="/how-we-work" />} />
-              <Route path="/fractional-and-advisory-consulting" element={<Navigate replace to="/solutions/existing-clinics" />} />
-              <Route path="/strategic-analysis" element={<Navigate replace to="/solutions/existing-clinics" />} />
-              <Route path="/home" element={<Navigate replace to="/" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

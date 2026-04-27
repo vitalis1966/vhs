@@ -1,6 +1,9 @@
 # Page redirects
 /team /about 301
-/strategic-analysis /strategic-assessment 301
-/solutions_ /solutions 301
 /home / 301
+/builds /solutions/new-clinics 301
+/areas-of-expertise /how-we-work 301
+/fractional-and-advisory-consulting /solutions/existing-clinics 301
+/strategic-analysis /solutions/existing-clinics 301
+/solutions_ /solutions 301
 /insights/tag/Budget /insights 301
