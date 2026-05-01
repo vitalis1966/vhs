@@ -1,3 +1,8 @@
+import { Helmet } from "react-helmet-async";
+<Helmet>
+  <meta name="prerender-status-code" content="404" />
+</Helmet>
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
