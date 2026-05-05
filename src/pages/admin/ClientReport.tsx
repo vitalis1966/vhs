@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import {
   Dialog,
   DialogContent,
@@ -370,6 +368,10 @@ export default function ClientReport() {
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
       const reportContainer = document.getElementById("report-content");
       if (!reportContainer) { setIsGeneratingPDF(false); return; }
 
