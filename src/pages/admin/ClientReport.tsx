@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
