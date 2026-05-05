@@ -1,19 +1,32 @@
-## Add Bundle Analyzer
+## Goal
+Reduce Total Blocking Time by deferring heavy PDF/canvas libraries until the user triggers export.
 
-Add `rollup-plugin-visualizer` to diagnose unused JavaScript in production bundles.
+## Findings
+- `html2canvas` and `jspdf` are imported statically only in `src/pages/admin/ClientReport.tsx` (lines 8–9), used inside the existing PDF export handler (around line 408/419).
+- `ReportCharts.tsx` does NOT import `html2canvas`, `jspdf`, or `canvg` — no change needed there.
+- No occurrences of `canvg` anywhere in the codebase.
+- No `lodash` or `lodash-es` imports anywhere in `src/`, and `lodash`/`@types/lodash` are not in `package.json`. Part 2 is a no-op.
 
-### Changes
+## Part 1 — Lazy-load PDF libs in ClientReport.tsx
 
-**1. `package.json`**
-- Add to `devDependencies`: `"rollup-plugin-visualizer": "^5.12.0"`
-- Add to `scripts`: `"analyze": "ANALYZE=true vite build"`
+1. Remove the static imports at lines 8–9:
+   ```ts
+   import jsPDF from "jspdf";
+   import html2canvas from "html2canvas";
+   ```
+2. Inside the existing export handler function (the one containing the `html2canvas(wrapper, …)` call at line 408), add at the top of the function body:
+   ```ts
+   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+     import("html2canvas"),
+     import("jspdf"),
+   ]);
+   ```
+3. Leave all other logic, the wrapper construction, the `new jsPDF(...)` call, and downstream PDF page-stitching code unchanged.
 
-**2. `vite.config.ts`**
-- Add import at top: `import { visualizer } from 'rollup-plugin-visualizer';`
-- Inside the `plugins` array (after existing entries, before `.filter(Boolean)`), conditionally spread the visualizer plugin when `process.env.ANALYZE === 'true'`, outputting to `dist/stats.html` with gzip and brotli sizes enabled.
+This keeps both libraries out of the initial route chunk so they only load on the export click.
 
-No other config, plugins, or build settings will be touched. `manualChunks`, `nonBlockingCSS`, SWC react plugin, and `componentTagger` remain unchanged.
+## Part 2 — lodash → lodash-es
+No action required. No `lodash` imports or dependency entries exist in the project. Will be reported as a no-op after switching to default mode (no files modified for Part 2).
 
-### Usage
-
-After approval, run `npm run analyze` (or `bun run analyze`) locally to generate `dist/stats.html` — open it in a browser to inspect chunk composition and identify unused JS.
+## Out of scope
+- No changes to Recharts imports, Vite config, routing, or any other component.
