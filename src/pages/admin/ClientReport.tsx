@@ -370,6 +370,10 @@ export default function ClientReport() {
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
       const reportContainer = document.getElementById("report-content");
       if (!reportContainer) { setIsGeneratingPDF(false); return; }
 
