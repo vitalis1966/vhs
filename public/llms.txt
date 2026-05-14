@@ -1,29 +1,25 @@
 # Vitalis Health Strategies
 
-> Physician-led healthcare consulting firm based in Calgary,
-> Alberta. We serve medical, dental, and veterinary practices
-> across Canada with clinic builds, operational optimization,
-> revenue cycle improvement, physician recruitment,
-> accreditation support, and mergers and acquisitions.
+> Physician-led healthcare consulting firm based in Calgary, Alberta. We serve medical, dental, and veterinary practices across Canada with clinic builds, operational optimization, revenue cycle improvement, physician recruitment, accreditation support, and mergers and acquisitions.
 
 ## Pages
 
-- Homepage: https://www.vitalisstrategies.com/
-- About: https://www.vitalisstrategies.com/about
-- Mission & Vision: https://www.vitalisstrategies.com/about/mission-vision
-- How We Work: https://www.vitalisstrategies.com/how-we-work
-- Engagement: https://www.vitalisstrategies.com/engagement
-- Solutions: https://www.vitalisstrategies.com/solutions
-- New Clinics: https://www.vitalisstrategies.com/solutions/new-clinics
-- Existing Clinics: https://www.vitalisstrategies.com/solutions/existing-clinics
-- Medical: https://www.vitalisstrategies.com/solutions/medical
-- Dental: https://www.vitalisstrategies.com/solutions/dental
-- Veterinary: https://www.vitalisstrategies.com/solutions/veterinary
-- Non-Hospital Surgical Facilities: https://www.vitalisstrategies.com/solutions/nhsf
-- Portfolio: https://www.vitalisstrategies.com/portfolio
-- Partners: https://www.vitalisstrategies.com/partners
-- Insights: https://www.vitalisstrategies.com/insights
-- Healthcare IT: https://www.vitalisstrategies.com/healthcare-it
-- Contact: https://www.vitalisstrategies.com/contact
-- Clinic Audit: https://www.vitalisstrategies.com/clinic-audit
-- Strategic Assessment: https://www.vitalisstrategies.com/strategic-assessment
+- [Homepage](/): Full-cycle healthcare strategy for medical, dental, and veterinary practices.
+- [About](/about): Who we are and the physician-led team behind Vitalis.
+- [Mission & Vision](/about/mission-vision): Our purpose, values, and long-term commitments.
+- [How We Work](/how-we-work): Our advisory methodology and engagement model.
+- [Engagement](/engagement): The six-phase client engagement journey from discovery to transition.
+- [Solutions](/solutions): Overview of advisory services for new and existing practices.
+- [New Clinics](/solutions/new-clinics): Site selection, build planning, and launch strategy for new practices.
+- [Existing Clinics](/solutions/existing-clinics): Operational optimization and growth for established practices.
+- [Medical Practices](/solutions/medical): Strategy and operations for medical clinics.
+- [Dental Practices](/solutions/dental): Strategy and operations for dental practices.
+- [Veterinary Practices](/solutions/veterinary): Strategy and operations for veterinary clinics.
+- [Non-Hospital Surgical Facilities](/solutions/nhsf): Advisory for ambulatory and non-hospital surgical centers.
+- [Healthcare IT](/healthcare-it): EMR, clinical systems, and digital infrastructure consulting.
+- [Portfolio](/portfolio): Selected case studies and engagement outcomes.
+- [Partners](/partners): Strategic partner network supporting our clients.
+- [Insights](/insights): Research-led articles on healthcare strategy and operations.
+- [Strategic Assessment](/strategic-assessment): Complimentary strategic assessment for clinicians and practice owners.
+- [Clinic Audit](/clinic-audit): Operational audit for existing clinics.
+- [Contact](/contact): Reach our team to discuss an engagement.
