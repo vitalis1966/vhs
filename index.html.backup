@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://ilbhphreyvaoomhpvaxi.supabase.co" />
+    <link rel="preconnect" href="https://ilbhphreyvaoomhpvaxi.supabase.co" crossorigin />
+    <link rel="preload" as="image" imagesrcset="/vitalis-logo.webp 2x, /vitalis-logo-1x.webp 1x" href="/vitalis-logo-1x.webp" fetchpriority="high" type="image/webp" />
+    <!-- Preload entry module so browser fetches it early -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    <!-- Google Fonts: non-blocking with font-display:swap -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" /></noscript>
+    <style>
+      /* Critical inline CSS — prevents render-blocking stylesheet flash */
+      *{box-sizing:border-box;margin:0;padding:0;border:0 solid hsl(145 12% 87%)}
+      body{font-family:"Montserrat",system-ui,sans-serif;background:hsl(40 33% 97%);color:hsl(155 25% 12%)}
+      h1,h2,h3,h4,h5,h6{font-family:"Playfair Display",Georgia,serif}
+      .min-h-screen{min-height:100vh}
+      /* Critical above-fold: hero gradient, nav, layout */
+      .bg-gradient-hero{background:linear-gradient(165deg,hsl(40 33% 99%) 0%,hsl(40 40% 96%) 40%,hsl(148 12% 88%) 100%)}
+      .container{width:100%;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}
+      @media(min-width:1024px){.container{max-width:1280px}}
+      .animate-fade-in{animation:fadeInUp .6s ease-out both}
+      @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+    <title>Vitalis Health Strategies</title>
+    <meta name="description" content="Physician-led healthcare consulting for medical, dental, and veterinary practices across Canada. Clinic builds, operations, M&A, and recruitment." />
+    <link rel="canonical" href="https://www.vitalisstrategies.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vitalis Health Strategies" />
+    <meta property="og:title" content="Vitalis Health Strategies" />
+    <meta property="og:description" content="Physician-led healthcare consulting for medical, dental, and veterinary practices across Canada." />
+    <meta property="og:url" content="https://www.vitalisstrategies.com/" />
+    <meta property="og:image" content="https://www.vitalisstrategies.com/og-default.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Vitalis Health Strategies" />
+    <meta name="twitter:description" content="Physician-led healthcare consulting for medical, dental, and veterinary practices across Canada." />
+    <meta name="twitter:image" content="https://www.vitalisstrategies.com/og-default.jpg" />
+  </head>
+
+  <body>
+    <div id="root">
+      <!-- Static shell for faster FCP — replaced by React on boot -->
+      <nav style="height:80px;display:flex;align-items:center;padding:0 2rem;background:hsl(40 33% 97%)">
+        <img src="/vitalis-logo.webp" srcset="/vitalis-logo.webp 2x, /vitalis-logo-1x.webp 1x" alt="Vitalis Health Strategies" width="120" height="27" fetchpriority="high" />
+      </nav>
+      <section style="min-height:90vh;display:flex;align-items:center;padding:6rem 2rem 4rem;background:linear-gradient(165deg,hsl(40 33% 99%) 0%,hsl(40 40% 96%) 40%,hsl(148 12% 88%) 100%)">
+        <div style="max-width:56rem">
+          <p style="font-family:Montserrat,system-ui,sans-serif;font-size:.875rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7a5500;margin-bottom:2rem">Full-Cycle Healthcare Strategy</p>
+          <h1 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.25rem,5vw,4.5rem);font-weight:700;line-height:1.08;color:hsl(155 25% 12%)">Practice Strategy for Medical,<br/>Dental &amp; Veterinary</h1>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
