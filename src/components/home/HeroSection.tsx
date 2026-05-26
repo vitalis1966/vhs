@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[95vh] flex items-center bg-gradient-hero overflow-hidden">
+    //<section className="relative min-h-[95vh] flex items-center bg-gradient-hero overflow-hidden">
+    <section className="relative min-h-[95vh] flex items-center bg-gradient-hero overflow-hidden" style={{contain: "layout"}}>
       <div className="absolute top-20 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
 
