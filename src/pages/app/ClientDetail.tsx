@@ -13,6 +13,7 @@ import { ClientFormDialog } from "@/components/app/ClientFormDialog";
 import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
+import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
@@ -214,6 +215,7 @@ export default function ClientDetail() {
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
         </TabsList>
 
@@ -336,6 +338,7 @@ export default function ClientDetail() {
         <TabsContent value="projects" className="mt-6"><ProjectsTab clientId={client.id} /></TabsContent>
         <TabsContent value="tasks" className="mt-6"><TasksTab clientId={client.id} /></TabsContent>
         <TabsContent value="notes" className="mt-6"><NotesTab clientId={client.id} /></TabsContent>
+        <TabsContent value="meetings" className="mt-6"><MeetingsTab clientId={client.id} workspaceId={client.workspace_id} /></TabsContent>
         <TabsContent value="files" className="mt-6">
           <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
         </TabsContent>
@@ -383,6 +386,7 @@ function Placeholder({ text }: { text: string }) {
 function formatActivity(a: Activity) {
   const target = a.metadata?.name ?? a.metadata?.title ?? a.target_type ?? "";
   if (a.verb === "created" && a.target_type === "client") return `created this client`;
+  if (a.verb === "meeting_logged") return `logged meeting${target ? ` "${target}"` : ""}`;
   return `${a.verb} ${a.target_type ?? ""}${target ? ` "${target}"` : ""}`.trim();
 }
 

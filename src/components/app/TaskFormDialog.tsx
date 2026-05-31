@@ -14,10 +14,13 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   defaultClientId?: string | null;
   defaultProjectId?: string | null;
+  defaultTitle?: string;
+  defaultDueDate?: string;
+  defaultAssigneeId?: string | null;
   onCreated?: (task: any) => void;
 }
 
-export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, onCreated }: Props) {
+export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, onCreated }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -32,12 +35,12 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
 
   useEffect(() => {
     if (!open) return;
-    setTitle("");
+    setTitle(defaultTitle ?? "");
     setClientId(defaultClientId ?? "");
     setProjectId(defaultProjectId ?? "none");
     setPriority("Medium");
-    setDueDate("");
-  }, [open, defaultClientId, defaultProjectId]);
+    setDueDate(defaultDueDate ?? "");
+  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
@@ -73,6 +76,9 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
       };
       const { data, error } = await (supabase as any).from("tasks").insert(payload).select().single();
       if (error) throw error;
+      if (defaultAssigneeId) {
+        await (supabase as any).from("task_assignees").insert({ task_id: data.id, user_id: defaultAssigneeId });
+      }
       await (supabase as any).from("activities").insert({
         workspace_id: workspaceId, actor_id: userId, verb: "created",
         target_type: "task", target_id: data.id, client_id: clientId,
