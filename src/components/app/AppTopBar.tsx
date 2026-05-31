@@ -1,0 +1,68 @@
+import { useNavigate } from "react-router-dom";
+import { Search, Plus, LogOut, User as UserIcon } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { NotificationsBell } from "./NotificationsBell";
+import { CommandPalette } from "./CommandPalette";
+
+export function AppTopBar() {
+  const navigate = useNavigate();
+  const { userFullName, userEmail, role } = useWorkspace();
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin/login", { replace: true });
+  };
+
+  const initials = (userFullName || userEmail || "?")
+    .split(/[\s@]/).filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("");
+
+  return (
+    <header className="h-14 border-b border-border bg-card/60 backdrop-blur flex items-center gap-3 px-3 sm:px-4">
+      <SidebarTrigger />
+      <div className="relative flex-1 max-w-md hidden sm:block">
+        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <Input
+          placeholder="Search… (⌘K)"
+          className="pl-9 h-9 bg-background"
+          onFocus={(e) => { e.currentTarget.blur(); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true })); }}
+          readOnly
+        />
+      </div>
+      <div className="flex-1 sm:hidden" />
+      <Button size="sm" variant="default" className="gap-1.5">
+        <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New</span>
+      </Button>
+      <NotificationsBell />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs">{initials || "?"}</AvatarFallback>
+            </Avatar>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>
+            <div className="font-medium text-sm">{userFullName ?? "User"}</div>
+            <div className="text-xs text-muted-foreground font-normal">{userEmail}</div>
+            {role && <Badge variant="secondary" className="mt-2 capitalize">{role.replace("_", " ")}</Badge>}
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem><UserIcon className="h-4 w-4 mr-2" /> Profile</DropdownMenuItem>
+          <DropdownMenuItem onClick={signOut}><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <CommandPalette />
+    </header>
+  );
+}
