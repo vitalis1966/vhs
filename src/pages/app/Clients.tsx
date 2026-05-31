@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, LayoutGrid, Table as TableIcon } from "lucide-react";
+import { Plus, LayoutGrid, Table as TableIcon, Tag as TagIcon, X } from "lucide-react";
 import { ClientFormDialog, CLIENT_STATUSES } from "@/components/app/ClientFormDialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 
 type ClientRow = {
   id: string; name: string; status: string | null; industry: string | null;
   account_owner_id: string | null; created_at: string;
 };
+
+type TagRow = { id: string; name: string; color: string | null; category: string | null };
 
 const statusColor: Record<string, string> = {
   Prospect: "bg-blue-100 text-blue-800 border-blue-200",
