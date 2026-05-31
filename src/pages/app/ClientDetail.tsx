@@ -13,6 +13,7 @@ import { ClientFormDialog } from "@/components/app/ClientFormDialog";
 import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
+import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
