@@ -15,7 +15,7 @@ import {
   ArrowLeft, Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered,
   ListChecks, Table as TableIcon, Code, Minus, Check, Loader2,
 } from "lucide-react";
-import { NoteTagPicker } from "./NoteTagPicker";
+import { TagPicker } from "./TagPicker";
 
 interface NoteRow {
   id: string; workspace_id: string; client_id: string; project_id: string | null;
