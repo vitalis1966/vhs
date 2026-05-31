@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
-          body: JSON.stringify({ from: FROM_ADDR, to: [profile.email], subject, html }),
+          body: JSON.stringify({ from: FROM_ADDR, to: [profile.email], reply_to: REPLY_TO, subject, html }),
         });
         email_status = res.ok ? "sent" : `error_${res.status}`;
         if (!res.ok) console.error("resend error", res.status, await res.text());
