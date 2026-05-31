@@ -50,7 +50,7 @@ export function MeetingDialog({ open, onOpenChange, clientId, workspaceId, meeti
         class: "prose prose-sm max-w-none min-h-[120px] focus:outline-none px-3 py-2",
       },
     },
-  }, [open]);
+  });
 
   useEffect(() => {
     if (!open || !workspaceId) return;
