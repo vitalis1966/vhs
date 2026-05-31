@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { PRIORITIES, PRIORITY_CLASS, initials } from "./taskUtils";
 import { TaskRichText } from "./TaskRichText";
 import { TagPicker } from "./TagPicker";
+import { Attachments } from "./Attachments";
 
 interface Props {
   taskId: string | null;
@@ -298,6 +299,11 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
                     />
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <Label className="text-xs mb-1.5 block">Attachments</Label>
+                <Attachments attachableType="task" attachableId={task.id} workspaceId={task.workspace_id} />
               </div>
 
               <div>

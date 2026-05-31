@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pencil, Plus, ArrowLeft } from "lucide-react";
 import { ProjectFormDialog, PROJECT_STATUS_COLOR } from "@/components/app/ProjectFormDialog";
+import { Attachments } from "@/components/app/Attachments";
 import { toast } from "sonner";
 
 function initials(s?: string | null) {
@@ -271,6 +272,10 @@ export default function ProjectDetail() {
           </ul>
         )}
       </Section>
+      <Section title="Attachments">
+        <Attachments attachableType="project" attachableId={project.id} workspaceId={project.workspace_id} />
+      </Section>
+
 
       <ProjectFormDialog
         open={editOpen}
