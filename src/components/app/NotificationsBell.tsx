@@ -16,6 +16,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
   actor_id: string | null;
+  email_status: string | null;
 }
 
 interface ActorProfile { id: string; full_name: string | null; avatar_url: string | null; email: string | null; }
