@@ -71,7 +71,8 @@ const AppHome = lazy(() => import("./pages/app/ShellPages").then(m => ({ default
 const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
 const AppClients = lazy(() => import("./pages/app/Clients"));
 const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
-const AppProjects = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppProjects })));
+const AppProjects = lazy(() => import("./pages/app/Projects"));
+const AppProjectDetail = lazy(() => import("./pages/app/ProjectDetail"));
 const AppTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppTasks })));
 const AppDashboards = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppDashboards })));
 
@@ -191,6 +192,7 @@ const App = () => (
                 <Route path="my-tasks" element={<AppMyTasks />} />
                 <Route path="clients" element={<AppClients />} />
                 <Route path="clients/:clientId" element={<AppClientDetail />} />
+                <Route path="clients/:clientId/projects/:projectId" element={<AppProjectDetail />} />
                 <Route path="projects" element={<AppProjects />} />
                 <Route path="tasks" element={<AppTasks />} />
                 <Route path="dashboards" element={<AppDashboards />} />
