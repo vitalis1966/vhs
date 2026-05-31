@@ -102,6 +102,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
           .from("projects").insert({ ...payload, workspace_id: workspaceId, client_id: clientId })
           .select().single();
         if (error) throw error;
+        await persistPendingTags("project", data.id, pendingTagIds);
         await (supabase as any).from("activities").insert({
           workspace_id: workspaceId, actor_id: userId, verb: "created",
           target_type: "project", target_id: data.id, client_id: clientId,
