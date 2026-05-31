@@ -1213,6 +1213,7 @@ export type Database = {
           actor_id: string | null
           body: string | null
           created_at: string
+          email_status: string | null
           entity_id: string | null
           entity_type: string | null
           id: string
@@ -1227,6 +1228,7 @@ export type Database = {
           actor_id?: string | null
           body?: string | null
           created_at?: string
+          email_status?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
@@ -1241,6 +1243,7 @@ export type Database = {
           actor_id?: string | null
           body?: string | null
           created_at?: string
+          email_status?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
