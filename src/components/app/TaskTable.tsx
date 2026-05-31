@@ -83,6 +83,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       if (filters?.clientFilter && t.client_id !== filters.clientFilter) return false;
       if (filters?.projectFilter && t.project_id !== filters.projectFilter) return false;
       if (filters?.assignee && !(assigneesByTask[t.id] ?? []).includes(filters.assignee)) return false;
+      if (filters?.tag && !(tagsByTask[t.id] ?? []).includes(filters.tag)) return false;
       return true;
     });
     out.sort((a, b) => {
@@ -92,7 +93,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       return ad - bd;
     });
     return out;
-  }, [rows, filters, assigneesByTask, sortBy]);
+  }, [rows, filters, assigneesByTask, tagsByTask, sortBy]);
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-card">
