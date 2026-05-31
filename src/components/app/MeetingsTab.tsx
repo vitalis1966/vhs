@@ -87,13 +87,18 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {meetings.length} meeting{meetings.length === 1 ? "" : "s"} logged
         </p>
-        <Button size="sm" onClick={() => { setEditing(null); setDialogOpen(true); }}>
-          <Plus className="h-4 w-4 mr-1.5" /> Log Meeting
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setTranscriptOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-1.5" /> Upload Transcript
+          </Button>
+          <Button size="sm" onClick={() => { setEditing(null); setDialogOpen(true); }}>
+            <Plus className="h-4 w-4 mr-1.5" /> Log Meeting
+          </Button>
+        </div>
       </div>
 
       {meetings.length === 0 ? (
@@ -116,6 +121,9 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(m.meeting_date), "MMM d, yyyy · h:mm a")}
                     </span>
+                    <Badge variant="outline" className="text-[10px]">
+                      {attendeeCounts[m.id] ?? 0} attendee{(attendeeCounts[m.id] ?? 0) === 1 ? "" : "s"}
+                    </Badge>
                   </div>
                   {m.summary_text && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.summary_text}</p>
@@ -134,6 +142,13 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
         clientId={clientId}
         workspaceId={workspaceId}
         meeting={editing}
+        onSaved={() => { void load(); }}
+      />
+      <MeetingTranscriptDialog
+        open={transcriptOpen}
+        onOpenChange={setTranscriptOpen}
+        clientId={clientId}
+        workspaceId={workspaceId}
         onSaved={() => { void load(); }}
       />
     </div>
