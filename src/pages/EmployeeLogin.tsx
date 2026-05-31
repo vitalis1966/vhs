@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 
-export default function AdminLogin() {
+export default function EmployeeLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
@@ -28,7 +28,25 @@ export default function AdminLogin() {
       return;
     }
 
-    navigate("/admin");
+    if (data.user) {
+      const { data: memberships } = await (supabase as any)
+        .from("workspace_members")
+        .select("workspace_id")
+        .eq("user_id", data.user.id)
+        .eq("status", "active")
+        .limit(1);
+
+      if (memberships && memberships.length > 0) {
+        navigate("/app/home");
+      } else {
+        toast({
+          title: "Access not yet granted",
+          description: "You do not have access yet. Contact your administrator.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+      }
+    }
     setLoading(false);
   };
 
@@ -40,14 +58,14 @@ export default function AdminLogin() {
           <div className="bg-card rounded-2xl shadow-soft border border-border/40 p-8">
             <div className="flex items-center justify-center mb-6">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-primary" />
+                <Users className="h-5 w-5 text-primary" />
               </div>
             </div>
             <h1 className="font-display text-xl font-bold text-foreground text-center mb-1">
-              Admin Login
+              Team Login
             </h1>
             <p className="text-sm text-muted-foreground text-center mb-6">
-              Sign in to access the admin dashboard
+              Sign in to access the Vitalis OS workspace
             </p>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
@@ -58,7 +76,7 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@vitalisstrategies.com"
+                  placeholder="you@vitalisstrategies.com"
                 />
               </div>
               <div>

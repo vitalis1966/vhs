@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 const adminPages = [
   {
-    title: "Internal Platform",
-    description: "Open the workspace platform: clients, projects, tasks, and dashboards.",
+    title: "Open Platform",
+    description: "Go to Vitalis OS: clients, projects, tasks, meetings, and dashboards.",
     href: "/app/home",
     icon: LayoutDashboard,
   },
