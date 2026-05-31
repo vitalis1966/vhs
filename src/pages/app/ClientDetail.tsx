@@ -13,6 +13,7 @@ import { ClientFormDialog } from "@/components/app/ClientFormDialog";
 import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
+import { Attachments } from "@/components/app/Attachments";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -335,7 +336,9 @@ export default function ClientDetail() {
         <TabsContent value="projects" className="mt-6"><ProjectsTab clientId={client.id} /></TabsContent>
         <TabsContent value="tasks" className="mt-6"><TasksTab clientId={client.id} /></TabsContent>
         <TabsContent value="notes" className="mt-6"><NotesTab clientId={client.id} /></TabsContent>
-        <TabsContent value="files" className="mt-6"><Placeholder text="Files are coming in the next step." /></TabsContent>
+        <TabsContent value="files" className="mt-6">
+          <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
+        </TabsContent>
       </Tabs>
 
       <ClientFormDialog
