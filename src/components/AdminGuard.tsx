@@ -23,8 +23,20 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       });
       if (cancelled) return;
       if (error || !data) {
-        await supabase.auth.signOut();
-        navigate("/admin/login", { replace: true });
+        // Not an admin. If they have an active workspace membership, send them
+        // into the platform instead of signing them out.
+        const { data: memberships } = await (supabase as any)
+          .from("workspace_members")
+          .select("workspace_id")
+          .eq("user_id", session.user.id)
+          .eq("status", "active")
+          .limit(1);
+        if (memberships && memberships.length > 0) {
+          navigate("/app/home", { replace: true });
+        } else {
+          await supabase.auth.signOut();
+          navigate("/admin/login", { replace: true });
+        }
         setAuthorized(false);
       } else {
         setAuthorized(true);
