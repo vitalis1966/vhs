@@ -68,7 +68,7 @@ const AppGuard = lazy(() => import("@/components/app/AppGuard").then(m => ({ def
 const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ default: m.AppLayout })));
 const AppIndex = lazy(() => import("./pages/app/AppIndex"));
 const SetupWorkspace = lazy(() => import("./pages/app/SetupWorkspace"));
-const AppHome = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppHome })));
+const AppHome = lazy(() => import("./pages/app/Home"));
 const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
 const AppClients = lazy(() => import("./pages/app/Clients"));
 const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
