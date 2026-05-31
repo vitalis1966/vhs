@@ -74,6 +74,9 @@ export function AppTopBar() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem><UserIcon className="h-4 w-4 mr-2" /> Profile</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/app/settings/notifications")}>
+            <BellIcon className="h-4 w-4 mr-2" /> Notification Settings
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={signOut}><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
