@@ -42,7 +42,7 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
         (supabase as any).from("task_assignees").select("user_id").eq("task_id", taskId),
         (supabase as any).from("clients").select("id, name").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("projects").select("id, name, client_id").eq("workspace_id", workspaceId).order("name"),
-        (supabase as any).from("task_statuses").select("id, name, color, position").eq("workspace_id", workspaceId).order("position"),
+        (supabase as any).from("task_statuses").select("id, name, color, position, category").eq("workspace_id", workspaceId).order("position"),
         (supabase as any).from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active").not("user_id", "is", null),
       ]);
       setTask(t.data); setClients(c.data ?? []); setProjects(p.data ?? []); setStatuses(s.data ?? []);
