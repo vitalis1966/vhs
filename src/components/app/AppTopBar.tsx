@@ -18,7 +18,16 @@ import { CommandPalette } from "./CommandPalette";
 
 export function AppTopBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userFullName, userEmail, role } = useWorkspace();
+  const [newTaskOpen, setNewTaskOpen] = useState(false);
+
+  // Detect current client/project context from URL
+  const clientMatch = matchPath("/app/clients/:clientId/*", location.pathname)
+    ?? matchPath("/app/clients/:clientId", location.pathname);
+  const projectMatch = matchPath("/app/clients/:clientId/projects/:projectId", location.pathname);
+  const ctxClientId = (clientMatch?.params as any)?.clientId ?? null;
+  const ctxProjectId = (projectMatch?.params as any)?.projectId ?? null;
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -41,9 +50,13 @@ export function AppTopBar() {
         />
       </div>
       <div className="flex-1 sm:hidden" />
-      <Button size="sm" variant="default" className="gap-1.5">
+      <Button size="sm" variant="default" className="gap-1.5" onClick={() => setNewTaskOpen(true)}>
         <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New</span>
       </Button>
+      <TaskFormDialog
+        open={newTaskOpen} onOpenChange={setNewTaskOpen}
+        defaultClientId={ctxClientId} defaultProjectId={ctxProjectId}
+      />
       <NotificationsBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
