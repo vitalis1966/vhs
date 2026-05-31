@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin } from "lucide-react";
 import {
@@ -5,6 +6,8 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
 } from "@/components/ui/sidebar";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { usePinnedClients } from "@/hooks/usePinnedClients";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { title: "Home", url: "/app/home", icon: Home },
@@ -19,9 +22,20 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
-  const { workspaceName } = useWorkspace();
+  const { workspaceName, userId, workspaceId } = useWorkspace();
+  const { pinned } = usePinnedClients(userId, workspaceId);
+  const [pinnedClients, setPinnedClients] = useState<Array<{ id: string; name: string }>>([]);
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+
+  useEffect(() => {
+    if (!pinned.length || !workspaceId) { setPinnedClients([]); return; }
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("clients").select("id, name").in("id", pinned);
+      setPinnedClients(data ?? []);
+    })();
+  }, [pinned, workspaceId]);
 
   return (
     <Sidebar collapsible="icon">
@@ -64,10 +78,25 @@ export function AppSidebar() {
             <Pin className="h-3 w-3" /> Pinned Clients
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            {!collapsed && (
-              <p className="px-3 py-2 text-xs text-muted-foreground italic">
-                No pinned clients yet
-              </p>
+            {pinnedClients.length === 0 ? (
+              !collapsed && (
+                <p className="px-3 py-2 text-xs text-muted-foreground italic">
+                  No pinned clients yet
+                </p>
+              )
+            ) : (
+              <SidebarMenu>
+                {pinnedClients.map((c) => (
+                  <SidebarMenuItem key={c.id}>
+                    <SidebarMenuButton asChild isActive={pathname === `/app/clients/${c.id}`} tooltip={c.name}>
+                      <NavLink to={`/app/clients/${c.id}`}>
+                        <Pin className="h-3 w-3" />
+                        <span className="truncate">{c.name}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
             )}
           </SidebarGroupContent>
         </SidebarGroup>
