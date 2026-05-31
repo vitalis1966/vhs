@@ -129,6 +129,13 @@ export default function ClientDetail() {
       (profs ?? []).forEach((p: any) => { map[p.id] = p; });
       setActors(map);
     }
+
+    // Recent meetings (top 2)
+    const { data: rm } = await (supabase as any)
+      .from("meetings").select("id, title, meeting_date, summary_text")
+      .eq("client_id", clientId).order("meeting_date", { ascending: false }).limit(2);
+    setRecentMeetings(rm ?? []);
+
     setLoading(false);
   };
 
