@@ -1597,6 +1597,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          last_active_at: string | null
           notification_channels: Json
           notification_preferences: Json
         }
@@ -1606,6 +1607,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          last_active_at?: string | null
           notification_channels?: Json
           notification_preferences?: Json
         }
@@ -1615,6 +1617,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          last_active_at?: string | null
           notification_channels?: Json
           notification_preferences?: Json
         }
@@ -2305,7 +2308,10 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          invited_at: string | null
+          invited_by: string | null
           invited_email: string | null
+          invited_name: string | null
           role: string
           status: string
           user_id: string | null
@@ -2314,7 +2320,10 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          invited_at?: string | null
+          invited_by?: string | null
           invited_email?: string | null
+          invited_name?: string | null
           role?: string
           status?: string
           user_id?: string | null
@@ -2323,7 +2332,10 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          invited_at?: string | null
+          invited_by?: string | null
           invited_email?: string | null
+          invited_name?: string | null
           role?: string
           status?: string
           user_id?: string | null
@@ -2342,21 +2354,54 @@ export type Database = {
       workspaces: {
         Row: {
           created_at: string
+          date_format: string | null
+          default_account_owner_id: string | null
+          default_industry: string | null
           id: string
+          logo_url: string | null
           name: string
+          notification_config: Json
+          primary_color: string | null
+          role_permissions: Json
+          security_config: Json
           slug: string
+          time_zone: string | null
+          updated_at: string
+          workspace_config: Json
         }
         Insert: {
           created_at?: string
+          date_format?: string | null
+          default_account_owner_id?: string | null
+          default_industry?: string | null
           id?: string
+          logo_url?: string | null
           name: string
+          notification_config?: Json
+          primary_color?: string | null
+          role_permissions?: Json
+          security_config?: Json
           slug: string
+          time_zone?: string | null
+          updated_at?: string
+          workspace_config?: Json
         }
         Update: {
           created_at?: string
+          date_format?: string | null
+          default_account_owner_id?: string | null
+          default_industry?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
+          notification_config?: Json
+          primary_color?: string | null
+          role_permissions?: Json
+          security_config?: Json
           slug?: string
+          time_zone?: string | null
+          updated_at?: string
+          workspace_config?: Json
         }
         Relationships: []
       }
