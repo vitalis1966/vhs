@@ -58,6 +58,7 @@ export default function ClientDetail() {
   const [actors, setActors] = useState<Record<string, any>>({});
   const [recentMeetings, setRecentMeetings] = useState<Array<{ id: string; title: string; meeting_date: string; summary_text: string | null }>>([]);
   const [editOpen, setEditOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
   const [addContact, setAddContact] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
