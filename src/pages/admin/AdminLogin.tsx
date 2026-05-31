@@ -20,13 +20,26 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } else {
-      navigate("/admin");
+      setLoading(false);
+      return;
     }
+
+    // If this user belongs to a workspace, send them to the internal platform.
+    let target = "/admin";
+    if (data.user) {
+      const { data: memberships } = await (supabase as any)
+        .from("workspace_members")
+        .select("workspace_id")
+        .eq("user_id", data.user.id)
+        .eq("status", "active")
+        .limit(1);
+      if (memberships && memberships.length > 0) target = "/app/home";
+    }
+    navigate(target);
     setLoading(false);
   };
 
