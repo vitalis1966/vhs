@@ -37,6 +37,8 @@ export default function ClientDetail() {
   const { clientId } = useParams<{ clientId: string }>();
   const { userId, workspaceId, role } = useWorkspace();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") ?? "overview";
   const canManage = role === "admin" || role === "manager";
 
   const [client, setClient] = useState<any | null>(null);
