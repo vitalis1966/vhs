@@ -193,19 +193,23 @@ export default function Clients() {
                   <th className="text-left px-4 py-3">Company</th>
                   <th className="text-left px-4 py-3">Status</th>
                   <th className="text-left px-4 py-3">Industry</th>
+                  <th className="text-left px-4 py-3">Tags</th>
                   <th className="text-left px-4 py-3">Account Owner</th>
                   <th className="text-left px-4 py-3">Open Tasks</th>
                 </tr>
               </thead>
               <tbody>
                 {loading && (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
                 )}
-                {!loading && clients.length === 0 && (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No clients yet.</td></tr>
+                {!loading && filteredClients.length === 0 && (
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                    {clients.length === 0 ? "No clients yet." : "No clients match the selected tags."}
+                  </td></tr>
                 )}
-                {clients.map((c) => {
+                {filteredClients.map((c) => {
                   const owner = c.account_owner_id ? owners[c.account_owner_id] : null;
+                  const tagIds = clientTagMap[c.id] ?? [];
                   return (
                     <tr key={c.id} className="border-t hover:bg-muted/30">
                       <td className="px-4 py-3">
@@ -220,6 +224,21 @@ export default function Clients() {
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{c.industry ?? "—"}</td>
                       <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {tagIds.map((id) => {
+                            const t = tagMap[id];
+                            if (!t) return null;
+                            return (
+                              <Badge key={id} variant="outline" className="border-transparent text-[10px]"
+                                style={{ background: `${t.color ?? "#94a3b8"}22`, color: t.color ?? "#475569" }}>
+                                {t.name}
+                              </Badge>
+                            );
+                          })}
+                          {tagIds.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
                         {owner ? (
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
@@ -232,6 +251,7 @@ export default function Clients() {
                   );
                 })}
               </tbody>
+
             </table>
           </div>
         </TabsContent>
