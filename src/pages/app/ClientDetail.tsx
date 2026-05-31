@@ -212,9 +212,14 @@ export default function ClientDetail() {
             {pinned ? "Unpin" : "Pin"}
           </Button>
           {canManage && (
-            <Button size="sm" onClick={() => setEditOpen(true)}>
-              <Pencil className="h-4 w-4 mr-2" /> Edit
-            </Button>
+            <>
+              <Button size="sm" variant="outline" onClick={() => setComposeOpen(true)}>
+                <Mail className="h-4 w-4 mr-2" /> Send Email
+              </Button>
+              <Button size="sm" onClick={() => setEditOpen(true)}>
+                <Pencil className="h-4 w-4 mr-2" /> Edit
+              </Button>
+            </>
           )}
         </div>
       </div>
