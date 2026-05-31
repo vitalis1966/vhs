@@ -29,7 +29,7 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
   const [task, setTask] = useState<any | null>(null);
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name: string; client_id: string }>>([]);
-  const [statuses, setStatuses] = useState<Array<{ id: string; name: string; color: string | null; position: number }>>([]);
+  const [statuses, setStatuses] = useState<Array<{ id: string; name: string; color: string | null; position: number; category: string }>>([]);
   const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
   const [assignees, setAssignees] = useState<string[]>([]);
   const [newChecklist, setNewChecklist] = useState("");
