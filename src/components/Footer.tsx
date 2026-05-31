@@ -17,6 +17,7 @@ const footerLinks = {
     { label: "Portfolio", href: "/portfolio" },
     { label: "Ecosystem", href: "/partners" },
     { label: "Contact", href: "/contact" },
+    { label: "Employee Login", href: "/employee-login" },
     { label: "Admin Login", href: "/admin/login" },
   ],
   Legal: [
