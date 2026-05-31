@@ -77,22 +77,24 @@ export function BroadcastEmailDialog({ open, onOpenChange, onSent }: Props) {
   useEffect(() => {
     if (!open || !workspaceId) return;
     (async () => {
-      const [{ data: cs }, { data: cts }, { data: tg }, { data: tggs }, { data: prof }] = await Promise.all([
+      const [{ data: cs }, { data: cts }, { data: tg }, { data: tggs }, { data: members }] = await Promise.all([
         (supabase as any).from("clients").select("id, name, status, industry, account_owner_id").eq("workspace_id", workspaceId),
         (supabase as any).from("contacts").select("client_id, email, is_primary"),
         (supabase as any).from("tags").select("id, name, category").eq("workspace_id", workspaceId).eq("category", "service_line"),
         (supabase as any).from("taggings").select("tag_id, taggable_id").eq("taggable_type", "client"),
-        (supabase as any).from("workspace_members").select("user_id, profiles:user_id(full_name, email)").eq("workspace_id", workspaceId).eq("status", "active"),
+        (supabase as any).from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active"),
       ]);
       setClients(cs ?? []);
       setContacts(cts ?? []);
       setTags(tg ?? []);
       setTaggings(tggs ?? []);
-      setOwners(
-        (prof ?? [])
-          .map((r: any) => r.profiles ? { id: r.user_id, full_name: r.profiles.full_name, email: r.profiles.email } : null)
-          .filter(Boolean),
-      );
+      const userIds = (members ?? []).map((m: any) => m.user_id).filter(Boolean);
+      if (userIds.length) {
+        const { data: profs } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", userIds);
+        setOwners((profs ?? []).map((p: any) => ({ id: p.id, full_name: p.full_name, email: p.email })));
+      } else {
+        setOwners([]);
+      }
     })();
   }, [open, workspaceId]);
 
