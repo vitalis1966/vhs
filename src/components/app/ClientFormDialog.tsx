@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { TagPicker, persistPendingTags } from "./TagPicker";
+import { Label as UILabel } from "@/components/ui/label";
 
 export const CLIENT_STATUSES = ["Prospect", "Active", "On Hold", "Closed"] as const;
 export const CLIENT_INDUSTRIES = [
