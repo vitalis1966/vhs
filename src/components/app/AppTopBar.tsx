@@ -1,4 +1,4 @@
-import { useNavigate, useLocation, useParams, matchPath } from "react-router-dom";
+import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { useState } from "react";
 import { TaskFormDialog } from "./TaskFormDialog";
 import { Search, Plus, LogOut, User as UserIcon } from "lucide-react";
