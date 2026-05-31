@@ -5,10 +5,16 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check } from "lucide-react";
+import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check, Sparkles, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { MeetingDialog } from "./MeetingDialog";
+import { MeetingTranscriptDialog } from "./MeetingTranscriptDialog";
 import { TaskFormDialog } from "./TaskFormDialog";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Meeting {
   id: string;
