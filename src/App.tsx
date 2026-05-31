@@ -77,6 +77,7 @@ const AppProjectDetail = lazy(() => import("./pages/app/ProjectDetail"));
 const AppTasks = lazy(() => import("./pages/app/Tasks"));
 const AppDashboards = lazy(() => import("./pages/app/LeadershipDashboard"));
 const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSettings"));
+const AppSettings = lazy(() => import("./pages/app/Settings"));
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -200,6 +201,7 @@ const App = () => (
                 <Route path="tasks" element={<AppTasks />} />
                 <Route path="dashboards" element={<AppDashboards />} />
                 <Route path="settings/notifications" element={<AppNotificationSettings />} />
+                <Route path="settings" element={<AppSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
