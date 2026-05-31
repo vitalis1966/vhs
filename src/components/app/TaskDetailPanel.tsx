@@ -16,6 +16,7 @@ import { PRIORITIES, PRIORITY_CLASS, initials } from "./taskUtils";
 import { TaskRichText } from "./TaskRichText";
 import { TagPicker } from "./TagPicker";
 import { Attachments } from "./Attachments";
+import { sendNotification } from "@/lib/notify";
 
 interface Props {
   taskId: string | null;
