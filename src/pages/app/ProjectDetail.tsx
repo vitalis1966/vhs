@@ -287,10 +287,13 @@ export default function ProjectDetail() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="rounded-lg border bg-card p-5">
-      <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">{title}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">{title}</h2>
+        {action}
+      </div>
       {children}
     </div>
   );
