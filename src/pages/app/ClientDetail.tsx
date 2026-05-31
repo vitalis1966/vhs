@@ -273,6 +273,40 @@ export default function ClientDetail() {
                 )}
               </Card>
 
+              {/* Recent Meetings */}
+              <Card
+                title="Recent Meetings"
+                action={
+                  <Button size="sm" variant="ghost" onClick={() => setSearchParams({ tab: "meetings" })}>
+                    View all
+                  </Button>
+                }
+              >
+                {recentMeetings.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No meetings logged yet.</p>
+                ) : (
+                  <ul className="divide-y">
+                    {recentMeetings.map((m) => (
+                      <li
+                        key={m.id}
+                        onClick={() => setSearchParams({ tab: "meetings" })}
+                        className="py-3 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-medium text-sm truncate">{m.title}</span>
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            {formatDistanceToNow(new Date(m.meeting_date), { addSuffix: true })}
+                          </span>
+                        </div>
+                        {m.summary_text && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.summary_text}</p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+
               {/* Contacts */}
               <Card
                 title="Contacts"
