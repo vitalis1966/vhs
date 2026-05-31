@@ -110,6 +110,11 @@ Deno.serve(async (req) => {
       email_status = "disabled";
     }
 
+    // Persist email_status on the in-app row so the bell can show the channel icon
+    if (notification_id) {
+      await admin.from("notifications").update({ email_status }).eq("id", notification_id);
+    }
+
     return new Response(JSON.stringify({ ok: true, notification_id, email_status, in_app: inAppEnabled }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
