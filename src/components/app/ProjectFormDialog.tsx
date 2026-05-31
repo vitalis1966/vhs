@@ -39,6 +39,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
     start_date: null, target_date: null, owner_id: null,
   });
   const [initialStatus, setInitialStatus] = useState<string | null>(null);
+  const [pendingTagIds, setPendingTagIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,6 +53,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
     };
     setForm(next);
     setInitialStatus(initial?.id ? next.status : null);
+    setPendingTagIds([]);
   }, [open, initial]);
 
   useEffect(() => {
