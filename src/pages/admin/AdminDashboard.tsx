@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const adminPages = [
   {
-    title: "Open Platform",
+    title: "Vitalis OS",
     description: "Go to Vitalis OS: clients, projects, tasks, meetings, and dashboards.",
     href: "/app/home",
     icon: LayoutDashboard,
