@@ -17,7 +17,7 @@ interface Row {
 interface Props {
   clientId?: string;
   projectId?: string;
-  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string; projectFilter?: string };
+  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string; projectFilter?: string; tag?: string };
   reloadKey?: number;
   onOpenTask: (id: string) => void;
 }
@@ -34,6 +34,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   const [sortBy, setSortBy] = useState<"due" | "priority">("due");
 
+  const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const load = useCallback(async () => {
     if (!workspaceId) return;
     let q = (supabase as any).from("tasks")
@@ -55,16 +56,22 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
     const sm: any = {}; (ss.data ?? []).forEach((s: any) => sm[s.id] = s); setStatuses(sm);
 
     if (trows.length) {
-      const { data: as } = await (supabase as any).from("task_assignees").select("task_id, user_id").in("task_id", trows.map((t) => t.id));
+      const [asRes, tgRes] = await Promise.all([
+        (supabase as any).from("task_assignees").select("task_id, user_id").in("task_id", trows.map((t) => t.id)),
+        (supabase as any).from("taggings").select("tag_id, taggable_id").eq("taggable_type", "task").in("taggable_id", trows.map((t) => t.id)),
+      ]);
       const g: Record<string, string[]> = {};
-      (as ?? []).forEach((r: any) => { (g[r.task_id] = g[r.task_id] ?? []).push(r.user_id); });
+      (asRes.data ?? []).forEach((r: any) => { (g[r.task_id] = g[r.task_id] ?? []).push(r.user_id); });
       setAssigneesByTask(g);
-      const uids = Array.from(new Set((as ?? []).map((r: any) => r.user_id)));
+      const tg: Record<string, string[]> = {};
+      (tgRes.data ?? []).forEach((r: any) => { (tg[r.taggable_id] = tg[r.taggable_id] ?? []).push(r.tag_id); });
+      setTagsByTask(tg);
+      const uids = Array.from(new Set((asRes.data ?? []).map((r: any) => r.user_id)));
       if (uids.length) {
         const { data: prs } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", uids);
         const m: any = {}; (prs ?? []).forEach((p: any) => m[p.id] = p); setProfiles(m);
       }
-    }
+    } else { setTagsByTask({}); }
   }, [workspaceId, clientId, projectId]);
 
   useEffect(() => { load(); }, [load, reloadKey]);
@@ -76,6 +83,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       if (filters?.clientFilter && t.client_id !== filters.clientFilter) return false;
       if (filters?.projectFilter && t.project_id !== filters.projectFilter) return false;
       if (filters?.assignee && !(assigneesByTask[t.id] ?? []).includes(filters.assignee)) return false;
+      if (filters?.tag && !(tagsByTask[t.id] ?? []).includes(filters.tag)) return false;
       return true;
     });
     out.sort((a, b) => {
@@ -85,7 +93,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       return ad - bd;
     });
     return out;
-  }, [rows, filters, assigneesByTask, sortBy]);
+  }, [rows, filters, assigneesByTask, tagsByTask, sortBy]);
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-card">

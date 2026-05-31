@@ -8,7 +8,7 @@ import { PRIORITIES } from "./taskUtils";
 
 export interface TaskFilterState {
   status?: string; priority?: string; assignee?: string;
-  clientFilter?: string; projectFilter?: string;
+  clientFilter?: string; projectFilter?: string; tag?: string;
 }
 
 interface Props {
@@ -25,17 +25,20 @@ export function TasksFilters({ value, onChange, hideClient, hideProject, scopeCl
   const [projects, setProjects] = useState<Array<{ id: string; name: string; client_id: string }>>([]);
   const [statuses, setStatuses] = useState<Array<{ id: string; name: string }>>([]);
   const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
+  const [tags, setTags] = useState<Array<{ id: string; name: string; color: string | null }>>([]);
 
   useEffect(() => {
     if (!workspaceId) return;
     (async () => {
-      const [c, p, s, wm] = await Promise.all([
+      const [c, p, s, wm, tg] = await Promise.all([
         (supabase as any).from("clients").select("id, name").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("projects").select("id, name, client_id").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("task_statuses").select("id, name").eq("workspace_id", workspaceId).order("position"),
         (supabase as any).from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active").not("user_id", "is", null),
+        (supabase as any).from("tags").select("id, name, color").eq("workspace_id", workspaceId).order("name"),
       ]);
       setClients(c.data ?? []); setProjects(p.data ?? []); setStatuses(s.data ?? []);
+      setTags(tg.data ?? []);
       const ids = (wm.data ?? []).map((m: any) => m.user_id);
       if (ids.length) {
         const { data: ps } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", ids);
@@ -87,6 +90,20 @@ export function TasksFilters({ value, onChange, hideClient, hideProject, scopeCl
         <SelectContent>
           <SelectItem value="__all">All assignees</SelectItem>
           {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email}</SelectItem>)}
+        </SelectContent>
+      </Select>
+      <Select value={value.tag ?? "__all"} onValueChange={sel(value.tag, (v) => onChange({ ...value, tag: v }))}>
+        <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Tag" /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__all">All tags</SelectItem>
+          {tags.map((t) => (
+            <SelectItem key={t.id} value={t.id}>
+              <span className="inline-flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full" style={{ background: t.color ?? "#94a3b8" }} />
+                {t.name}
+              </span>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       {hasAny && (

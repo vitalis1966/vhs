@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { TagPicker, persistPendingTags } from "./TagPicker";
+import { Label as UILabel } from "@/components/ui/label";
 
 export const CLIENT_STATUSES = ["Prospect", "Active", "On Hold", "Closed"] as const;
 export const CLIENT_INDUSTRIES = [
@@ -37,6 +39,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
+  const [pendingTagIds, setPendingTagIds] = useState<string[]>([]);
   const [form, setForm] = useState<ClientRecord>({
     name: "", status: "Active", industry: null, account_owner_id: null,
     start_date: null, website: null, summary: null,
@@ -44,6 +47,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
 
   useEffect(() => {
     if (!open) return;
+    setPendingTagIds([]);
     setForm({
       name: initial?.name ?? "",
       status: initial?.status ?? "Active",
@@ -98,6 +102,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
           .from("clients").insert({ ...payload, workspace_id: workspaceId, created_by: userId })
           .select().single();
         if (error) throw error;
+        await persistPendingTags("client", data.id, pendingTagIds);
         // Log activity (non-blocking)
         await (supabase as any).from("activities").insert({
           workspace_id: workspaceId, actor_id: userId, verb: "created",
@@ -177,6 +182,19 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
             <Label htmlFor="summary">Summary</Label>
             <Textarea id="summary" rows={3} value={form.summary ?? ""}
               onChange={(e) => setForm({ ...form, summary: e.target.value })} />
+          </div>
+          <div>
+            <UILabel>Service Lines</UILabel>
+            <div className="mt-1.5 p-2 rounded-md border border-input min-h-[40px]">
+              <TagPicker
+                taggableType="client"
+                taggableId={initial?.id}
+                value={initial?.id ? undefined : pendingTagIds}
+                onValueChange={initial?.id ? undefined : setPendingTagIds}
+                categoryFilter="service_line"
+                triggerLabel="Add service line"
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>

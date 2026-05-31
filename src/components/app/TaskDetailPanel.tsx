@@ -14,6 +14,7 @@ import { Plus, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PRIORITIES, PRIORITY_CLASS, initials } from "./taskUtils";
 import { TaskRichText } from "./TaskRichText";
+import { TagPicker } from "./TagPicker";
 
 interface Props {
   taskId: string | null;
@@ -247,6 +248,13 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
                   <Button size="sm" variant="outline" onClick={() => update({ description: task.description, description_text: task.description_text })}>
                     Save description
                   </Button>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-xs mb-1.5 block">Tags</Label>
+                <div className="p-2 rounded-md border border-input min-h-[40px]">
+                  <TagPicker taggableType="task" taggableId={task.id} />
                 </div>
               </div>
 

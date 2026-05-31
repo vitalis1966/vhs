@@ -15,7 +15,7 @@ import {
   ArrowLeft, Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered,
   ListChecks, Table as TableIcon, Code, Minus, Check, Loader2,
 } from "lucide-react";
-import { NoteTagPicker } from "./NoteTagPicker";
+import { TagPicker } from "./TagPicker";
 
 interface NoteRow {
   id: string; workspace_id: string; client_id: string; project_id: string | null;
@@ -168,7 +168,7 @@ export function NoteEditor({ note, onBack, onSaved }: Props) {
         className="text-2xl font-bold border-0 px-0 focus-visible:ring-0 shadow-none h-auto py-1 font-display"
       />
       <div className="mt-2 mb-3">
-        <NoteTagPicker noteId={note.id} />
+        <TagPicker taggableType="note" taggableId={note.id} compact />
       </div>
 
       <div className="border border-border rounded-md bg-card relative">

@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, LayoutGrid, Table as TableIcon } from "lucide-react";
 import { ClientFormDialog, CLIENT_STATUSES } from "@/components/app/ClientFormDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type ClientRow = {
   id: string; name: string; status: string | null; industry: string | null;

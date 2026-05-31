@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { TagPicker, persistPendingTags } from "./TagPicker";
 
 export const PROJECT_STATUSES = ["Planned", "Active", "On Hold", "Complete", "Cancelled"] as const;
 
@@ -38,6 +39,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
     start_date: null, target_date: null, owner_id: null,
   });
   const [initialStatus, setInitialStatus] = useState<string | null>(null);
+  const [pendingTagIds, setPendingTagIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -51,6 +53,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
     };
     setForm(next);
     setInitialStatus(initial?.id ? next.status : null);
+    setPendingTagIds([]);
   }, [open, initial]);
 
   useEffect(() => {
@@ -99,6 +102,7 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
           .from("projects").insert({ ...payload, workspace_id: workspaceId, client_id: clientId })
           .select().single();
         if (error) throw error;
+        await persistPendingTags("project", data.id, pendingTagIds);
         await (supabase as any).from("activities").insert({
           workspace_id: workspaceId, actor_id: userId, verb: "created",
           target_type: "project", target_id: data.id, client_id: clientId,
@@ -165,6 +169,17 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
               <Label htmlFor="ptarget">Target Date</Label>
               <Input id="ptarget" type="date" value={form.target_date ?? ""}
                 onChange={(e) => setForm({ ...form, target_date: e.target.value || null })} />
+            </div>
+          </div>
+          <div>
+            <Label>Tags</Label>
+            <div className="mt-1.5 p-2 rounded-md border border-input min-h-[40px]">
+              <TagPicker
+                taggableType="project"
+                taggableId={initial?.id}
+                value={initial?.id ? undefined : pendingTagIds}
+                onValueChange={initial?.id ? undefined : setPendingTagIds}
+              />
             </div>
           </div>
         </div>
