@@ -31,6 +31,7 @@ interface ActionItem {
   description: string;
   owner_id: string | null;
   due_date: string | null;
+  priority: string | null;
   converted_task_id: string | null;
   position: number;
 }
