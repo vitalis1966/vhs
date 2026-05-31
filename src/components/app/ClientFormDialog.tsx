@@ -102,6 +102,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
           .from("clients").insert({ ...payload, workspace_id: workspaceId, created_by: userId })
           .select().single();
         if (error) throw error;
+        await persistPendingTags("client", data.id, pendingTagIds);
         // Log activity (non-blocking)
         await (supabase as any).from("activities").insert({
           workspace_id: workspaceId, actor_id: userId, verb: "created",
