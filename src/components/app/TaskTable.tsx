@@ -17,7 +17,7 @@ interface Row {
 interface Props {
   clientId?: string;
   projectId?: string;
-  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string; projectFilter?: string };
+  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string; projectFilter?: string; tag?: string };
   reloadKey?: number;
   onOpenTask: (id: string) => void;
 }
