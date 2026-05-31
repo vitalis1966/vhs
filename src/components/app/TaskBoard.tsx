@@ -29,6 +29,7 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [tasks, setTasks] = useState<TaskCard[]>([]);
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
   const [assigneesByTask, setAssigneesByTask] = useState<Record<string, string[]>>({});
+  const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const [profiles, setProfiles] = useState<Record<string, ProfileLite>>({});
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
