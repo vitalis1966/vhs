@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
