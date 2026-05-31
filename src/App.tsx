@@ -73,7 +73,7 @@ const AppClients = lazy(() => import("./pages/app/Clients"));
 const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
 const AppProjects = lazy(() => import("./pages/app/Projects"));
 const AppProjectDetail = lazy(() => import("./pages/app/ProjectDetail"));
-const AppTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppTasks })));
+const AppTasks = lazy(() => import("./pages/app/Tasks"));
 const AppDashboards = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppDashboards })));
 
 import { supabase } from "@/integrations/supabase/client";
