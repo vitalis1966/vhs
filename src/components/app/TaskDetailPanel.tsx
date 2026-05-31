@@ -14,6 +14,7 @@ import { Plus, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PRIORITIES, PRIORITY_CLASS, initials } from "./taskUtils";
 import { TaskRichText } from "./TaskRichText";
+import { TagPicker } from "./TagPicker";
 
 interface Props {
   taskId: string | null;
