@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Pin, PinOff, Pencil, Plus, Star } from "lucide-react";
 import { ClientFormDialog } from "@/components/app/ClientFormDialog";
+import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -236,7 +237,7 @@ export default function ClientDetail() {
                       const pct = projectProgress[p.id] ?? 0;
                       return (
                         <li key={p.id}
-                          onClick={() => navigate(`/app/projects/${p.id}`)}
+                          onClick={() => navigate(`/app/clients/${clientId}/projects/${p.id}`)}
                           className="py-3 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded">
                           <div className="flex items-center justify-between gap-3">
                             <span className="font-medium text-sm">{p.name}</span>
@@ -327,7 +328,7 @@ export default function ClientDetail() {
           </div>
         </TabsContent>
 
-        <TabsContent value="projects" className="mt-6"><Placeholder text="Projects are coming in the next step." /></TabsContent>
+        <TabsContent value="projects" className="mt-6"><ProjectsTab clientId={client.id} /></TabsContent>
         <TabsContent value="tasks" className="mt-6"><Placeholder text="Tasks are coming in the next step." /></TabsContent>
         <TabsContent value="notes" className="mt-6"><Placeholder text="Notes are coming in the next step." /></TabsContent>
         <TabsContent value="files" className="mt-6"><Placeholder text="Files are coming in the next step." /></TabsContent>
