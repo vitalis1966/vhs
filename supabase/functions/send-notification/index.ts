@@ -7,10 +7,11 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_API_KEY = Deno.env.get("VHS_Website");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const FROM_ADDR = "Vitalis <notifications@vitalisstrategies.com>";
+const FROM_ADDR = "Vitalis Health Strategies <info@mail.vitalisstrategies.com>";
+const REPLY_TO = "info@vitalisstrategies.com";
 const APP_BASE_URL = Deno.env.get("APP_BASE_URL") ?? "https://vitalis-website-new.lovable.app";
 
 type Payload = {
@@ -101,7 +102,7 @@ Deno.serve(async (req) => {
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
-          body: JSON.stringify({ from: FROM_ADDR, to: [profile.email], subject, html }),
+          body: JSON.stringify({ from: FROM_ADDR, to: [profile.email], reply_to: REPLY_TO, subject, html }),
         });
         email_status = res.ok ? "sent" : `error_${res.status}`;
         if (!res.ok) console.error("resend error", res.status, await res.text());
