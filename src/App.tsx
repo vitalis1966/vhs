@@ -155,6 +155,7 @@ const App = () => (
               <Route path="/assessment/:token/report" element={<AssessmentReport />} />
               <Route path="/report/:token" element={<ClientReportView />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/employee-login" element={<EmployeeLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/assessments" element={<AdminGuard><AssessmentList /></AdminGuard>} />
               <Route path="/admin/assessments/:id" element={<AdminGuard><AssessmentEditor /></AdminGuard>} />
