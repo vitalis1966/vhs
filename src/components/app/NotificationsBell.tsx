@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 interface Notification {
@@ -12,11 +15,17 @@ interface Notification {
   link_url: string | null;
   is_read: boolean;
   created_at: string;
+  actor_id: string | null;
 }
+
+interface ActorProfile { id: string; full_name: string | null; avatar_url: string | null; email: string | null; }
 
 export function NotificationsBell() {
   const { userId } = useWorkspace();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Notification[]>([]);
+  const [actors, setActors] = useState<Record<string, ActorProfile>>({});
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -25,11 +34,23 @@ export function NotificationsBell() {
     const load = async () => {
       const { data } = await (supabase as any)
         .from("notifications")
-        .select("id, title, body, link_url, is_read, created_at")
+        .select("id, title, body, link_url, is_read, created_at, actor_id")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
-        .limit(20);
-      if (!cancelled) setItems((data ?? []) as Notification[]);
+        .limit(30);
+      if (cancelled) return;
+      const rows = (data ?? []) as Notification[];
+      setItems(rows);
+      const actorIds = Array.from(new Set(rows.map((r) => r.actor_id).filter(Boolean) as string[]));
+      if (actorIds.length) {
+        const { data: profiles } = await (supabase as any)
+          .from("profiles").select("id, full_name, avatar_url, email").in("id", actorIds);
+        if (!cancelled && profiles) {
+          const map: Record<string, ActorProfile> = {};
+          for (const p of profiles) map[p.id] = p;
+          setActors(map);
+        }
+      }
     };
     void load();
 
@@ -52,8 +73,24 @@ export function NotificationsBell() {
     await (supabase as any).from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
   };
 
+  const onClickNotif = async (n: Notification) => {
+    if (!n.is_read) {
+      await (supabase as any).from("notifications").update({ is_read: true }).eq("id", n.id);
+    }
+    setOpen(false);
+    if (n.link_url) {
+      if (n.link_url.startsWith("http")) window.location.href = n.link_url;
+      else navigate(n.link_url);
+    }
+  };
+
+  const initials = (name?: string | null, email?: string | null) => {
+    const src = name || email || "?";
+    return src.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
           <Bell className="h-5 w-5" />
@@ -64,29 +101,48 @@ export function NotificationsBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 p-0">
+      <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <span className="font-display text-sm font-semibold">Notifications</span>
           {unread > 0 && (
             <button onClick={markAllRead} className="text-xs text-accent hover:underline">
-              Mark all read
+              Mark all as read
             </button>
           )}
         </div>
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-[28rem] overflow-y-auto">
           {items.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">No notifications yet</p>
+            <p className="px-4 py-10 text-center text-sm text-muted-foreground">No notifications yet</p>
           ) : (
-            items.map((n) => (
-              <a
-                key={n.id}
-                href={n.link_url ?? "#"}
-                className={`block px-4 py-3 border-b last:border-b-0 hover:bg-muted/40 ${!n.is_read ? "bg-accent/5" : ""}`}
-              >
-                {n.title && <div className="text-sm font-medium">{n.title}</div>}
-                {n.body && <div className="text-xs text-muted-foreground mt-0.5">{n.body}</div>}
-              </a>
-            ))
+            items.map((n) => {
+              const actor = n.actor_id ? actors[n.actor_id] : null;
+              return (
+                <button
+                  key={n.id}
+                  onClick={() => onClickNotif(n)}
+                  className={`w-full text-left flex gap-3 px-4 py-3 border-b last:border-b-0 hover:bg-muted/40 transition-colors ${
+                    !n.is_read ? "bg-accent/5" : ""
+                  }`}
+                >
+                  <Avatar className="h-9 w-9 shrink-0">
+                    {actor?.avatar_url && <AvatarImage src={actor.avatar_url} />}
+                    <AvatarFallback className="text-xs">{initials(actor?.full_name, actor?.email)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        {n.title && <div className="text-sm font-medium truncate">{n.title}</div>}
+                        {n.body && <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{n.body}</div>}
+                        <div className="text-[11px] text-muted-foreground mt-1">
+                          {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                        </div>
+                      </div>
+                      {!n.is_read && <span className="h-2 w-2 rounded-full bg-accent shrink-0 mt-1.5" />}
+                    </div>
+                  </div>
+                </button>
+              );
+            })
           )}
         </div>
       </PopoverContent>
