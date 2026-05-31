@@ -38,6 +38,10 @@ export default function Clients() {
   const [openCounts, setOpenCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [allTags, setAllTags] = useState<TagRow[]>([]);
+  const [clientTagMap, setClientTagMap] = useState<Record<string, string[]>>({});
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [tagSearch, setTagSearch] = useState("");
 
   const load = async () => {
     if (!workspaceId) return;
