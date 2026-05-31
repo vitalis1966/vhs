@@ -1414,6 +1414,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          notification_channels: Json
+          notification_preferences: Json
         }
         Insert: {
           avatar_url?: string | null
@@ -1421,6 +1423,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          notification_channels?: Json
+          notification_preferences?: Json
         }
         Update: {
           avatar_url?: string | null
@@ -1428,6 +1432,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notification_channels?: Json
+          notification_preferences?: Json
         }
         Relationships: []
       }
