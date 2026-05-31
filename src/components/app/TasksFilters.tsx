@@ -8,7 +8,7 @@ import { PRIORITIES } from "./taskUtils";
 
 export interface TaskFilterState {
   status?: string; priority?: string; assignee?: string;
-  clientFilter?: string; projectFilter?: string;
+  clientFilter?: string; projectFilter?: string; tag?: string;
 }
 
 interface Props {
