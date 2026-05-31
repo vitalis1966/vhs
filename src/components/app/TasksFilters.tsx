@@ -25,6 +25,7 @@ export function TasksFilters({ value, onChange, hideClient, hideProject, scopeCl
   const [projects, setProjects] = useState<Array<{ id: string; name: string; client_id: string }>>([]);
   const [statuses, setStatuses] = useState<Array<{ id: string; name: string }>>([]);
   const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
+  const [tags, setTags] = useState<Array<{ id: string; name: string; color: string | null }>>([]);
 
   useEffect(() => {
     if (!workspaceId) return;
