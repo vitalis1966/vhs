@@ -197,6 +197,7 @@ const App = () => (
                 <Route path="projects" element={<AppProjects />} />
                 <Route path="tasks" element={<AppTasks />} />
                 <Route path="dashboards" element={<AppDashboards />} />
+                <Route path="settings/notifications" element={<AppNotificationSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
