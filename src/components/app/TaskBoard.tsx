@@ -56,18 +56,24 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     } else setClients({});
 
     if (trows.length) {
-      const { data: as } = await (supabase as any).from("task_assignees").select("task_id, user_id").in("task_id", trows.map((t) => t.id));
+      const [asRes, tgRes] = await Promise.all([
+        (supabase as any).from("task_assignees").select("task_id, user_id").in("task_id", trows.map((t) => t.id)),
+        (supabase as any).from("taggings").select("tag_id, taggable_id").eq("taggable_type", "task").in("taggable_id", trows.map((t) => t.id)),
+      ]);
       const grouped: Record<string, string[]> = {};
-      (as ?? []).forEach((r: any) => { (grouped[r.task_id] = grouped[r.task_id] ?? []).push(r.user_id); });
+      (asRes.data ?? []).forEach((r: any) => { (grouped[r.task_id] = grouped[r.task_id] ?? []).push(r.user_id); });
       setAssigneesByTask(grouped);
-      const uids = Array.from(new Set((as ?? []).map((r: any) => r.user_id)));
+      const tg: Record<string, string[]> = {};
+      (tgRes.data ?? []).forEach((r: any) => { (tg[r.taggable_id] = tg[r.taggable_id] ?? []).push(r.tag_id); });
+      setTagsByTask(tg);
+      const uids = Array.from(new Set((asRes.data ?? []).map((r: any) => r.user_id)));
       if (uids.length) {
         const { data: ps } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", uids);
         const pm: Record<string, ProfileLite> = {};
         (ps ?? []).forEach((p: any) => { pm[p.id] = p; });
         setProfiles(pm);
       }
-    } else { setAssigneesByTask({}); setProfiles({}); }
+    } else { setAssigneesByTask({}); setTagsByTask({}); setProfiles({}); }
   }, [workspaceId, clientId, projectId]);
 
   useEffect(() => { load(); }, [load, reloadKey]);
