@@ -183,6 +183,19 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
             <Textarea id="summary" rows={3} value={form.summary ?? ""}
               onChange={(e) => setForm({ ...form, summary: e.target.value })} />
           </div>
+          <div>
+            <UILabel>Service Lines</UILabel>
+            <div className="mt-1.5 p-2 rounded-md border border-input min-h-[40px]">
+              <TagPicker
+                taggableType="client"
+                taggableId={initial?.id}
+                value={initial?.id ? undefined : pendingTagIds}
+                onValueChange={initial?.id ? undefined : setPendingTagIds}
+                categoryFilter="service_line"
+                triggerLabel="Add service line"
+              />
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
