@@ -53,15 +53,42 @@ export function UsersSection() {
   const load = async () => {
     if (!workspaceId) return;
     setLoading(true);
-    const { data: rows } = await (supabase as any)
+    const { data: rows, error: rowsErr } = await (supabase as any)
       .from("workspace_members")
-      .select("*, profile:profiles!workspace_members_user_id_fkey(full_name, email, avatar_url, last_active_at)")
+      .select("*")
       .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: true });
-    const { data: cm } = await (supabase as any).from("client_members").select("user_id, clients!inner(workspace_id)").eq("clients.workspace_id", workspaceId);
+    if (rowsErr) console.error("workspace_members load failed", rowsErr);
+
+    const userIds = (rows ?? []).map((r: any) => r.user_id).filter(Boolean);
+    let profilesById: Record<string, any> = {};
+    if (userIds.length) {
+      const { data: profs } = await (supabase as any)
+        .from("profiles")
+        .select("id, full_name, email, avatar_url, last_active_at")
+        .in("id", userIds);
+      (profs ?? []).forEach((p: any) => { profilesById[p.id] = p; });
+    }
+
+    const { data: cm } = await (supabase as any)
+      .from("client_members")
+      .select("user_id, clients!inner(workspace_id)")
+      .eq("clients.workspace_id", workspaceId);
     const counts: Record<string, number> = {};
     (cm ?? []).forEach((r: any) => { if (r.user_id) counts[r.user_id] = (counts[r.user_id] ?? 0) + 1; });
-    setMembers((rows ?? []).map((m: any) => ({ ...m, client_count: m.user_id ? counts[m.user_id] ?? 0 : 0 })));
+
+    const merged: Member[] = (rows ?? []).map((m: any) => ({
+      ...m,
+      profile: m.user_id ? profilesById[m.user_id] ?? null : null,
+      client_count: m.user_id ? counts[m.user_id] ?? 0 : 0,
+    }));
+    merged.sort((a, b) => {
+      const an = (a.profile?.full_name ?? a.invited_name ?? a.invited_email ?? "").toLowerCase();
+      const bn = (b.profile?.full_name ?? b.invited_name ?? b.invited_email ?? "").toLowerCase();
+      return an.localeCompare(bn);
+    });
+    setMembers(merged);
+
     const { data: cs } = await (supabase as any).from("clients").select("id, name").eq("workspace_id", workspaceId).order("name");
     setClients(cs ?? []);
     setLoading(false);
