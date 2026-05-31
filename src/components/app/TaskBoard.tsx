@@ -18,7 +18,7 @@ interface ProfileLite { id: string; full_name: string | null; email: string | nu
 interface Props {
   clientId?: string;            // filter to this client
   projectId?: string;           // filter to this project
-  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string };
+  filters?: { status?: string; priority?: string; assignee?: string; clientFilter?: string; tag?: string };
   reloadKey?: number;
   onOpenTask: (taskId: string) => void;
 }
