@@ -50,7 +50,7 @@ export function MeetingDialog({ open, onOpenChange, clientId, workspaceId, meeti
         class: "prose prose-sm max-w-none min-h-[120px] focus:outline-none px-3 py-2",
       },
     },
-  }, [open]);
+  });
 
   useEffect(() => {
     if (!open || !workspaceId) return;
@@ -67,12 +67,12 @@ export function MeetingDialog({ open, onOpenChange, clientId, workspaceId, meeti
   }, [open, workspaceId]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !editor || editor.isDestroyed) return;
     if (meeting) {
       setTitle(meeting.title ?? "");
       setMeetingDate(meeting.meeting_date ? toLocalInput(meeting.meeting_date) : toLocalInput(new Date().toISOString()));
       setExternalAttendees(meeting.external_attendees ?? []);
-      editor?.commands.setContent(meeting.summary ?? { type: "doc", content: [{ type: "paragraph" }] });
+      editor.commands.setContent(meeting.summary ?? { type: "doc", content: [{ type: "paragraph" }] });
       (async () => {
         const [att, dec, ai] = await Promise.all([
           (supabase as any).from("meeting_attendees").select("user_id").eq("meeting_id", meeting.id),
@@ -92,7 +92,7 @@ export function MeetingDialog({ open, onOpenChange, clientId, workspaceId, meeti
       setDecisions([]);
       setDecisionInput("");
       setActionItems([]);
-      editor?.commands.setContent({ type: "doc", content: [{ type: "paragraph" }] });
+      editor.commands.setContent({ type: "doc", content: [{ type: "paragraph" }] });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, meeting, editor]);
