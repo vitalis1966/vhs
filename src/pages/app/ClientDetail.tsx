@@ -338,6 +338,7 @@ export default function ClientDetail() {
         <TabsContent value="projects" className="mt-6"><ProjectsTab clientId={client.id} /></TabsContent>
         <TabsContent value="tasks" className="mt-6"><TasksTab clientId={client.id} /></TabsContent>
         <TabsContent value="notes" className="mt-6"><NotesTab clientId={client.id} /></TabsContent>
+        <TabsContent value="meetings" className="mt-6"><MeetingsTab clientId={client.id} workspaceId={client.workspace_id} /></TabsContent>
         <TabsContent value="files" className="mt-6">
           <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
         </TabsContent>
