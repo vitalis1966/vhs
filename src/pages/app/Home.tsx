@@ -29,7 +29,7 @@ import {
   AlertTriangle, Users, ListChecks, Activity, ArrowRight, FileText,
   Calendar, Pin, TrendingUp, ChevronRight,
 } from "lucide-react";
-import { formatDistanceToNow, format, startOfWeek, addWeeks, isAfter, isBefore } from "date-fns";
+import { formatDistanceToNow, format, startOfWeek, addWeeks, isBefore } from "date-fns";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
 import { PRIORITY_CLASS, initials } from "@/components/app/taskUtils";
 
