@@ -30,13 +30,15 @@ export function TasksFilters({ value, onChange, hideClient, hideProject, scopeCl
   useEffect(() => {
     if (!workspaceId) return;
     (async () => {
-      const [c, p, s, wm] = await Promise.all([
+      const [c, p, s, wm, tg] = await Promise.all([
         (supabase as any).from("clients").select("id, name").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("projects").select("id, name, client_id").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("task_statuses").select("id, name").eq("workspace_id", workspaceId).order("position"),
         (supabase as any).from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active").not("user_id", "is", null),
+        (supabase as any).from("tags").select("id, name, color").eq("workspace_id", workspaceId).order("name"),
       ]);
       setClients(c.data ?? []); setProjects(p.data ?? []); setStatuses(s.data ?? []);
+      setTags(tg.data ?? []);
       const ids = (wm.data ?? []).map((m: any) => m.user_id);
       if (ids.length) {
         const { data: ps } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", ids);
