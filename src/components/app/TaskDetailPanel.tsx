@@ -252,6 +252,13 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
               </div>
 
               <div>
+                <Label className="text-xs mb-1.5 block">Tags</Label>
+                <div className="p-2 rounded-md border border-input min-h-[40px]">
+                  <TagPicker taggableType="task" taggableId={task.id} />
+                </div>
+              </div>
+
+              <div>
                 <Label className="text-xs mb-1.5 block">Checklist</Label>
                 <div className="space-y-1.5">
                   {checklist.map((item, i) => (
