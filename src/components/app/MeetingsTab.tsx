@@ -161,12 +161,15 @@ function MeetingDetail({
   meeting: Meeting; clientId: string; workspaceId: string; onBack: () => void; onEdit: () => void;
 }) {
   const navigate = useNavigate();
+  const { userId, role } = useWorkspace();
   const [full, setFull] = useState<any>(null);
   const [attendees, setAttendees] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
   const [decisions, setDecisions] = useState<Array<{ id: string; content: string }>>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [convertOpen, setConvertOpen] = useState(false);
   const [convertingItem, setConvertingItem] = useState<ActionItem | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const canDelete = role === "admin" || meeting.created_by === userId;
 
   const load = async () => {
     const [m, att, dec, ai] = await Promise.all([
