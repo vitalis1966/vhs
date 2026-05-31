@@ -1,7 +1,9 @@
 import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { useState } from "react";
 import { TaskFormDialog } from "./TaskFormDialog";
-import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon } from "lucide-react";
+import { ComposeEmailDialog } from "./email/ComposeEmailDialog";
+import { BroadcastEmailDialog } from "./email/BroadcastEmailDialog";
+import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon, CheckSquare, Mail, Megaphone, ChevronDown } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,13 +23,16 @@ export function AppTopBar() {
   const location = useLocation();
   const { userFullName, userEmail, role } = useWorkspace();
   const [newTaskOpen, setNewTaskOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
 
-  // Detect current client/project context from URL
   const clientMatch = matchPath("/app/clients/:clientId/*", location.pathname)
     ?? matchPath("/app/clients/:clientId", location.pathname);
   const projectMatch = matchPath("/app/clients/:clientId/projects/:projectId", location.pathname);
   const ctxClientId = (clientMatch?.params as any)?.clientId ?? null;
   const ctxProjectId = (projectMatch?.params as any)?.projectId ?? null;
+
+  const canBroadcast = role === "admin" || role === "manager";
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -50,13 +55,33 @@ export function AppTopBar() {
         />
       </div>
       <div className="flex-1 sm:hidden" />
-      <Button size="sm" variant="default" className="gap-1.5" onClick={() => setNewTaskOpen(true)}>
-        <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New</span>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" variant="default" className="gap-1">
+            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New</span>
+            <ChevronDown className="h-3 w-3 opacity-70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={() => setNewTaskOpen(true)}>
+            <CheckSquare className="h-4 w-4 mr-2" /> New Task
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setComposeOpen(true)}>
+            <Mail className="h-4 w-4 mr-2" /> Send Email
+          </DropdownMenuItem>
+          {canBroadcast && (
+            <DropdownMenuItem onClick={() => setBroadcastOpen(true)}>
+              <Megaphone className="h-4 w-4 mr-2" /> Broadcast Email
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <TaskFormDialog
         open={newTaskOpen} onOpenChange={setNewTaskOpen}
         defaultClientId={ctxClientId} defaultProjectId={ctxProjectId}
       />
+      <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={ctxClientId} />
+      <BroadcastEmailDialog open={broadcastOpen} onOpenChange={setBroadcastOpen} />
       <NotificationsBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

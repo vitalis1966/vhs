@@ -8,13 +8,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Pin, PinOff, Pencil, Plus, Star } from "lucide-react";
+import { Pin, PinOff, Pencil, Plus, Star, Mail } from "lucide-react";
 import { ClientFormDialog } from "@/components/app/ClientFormDialog";
 import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
 import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
+import { ComposeEmailDialog } from "@/components/app/email/ComposeEmailDialog";
+import { EmailsTab, RecentEmailsCard } from "@/components/app/email/EmailsTab";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -56,6 +58,7 @@ export default function ClientDetail() {
   const [actors, setActors] = useState<Record<string, any>>({});
   const [recentMeetings, setRecentMeetings] = useState<Array<{ id: string; title: string; meeting_date: string; summary_text: string | null }>>([]);
   const [editOpen, setEditOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
   const [addContact, setAddContact] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
@@ -209,9 +212,14 @@ export default function ClientDetail() {
             {pinned ? "Unpin" : "Pin"}
           </Button>
           {canManage && (
-            <Button size="sm" onClick={() => setEditOpen(true)}>
-              <Pencil className="h-4 w-4 mr-2" /> Edit
-            </Button>
+            <>
+              <Button size="sm" variant="outline" onClick={() => setComposeOpen(true)}>
+                <Mail className="h-4 w-4 mr-2" /> Send Email
+              </Button>
+              <Button size="sm" onClick={() => setEditOpen(true)}>
+                <Pencil className="h-4 w-4 mr-2" /> Edit
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -223,8 +231,9 @@ export default function ClientDetail() {
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
+          <TabsTrigger value="meetings">Meetings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -307,6 +316,8 @@ export default function ClientDetail() {
                 )}
               </Card>
 
+              <RecentEmailsCard clientId={client.id} onViewAll={() => setSearchParams({ tab: "emails" })} />
+
               {/* Contacts */}
               <Card
                 title="Contacts"
@@ -384,7 +395,10 @@ export default function ClientDetail() {
         <TabsContent value="files" className="mt-6">
           <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
         </TabsContent>
+        <TabsContent value="emails" className="mt-6"><EmailsTab clientId={client.id} /></TabsContent>
       </Tabs>
+
+      <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={client.id} lockClient />
 
       <ClientFormDialog
         open={editOpen}
