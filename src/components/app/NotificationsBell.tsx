@@ -133,8 +133,11 @@ export function NotificationsBell() {
                       <div className="flex-1 min-w-0">
                         {n.title && <div className="text-sm font-medium truncate">{n.title}</div>}
                         {n.body && <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{n.body}</div>}
-                        <div className="text-[11px] text-muted-foreground mt-1">
-                          {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1">
+                          {n.email_status === "sent"
+                            ? <Mail className="h-3 w-3" aria-label="Sent by email" />
+                            : <Bell className="h-3 w-3" aria-label="In-app only" />}
+                          <span>{formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}</span>
                         </div>
                       </div>
                       {!n.is_read && <span className="h-2 w-2 rounded-full bg-accent shrink-0 mt-1.5" />}
@@ -144,6 +147,14 @@ export function NotificationsBell() {
               );
             })
           )}
+        </div>
+        <div className="border-t px-3 py-2">
+          <button
+            onClick={() => { setOpen(false); navigate("/app/settings/notifications"); }}
+            className="w-full inline-flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1.5 rounded"
+          >
+            <Settings className="h-3.5 w-3.5" /> Notification settings
+          </button>
         </div>
       </PopoverContent>
     </Popover>
