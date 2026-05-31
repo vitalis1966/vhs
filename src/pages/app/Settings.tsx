@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import {
-  Building2, Users, Shield, KeyRound, Bell, ListChecks, Lock, CreditCard,
+  Building2, Users, Shield, KeyRound, Bell, ListChecks, Lock, CreditCard, MessageSquare,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
