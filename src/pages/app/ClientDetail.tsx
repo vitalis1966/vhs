@@ -54,6 +54,7 @@ export default function ClientDetail() {
   const [openTaskCount, setOpenTaskCount] = useState(0);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [actors, setActors] = useState<Record<string, any>>({});
+  const [recentMeetings, setRecentMeetings] = useState<Array<{ id: string; title: string; meeting_date: string; summary_text: string | null }>>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [addContact, setAddContact] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
