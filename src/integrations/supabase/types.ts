@@ -1944,6 +1944,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          checklist: Json
           client_id: string
           completed_at: string | null
           created_at: string
@@ -1961,6 +1962,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          checklist?: Json
           client_id: string
           completed_at?: string | null
           created_at?: string
@@ -1978,6 +1980,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          checklist?: Json
           client_id?: string
           completed_at?: string | null
           created_at?: string
