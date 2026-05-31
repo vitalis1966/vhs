@@ -92,6 +92,20 @@ export function TasksFilters({ value, onChange, hideClient, hideProject, scopeCl
           {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email}</SelectItem>)}
         </SelectContent>
       </Select>
+      <Select value={value.tag ?? "__all"} onValueChange={sel(value.tag, (v) => onChange({ ...value, tag: v }))}>
+        <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Tag" /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__all">All tags</SelectItem>
+          {tags.map((t) => (
+            <SelectItem key={t.id} value={t.id}>
+              <span className="inline-flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full" style={{ background: t.color ?? "#94a3b8" }} />
+                {t.name}
+              </span>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {hasAny && (
         <Button variant="ghost" size="sm" onClick={() => onChange({})}>
           <X className="h-3.5 w-3.5 mr-1" /> Clear
