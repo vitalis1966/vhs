@@ -39,6 +39,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
+  const [pendingTagIds, setPendingTagIds] = useState<string[]>([]);
   const [form, setForm] = useState<ClientRecord>({
     name: "", status: "Active", industry: null, account_owner_id: null,
     start_date: null, website: null, summary: null,
@@ -46,6 +47,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
 
   useEffect(() => {
     if (!open) return;
+    setPendingTagIds([]);
     setForm({
       name: initial?.name ?? "",
       status: initial?.status ?? "Active",
