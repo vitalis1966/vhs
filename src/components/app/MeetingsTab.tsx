@@ -44,8 +44,10 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
   const [selected, setSelected] = useState<Meeting | null>(null);
   const [editing, setEditing] = useState<Meeting | null>(null);
+  const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
 
   const load = async () => {
     setLoading(true);
@@ -54,7 +56,16 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
       .select("id, title, meeting_date, summary_text, external_attendees, created_by")
       .eq("client_id", clientId)
       .order("meeting_date", { ascending: false });
-    setMeetings(data ?? []);
+    const list = (data ?? []) as Meeting[];
+    setMeetings(list);
+    if (list.length) {
+      const { data: att } = await (supabase as any)
+        .from("meeting_attendees").select("meeting_id").in("meeting_id", list.map((m) => m.id));
+      const counts: Record<string, number> = {};
+      for (const m of list) counts[m.id] = (m.external_attendees?.length ?? 0);
+      for (const a of (att ?? [])) counts[a.meeting_id] = (counts[a.meeting_id] ?? 0) + 1;
+      setAttendeeCounts(counts);
+    } else setAttendeeCounts({});
     setLoading(false);
   };
 
