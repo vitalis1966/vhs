@@ -957,6 +957,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body_html: string
+          body_text: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          subject?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       email_unsubscribe_tokens: {
         Row: {
           created_at: string
@@ -1683,6 +1719,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sent_emails: {
+        Row: {
+          attachments: Json
+          bcc_addresses: Json
+          body_html: string | null
+          body_text: string | null
+          cc_addresses: Json
+          client_id: string | null
+          created_at: string
+          error_message: string | null
+          from_address: string
+          id: string
+          is_broadcast: boolean
+          resend_message_id: string | null
+          sent_at: string
+          sent_by: string | null
+          status: string
+          subject: string
+          to_addresses: Json
+          workspace_id: string
+        }
+        Insert: {
+          attachments?: Json
+          bcc_addresses?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_address: string
+          id?: string
+          is_broadcast?: boolean
+          resend_message_id?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+          subject: string
+          to_addresses?: Json
+          workspace_id: string
+        }
+        Update: {
+          attachments?: Json
+          bcc_addresses?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_address?: string
+          id?: string
+          is_broadcast?: boolean
+          resend_message_id?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+          subject?: string
+          to_addresses?: Json
+          workspace_id?: string
+        }
+        Relationships: []
       }
       seo_global: {
         Row: {
