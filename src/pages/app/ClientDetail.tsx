@@ -205,7 +205,7 @@ export default function ClientDetail() {
       </div>
 
       {/* Tabs */}
-      <ClientTabs />
+      <Tabs value={tab} onValueChange={(v) => { searchParams.set("tab", v); setSearchParams(searchParams, { replace: true }); }}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="projects">Projects</TabsTrigger>
