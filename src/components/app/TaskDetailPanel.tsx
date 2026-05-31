@@ -90,6 +90,20 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
     await update(patch, {
       activity: { verb: "status_changed", metadata: { title: task.title, old_status: oldStatus?.name ?? null, new_status: newStatus?.name ?? null } },
     });
+    // Notify the client account owner if it's not the current user
+    if (workspaceId && userId && task.client_id) {
+      const { data: client } = await (supabase as any)
+        .from("clients").select("name, account_owner_id").eq("id", task.client_id).maybeSingle();
+      if (client?.account_owner_id && client.account_owner_id !== userId) {
+        void sendNotification({
+          user_id: client.account_owner_id, type: "status_changed", workspace_id: workspaceId, actor_id: userId,
+          title: `Task status updated on ${client.name}`,
+          body: `${task.title}: ${oldStatus?.name ?? "—"} → ${newStatus?.name ?? "—"}`,
+          link_url: `/app/tasks?task=${task.id}`, entity_type: "task", entity_id: task.id,
+          email_subject: `Task status updated on ${client.name}`,
+        });
+      }
+    }
   };
 
   const toggleAssignee = async (uid: string) => {
@@ -101,12 +115,15 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
     } else {
       setAssignees([...assignees, uid]);
       await (supabase as any).from("task_assignees").insert({ task_id: task.id, user_id: uid });
-      // Notification + activity for new assignee
-      await (supabase as any).from("notifications").insert({
-        workspace_id: workspaceId, user_id: uid, actor_id: userId,
-        type: "task_assigned", title: "You have been assigned a task",
-        body: task.title, entity_type: "task", entity_id: task.id,
-        link_url: `/app/tasks?task=${task.id}`,
+      // Dispatch notification + activity for the new assignee
+      const { data: client } = await (supabase as any)
+        .from("clients").select("name").eq("id", task.client_id).maybeSingle();
+      void sendNotification({
+        user_id: uid, type: "task_assigned", workspace_id: workspaceId, actor_id: userId,
+        title: `You have been assigned a task on ${client?.name ?? "a client"}`,
+        body: task.title, link_url: `/app/tasks?task=${task.id}`,
+        entity_type: "task", entity_id: task.id,
+        email_subject: `You have been assigned a task on ${client?.name ?? "a client"}`,
       });
       await (supabase as any).from("activities").insert({
         workspace_id: workspaceId, actor_id: userId, verb: "assigned",
