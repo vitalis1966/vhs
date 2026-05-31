@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, Mail, Settings } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
   actor_id: string | null;
+  email_status: string | null;
 }
 
 interface ActorProfile { id: string; full_name: string | null; avatar_url: string | null; email: string | null; }
@@ -34,7 +35,7 @@ export function NotificationsBell() {
     const load = async () => {
       const { data } = await (supabase as any)
         .from("notifications")
-        .select("id, title, body, link_url, is_read, created_at, actor_id")
+        .select("id, title, body, link_url, is_read, created_at, actor_id, email_status")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(30);
@@ -133,8 +134,11 @@ export function NotificationsBell() {
                       <div className="flex-1 min-w-0">
                         {n.title && <div className="text-sm font-medium truncate">{n.title}</div>}
                         {n.body && <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{n.body}</div>}
-                        <div className="text-[11px] text-muted-foreground mt-1">
-                          {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1">
+                          {n.email_status === "sent"
+                            ? <Mail className="h-3 w-3" aria-label="Sent by email" />
+                            : <Bell className="h-3 w-3" aria-label="In-app only" />}
+                          <span>{formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}</span>
                         </div>
                       </div>
                       {!n.is_read && <span className="h-2 w-2 rounded-full bg-accent shrink-0 mt-1.5" />}
@@ -144,6 +148,14 @@ export function NotificationsBell() {
               );
             })
           )}
+        </div>
+        <div className="border-t px-3 py-2">
+          <button
+            onClick={() => { setOpen(false); navigate("/app/settings/notifications"); }}
+            className="w-full inline-flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1.5 rounded"
+          >
+            <Settings className="h-3.5 w-3.5" /> Notification settings
+          </button>
         </div>
       </PopoverContent>
     </Popover>

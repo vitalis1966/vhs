@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { useState } from "react";
 import { TaskFormDialog } from "./TaskFormDialog";
-import { Search, Plus, LogOut, User as UserIcon } from "lucide-react";
+import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,9 @@ export function AppTopBar() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem><UserIcon className="h-4 w-4 mr-2" /> Profile</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/app/settings/notifications")}>
+            <BellIcon className="h-4 w-4 mr-2" /> Notification Settings
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={signOut}><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

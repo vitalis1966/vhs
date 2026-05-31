@@ -1213,6 +1213,7 @@ export type Database = {
           actor_id: string | null
           body: string | null
           created_at: string
+          email_status: string | null
           entity_id: string | null
           entity_type: string | null
           id: string
@@ -1227,6 +1228,7 @@ export type Database = {
           actor_id?: string | null
           body?: string | null
           created_at?: string
+          email_status?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
@@ -1241,6 +1243,7 @@ export type Database = {
           actor_id?: string | null
           body?: string | null
           created_at?: string
+          email_status?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
@@ -1414,6 +1417,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          notification_channels: Json
+          notification_preferences: Json
         }
         Insert: {
           avatar_url?: string | null
@@ -1421,6 +1426,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          notification_channels?: Json
+          notification_preferences?: Json
         }
         Update: {
           avatar_url?: string | null
@@ -1428,6 +1435,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notification_channels?: Json
+          notification_preferences?: Json
         }
         Relationships: []
       }
