@@ -83,8 +83,9 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     if (filters?.priority && t.priority !== filters.priority) return false;
     if (filters?.clientFilter && t.client_id !== filters.clientFilter) return false;
     if (filters?.assignee && !(assigneesByTask[t.id] ?? []).includes(filters.assignee)) return false;
+    if (filters?.tag && !(tagsByTask[t.id] ?? []).includes(filters.tag)) return false;
     return true;
-  }), [tasks, filters, assigneesByTask]);
+  }), [tasks, filters, assigneesByTask, tagsByTask]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
