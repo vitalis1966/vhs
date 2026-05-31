@@ -316,6 +316,8 @@ export default function ClientDetail() {
                 )}
               </Card>
 
+              <RecentEmailsCard clientId={client.id} onViewAll={() => setSearchParams({ tab: "emails" })} />
+
               {/* Contacts */}
               <Card
                 title="Contacts"
