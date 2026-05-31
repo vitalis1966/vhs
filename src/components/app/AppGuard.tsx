@@ -1,25 +1,26 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkspaceProvider, useWorkspace } from "@/contexts/WorkspaceContext";
 
-function AppGuardInner({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  const { loading, hasMembership } = useWorkspace();
+const NoWorkspaceAccess = lazy(() => import("@/pages/app/SetupWorkspace"));
 
-  useEffect(() => {
-    if (loading) return;
-    if (!hasMembership) {
-      navigate("/app/setup", { replace: true });
-    }
-  }, [loading, hasMembership, navigate]);
+function AppGuardInner({ children }: { children: ReactNode }) {
+  const { loading, hasMembership } = useWorkspace();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
+    );
+  }
+  if (!hasMembership) {
+    return (
+      <Suspense fallback={<div className="min-h-screen" />}>
+        <NoWorkspaceAccess />
+      </Suspense>
     );
   }
   return <>{children}</>;
