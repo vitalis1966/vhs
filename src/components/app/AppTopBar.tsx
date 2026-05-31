@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { useState } from "react";
 import { TaskFormDialog } from "./TaskFormDialog";
-import { Search, Plus, LogOut, User as UserIcon } from "lucide-react";
+import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
