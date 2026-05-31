@@ -35,7 +35,7 @@ export function NotificationsBell() {
     const load = async () => {
       const { data } = await (supabase as any)
         .from("notifications")
-        .select("id, title, body, link_url, is_read, created_at, actor_id")
+        .select("id, title, body, link_url, is_read, created_at, actor_id, email_status")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(30);
