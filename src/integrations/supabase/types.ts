@@ -2503,6 +2503,18 @@ export type Database = {
           updated_at: string
         }[]
       }
+      global_search: {
+        Args: { p_query: string; p_workspace_id: string }
+        Returns: {
+          client_id: string
+          id: string
+          kind: string
+          project_id: string
+          rank: number
+          subtitle: string
+          title: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
