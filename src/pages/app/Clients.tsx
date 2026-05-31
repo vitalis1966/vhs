@@ -131,11 +131,59 @@ export default function Clients() {
         )}
       </div>
 
+      <div className="flex items-center gap-2 flex-wrap">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8">
+              <TagIcon className="h-3.5 w-3.5 mr-1.5" />
+              Tags {selectedTagIds.length > 0 && <span className="ml-1 text-xs text-muted-foreground">({selectedTagIds.length})</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72 p-2" align="start">
+            <Input value={tagSearch} onChange={(e) => setTagSearch(e.target.value)}
+              placeholder="Search tags…" className="h-8 mb-2" />
+            <div className="max-h-64 overflow-y-auto space-y-1">
+              {allTags
+                .filter((t) => !tagSearch.trim() || t.name.toLowerCase().includes(tagSearch.toLowerCase()))
+                .map((t) => {
+                  const checked = selectedTagIds.includes(t.id);
+                  return (
+                    <button key={t.id} type="button" onClick={() => toggleTag(t.id)}
+                      className={`w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2 ${checked ? "bg-muted" : ""}`}>
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: t.color ?? "#94a3b8" }} />
+                      <span className="flex-1 truncate">{t.name}</span>
+                      {t.category && <span className="text-[10px] uppercase text-muted-foreground tracking-wider">{t.category.replace("_", " ")}</span>}
+                    </button>
+                  );
+                })}
+              {allTags.length === 0 && <div className="text-xs text-muted-foreground italic px-2 py-2">No tags yet.</div>}
+            </div>
+          </PopoverContent>
+        </Popover>
+        {selectedTagIds.map((id) => {
+          const t = tagMap[id];
+          if (!t) return null;
+          return (
+            <Badge key={id} variant="outline" className="border-transparent text-xs gap-1"
+              style={{ background: `${t.color ?? "#94a3b8"}22`, color: t.color ?? "#475569" }}>
+              {t.name}
+              <button onClick={() => toggleTag(id)} type="button" className="hover:opacity-70" aria-label="Remove">
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          );
+        })}
+        {selectedTagIds.length > 0 && (
+          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setSelectedTagIds([])}>Clear</Button>
+        )}
+      </div>
+
       <Tabs defaultValue="table">
         <TabsList>
           <TabsTrigger value="table"><TableIcon className="h-4 w-4 mr-2" /> Table</TabsTrigger>
           <TabsTrigger value="board"><LayoutGrid className="h-4 w-4 mr-2" /> Board</TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="table" className="mt-4">
           <div className="rounded-lg border bg-card overflow-x-auto">
