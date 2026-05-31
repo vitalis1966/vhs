@@ -1107,6 +1107,7 @@ export type Database = {
           meeting_id: string
           owner_id: string | null
           position: number
+          priority: string
         }
         Insert: {
           converted_task_id?: string | null
@@ -1116,6 +1117,7 @@ export type Database = {
           meeting_id: string
           owner_id?: string | null
           position?: number
+          priority?: string
         }
         Update: {
           converted_task_id?: string | null
@@ -1125,6 +1127,7 @@ export type Database = {
           meeting_id?: string
           owner_id?: string | null
           position?: number
+          priority?: string
         }
         Relationships: [
           {
@@ -1210,10 +1213,12 @@ export type Database = {
           external_attendees: string[]
           id: string
           meeting_date: string
+          next_meeting_date: string | null
           project_id: string | null
           summary: Json | null
           summary_text: string | null
           title: string
+          topics: string[]
           updated_at: string
           workspace_id: string
         }
@@ -1224,10 +1229,12 @@ export type Database = {
           external_attendees?: string[]
           id?: string
           meeting_date?: string
+          next_meeting_date?: string | null
           project_id?: string | null
           summary?: Json | null
           summary_text?: string | null
           title: string
+          topics?: string[]
           updated_at?: string
           workspace_id: string
         }
@@ -1238,10 +1245,12 @@ export type Database = {
           external_attendees?: string[]
           id?: string
           meeting_date?: string
+          next_meeting_date?: string | null
           project_id?: string | null
           summary?: Json | null
           summary_text?: string | null
           title?: string
+          topics?: string[]
           updated_at?: string
           workspace_id?: string
         }

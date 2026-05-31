@@ -5,10 +5,16 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check } from "lucide-react";
+import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check, Sparkles, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { MeetingDialog } from "./MeetingDialog";
+import { MeetingTranscriptDialog } from "./MeetingTranscriptDialog";
 import { TaskFormDialog } from "./TaskFormDialog";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Meeting {
   id: string;
@@ -25,6 +31,7 @@ interface ActionItem {
   description: string;
   owner_id: string | null;
   due_date: string | null;
+  priority: string | null;
   converted_task_id: string | null;
   position: number;
 }
@@ -38,8 +45,10 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
   const [selected, setSelected] = useState<Meeting | null>(null);
   const [editing, setEditing] = useState<Meeting | null>(null);
+  const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
 
   const load = async () => {
     setLoading(true);
@@ -48,7 +57,16 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
       .select("id, title, meeting_date, summary_text, external_attendees, created_by")
       .eq("client_id", clientId)
       .order("meeting_date", { ascending: false });
-    setMeetings(data ?? []);
+    const list = (data ?? []) as Meeting[];
+    setMeetings(list);
+    if (list.length) {
+      const { data: att } = await (supabase as any)
+        .from("meeting_attendees").select("meeting_id").in("meeting_id", list.map((m) => m.id));
+      const counts: Record<string, number> = {};
+      for (const m of list) counts[m.id] = (m.external_attendees?.length ?? 0);
+      for (const a of (att ?? [])) counts[a.meeting_id] = (counts[a.meeting_id] ?? 0) + 1;
+      setAttendeeCounts(counts);
+    } else setAttendeeCounts({});
     setLoading(false);
   };
 
@@ -70,13 +88,18 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {meetings.length} meeting{meetings.length === 1 ? "" : "s"} logged
         </p>
-        <Button size="sm" onClick={() => { setEditing(null); setDialogOpen(true); }}>
-          <Plus className="h-4 w-4 mr-1.5" /> Log Meeting
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setTranscriptOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-1.5" /> Upload Transcript
+          </Button>
+          <Button size="sm" onClick={() => { setEditing(null); setDialogOpen(true); }}>
+            <Plus className="h-4 w-4 mr-1.5" /> Log Meeting
+          </Button>
+        </div>
       </div>
 
       {meetings.length === 0 ? (
@@ -99,6 +122,9 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(m.meeting_date), "MMM d, yyyy · h:mm a")}
                     </span>
+                    <Badge variant="outline" className="text-[10px]">
+                      {attendeeCounts[m.id] ?? 0} attendee{(attendeeCounts[m.id] ?? 0) === 1 ? "" : "s"}
+                    </Badge>
                   </div>
                   {m.summary_text && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.summary_text}</p>
@@ -119,6 +145,13 @@ export function MeetingsTab({ clientId, workspaceId }: { clientId: string; works
         meeting={editing}
         onSaved={() => { void load(); }}
       />
+      <MeetingTranscriptDialog
+        open={transcriptOpen}
+        onOpenChange={setTranscriptOpen}
+        clientId={clientId}
+        workspaceId={workspaceId}
+        onSaved={() => { void load(); }}
+      />
     </div>
   );
 }
@@ -129,12 +162,15 @@ function MeetingDetail({
   meeting: Meeting; clientId: string; workspaceId: string; onBack: () => void; onEdit: () => void;
 }) {
   const navigate = useNavigate();
+  const { userId, role } = useWorkspace();
   const [full, setFull] = useState<any>(null);
   const [attendees, setAttendees] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
   const [decisions, setDecisions] = useState<Array<{ id: string; content: string }>>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [convertOpen, setConvertOpen] = useState(false);
   const [convertingItem, setConvertingItem] = useState<ActionItem | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const canDelete = role === "admin" || meeting.created_by === userId;
 
   const load = async () => {
     const [m, att, dec, ai] = await Promise.all([
@@ -165,15 +201,31 @@ function MeetingDetail({
     void load();
   };
 
+  const handleDelete = async () => {
+    const { error } = await (supabase as any).from("meetings").delete().eq("id", meeting.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Meeting deleted");
+    setDeleteOpen(false);
+    onBack();
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
           <ArrowLeft className="h-4 w-4" /> Back to meetings
         </Button>
-        <Button size="sm" variant="outline" onClick={onEdit}>
-          <Pencil className="h-4 w-4 mr-1.5" /> Edit
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={onEdit}>
+            <Pencil className="h-4 w-4 mr-1.5" /> Edit
+          </Button>
+          {canDelete && (
+            <Button size="sm" variant="outline" onClick={() => setDeleteOpen(true)}
+              className="text-destructive hover:text-destructive">
+              <Trash2 className="h-4 w-4 mr-1.5" /> Delete
+            </Button>
+          )}
+        </div>
       </div>
 
       <div>
@@ -231,9 +283,14 @@ function MeetingDetail({
               <li key={a.id} className="rounded-md border p-3 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{a.description}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {a.due_date ? `Due ${format(new Date(a.due_date), "MMM d, yyyy")}` : "No due date"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <p className="text-xs text-muted-foreground">
+                      {a.due_date ? `Due ${format(new Date(a.due_date), "MMM d, yyyy")}` : "No due date"}
+                    </p>
+                    {a.priority && a.priority !== "Medium" && (
+                      <Badge variant="outline" className="text-[10px]">{a.priority}</Badge>
+                    )}
+                  </div>
                 </div>
                 {a.converted_task_id ? (
                   <Button size="sm" variant="outline" onClick={() => navigate(`/app/tasks?taskId=${a.converted_task_id}`)}>
@@ -250,6 +307,22 @@ function MeetingDetail({
         )}
       </Section>
 
+      {full?.topics && full.topics.length > 0 && (
+        <Section title="Topics">
+          <div className="flex flex-wrap gap-1.5">
+            {full.topics.map((t: string, i: number) => (
+              <Badge key={i} variant="secondary">{t}</Badge>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {full?.next_meeting_date && (
+        <Section title="Next Meeting">
+          <p className="text-sm">{format(new Date(full.next_meeting_date), "EEEE, MMMM d, yyyy · h:mm a")}</p>
+        </Section>
+      )}
+
       <TaskFormDialog
         open={convertOpen}
         onOpenChange={(v) => { setConvertOpen(v); if (!v) setConvertingItem(null); }}
@@ -259,6 +332,23 @@ function MeetingDetail({
         defaultAssigneeId={convertingItem?.owner_id ?? null}
         onCreated={handleConverted}
       />
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this meeting?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the meeting, its attendees, decisions, and action items. Tasks already converted from action items will remain.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

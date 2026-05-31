@@ -54,6 +54,7 @@ export default function ClientDetail() {
   const [openTaskCount, setOpenTaskCount] = useState(0);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [actors, setActors] = useState<Record<string, any>>({});
+  const [recentMeetings, setRecentMeetings] = useState<Array<{ id: string; title: string; meeting_date: string; summary_text: string | null }>>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [addContact, setAddContact] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
@@ -128,6 +129,13 @@ export default function ClientDetail() {
       (profs ?? []).forEach((p: any) => { map[p.id] = p; });
       setActors(map);
     }
+
+    // Recent meetings (top 2)
+    const { data: rm } = await (supabase as any)
+      .from("meetings").select("id, title, meeting_date, summary_text")
+      .eq("client_id", clientId).order("meeting_date", { ascending: false }).limit(2);
+    setRecentMeetings(rm ?? []);
+
     setLoading(false);
   };
 
@@ -261,6 +269,40 @@ export default function ClientDetail() {
                         </li>
                       );
                     })}
+                  </ul>
+                )}
+              </Card>
+
+              {/* Recent Meetings */}
+              <Card
+                title="Recent Meetings"
+                action={
+                  <Button size="sm" variant="ghost" onClick={() => setSearchParams({ tab: "meetings" })}>
+                    View all
+                  </Button>
+                }
+              >
+                {recentMeetings.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No meetings logged yet.</p>
+                ) : (
+                  <ul className="divide-y">
+                    {recentMeetings.map((m) => (
+                      <li
+                        key={m.id}
+                        onClick={() => setSearchParams({ tab: "meetings" })}
+                        className="py-3 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-medium text-sm truncate">{m.title}</span>
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            {formatDistanceToNow(new Date(m.meeting_date), { addSuffix: true })}
+                          </span>
+                        </div>
+                        {m.summary_text && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.summary_text}</p>
+                        )}
+                      </li>
+                    ))}
                   </ul>
                 )}
               </Card>
