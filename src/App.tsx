@@ -201,6 +201,7 @@ const App = () => (
                 <Route path="tasks" element={<AppTasks />} />
                 <Route path="dashboards" element={<AppDashboards />} />
                 <Route path="settings/notifications" element={<AppNotificationSettings />} />
+                <Route path="settings" element={<AppSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
