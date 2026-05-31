@@ -46,7 +46,7 @@ export function AppSidebar() {
               {workspaceName ?? "Workspace"}
             </div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
-              Internal Platform
+              Vitalis OS
             </div>
           </div>
         ) : (
