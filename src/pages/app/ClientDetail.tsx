@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Pin, PinOff, Pencil, Plus, Star } from "lucide-react";
 import { ClientFormDialog } from "@/components/app/ClientFormDialog";
 import { ProjectsTab } from "@/components/app/ProjectsTab";
 import { TasksTab } from "@/components/app/TasksTab";
+import { NotesTab } from "@/components/app/NotesTab";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -36,6 +37,8 @@ export default function ClientDetail() {
   const { clientId } = useParams<{ clientId: string }>();
   const { userId, workspaceId, role } = useWorkspace();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") ?? "overview";
   const canManage = role === "admin" || role === "manager";
 
   const [client, setClient] = useState<any | null>(null);
@@ -204,7 +207,7 @@ export default function ClientDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview">
+      <Tabs value={tab} onValueChange={(v) => { searchParams.set("tab", v); setSearchParams(searchParams, { replace: true }); }}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -331,7 +334,7 @@ export default function ClientDetail() {
 
         <TabsContent value="projects" className="mt-6"><ProjectsTab clientId={client.id} /></TabsContent>
         <TabsContent value="tasks" className="mt-6"><TasksTab clientId={client.id} /></TabsContent>
-        <TabsContent value="notes" className="mt-6"><Placeholder text="Notes are coming in the next step." /></TabsContent>
+        <TabsContent value="notes" className="mt-6"><NotesTab clientId={client.id} /></TabsContent>
         <TabsContent value="files" className="mt-6"><Placeholder text="Files are coming in the next step." /></TabsContent>
       </Tabs>
 

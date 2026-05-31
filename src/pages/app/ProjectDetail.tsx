@@ -240,16 +240,30 @@ export default function ProjectDetail() {
         )}
       </Section>
 
-      <Section title="Notes">
+      <Section title="Notes" action={
+        <Button size="sm" variant="outline" onClick={async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user || !project) return;
+          const { data, error } = await (supabase as any).from("notes").insert({
+            workspace_id: project.workspace_id, client_id: project.client_id, project_id: project.id,
+            title: "", body: { type: "doc", content: [{ type: "paragraph" }] }, body_text: "",
+            created_by: user.id, updated_by: user.id,
+          }).select().single();
+          if (error || !data) { toast.error(error?.message ?? "Failed"); return; }
+          navigate(`/app/clients/${clientId}?tab=notes&note=${data.id}`);
+        }}>
+          <Plus className="h-4 w-4 mr-1" /> New Note
+        </Button>
+      }>
         {notes.length === 0 ? (
           <p className="text-sm text-muted-foreground italic">No notes.</p>
         ) : (
           <ul className="divide-y">
             {notes.map((n) => (
               <li key={n.id}>
-                <Link to={`/app/clients/${clientId}?note=${n.id}`}
+                <Link to={`/app/clients/${clientId}?tab=notes&note=${n.id}`}
                   className="block py-3 hover:bg-muted/30 -mx-2 px-2 rounded">
-                  <div className="text-sm font-medium text-foreground">{n.title ?? "Untitled note"}</div>
+                  <div className="text-sm font-medium text-foreground">{n.title?.trim() || "Untitled note"}</div>
                   <div className="text-xs text-muted-foreground">{new Date(n.updated_at).toLocaleString()}</div>
                 </Link>
               </li>
@@ -273,10 +287,13 @@ export default function ProjectDetail() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="rounded-lg border bg-card p-5">
-      <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">{title}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">{title}</h2>
+        {action}
+      </div>
       {children}
     </div>
   );
