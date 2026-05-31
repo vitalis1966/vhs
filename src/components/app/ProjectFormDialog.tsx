@@ -171,6 +171,17 @@ export function ProjectFormDialog({ open, onOpenChange, clientId, initial, onSav
                 onChange={(e) => setForm({ ...form, target_date: e.target.value || null })} />
             </div>
           </div>
+          <div>
+            <Label>Tags</Label>
+            <div className="mt-1.5 p-2 rounded-md border border-input min-h-[40px]">
+              <TagPicker
+                taggableType="project"
+                taggableId={initial?.id}
+                value={initial?.id ? undefined : pendingTagIds}
+                onValueChange={initial?.id ? undefined : setPendingTagIds}
+              />
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
