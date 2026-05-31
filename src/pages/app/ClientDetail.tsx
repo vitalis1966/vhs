@@ -386,6 +386,7 @@ function Placeholder({ text }: { text: string }) {
 function formatActivity(a: Activity) {
   const target = a.metadata?.name ?? a.metadata?.title ?? a.target_type ?? "";
   if (a.verb === "created" && a.target_type === "client") return `created this client`;
+  if (a.verb === "meeting_logged") return `logged meeting${target ? ` "${target}"` : ""}`;
   return `${a.verb} ${a.target_type ?? ""}${target ? ` "${target}"` : ""}`.trim();
 }
 
