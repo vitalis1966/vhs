@@ -34,6 +34,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   const [sortBy, setSortBy] = useState<"due" | "priority">("due");
 
+  const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const load = useCallback(async () => {
     if (!workspaceId) return;
     let q = (supabase as any).from("tasks")
