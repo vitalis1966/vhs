@@ -72,19 +72,50 @@ export default function Clients() {
       (tasks ?? []).forEach((t: any) => { counts[t.client_id] = (counts[t.client_id] ?? 0) + 1; });
       setOpenCounts(counts);
     } else setOpenCounts({});
+
+    const { data: tagRows } = await (supabase as any)
+      .from("tags").select("id, name, color, category")
+      .eq("workspace_id", workspaceId).order("name");
+    setAllTags(tagRows ?? []);
+
+    if (rows.length) {
+      const { data: tg } = await (supabase as any)
+        .from("taggings").select("tag_id, taggable_id")
+        .eq("taggable_type", "client")
+        .in("taggable_id", rows.map((r) => r.id));
+      const m: Record<string, string[]> = {};
+      (tg ?? []).forEach((r: any) => {
+        (m[r.taggable_id] ||= []).push(r.tag_id);
+      });
+      setClientTagMap(m);
+    } else setClientTagMap({});
+
     setLoading(false);
   };
 
   useEffect(() => { void load(); }, [workspaceId]);
 
+  const tagMap = useMemo(() => Object.fromEntries(allTags.map((t) => [t.id, t])), [allTags]);
+
+  const filteredClients = useMemo(() => {
+    if (!selectedTagIds.length) return clients;
+    return clients.filter((c) => {
+      const ids = clientTagMap[c.id] ?? [];
+      return selectedTagIds.every((t) => ids.includes(t));
+    });
+  }, [clients, clientTagMap, selectedTagIds]);
+
   const grouped = useMemo(() => {
     const g: Record<string, ClientRow[]> = { Prospect: [], Active: [], "On Hold": [], Closed: [] };
-    clients.forEach((c) => {
+    filteredClients.forEach((c) => {
       const s = (c.status && g[c.status] !== undefined) ? c.status : "Active";
       g[s].push(c);
     });
     return g;
-  }, [clients]);
+  }, [filteredClients]);
+
+  const toggleTag = (id: string) =>
+    setSelectedTagIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   return (
     <div className="space-y-6">
