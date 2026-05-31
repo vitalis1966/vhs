@@ -201,15 +201,31 @@ function MeetingDetail({
     void load();
   };
 
+  const handleDelete = async () => {
+    const { error } = await (supabase as any).from("meetings").delete().eq("id", meeting.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Meeting deleted");
+    setDeleteOpen(false);
+    onBack();
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
           <ArrowLeft className="h-4 w-4" /> Back to meetings
         </Button>
-        <Button size="sm" variant="outline" onClick={onEdit}>
-          <Pencil className="h-4 w-4 mr-1.5" /> Edit
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={onEdit}>
+            <Pencil className="h-4 w-4 mr-1.5" /> Edit
+          </Button>
+          {canDelete && (
+            <Button size="sm" variant="outline" onClick={() => setDeleteOpen(true)}
+              className="text-destructive hover:text-destructive">
+              <Trash2 className="h-4 w-4 mr-1.5" /> Delete
+            </Button>
+          )}
+        </div>
       </div>
 
       <div>
@@ -267,9 +283,14 @@ function MeetingDetail({
               <li key={a.id} className="rounded-md border p-3 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{a.description}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {a.due_date ? `Due ${format(new Date(a.due_date), "MMM d, yyyy")}` : "No due date"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <p className="text-xs text-muted-foreground">
+                      {a.due_date ? `Due ${format(new Date(a.due_date), "MMM d, yyyy")}` : "No due date"}
+                    </p>
+                    {a.priority && a.priority !== "Medium" && (
+                      <Badge variant="outline" className="text-[10px]">{a.priority}</Badge>
+                    )}
+                  </div>
                 </div>
                 {a.converted_task_id ? (
                   <Button size="sm" variant="outline" onClick={() => navigate(`/app/tasks?taskId=${a.converted_task_id}`)}>
@@ -286,6 +307,22 @@ function MeetingDetail({
         )}
       </Section>
 
+      {full?.topics && full.topics.length > 0 && (
+        <Section title="Topics">
+          <div className="flex flex-wrap gap-1.5">
+            {full.topics.map((t: string, i: number) => (
+              <Badge key={i} variant="secondary">{t}</Badge>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {full?.next_meeting_date && (
+        <Section title="Next Meeting">
+          <p className="text-sm">{format(new Date(full.next_meeting_date), "EEEE, MMMM d, yyyy · h:mm a")}</p>
+        </Section>
+      )}
+
       <TaskFormDialog
         open={convertOpen}
         onOpenChange={(v) => { setConvertOpen(v); if (!v) setConvertingItem(null); }}
@@ -295,6 +332,23 @@ function MeetingDetail({
         defaultAssigneeId={convertingItem?.owner_id ?? null}
         onCreated={handleConverted}
       />
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this meeting?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the meeting, its attendees, decisions, and action items. Tasks already converted from action items will remain.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
