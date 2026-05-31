@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { TagPicker, persistPendingTags } from "./TagPicker";
 
 export const PROJECT_STATUSES = ["Planned", "Active", "On Hold", "Complete", "Cancelled"] as const;
 
