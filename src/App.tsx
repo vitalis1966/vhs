@@ -63,6 +63,17 @@ const ClientUsersAdmin = lazy(() => import("./pages/admin/ClientUsersAdmin"));
 const ClientDocumentsAdmin = lazy(() => import("./pages/admin/ClientDocumentsAdmin"));
 const ClientDocumentsPortal = lazy(() => import("./pages/portal/ClientDocuments"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AppGuard = lazy(() => import("@/components/app/AppGuard").then(m => ({ default: m.AppGuard })));
+const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ default: m.AppLayout })));
+const AppIndex = lazy(() => import("./pages/app/AppIndex"));
+const SetupWorkspace = lazy(() => import("./pages/app/SetupWorkspace"));
+const AppHome = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppHome })));
+const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
+const AppClients = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppClients })));
+const AppClientDetail = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppClientDetail })));
+const AppProjects = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppProjects })));
+const AppTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppTasks })));
+const AppDashboards = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppDashboards })));
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -173,6 +184,17 @@ const App = () => (
               <Route path="/admin/client-management/users" element={<AdminGuard><ClientUsersAdmin /></AdminGuard>} />
               <Route path="/admin/client-management/documents" element={<AdminGuard><ClientDocumentsAdmin /></AdminGuard>} />
               <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
+              <Route path="/app/setup" element={<AppGuard requireMembership={false}><SetupWorkspace /></AppGuard>} />
+              <Route path="/app" element={<AppGuard><AppLayout /></AppGuard>}>
+                <Route index element={<AppIndex />} />
+                <Route path="home" element={<AppHome />} />
+                <Route path="my-tasks" element={<AppMyTasks />} />
+                <Route path="clients" element={<AppClients />} />
+                <Route path="clients/:clientId" element={<AppClientDetail />} />
+                <Route path="projects" element={<AppProjects />} />
+                <Route path="tasks" element={<AppTasks />} />
+                <Route path="dashboards" element={<AppDashboards />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
