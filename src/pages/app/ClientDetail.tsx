@@ -231,8 +231,9 @@ export default function ClientDetail() {
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
+          <TabsTrigger value="meetings">Meetings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
