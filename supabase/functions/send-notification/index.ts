@@ -10,7 +10,7 @@ const corsHeaders = {
 const RESEND_API_KEY = Deno.env.get("VHS_Website");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const FROM_ADDR = "Vitalis Health Strategies <info@mail.vitalisstrategies.com>";
+const FROM_ADDR = "Vitalis Health Strategies <info@vitalisstrategies.com>";
 const REPLY_TO = "info@vitalisstrategies.com";
 const APP_BASE_URL = Deno.env.get("APP_BASE_URL") ?? "https://vitalis-website-new.lovable.app";
 
