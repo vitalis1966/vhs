@@ -258,7 +258,7 @@ export function UsersSection() {
   );
 }
 
-async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<boolean> {
+async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<{ ok: boolean; error?: string }> {
   if (!p.workspaceId) return false;
   const signInUrl = `${window.location.origin}/employee-login`;
   const greeting = p.name ? `Hi ${p.name},` : "Hello,";
