@@ -154,3 +154,33 @@ export function buildPasswordResetEmail(opts: { name: string; email: string; tem
 </td></tr>`
   return wrapEmail('Your password was reset', body + emailFooter())
 }
+
+export function buildTeamInviteEmail(opts: { name: string; email: string; tempPassword?: string; loginUrl: string; workspaceName?: string; message?: string; reused?: boolean }): string {
+  const greeting = opts.name ? `Welcome, ${esc(opts.name)}.` : 'Welcome.'
+  const workspaceLine = opts.workspaceName
+    ? `You've been added to the <strong>${esc(opts.workspaceName)}</strong> workspace on Vitalis OS.`
+    : `You've been added to a Vitalis OS workspace.`
+  const messageBlock = opts.message
+    ? `<p style="font-size:14px;color:#172620;line-height:1.7;margin:0 0 20px;font-style:italic;border-left:3px solid #c89741;padding-left:14px;font-family:'Montserrat',Arial,sans-serif;">${esc(opts.message)}</p>`
+    : ''
+  const credentialsBlock = opts.reused || !opts.tempPassword
+    ? `<p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 24px;font-family:'Montserrat',Arial,sans-serif;">Sign in with your existing Vitalis credentials (<strong>${esc(opts.email)}</strong>) to get started.</p>`
+    : `<div style="border-left:4px solid #A9B1A1;background-color:#f9f6f1;padding:16px 20px;border-radius:0 6px 6px 0;margin:0 0 24px;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#5a7060;margin:0 0 8px;font-weight:600;font-family:'Montserrat',Arial,sans-serif;">YOUR CREDENTIALS</p>
+        <p style="font-size:14px;color:#172620;margin:0 0 6px;font-family:'Montserrat',Arial,sans-serif;"><strong>Username:</strong> ${esc(opts.email)}</p>
+        <p style="font-size:14px;color:#172620;margin:0;font-family:'Montserrat',Arial,sans-serif;"><strong>Temporary Password:</strong> <code style="background:#fff;padding:3px 8px;border-radius:4px;border:1px solid #dde4e0;">${esc(opts.tempPassword)}</code></p>
+      </div>
+      <p style="font-size:13px;color:#5a7060;line-height:1.6;margin:0 0 24px;font-family:'Montserrat',Arial,sans-serif;">You'll be asked to set a new password the first time you sign in.</p>`
+  const body = `
+<tr><td style="padding:36px 40px;">
+  <h2 style="margin:0 0 20px;color:#264a39;font-size:24px;font-weight:600;font-family:'Playfair Display',Georgia,serif;line-height:1.3;">${greeting}</h2>
+  <p style="font-size:15px;color:#172620;line-height:1.75;margin:0 0 16px;font-family:'Montserrat',Arial,sans-serif;">${workspaceLine}</p>
+  ${messageBlock}
+  ${credentialsBlock}
+  <p style="text-align:center;margin:0 0 8px;">
+    <a href="${opts.loginUrl}" style="background-color:#264a39;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:6px;font-size:13px;font-weight:600;display:inline-block;font-family:'Montserrat',Arial,sans-serif;">Sign in to Vitalis OS →</a>
+  </p>
+</td></tr>`
+  return wrapEmail(`You've been invited to Vitalis OS`, body + emailFooter())
+}
+
