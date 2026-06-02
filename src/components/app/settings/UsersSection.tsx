@@ -115,8 +115,12 @@ export function UsersSection() {
   };
 
   const resendInvite = async (m: Member) => {
-    const ok = await sendInviteEmail({ email: m.invited_email!, name: m.invited_name ?? "", message: "", workspaceId });
-    toast({ title: ok ? "Invite resent" : "Invite email failed to send", variant: ok ? undefined : "destructive" });
+    const res = await sendInviteEmail({ email: m.invited_email!, name: m.invited_name ?? "", message: "", workspaceId });
+    toast({
+      title: res.ok ? "Invite resent" : "Invite email failed to send",
+      description: res.ok ? undefined : res.error,
+      variant: res.ok ? undefined : "destructive",
+    });
   };
 
   const cancelInvite = async (m: Member) => {
