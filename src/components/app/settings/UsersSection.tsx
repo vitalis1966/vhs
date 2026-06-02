@@ -115,12 +115,19 @@ export function UsersSection() {
   };
 
   const resendInvite = async (m: Member) => {
-    const res = await sendInviteEmail({ email: m.invited_email!, name: m.invited_name ?? "", message: "", workspaceId });
+    const res = await inviteTeamMember({
+      workspaceId,
+      email: m.invited_email ?? m.profile?.email ?? "",
+      fullName: m.invited_name ?? m.profile?.full_name ?? "",
+      role: m.role,
+      message: "",
+    });
     toast({
       title: res.ok ? "Invite resent" : "Invite email failed to send",
-      description: res.ok ? undefined : res.error,
+      description: res.ok ? (res.reused ? "Existing user — login link sent." : "New temporary password emailed.") : res.error,
       variant: res.ok ? undefined : "destructive",
     });
+    if (res.ok) void load();
   };
 
   const cancelInvite = async (m: Member) => {
