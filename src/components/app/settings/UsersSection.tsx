@@ -265,60 +265,37 @@ export function UsersSection() {
   );
 }
 
-async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<{ ok: boolean; error?: string }> {
+async function inviteTeamMember(p: {
+  workspaceId: string | null;
+  email: string;
+  fullName: string;
+  role: string;
+  message: string;
+}): Promise<{ ok: boolean; error?: string; reused?: boolean; emailSent?: boolean }> {
   if (!p.workspaceId) return { ok: false, error: "Missing workspace" };
-  const signInUrl = `${window.location.origin}/employee-login`;
-  const greeting = p.name ? `Hi ${p.name},` : "Hello,";
-  const messageBlock = p.message
-    ? `<p style="font-size:15px;line-height:1.6;color:#374151;margin:0 0 16px;white-space:pre-wrap;">${escapeHtml(p.message)}</p>`
-    : "";
-  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f5f3ee;font-family:Helvetica,Arial,sans-serif;color:#1f2937;">
-  <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e6e1d6;">
-    <div style="background:#ffffff;border-bottom:2px solid #4a6741;padding:20px 28px;">
-      <div style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#1C3D2E;letter-spacing:0.5px;">Vitalis Health Strategies</div>
-    </div>
-    <div style="height:4px;background:#c9a84c;"></div>
-    <div style="padding:32px 28px;">
-      <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.3;margin:0 0 16px;color:#1C3D2E;">You've been invited to Vitalis OS</h1>
-      <p style="font-size:15px;line-height:1.6;color:#374151;margin:0 0 16px;">${escapeHtml(greeting)}</p>
-      <p style="font-size:15px;line-height:1.6;color:#374151;margin:0 0 16px;">You've been invited to join the Vitalis OS workspace. Sign in with this email address (<strong>${escapeHtml(p.email)}</strong>) to accept and get started.</p>
-      ${messageBlock}
-      <a href="${signInUrl}" style="display:inline-block;background:#1C3D2E;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:14px;margin-top:8px;">Sign in to Vitalis OS</a>
-      <p style="font-size:12px;color:#9ca3af;margin:24px 0 0;">If the button doesn't work, paste this URL into your browser: ${signInUrl}</p>
-    </div>
-    <div style="padding:20px 28px;border-top:1px solid #e6e1d6;font-size:11px;color:#9ca3af;">
-      You're receiving this because you were invited to a Vitalis Health Strategies workspace.
-    </div>
-  </div></body></html>`;
-  const text = `${greeting}\n\nYou've been invited to join the Vitalis OS workspace. Sign in with ${p.email} at ${signInUrl} to accept.${p.message ? `\n\nMessage: ${p.message}` : ""}`;
+  if (!p.email) return { ok: false, error: "Missing email" };
+  const loginUrl = `${window.location.origin}/employee-login`;
   try {
-    const { data, error } = await (supabase as any).functions.invoke("send-email", {
+    const { data, error } = await (supabase as any).functions.invoke("admin-invite-team-member", {
       body: {
         workspace_id: p.workspaceId,
-        subject: "You have been invited to Vitalis OS",
-        body_html: html,
-        body_text: text,
-        to: [p.email],
+        email: p.email.toLowerCase().trim(),
+        full_name: p.fullName,
+        role: p.role,
+        message: p.message,
+        login_url: loginUrl,
       },
     });
-    if (error) {
-      console.error("sendInviteEmail invoke error", error);
-      return { ok: false, error: error.message ?? "Email request failed" };
+    if (error) return { ok: false, error: error.message ?? "Invite request failed" };
+    if (!data || data.success !== true) {
+      return { ok: false, error: data?.error ?? "Invite failed" };
     }
-    if (data && data.success === false) {
-      const first = Array.isArray(data.results) ? data.results.find((r: any) => !r.ok) : null;
-      let msg = first?.error ?? "Email provider rejected the send";
-      try {
-        const parsed = JSON.parse(msg);
-        if (parsed?.message) msg = parsed.message;
-      } catch { /* ignore */ }
-      console.error("sendInviteEmail provider error", msg);
-      return { ok: false, error: msg };
+    if (data.email_sent === false) {
+      return { ok: false, error: data.email_error ?? "Invite created but email failed", reused: data.reused };
     }
-    return { ok: true };
+    return { ok: true, reused: !!data.reused, emailSent: true };
   } catch (e: any) {
-    console.error("sendInviteEmail exception", e);
-    return { ok: false, error: e?.message ?? "Unexpected error sending invite email" };
+    return { ok: false, error: e?.message ?? "Unexpected error" };
   }
 }
 
