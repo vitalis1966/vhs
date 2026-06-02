@@ -2625,6 +2625,10 @@ export type Database = {
         Returns: boolean
       }
       intake_exists: { Args: { p_id: string }; Returns: boolean }
+      is_task_assignee: {
+        Args: { _task_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_workspace_admin: { Args: { wid: string }; Returns: boolean }
       is_workspace_member: { Args: { wid: string }; Returns: boolean }
       move_to_dlq: {
@@ -2653,6 +2657,7 @@ export type Database = {
         }
         Returns: string
       }
+      task_workspace_id: { Args: { _task_id: string }; Returns: string }
       update_session_by_token: {
         Args: {
           p_current_section_index?: number

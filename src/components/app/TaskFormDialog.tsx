@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { PRIORITIES } from "./taskUtils";
 
@@ -33,6 +34,7 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
   const [dueDate, setDueDate] = useState("");
   const [statusId, setStatusId] = useState<string>("");
   const [assigneeId, setAssigneeId] = useState<string>(UNASSIGNED);
+  const [summary, setSummary] = useState("");
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name: string; client_id: string }>>([]);
   const [statuses, setStatuses] = useState<Array<{ id: string; name: string; position: number }>>([]);
@@ -46,6 +48,7 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setPriority("Medium");
     setDueDate(defaultDueDate ?? "");
     setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
+    setSummary("");
   }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId]);
 
   useEffect(() => {
@@ -78,6 +81,10 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     if (!clientId) return toast.error("Client is required");
     setSaving(true);
     try {
+      const trimmedSummary = summary.trim();
+      const descriptionJson = trimmedSummary
+        ? { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: trimmedSummary }] }] }
+        : null;
       const payload: any = {
         workspace_id: workspaceId, client_id: clientId,
         project_id: projectId === "none" ? null : projectId,
@@ -85,6 +92,8 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
         due_date: dueDate || null,
         status_id: statusId || null,
         created_by: userId,
+        description: descriptionJson,
+        description_text: trimmedSummary || null,
       };
       const { data, error } = await (supabase as any).from("tasks").insert(payload).select().single();
       if (error) throw error;
@@ -197,6 +206,16 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
           <div>
             <Label htmlFor="t-due">Due Date</Label>
             <Input id="t-due" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="t-summary">Task Summary</Label>
+            <Textarea
+              id="t-summary"
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="Describe what needs to be done…"
+              rows={4}
+            />
           </div>
         </div>
         <DialogFooter>
