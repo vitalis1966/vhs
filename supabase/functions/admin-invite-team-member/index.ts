@@ -76,7 +76,13 @@ Deno.serve(async (req) => {
     })
     if (cErr) {
       const msg = cErr.message || ''
-      const exists = /already (registered|exists)/i.test(msg) || /duplicate/i.test(msg)
+      const code = (cErr as { code?: string }).code || ''
+      const status = (cErr as { status?: number }).status || 0
+      const exists = code === 'email_exists'
+        || status === 422
+        || /already (been )?(registered|exists)/i.test(msg)
+        || /duplicate/i.test(msg)
+        || /email.*exists/i.test(msg)
       if (!exists) return json(400, { error: msg || 'Failed to create user' })
       // Find existing user
       // Page through users to find by email
