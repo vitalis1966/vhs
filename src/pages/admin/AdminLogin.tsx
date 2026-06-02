@@ -24,9 +24,11 @@ export default function AdminLogin() {
 
     if (error) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } else {
-      navigate("/admin");
+      setLoading(false);
+      return;
     }
+
+    navigate("/admin");
     setLoading(false);
   };
 

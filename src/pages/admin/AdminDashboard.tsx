@@ -2,12 +2,18 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare, ShieldCheck, ScrollText, Users } from "lucide-react";
+import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare, ShieldCheck, ScrollText, Users, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
 const adminPages = [
+  {
+    title: "Vitalis OS",
+    description: "Go to Vitalis OS: clients, projects, tasks, meetings, and dashboards.",
+    href: "/app/home",
+    icon: LayoutDashboard,
+  },
   {
     title: "Assessment Builder",
     description: "Create and manage assessment questionnaires, sections, and questions.",

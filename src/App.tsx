@@ -25,6 +25,7 @@ const AssessmentClient = lazy(() => import("./pages/assessment/AssessmentClient"
 const AssessmentReport = lazy(() => import("./pages/assessment/AssessmentReport"));
 const ClientReportView = lazy(() => import("./pages/ClientReportView"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const EmployeeLogin = lazy(() => import("./pages/EmployeeLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AssessmentList = lazy(() => import("./pages/admin/AssessmentList"));
 const AssessmentEditor = lazy(() => import("./pages/admin/AssessmentEditor"));
@@ -63,6 +64,20 @@ const ClientUsersAdmin = lazy(() => import("./pages/admin/ClientUsersAdmin"));
 const ClientDocumentsAdmin = lazy(() => import("./pages/admin/ClientDocumentsAdmin"));
 const ClientDocumentsPortal = lazy(() => import("./pages/portal/ClientDocuments"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AppGuard = lazy(() => import("@/components/app/AppGuard").then(m => ({ default: m.AppGuard })));
+const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ default: m.AppLayout })));
+const AppIndex = lazy(() => import("./pages/app/AppIndex"));
+const SetupWorkspace = lazy(() => import("./pages/app/SetupWorkspace"));
+const AppHome = lazy(() => import("./pages/app/Home"));
+const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
+const AppClients = lazy(() => import("./pages/app/Clients"));
+const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
+const AppProjects = lazy(() => import("./pages/app/Projects"));
+const AppProjectDetail = lazy(() => import("./pages/app/ProjectDetail"));
+const AppTasks = lazy(() => import("./pages/app/Tasks"));
+const AppDashboards = lazy(() => import("./pages/app/LeadershipDashboard"));
+const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSettings"));
+const AppSettings = lazy(() => import("./pages/app/Settings"));
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -141,6 +156,7 @@ const App = () => (
               <Route path="/assessment/:token/report" element={<AssessmentReport />} />
               <Route path="/report/:token" element={<ClientReportView />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/employee-login" element={<EmployeeLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/assessments" element={<AdminGuard><AssessmentList /></AdminGuard>} />
               <Route path="/admin/assessments/:id" element={<AdminGuard><AssessmentEditor /></AdminGuard>} />
@@ -173,6 +189,20 @@ const App = () => (
               <Route path="/admin/client-management/users" element={<AdminGuard><ClientUsersAdmin /></AdminGuard>} />
               <Route path="/admin/client-management/documents" element={<AdminGuard><ClientDocumentsAdmin /></AdminGuard>} />
               <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
+              <Route path="/app/setup" element={<Navigate to="/app" replace />} />
+              <Route path="/app" element={<AppGuard><AppLayout /></AppGuard>}>
+                <Route index element={<AppIndex />} />
+                <Route path="home" element={<AppHome />} />
+                <Route path="my-tasks" element={<AppMyTasks />} />
+                <Route path="clients" element={<AppClients />} />
+                <Route path="clients/:clientId" element={<AppClientDetail />} />
+                <Route path="clients/:clientId/projects/:projectId" element={<AppProjectDetail />} />
+                <Route path="projects" element={<AppProjects />} />
+                <Route path="tasks" element={<AppTasks />} />
+                <Route path="dashboards" element={<AppDashboards />} />
+                <Route path="settings/notifications" element={<AppNotificationSettings />} />
+                <Route path="settings" element={<AppSettings />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -14,6 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          actor_id: string | null
+          client_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_type: string | null
+          verb: string
+          workspace_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+          verb: string
+          workspace_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+          verb?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_logs: {
         Row: {
           action: string
@@ -425,6 +483,68 @@ export type Database = {
         }
         Relationships: []
       }
+      attachments: {
+        Row: {
+          attachable_id: string
+          attachable_type: string
+          document_id: string
+          id: string
+        }
+        Insert: {
+          attachable_id: string
+          attachable_type: string
+          document_id: string
+          id?: string
+        }
+        Update: {
+          attachable_id?: string
+          attachable_type?: string
+          document_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attachments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "platform_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_members: {
+        Row: {
+          client_id: string
+          role_on_account: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          role_on_account?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          role_on_account?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_members_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_report_edits: {
         Row: {
           created_at: string | null
@@ -535,6 +655,76 @@ export type Database = {
         }
         Relationships: []
       }
+      clients: {
+        Row: {
+          account_owner_id: string | null
+          created_at: string
+          created_by: string | null
+          health_score: number | null
+          id: string
+          industry: string | null
+          name: string
+          start_date: string | null
+          status: string | null
+          summary: string | null
+          updated_at: string
+          website: string | null
+          workspace_id: string
+        }
+        Insert: {
+          account_owner_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          health_score?: number | null
+          id?: string
+          industry?: string | null
+          name: string
+          start_date?: string | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+          website?: string | null
+          workspace_id: string
+        }
+        Update: {
+          account_owner_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          health_score?: number | null
+          id?: string
+          industry?: string | null
+          name?: string
+          start_date?: string | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+          website?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_account_owner_id_fkey"
+            columns: ["account_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           area_of_interest: string | null
@@ -570,6 +760,44 @@ export type Database = {
           submitted_at?: string | null
         }
         Relationships: []
+      }
+      contacts: {
+        Row: {
+          client_id: string
+          email: string | null
+          id: string
+          is_primary: boolean | null
+          name: string
+          phone: string | null
+          title: string | null
+        }
+        Insert: {
+          client_id: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          phone?: string | null
+          title?: string | null
+        }
+        Update: {
+          client_id?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          phone?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documents: {
         Row: {
@@ -729,6 +957,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body_html: string
+          body_text: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          subject?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       email_unsubscribe_tokens: {
         Row: {
           created_at: string
@@ -870,6 +1134,414 @@ export type Database = {
           },
         ]
       }
+      meeting_action_items: {
+        Row: {
+          converted_task_id: string | null
+          description: string
+          due_date: string | null
+          id: string
+          meeting_id: string
+          owner_id: string | null
+          position: number
+          priority: string
+        }
+        Insert: {
+          converted_task_id?: string | null
+          description: string
+          due_date?: string | null
+          id?: string
+          meeting_id: string
+          owner_id?: string | null
+          position?: number
+          priority?: string
+        }
+        Update: {
+          converted_task_id?: string | null
+          description?: string
+          due_date?: string | null
+          id?: string
+          meeting_id?: string
+          owner_id?: string | null
+          position?: number
+          priority?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_action_items_converted_task_id_fkey"
+            columns: ["converted_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_action_items_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_action_items_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_attendees: {
+        Row: {
+          meeting_id: string
+          user_id: string
+        }
+        Insert: {
+          meeting_id: string
+          user_id: string
+        }
+        Update: {
+          meeting_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendees_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_decisions: {
+        Row: {
+          content: string
+          id: string
+          meeting_id: string
+          position: number
+        }
+        Insert: {
+          content: string
+          id?: string
+          meeting_id: string
+          position?: number
+        }
+        Update: {
+          content?: string
+          id?: string
+          meeting_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_decisions_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          external_attendees: string[]
+          id: string
+          meeting_date: string
+          next_meeting_date: string | null
+          project_id: string | null
+          summary: Json | null
+          summary_text: string | null
+          title: string
+          topics: string[]
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          external_attendees?: string[]
+          id?: string
+          meeting_date?: string
+          next_meeting_date?: string | null
+          project_id?: string | null
+          summary?: Json | null
+          summary_text?: string | null
+          title: string
+          topics?: string[]
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          external_attendees?: string[]
+          id?: string
+          meeting_date?: string
+          next_meeting_date?: string | null
+          project_id?: string | null
+          summary?: Json | null
+          summary_text?: string | null
+          title?: string
+          topics?: string[]
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestones: {
+        Row: {
+          completed_at: string | null
+          due_date: string | null
+          id: string
+          project_id: string
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          due_date?: string | null
+          id?: string
+          project_id: string
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          due_date?: string | null
+          id?: string
+          project_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          body: Json | null
+          body_text: string | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          project_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          body?: Json | null
+          body_text?: string | null
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          project_id?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          body?: Json | null
+          body_text?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          project_id?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          body: string | null
+          created_at: string
+          email_status: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          is_read: boolean
+          link_url: string | null
+          title: string | null
+          type: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          body?: string | null
+          created_at?: string
+          email_status?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean
+          link_url?: string | null
+          title?: string | null
+          type: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          body?: string | null
+          created_at?: string
+          email_status?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean
+          link_url?: string | null
+          title?: string | null
+          type?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_documents: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platform_documents_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_cases: {
         Row: {
           body: string | null
@@ -951,6 +1623,163 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          last_active_at: string | null
+          notification_channels: Json
+          notification_preferences: Json
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          last_active_at?: string | null
+          notification_channels?: Json
+          notification_preferences?: Json
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          last_active_at?: string | null
+          notification_channels?: Json
+          notification_preferences?: Json
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          client_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          start_date: string | null
+          status: string | null
+          target_date: string | null
+          workspace_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_date?: string | null
+          workspace_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_date?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sent_emails: {
+        Row: {
+          attachments: Json
+          bcc_addresses: Json
+          body_html: string | null
+          body_text: string | null
+          cc_addresses: Json
+          client_id: string | null
+          created_at: string
+          error_message: string | null
+          from_address: string
+          id: string
+          is_broadcast: boolean
+          resend_message_id: string | null
+          sent_at: string
+          sent_by: string | null
+          status: string
+          subject: string
+          to_addresses: Json
+          workspace_id: string
+        }
+        Insert: {
+          attachments?: Json
+          bcc_addresses?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_address: string
+          id?: string
+          is_broadcast?: boolean
+          resend_message_id?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+          subject: string
+          to_addresses?: Json
+          workspace_id: string
+        }
+        Update: {
+          attachments?: Json
+          bcc_addresses?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_address?: string
+          id?: string
+          is_broadcast?: boolean
+          resend_message_id?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+          subject?: string
+          to_addresses?: Json
+          workspace_id?: string
         }
         Relationships: []
       }
@@ -1278,6 +2107,281 @@ export type Database = {
         }
         Relationships: []
       }
+      taggings: {
+        Row: {
+          id: string
+          tag_id: string
+          taggable_id: string
+          taggable_type: string
+        }
+        Insert: {
+          id?: string
+          tag_id: string
+          taggable_id: string
+          taggable_type: string
+        }
+        Update: {
+          id?: string
+          tag_id?: string
+          taggable_id?: string
+          taggable_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taggings_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          category: string
+          color: string | null
+          id: string
+          name: string
+          workspace_id: string
+        }
+        Insert: {
+          category?: string
+          color?: string | null
+          id?: string
+          name: string
+          workspace_id: string
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          id?: string
+          name?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_assignees: {
+        Row: {
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_statuses: {
+        Row: {
+          category: string
+          color: string | null
+          id: string
+          name: string
+          position: number
+          workspace_id: string
+        }
+        Insert: {
+          category: string
+          color?: string | null
+          id?: string
+          name: string
+          position?: number
+          workspace_id: string
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          id?: string
+          name?: string
+          position?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_statuses_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          checklist: Json
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: Json | null
+          description_text: string | null
+          due_date: string | null
+          id: string
+          position: number
+          priority: string
+          project_id: string | null
+          status_id: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          checklist?: Json
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: Json | null
+          description_text?: string | null
+          due_date?: string | null
+          id?: string
+          position?: number
+          priority?: string
+          project_id?: string | null
+          status_id?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          checklist?: Json
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: Json | null
+          description_text?: string | null
+          due_date?: string | null
+          id?: string
+          position?: number
+          priority?: string
+          project_id?: string | null
+          status_id?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "task_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          id: string
+          name: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1299,12 +2403,127 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_members: {
+        Row: {
+          created_at: string
+          id: string
+          invited_at: string | null
+          invited_by: string | null
+          invited_email: string | null
+          invited_name: string | null
+          role: string
+          status: string
+          user_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          invited_email?: string | null
+          invited_name?: string | null
+          role?: string
+          status?: string
+          user_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          invited_email?: string | null
+          invited_name?: string | null
+          role?: string
+          status?: string
+          user_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          date_format: string | null
+          default_account_owner_id: string | null
+          default_industry: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          notification_config: Json
+          primary_color: string | null
+          role_permissions: Json
+          security_config: Json
+          slug: string
+          time_zone: string | null
+          updated_at: string
+          workspace_config: Json
+        }
+        Insert: {
+          created_at?: string
+          date_format?: string | null
+          default_account_owner_id?: string | null
+          default_industry?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          notification_config?: Json
+          primary_color?: string | null
+          role_permissions?: Json
+          security_config?: Json
+          slug: string
+          time_zone?: string | null
+          updated_at?: string
+          workspace_config?: Json
+        }
+        Update: {
+          created_at?: string
+          date_format?: string | null
+          default_account_owner_id?: string | null
+          default_industry?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          notification_config?: Json
+          primary_color?: string | null
+          role_permissions?: Json
+          security_config?: Json
+          slug?: string
+          time_zone?: string | null
+          updated_at?: string
+          workspace_config?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      accept_pending_invites: {
+        Args: { p_email: string; p_user_id: string }
+        Returns: number
+      }
+      can_access_client: { Args: { cid: string }; Returns: boolean }
       cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
+      create_workspace_for_user: {
+        Args: {
+          p_email: string
+          p_full_name: string
+          p_user_id: string
+          p_workspace_name: string
+        }
+        Returns: string
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1383,6 +2602,18 @@ export type Database = {
           updated_at: string
         }[]
       }
+      global_search: {
+        Args: { p_query: string; p_workspace_id: string }
+        Returns: {
+          client_id: string
+          id: string
+          kind: string
+          project_id: string
+          rank: number
+          subtitle: string
+          title: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1391,6 +2622,8 @@ export type Database = {
         Returns: boolean
       }
       intake_exists: { Args: { p_id: string }; Returns: boolean }
+      is_workspace_admin: { Args: { wid: string }; Returns: boolean }
+      is_workspace_member: { Args: { wid: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1437,6 +2670,7 @@ export type Database = {
         }
         Returns: string
       }
+      workspace_role: { Args: { wid: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "client"
