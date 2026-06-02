@@ -342,8 +342,12 @@ function InviteDialog({ open, onClose, clients, onInvited }:
     }).select("id").single();
     if (error) { toast({ title: "Invite failed", description: error.message, variant: "destructive" }); setSaving(false); return; }
     // pre-link clients via invited_email by waiting until user accepts is complex; for now skip pre-link until they activate.
-    const ok = await sendInviteEmail({ email: form.email, name: form.name, message: form.message, workspaceId });
-    toast({ title: ok ? "Invitation sent" : "Invite created, but email failed to send", variant: ok ? undefined : "destructive" });
+    const res = await sendInviteEmail({ email: form.email, name: form.name, message: form.message, workspaceId });
+    toast({
+      title: res.ok ? "Invitation sent" : "Invite created, but email failed to send",
+      description: res.ok ? undefined : res.error,
+      variant: res.ok ? undefined : "destructive",
+    });
     setSaving(false);
     onInvited();
     setForm({ name: "", email: "", role: "team_member", message: "" });
