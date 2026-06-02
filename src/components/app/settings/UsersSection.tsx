@@ -115,8 +115,12 @@ export function UsersSection() {
   };
 
   const resendInvite = async (m: Member) => {
-    const ok = await sendInviteEmail({ email: m.invited_email!, name: m.invited_name ?? "", message: "", workspaceId });
-    toast({ title: ok ? "Invite resent" : "Invite email failed to send", variant: ok ? undefined : "destructive" });
+    const res = await sendInviteEmail({ email: m.invited_email!, name: m.invited_name ?? "", message: "", workspaceId });
+    toast({
+      title: res.ok ? "Invite resent" : "Invite email failed to send",
+      description: res.ok ? undefined : res.error,
+      variant: res.ok ? undefined : "destructive",
+    });
   };
 
   const cancelInvite = async (m: Member) => {
@@ -254,8 +258,8 @@ export function UsersSection() {
   );
 }
 
-async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<boolean> {
-  if (!p.workspaceId) return false;
+async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<{ ok: boolean; error?: string }> {
+  if (!p.workspaceId) return { ok: false, error: "Missing workspace" };
   const signInUrl = `${window.location.origin}/employee-login`;
   const greeting = p.name ? `Hi ${p.name},` : "Hello,";
   const messageBlock = p.message
@@ -281,7 +285,7 @@ async function sendInviteEmail(p: { email: string; name: string; message: string
   </div></body></html>`;
   const text = `${greeting}\n\nYou've been invited to join the Vitalis OS workspace. Sign in with ${p.email} at ${signInUrl} to accept.${p.message ? `\n\nMessage: ${p.message}` : ""}`;
   try {
-    const { error } = await (supabase as any).functions.invoke("send-email", {
+    const { data, error } = await (supabase as any).functions.invoke("send-email", {
       body: {
         workspace_id: p.workspaceId,
         subject: "You have been invited to Vitalis OS",
@@ -290,11 +294,24 @@ async function sendInviteEmail(p: { email: string; name: string; message: string
         to: [p.email],
       },
     });
-    if (error) { console.error("sendInviteEmail error", error); return false; }
-    return true;
-  } catch (e) {
+    if (error) {
+      console.error("sendInviteEmail invoke error", error);
+      return { ok: false, error: error.message ?? "Email request failed" };
+    }
+    if (data && data.success === false) {
+      const first = Array.isArray(data.results) ? data.results.find((r: any) => !r.ok) : null;
+      let msg = first?.error ?? "Email provider rejected the send";
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed?.message) msg = parsed.message;
+      } catch { /* ignore */ }
+      console.error("sendInviteEmail provider error", msg);
+      return { ok: false, error: msg };
+    }
+    return { ok: true };
+  } catch (e: any) {
     console.error("sendInviteEmail exception", e);
-    return false;
+    return { ok: false, error: e?.message ?? "Unexpected error sending invite email" };
   }
 }
 
@@ -325,8 +342,12 @@ function InviteDialog({ open, onClose, clients, onInvited }:
     }).select("id").single();
     if (error) { toast({ title: "Invite failed", description: error.message, variant: "destructive" }); setSaving(false); return; }
     // pre-link clients via invited_email by waiting until user accepts is complex; for now skip pre-link until they activate.
-    const ok = await sendInviteEmail({ email: form.email, name: form.name, message: form.message, workspaceId });
-    toast({ title: ok ? "Invitation sent" : "Invite created, but email failed to send", variant: ok ? undefined : "destructive" });
+    const res = await sendInviteEmail({ email: form.email, name: form.name, message: form.message, workspaceId });
+    toast({
+      title: res.ok ? "Invitation sent" : "Invite created, but email failed to send",
+      description: res.ok ? undefined : res.error,
+      variant: res.ok ? undefined : "destructive",
+    });
     setSaving(false);
     onInvited();
     setForm({ name: "", email: "", role: "team_member", message: "" });
