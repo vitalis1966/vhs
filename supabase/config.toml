@@ -45,5 +45,7 @@ project_id = "ilbhphreyvaoomhpvaxi"
     verify_jwt = false
   [functions.admin-delete-user]
     verify_jwt = false
+  [functions.admin-invite-team-member]
+    verify_jwt = false
   [functions.notify-document-event]
     verify_jwt = false

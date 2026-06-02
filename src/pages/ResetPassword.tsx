@@ -45,11 +45,18 @@ export default function ResetPassword() {
       return;
     }
     try { await (supabase as any).from("activity_logs").insert({ user_name: user?.email || "unknown", action: "Password Reset", status: "Success" }); } catch {}
+    if (user) {
+      try { await (supabase as any).from("profiles").update({ must_change_password: false }).eq("id", user.id); } catch {}
+    }
     toast({ title: "Password updated", description: "Redirecting…" });
     // Determine destination
     if (user) {
       const { data: isAdmin } = await (supabase as any).rpc("has_role", { _user_id: user.id, _role: "admin" });
-      if (isAdmin) navigate("/admin"); else navigate("/portal/documents");
+      if (isAdmin) { navigate("/admin"); return; }
+      const { data: memberships } = await (supabase as any)
+        .from("workspace_members").select("workspace_id").eq("user_id", user.id).eq("status", "active").limit(1);
+      if (memberships && memberships.length > 0) navigate("/app/home");
+      else navigate("/portal/documents");
     } else {
       navigate("/");
     }
