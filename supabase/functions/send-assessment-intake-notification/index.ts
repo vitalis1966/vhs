@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'Vitalis Health Strategies <info@vitalisstrategies.com>',
+        from: 'Vitalis Health Strategies <noreply@mail.vitalisstrategies.com>',
         to: ['info@vitalisstrategies.com'],
         reply_to: 'info@vitalisstrategies.com',
         subject: resolvedSubject,

@@ -4,7 +4,7 @@ const RESEND_API_KEY = Deno.env.get('VHS_Website')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-const FROM = 'Vitalis Health Strategies <info@vitalisstrategies.com>'
+const FROM = 'Vitalis Health Strategies <noreply@mail.vitalisstrategies.com>'
 const REPLY_TO = 'info@vitalisstrategies.com'
 const INTERNAL_TO = 'info@vitalisstrategies.com'
 const LOGO_URL = 'https://vitalisstrategies.com/vitalis-logo-email.png'
