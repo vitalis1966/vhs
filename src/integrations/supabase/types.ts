@@ -1634,6 +1634,7 @@ export type Database = {
           full_name: string | null
           id: string
           last_active_at: string | null
+          must_change_password: boolean
           notification_channels: Json
           notification_preferences: Json
         }
@@ -1644,6 +1645,7 @@ export type Database = {
           full_name?: string | null
           id: string
           last_active_at?: string | null
+          must_change_password?: boolean
           notification_channels?: Json
           notification_preferences?: Json
         }
@@ -1654,6 +1656,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_active_at?: string | null
+          must_change_password?: boolean
           notification_channels?: Json
           notification_preferences?: Json
         }
