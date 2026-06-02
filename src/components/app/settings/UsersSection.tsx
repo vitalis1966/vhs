@@ -314,25 +314,24 @@ function InviteDialog({ open, onClose, clients, onInvited }:
   const submit = async () => {
     if (!form.email || !workspaceId) return;
     setSaving(true);
-    const { data: row, error } = await (supabase as any).from("workspace_members").insert({
-      workspace_id: workspaceId,
-      user_id: null,
-      invited_email: form.email.toLowerCase().trim(),
-      invited_name: form.name,
+    const res = await inviteTeamMember({
+      workspaceId,
+      email: form.email,
+      fullName: form.name,
       role: form.role,
-      status: "pending",
-      invited_at: new Date().toISOString(),
-      invited_by: userId,
-    }).select("id").single();
-    if (error) { toast({ title: "Invite failed", description: error.message, variant: "destructive" }); setSaving(false); return; }
-    // pre-link clients via invited_email by waiting until user accepts is complex; for now skip pre-link until they activate.
-    const res = await sendInviteEmail({ email: form.email, name: form.name, message: form.message, workspaceId });
-    toast({
-      title: res.ok ? "Invitation sent" : "Invite created, but email failed to send",
-      description: res.ok ? undefined : res.error,
-      variant: res.ok ? undefined : "destructive",
+      message: form.message,
     });
     setSaving(false);
+    if (!res.ok) {
+      toast({ title: "Invite failed", description: res.error, variant: "destructive" });
+      return;
+    }
+    toast({
+      title: "Invitation sent",
+      description: res.reused
+        ? "User already had an account — they were added to the workspace."
+        : "Temporary password emailed to the user.",
+    });
     onInvited();
     setForm({ name: "", email: "", role: "team_member", message: "" });
     setClientIds([]);
