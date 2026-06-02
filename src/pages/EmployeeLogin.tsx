@@ -29,6 +29,22 @@ export default function EmployeeLogin() {
     }
 
     if (data.user) {
+      const { data: profile } = await (supabase as any)
+        .from("profiles")
+        .select("must_change_password")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (profile?.must_change_password) {
+        toast({
+          title: "Please set a new password",
+          description: "You're using a temporary password. Choose a permanent one to continue.",
+        });
+        navigate("/reset-password");
+        setLoading(false);
+        return;
+      }
+
       const { data: memberships } = await (supabase as any)
         .from("workspace_members")
         .select("workspace_id")
