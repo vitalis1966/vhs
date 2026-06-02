@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { sendNotification } from "@/lib/notify";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,8 @@ interface Props {
   onCreated?: (task: any) => void;
 }
 
+const UNASSIGNED = "unassigned";
+
 export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, onCreated }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
@@ -29,9 +32,11 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
   const [priority, setPriority] = useState("Medium");
   const [dueDate, setDueDate] = useState("");
   const [statusId, setStatusId] = useState<string>("");
+  const [assigneeId, setAssigneeId] = useState<string>(UNASSIGNED);
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name: string; client_id: string }>>([]);
   const [statuses, setStatuses] = useState<Array<{ id: string; name: string; position: number }>>([]);
+  const [members, setMembers] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -40,20 +45,27 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setProjectId(defaultProjectId ?? "none");
     setPriority("Medium");
     setDueDate(defaultDueDate ?? "");
-  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate]);
+    setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
+  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
     (async () => {
-      const [c, p, s] = await Promise.all([
+      const [c, p, s, wm] = await Promise.all([
         (supabase as any).from("clients").select("id, name").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("projects").select("id, name, client_id").eq("workspace_id", workspaceId).order("name"),
         (supabase as any).from("task_statuses").select("id, name, position").eq("workspace_id", workspaceId).order("position"),
+        (supabase as any).from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active").not("user_id", "is", null),
       ]);
       setClients(c.data ?? []);
       setProjects(p.data ?? []);
       setStatuses(s.data ?? []);
       if (s.data?.length && !statusId) setStatusId(s.data[0].id);
+      const ids = (wm.data ?? []).map((m: any) => m.user_id);
+      if (ids.length) {
+        const { data: profs } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", ids);
+        setMembers(profs ?? []);
+      } else setMembers([]);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, workspaceId]);
@@ -76,9 +88,36 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
       };
       const { data, error } = await (supabase as any).from("tasks").insert(payload).select().single();
       if (error) throw error;
-      if (defaultAssigneeId) {
-        await (supabase as any).from("task_assignees").insert({ task_id: data.id, user_id: defaultAssigneeId });
+
+      const finalAssignee = assigneeId !== UNASSIGNED ? assigneeId : null;
+      if (finalAssignee) {
+        await (supabase as any).from("task_assignees").insert({ task_id: data.id, user_id: finalAssignee });
+        await (supabase as any).from("activities").insert({
+          workspace_id: workspaceId, actor_id: userId, verb: "assigned",
+          target_type: "task", target_id: data.id, client_id: clientId,
+          metadata: { title: data.title, assignee_id: finalAssignee },
+        });
+        if (finalAssignee !== userId) {
+          const clientName = clients.find((c) => c.id === clientId)?.name;
+          const bodyParts = [
+            clientName ? `Client: ${clientName}` : null,
+            dueDate ? `Due: ${dueDate}` : null,
+          ].filter(Boolean);
+          await sendNotification({
+            user_id: finalAssignee,
+            type: "task_assigned",
+            title: `New task assigned: ${data.title}`,
+            body: bodyParts.join(" • ") || null,
+            link_url: `/app/tasks?task=${data.id}`,
+            entity_type: "task",
+            entity_id: data.id,
+            actor_id: userId,
+            workspace_id: workspaceId,
+            email_subject: `New task assigned: ${data.title}`,
+          });
+        }
       }
+
       await (supabase as any).from("activities").insert({
         workspace_id: workspaceId, actor_id: userId, verb: "created",
         target_type: "task", target_id: data.id, client_id: clientId,
@@ -91,6 +130,9 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
       toast.error(e.message ?? "Failed to create task");
     } finally { setSaving(false); }
   };
+
+  const memberLabel = (m: { full_name: string | null; email: string | null }) =>
+    m.full_name?.trim() || m.email || "Unknown user";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,6 +181,18 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div>
+            <Label>Assignee</Label>
+            <Select value={assigneeId} onValueChange={setAssigneeId}>
+              <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={UNASSIGNED}>Unassigned</SelectItem>
+                {members.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{memberLabel(m)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="t-due">Due Date</Label>
