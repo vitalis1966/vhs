@@ -259,7 +259,7 @@ export function UsersSection() {
 }
 
 async function sendInviteEmail(p: { email: string; name: string; message: string; workspaceId: string | null }): Promise<{ ok: boolean; error?: string }> {
-  if (!p.workspaceId) return false;
+  if (!p.workspaceId) return { ok: false, error: "Missing workspace" };
   const signInUrl = `${window.location.origin}/employee-login`;
   const greeting = p.name ? `Hi ${p.name},` : "Hello,";
   const messageBlock = p.message
