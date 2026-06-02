@@ -281,7 +281,7 @@ async function sendInviteEmail(p: { email: string; name: string; message: string
   </div></body></html>`;
   const text = `${greeting}\n\nYou've been invited to join the Vitalis OS workspace. Sign in with ${p.email} at ${signInUrl} to accept.${p.message ? `\n\nMessage: ${p.message}` : ""}`;
   try {
-    const { error } = await (supabase as any).functions.invoke("send-email", {
+    const { data, error } = await (supabase as any).functions.invoke("send-email", {
       body: {
         workspace_id: p.workspaceId,
         subject: "You have been invited to Vitalis OS",
@@ -290,11 +290,24 @@ async function sendInviteEmail(p: { email: string; name: string; message: string
         to: [p.email],
       },
     });
-    if (error) { console.error("sendInviteEmail error", error); return false; }
-    return true;
-  } catch (e) {
+    if (error) {
+      console.error("sendInviteEmail invoke error", error);
+      return { ok: false, error: error.message ?? "Email request failed" };
+    }
+    if (data && data.success === false) {
+      const first = Array.isArray(data.results) ? data.results.find((r: any) => !r.ok) : null;
+      let msg = first?.error ?? "Email provider rejected the send";
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed?.message) msg = parsed.message;
+      } catch { /* ignore */ }
+      console.error("sendInviteEmail provider error", msg);
+      return { ok: false, error: msg };
+    }
+    return { ok: true };
+  } catch (e: any) {
     console.error("sendInviteEmail exception", e);
-    return false;
+    return { ok: false, error: e?.message ?? "Unexpected error sending invite email" };
   }
 }
 
