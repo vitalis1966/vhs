@@ -207,6 +207,16 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
             <Label htmlFor="t-due">Due Date</Label>
             <Input id="t-due" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
           </div>
+          <div>
+            <Label htmlFor="t-summary">Task Summary</Label>
+            <Textarea
+              id="t-summary"
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="Describe what needs to be done…"
+              rows={4}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
