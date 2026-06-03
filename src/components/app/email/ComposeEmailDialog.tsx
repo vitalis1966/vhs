@@ -62,9 +62,17 @@ interface Props {
   clientId?: string | null;
   lockClient?: boolean;
   onSent?: () => void;
+  /** Optional pre-populated values (used e.g. when sending a meeting summary) */
+  initialTo?: string[];
+  initialSubject?: string;
+  initialHtml?: string;
 }
 
-export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, onSent }: Props) {
+export function ComposeEmailDialog({
+  open, onOpenChange, clientId, lockClient, onSent,
+  initialTo, initialSubject, initialHtml,
+}: Props) {
+
   const { workspaceId, userId, userFullName } = useWorkspace();
   const [allClients, setAllClients] = useState<ClientLite[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(clientId ?? null);
