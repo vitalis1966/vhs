@@ -2657,6 +2657,7 @@ export type Database = {
         }
         Returns: string
       }
+      shares_workspace_with: { Args: { _other_user: string }; Returns: boolean }
       task_workspace_id: { Args: { _task_id: string }; Returns: string }
       update_session_by_token: {
         Args: {
