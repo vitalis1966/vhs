@@ -149,8 +149,28 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
 
   const applyTemplate = (t: Template) => {
     setSubject(t.subject);
-    if (t.body_html) editor?.commands.setContent(t.body_html);
-    else editor?.commands.setContent(`<p>${t.body_text.replace(/\n/g, "<br/>")}</p>`);
+    if (!editor) return;
+    if (t.body_html) {
+      // Let TipTap handle simple HTML it understands first…
+      editor.commands.setContent(t.body_html, false, { preserveWhitespace: "full" });
+      // …then, if the template contains raw HTML with inline styles / tables /
+      // <div>s that StarterKit strips, inject it directly into the editor DOM
+      // so the user sees the real formatted output. On send we read straight
+      // from the editor's DOM, preserving those inline styles.
+      const looksRaw = /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(
+        t.body_html,
+      );
+      if (looksRaw) {
+        // Defer to next tick so TipTap has finished its own DOM update first.
+        requestAnimationFrame(() => {
+          if (editor?.view?.dom) {
+            editor.view.dom.innerHTML = t.body_html;
+          }
+        });
+      }
+    } else {
+      editor.commands.setContent(`<p>${t.body_text.replace(/\n/g, "<br/>")}</p>`);
+    }
   };
 
   const uploadNewFiles = async (): Promise<DocLite[]> => {
