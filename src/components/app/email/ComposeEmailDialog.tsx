@@ -83,6 +83,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   const [newUploads, setNewUploads] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
   const [docSearch, setDocSearch] = useState("");
+  const [bodyMode, setBodyMode] = useState<BodyMode>("rich");
+  const [htmlSource, setHtmlSource] = useState("");
+  const [showHtmlSource, setShowHtmlSource] = useState(false);
 
   const editor = useEditor({
     extensions: [StarterKit, Link.configure({ openOnClick: false, HTMLAttributes: { class: "underline text-primary" } })],
