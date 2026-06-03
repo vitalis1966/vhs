@@ -108,7 +108,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     setSelectedDocIds(new Set());
     setNewUploads([]);
     editor?.commands.setContent("<p></p>");
-  }, [open, clientId, editor]);
+    setBodyMode("rich");
+    setHtmlSource("");
+    setShowHtmlSource(false);
 
   // Load workspace clients + templates
   useEffect(() => {
