@@ -1,31 +1,70 @@
-## Fixes for New Task
+## Plan: Admin Dashboard — VHS Management Grouping
 
-### 1. Fix "infinite recursion detected in policy for relation tasks"
+### Goal
+Restructure the Admin Dashboard by introducing a **"VHS Management"** grouped container card that houses 8 existing admin cards, while leaving **Vitalis OS** and **Client Management** as untouched standalone top-level cards.
 
-The recursion is caused by mutual references between RLS policies:
-- `tasks.tasks_select` subqueries `task_assignees`
-- `task_assignees.ta_all` subqueries `tasks`
+### What Changes (single file)
+**`src/pages/admin/AdminDashboard.tsx`**
 
-**Migration** (adds SECURITY DEFINER helpers and rewrites the two policies so they don't reference each other):
+### Data Split
+Split the existing `adminPages` array into three parts:
 
-- Add `public.is_task_assignee(_task_id uuid, _user_id uuid)` — SECURITY DEFINER, reads from `task_assignees` only.
-- Add `public.task_workspace_id(_task_id uuid)` — SECURITY DEFINER, reads `workspace_id` from `tasks` only.
-- Drop and recreate `tasks_select`:  
-  `USING (can_access_client(client_id) OR public.is_task_assignee(id, auth.uid()))`
-- Drop and recreate `task_assignees` policies (split into two, neither subqueries `tasks` directly):
-  - `ta_self` — user can manage rows where `user_id = auth.uid()`
-  - `ta_workspace` — workspace members of the task's workspace can manage rows, via `is_workspace_member(public.task_workspace_id(task_id))`
+1. **`standaloneTop`** — cards that remain outside any group (unchanged render logic)
+   - Vitalis OS
 
-No schema changes to tables, no grant changes needed.
+2. **`vhsManagementPages`** — cards moved into the new VHS Management container
+   - Assessment Builder
+   - Submissions Review
+   - Insights
+   - Portfolio
+   - Contact Submissions
+   - SEO Settings
+   - Administrators
+   - Logging
 
-### 2. Add "Task Summary" field to New Task dialog
+3. **`standaloneBottom`** — cards that remain outside any group
+   - Client Management
 
-The `tasks` table already has `description` (jsonb) and `description_text` (text). Reuse them — no migration needed.
+### Layout Structure
+Replace the current single `grid` block with a `space-y-6` container holding three sections:
 
-Frontend change in `src/components/app/TaskFormDialog.tsx`:
-- Add a `summary` textarea state, labelled **Task Summary**, placed below Due Date.
-- On submit, include `description_text: summary || null` and `description: summary ? { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: summary }] }] } : null` in the insert payload, so it shows up correctly in the existing rich-text editor in `TaskDetailPanel`.
+```
+space-y-6
+├── grid (2 cols) — Vitalis OS standalone card
+├── VHS Management card (full width)
+│   ├── Header: "VHS Management" title + subtitle
+│   └── Inner grid (1 / 2 / 4 cols) — 8 compact cards
+└── grid (2 cols) — Client Management standalone card
+```
 
-### Out of scope
-- No changes to `TaskDetailPanel` (it already renders `description` via TaskRichText).
-- No changes to email/notification flow.
+### VHS Management Container Styling
+- Same outer shell as existing cards: `bg-card rounded-2xl shadow-soft border border-border/40 p-6 md:p-8`
+- Header section with:
+  - Title: "VHS Management" (`font-display text-xl font-bold text-foreground`)
+  - Subtitle: "Manage and administer the Vitalis Health Strategies website platform" (`text-sm text-muted-foreground`)
+- No expand/collapse — static grouped panel (simpler, no new component dependencies)
+
+### Inner Card Grid (8 cards)
+- Grid: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4`
+- Each inner card uses the **exact same card style** as today but with slightly more compact padding (`p-6` instead of `p-8`):
+  - `bg-background rounded-xl border border-border/40 p-6 hover:shadow-elevated hover:border-primary/20 transition-all group cursor-pointer`
+  - Same icon container (`h-10 w-10 rounded-lg bg-primary/10`)
+  - Same icon size (`h-5 w-5 text-primary`)
+  - Same title and description pattern, just scaled down slightly for density
+- `motion.div` with existing `initial/animate` props preserved on each inner card
+- All `<Link>` wrappers and `href` values remain identical — zero routing changes
+
+### Standalone Cards (Vitalis OS + Client Management)
+- Rendered in their own `grid grid-cols-1 md:grid-cols-2 gap-6` wrappers
+- **Zero changes** to markup, styling, icons, descriptions, or routing
+- Preserved exactly as they exist today
+
+### What Does NOT Change
+- All card data objects (titles, descriptions, hrefs, icons)
+- All routing paths
+- All data fetching, Supabase calls, auth guards
+- The `Navbar`, `Footer`, `handleLogout`, hero section styling
+- Any other file in the codebase
+
+### Implementation Complexity
+Small — purely presentational refactor of a single component. No new dependencies, no new files, no state changes.
