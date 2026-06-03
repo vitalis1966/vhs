@@ -867,7 +867,7 @@ function ProjectsNearingDeadlineTile() {
       if (!filtered.length) return [];
       const ids = filtered.map((p: any) => p.id);
       const { data: tasks } = await (supabase as any)
-        .from("tasks").select("project_id, completed_at").in("project_id", ids);
+        .from("tasks").select("project_id, completed_at").in("project_id", ids).is("deleted_at", null);
       const total = new Map<string, number>();
       const done = new Map<string, number>();
       for (const t of tasks ?? []) {
