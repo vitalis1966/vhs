@@ -81,6 +81,7 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
   }, [workspaceId, clientId, projectId]);
 
   useEffect(() => { load(); }, [load, reloadKey]);
+  useEffect(() => onTasksChanged(() => load()), [load]);
 
   const filtered = useMemo(() => tasks.filter((t) => {
     if (filters?.status && t.status_id !== filters.status) return false;
