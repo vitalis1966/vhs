@@ -62,9 +62,17 @@ interface Props {
   clientId?: string | null;
   lockClient?: boolean;
   onSent?: () => void;
+  /** Optional pre-populated values (used e.g. when sending a meeting summary) */
+  initialTo?: string[];
+  initialSubject?: string;
+  initialHtml?: string;
 }
 
-export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, onSent }: Props) {
+export function ComposeEmailDialog({
+  open, onOpenChange, clientId, lockClient, onSent,
+  initialTo, initialSubject, initialHtml,
+}: Props) {
+
   const { workspaceId, userId, userFullName } = useWorkspace();
   const [allClients, setAllClients] = useState<ClientLite[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(clientId ?? null);
@@ -101,17 +109,30 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   useEffect(() => {
     if (!open) return;
     setSelectedClientId(clientId ?? null);
-    setToEmails([]); setToInput("");
+    setToEmails(initialTo ?? []); setToInput("");
     setCc([]); setBcc([]); setCcInput(""); setBccInput("");
     setShowCc(false); setShowBcc(false);
-    setSubject("");
+    setSubject(initialSubject ?? "");
     setSelectedDocIds(new Set());
     setNewUploads([]);
-    editor?.commands.setContent("<p></p>");
-    setBodyMode("rich");
-    setHtmlSource("");
-    setShowHtmlSource(false);
-  }, [open, clientId, editor]);
+    if (initialHtml && isRichHtmlContent(initialHtml)) {
+      setBodyMode("html");
+      setHtmlSource(initialHtml);
+      setShowHtmlSource(false);
+      editor?.commands.setContent("<p></p>");
+    } else if (initialHtml) {
+      editor?.commands.setContent(initialHtml);
+      setBodyMode("rich");
+      setHtmlSource("");
+      setShowHtmlSource(false);
+    } else {
+      editor?.commands.setContent("<p></p>");
+      setBodyMode("rich");
+      setHtmlSource("");
+      setShowHtmlSource(false);
+    }
+  }, [open, clientId, editor, initialTo, initialSubject, initialHtml]);
+
 
 
 

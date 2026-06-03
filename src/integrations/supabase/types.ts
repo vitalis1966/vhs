@@ -1252,6 +1252,8 @@ export type Database = {
           next_meeting_date: string | null
           project_id: string | null
           summary: Json | null
+          summary_sent_at: string | null
+          summary_sent_by: string | null
           summary_text: string | null
           title: string
           topics: string[]
@@ -1268,6 +1270,8 @@ export type Database = {
           next_meeting_date?: string | null
           project_id?: string | null
           summary?: Json | null
+          summary_sent_at?: string | null
+          summary_sent_by?: string | null
           summary_text?: string | null
           title: string
           topics?: string[]
@@ -1284,6 +1288,8 @@ export type Database = {
           next_meeting_date?: string | null
           project_id?: string | null
           summary?: Json | null
+          summary_sent_at?: string | null
+          summary_sent_by?: string | null
           summary_text?: string | null
           title?: string
           topics?: string[]
@@ -1310,6 +1316,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_summary_sent_by_fkey"
+            columns: ["summary_sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2247,6 +2260,7 @@ export type Database = {
           description_text: string | null
           due_date: string | null
           id: string
+          meeting_id: string | null
           position: number
           priority: string
           project_id: string | null
@@ -2265,6 +2279,7 @@ export type Database = {
           description_text?: string | null
           due_date?: string | null
           id?: string
+          meeting_id?: string | null
           position?: number
           priority?: string
           project_id?: string | null
@@ -2283,6 +2298,7 @@ export type Database = {
           description_text?: string | null
           due_date?: string | null
           id?: string
+          meeting_id?: string | null
           position?: number
           priority?: string
           project_id?: string | null
@@ -2304,6 +2320,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
             referencedColumns: ["id"]
           },
           {
