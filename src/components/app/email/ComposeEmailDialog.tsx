@@ -225,7 +225,6 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   };
 
   const applyTemplate = (t: Template) => {
-    if (!editor) return;
     const ctx = buildContext();
     const subjectFilled = substitute(t.subject ?? "", ctx);
     setSubject(subjectFilled);
@@ -233,19 +232,24 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     const rawHtml = t.body_html ? substitute(t.body_html, ctx) : "";
     const rawText = t.body_text ? substitute(t.body_text, ctx) : "";
 
-    if (rawHtml) {
-      // Always inject raw HTML so inline styles / tables / divs render exactly
-      // as authored. Reading from editor.view.dom.innerHTML on send preserves it.
+    if (rawHtml && isRichHtmlContent(rawHtml)) {
+      // Switch to HTML preview mode so inline styles / tables / layout render
+      // exactly as they will in the recipient's inbox.
+      setHtmlSource(rawHtml);
+      setBodyMode("html");
+      setShowHtmlSource(false);
+      return;
+    }
+
+    if (rawHtml && editor) {
       editor.commands.setContent(rawHtml);
-      requestAnimationFrame(() => {
-        if (editor?.view?.dom) {
-          editor.view.dom.innerHTML = rawHtml;
-        }
-      });
-    } else {
+      setBodyMode("rich");
+    } else if (editor) {
       editor.commands.setContent(`<p>${rawText.replace(/\n/g, "<br/>")}</p>`);
+      setBodyMode("rich");
     }
   };
+
 
   const uploadNewFiles = async (): Promise<DocLite[]> => {
     if (!newUploads.length || !workspaceId) return [];
