@@ -70,7 +70,7 @@ const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ d
 const AppIndex = lazy(() => import("./pages/app/AppIndex"));
 const SetupWorkspace = lazy(() => import("./pages/app/SetupWorkspace"));
 const AppHome = lazy(() => import("./pages/app/Home"));
-const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
+const AppMyTasks = lazy(() => import("./pages/app/MyTasks"));
 const AppClients = lazy(() => import("./pages/app/Clients"));
 const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
 const AppProjects = lazy(() => import("./pages/app/Projects"));
