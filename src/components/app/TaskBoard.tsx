@@ -42,8 +42,9 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     setStatuses(sRes.data ?? []);
 
     let q = (supabase as any).from("tasks")
-      .select("id, title, status_id, priority, due_date, client_id, completed_at")
-      .eq("workspace_id", workspaceId);
+      .select("id, title, status_id, priority, due_date, client_id, completed_at, meeting_id")
+      .eq("workspace_id", workspaceId)
+      .is("deleted_at", null);
     if (clientId) q = q.eq("client_id", clientId);
     if (projectId) q = q.eq("project_id", projectId);
     const tRes = await q.order("position");
