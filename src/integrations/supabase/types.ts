@@ -2256,6 +2256,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           description: Json | null
           description_text: string | null
           due_date: string | null
@@ -2275,6 +2276,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           description?: Json | null
           description_text?: string | null
           due_date?: string | null
@@ -2294,6 +2296,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           description?: Json | null
           description_text?: string | null
           due_date?: string | null
