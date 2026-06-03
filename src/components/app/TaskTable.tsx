@@ -161,46 +161,45 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
               assigneeIds: aids, dueDate: t.due_date,
             };
             return (
-              <TaskActionsMenu key={t.id} task={target} variant="context" onEdit={onOpenTask} onDeleted={() => setRows((prev) => prev.filter((r) => r.id !== t.id))}>
-                <tr
-                  tabIndex={0}
-                  onKeyDown={(e) => onKey(e, t)}
-                  onClick={() => onOpenTask(t.id)}
-                  className="border-t border-border hover:bg-muted/40 cursor-pointer focus:outline-none focus:bg-muted/40"
-                >
-                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
-                  </td>
-                  <td className="px-3 py-2 font-medium">{t.title}</td>
-                  <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
-                  <td className="px-3 py-2">
-                    {s ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs">
-                        <span className="w-2 h-2 rounded-full" style={{ background: s.color ?? "#94a3b8" }} />
-                        {s.name}
-                      </span>
-                    ) : "—"}
-                  </td>
-                  <td className="px-3 py-2"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
-                  <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(new Date(t.due_date), "MMM d, yyyy") : "—"}</td>
-                  <td className="px-3 py-2">
-                    <div className="flex -space-x-1.5">
-                      {aids.slice(0, 3).map((uid) => {
-                        const pr = profiles[uid];
-                        return (
-                          <Avatar key={uid} className="h-6 w-6 border border-background">
-                            <AvatarFallback className="text-[10px]">{initials(pr?.full_name ?? pr?.email)}</AvatarFallback>
-                          </Avatar>
-                        );
-                      })}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                    <TaskActionsMenu task={target} onEdit={onOpenTask} onDeleted={() => setRows((prev) => prev.filter((r) => r.id !== t.id))} />
-                  </td>
-                </tr>
-              </TaskActionsMenu>
+              <tr
+                key={t.id}
+                tabIndex={0}
+                onKeyDown={(e) => onKey(e, t)}
+                onClick={() => onOpenTask(t.id)}
+                className="border-t border-border hover:bg-muted/40 cursor-pointer focus:outline-none focus:bg-muted/40"
+              >
+                <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
+                </td>
+                <td className="px-3 py-2 font-medium">{t.title}</td>
+                <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
+                <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
+                <td className="px-3 py-2">
+                  {s ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs">
+                      <span className="w-2 h-2 rounded-full" style={{ background: s.color ?? "#94a3b8" }} />
+                      {s.name}
+                    </span>
+                  ) : "—"}
+                </td>
+                <td className="px-3 py-2"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
+                <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(new Date(t.due_date), "MMM d, yyyy") : "—"}</td>
+                <td className="px-3 py-2">
+                  <div className="flex -space-x-1.5">
+                    {aids.slice(0, 3).map((uid) => {
+                      const pr = profiles[uid];
+                      return (
+                        <Avatar key={uid} className="h-6 w-6 border border-background">
+                          <AvatarFallback className="text-[10px]">{initials(pr?.full_name ?? pr?.email)}</AvatarFallback>
+                        </Avatar>
+                      );
+                    })}
+                  </div>
+                </td>
+                <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                  <TaskActionsMenu task={target} onEdit={onOpenTask} onDeleted={() => setRows((prev) => prev.filter((r) => r.id !== t.id))} />
+                </td>
+              </tr>
             );
           })}
         </tbody>
