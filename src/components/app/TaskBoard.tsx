@@ -165,12 +165,18 @@ function Column({ status, count, children }: { status: Status; count: number; ch
   );
 }
 
-function DraggableCard({ task, client, assigneeIds, profiles, onClick }: { task: TaskCard; client?: ClientLite; assigneeIds: string[]; profiles: Record<string, ProfileLite>; onClick: () => void }) {
+function DraggableCard({ task, client, assigneeIds, profiles, workspaceId, onClick, onEdit }: { task: TaskCard; client?: ClientLite; assigneeIds: string[]; profiles: Record<string, ProfileLite>; workspaceId: string; onClick: () => void; onEdit: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, opacity: isDragging ? 0.4 : 1 } : undefined;
+  const target: TaskActionTarget = {
+    id: task.id, workspaceId, meetingId: task.meeting_id, assigneeIds, dueDate: task.due_date,
+  };
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick}>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick} className="relative group">
       <Card task={task} client={client} assigneeIds={assigneeIds} profiles={profiles} />
+      <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition" onClick={(e) => e.stopPropagation()}>
+        <TaskActionsMenu task={target} onEdit={onEdit} />
+      </div>
     </div>
   );
 }
