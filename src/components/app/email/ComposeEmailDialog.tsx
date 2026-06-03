@@ -111,6 +111,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     setBodyMode("rich");
     setHtmlSource("");
     setShowHtmlSource(false);
+  }, [open, clientId, editor]);
+
+
 
   // Load workspace clients + templates
   useEffect(() => {
