@@ -20,11 +20,29 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
 import { substitute, TagContext } from "@/components/app/settings/templateTags";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Bold, Italic, Heading1, Heading2, List, ListOrdered, Link as LinkIcon,
-  Paperclip, FileText, Loader2, X, Upload,
+  Paperclip, FileText, Loader2, X, Upload, Code2, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+
+type BodyMode = "rich" | "html";
+
+function isRichHtmlContent(html: string): boolean {
+  if (!html) return false;
+  return /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(html);
+}
+
+function htmlToPlain(html: string): string {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, "\n");
+  return (tmp.textContent || tmp.innerText || "").replace(/\n{3,}/g, "\n\n").trim();
+}
 
 const BUCKET = "platform-documents";
 
@@ -65,6 +83,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   const [newUploads, setNewUploads] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
   const [docSearch, setDocSearch] = useState("");
+  const [bodyMode, setBodyMode] = useState<BodyMode>("rich");
+  const [htmlSource, setHtmlSource] = useState("");
+  const [showHtmlSource, setShowHtmlSource] = useState(false);
 
   const editor = useEditor({
     extensions: [StarterKit, Link.configure({ openOnClick: false, HTMLAttributes: { class: "underline text-primary" } })],
@@ -87,7 +108,12 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     setSelectedDocIds(new Set());
     setNewUploads([]);
     editor?.commands.setContent("<p></p>");
+    setBodyMode("rich");
+    setHtmlSource("");
+    setShowHtmlSource(false);
   }, [open, clientId, editor]);
+
+
 
   // Load workspace clients + templates
   useEffect(() => {
@@ -199,7 +225,6 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   };
 
   const applyTemplate = (t: Template) => {
-    if (!editor) return;
     const ctx = buildContext();
     const subjectFilled = substitute(t.subject ?? "", ctx);
     setSubject(subjectFilled);
@@ -207,19 +232,24 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     const rawHtml = t.body_html ? substitute(t.body_html, ctx) : "";
     const rawText = t.body_text ? substitute(t.body_text, ctx) : "";
 
-    if (rawHtml) {
-      // Always inject raw HTML so inline styles / tables / divs render exactly
-      // as authored. Reading from editor.view.dom.innerHTML on send preserves it.
+    if (rawHtml && isRichHtmlContent(rawHtml)) {
+      // Switch to HTML preview mode so inline styles / tables / layout render
+      // exactly as they will in the recipient's inbox.
+      setHtmlSource(rawHtml);
+      setBodyMode("html");
+      setShowHtmlSource(false);
+      return;
+    }
+
+    if (rawHtml && editor) {
       editor.commands.setContent(rawHtml);
-      requestAnimationFrame(() => {
-        if (editor?.view?.dom) {
-          editor.view.dom.innerHTML = rawHtml;
-        }
-      });
-    } else {
+      setBodyMode("rich");
+    } else if (editor) {
       editor.commands.setContent(`<p>${rawText.replace(/\n/g, "<br/>")}</p>`);
+      setBodyMode("rich");
     }
   };
+
 
   const uploadNewFiles = async (): Promise<DocLite[]> => {
     if (!newUploads.length || !workspaceId) return [];
@@ -277,10 +307,15 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
         .filter(Boolean)
         .map((d) => ({ id: d!.id, file_name: d!.file_name, storage_path: d!.storage_path ?? "" }));
 
-      // Read straight from the editor's DOM so any raw HTML we injected
-      // (inline styles, tables, custom markup from a template) survives.
-      const html = editor?.view?.dom?.innerHTML ?? editor?.getHTML() ?? "";
-      const text = editor?.getText() ?? "";
+      // In HTML mode the iframe-previewed source is authoritative — it carries
+      // inline styles, tables, and layout exactly as the recipient will see.
+      const html = bodyMode === "html"
+        ? htmlSource
+        : (editor?.getHTML() ?? "");
+      const text = bodyMode === "html"
+        ? htmlToPlain(htmlSource)
+        : (editor?.getText() ?? "");
+
 
       const { data, error } = await supabase.functions.invoke("send-email", {
         body: {
@@ -390,10 +425,65 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
             </Popover>
           </div>
 
-          <RichToolbar editor={editor} />
-          <div className="border border-border rounded-md bg-card">
-            <EditorContent editor={editor} />
+          <div className="flex items-center justify-between gap-2">
+            <ToggleGroup
+              type="single"
+              size="sm"
+              value={bodyMode}
+              onValueChange={(v) => v && setBodyMode(v as BodyMode)}
+              className="border border-border rounded-md"
+            >
+              <ToggleGroupItem value="rich" className="h-7 px-2 text-xs gap-1">
+                <FileText className="h-3.5 w-3.5" /> Rich Text
+              </ToggleGroupItem>
+              <ToggleGroupItem value="html" className="h-7 px-2 text-xs gap-1">
+                <Code2 className="h-3.5 w-3.5" /> HTML
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {bodyMode === "html" && (
+              <Button
+                type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1"
+                onClick={() => setShowHtmlSource((s) => !s)}
+              >
+                {showHtmlSource ? <Eye className="h-3.5 w-3.5" /> : <Code2 className="h-3.5 w-3.5" />}
+                {showHtmlSource ? "Preview" : "Edit source"}
+              </Button>
+            )}
           </div>
+
+          {bodyMode === "rich" ? (
+            <>
+              <RichToolbar editor={editor} />
+              <div className="border border-border rounded-md bg-card">
+                <EditorContent editor={editor} />
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <div className="border border-border rounded-md bg-white overflow-hidden">
+                <iframe
+                  title="Email preview"
+                  sandbox=""
+                  srcDoc={htmlSource || "<p style='font-family:sans-serif;color:#999;padding:16px'>No content</p>"}
+                  className="w-full"
+                  style={{ minHeight: 360, border: 0, display: "block" }}
+                />
+              </div>
+              {showHtmlSource && (
+                <Textarea
+                  value={htmlSource}
+                  onChange={(e) => setHtmlSource(e.target.value)}
+                  className="font-mono text-xs min-h-[200px]"
+                  placeholder="<html>…</html>"
+                  spellCheck={false}
+                />
+              )}
+              <p className="text-xs text-muted-foreground">
+                Recipients will see the preview above. Use <span className="font-medium">Edit source</span> to tweak the HTML directly.
+              </p>
+            </div>
+          )}
+
 
           <div>
             <Label className="text-xs flex items-center gap-1.5"><Paperclip className="h-3 w-3" /> Attachments</Label>
