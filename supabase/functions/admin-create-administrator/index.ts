@@ -22,6 +22,10 @@ Deno.serve(async (req) => {
     }
     await admin.from('administrators').insert({ name, email, is_active: true, is_builtin: false })
     await admin.from('user_roles').insert({ user_id: created.user.id, role: 'admin' })
+    await admin.from('platform_roles').upsert(
+      { user_id: created.user.id, platform: 'vhs', role: 'admin', is_active: true },
+      { onConflict: 'user_id,platform' },
+    )
     await sendEmail(email, 'Your Vitalis Strategies Administrator account', buildCredentialsEmail({ name, email, tempPassword, role: 'Administrator' }))
     await admin.from('activity_logs').insert({ user_name: caller.email || 'admin', action: 'Password Changed', status: 'Success' })
     return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
