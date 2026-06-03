@@ -31,6 +31,10 @@ type Contact = { id: string; name: string; email: string | null; is_primary: boo
 type ClientLite = { id: string; name: string };
 type DocLite = { id: string; file_name: string; storage_path?: string };
 type Template = { id: string; name: string; subject: string; body_html: string; body_text: string };
+type ClientFull = {
+  id: string; name: string; industry: string | null; start_date: string | null;
+  account_owner_id: string | null;
+};
 
 interface Props {
   open: boolean;
