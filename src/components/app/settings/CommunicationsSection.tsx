@@ -159,8 +159,14 @@ function TemplatesPanel({ workspaceId }: { workspaceId: string }) {
                 <Input value={editing.subject} onChange={(e) => setEditing({ ...editing, subject: e.target.value })} />
               </div>
               <div>
-                <Label>Body (HTML)</Label>
-                <Textarea rows={10} value={editing.body_html} onChange={(e) => setEditing({ ...editing, body_html: e.target.value })} />
+                <Label>Body</Label>
+                <TemplateEditor
+                  html={editing.body_html ?? ""}
+                  text={editing.body_text ?? ""}
+                  onChange={({ html, text }) =>
+                    setEditing({ ...editing, body_html: html, body_text: text })
+                  }
+                />
               </div>
             </div>
           )}
