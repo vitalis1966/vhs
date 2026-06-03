@@ -164,7 +164,7 @@ function MeetingDetail({
   meeting: Meeting; clientId: string; workspaceId: string; onBack: () => void; onEdit: () => void;
 }) {
   const navigate = useNavigate();
-  const { userId, role } = useWorkspace();
+  const { userId, role, userFullName } = useWorkspace();
   const [full, setFull] = useState<any>(null);
   const [attendees, setAttendees] = useState<Array<{ id: string; full_name: string | null; email: string | null }>>([]);
   const [decisions, setDecisions] = useState<Array<{ id: string; content: string }>>([]);
@@ -172,6 +172,8 @@ function MeetingDetail({
   const [convertOpen, setConvertOpen] = useState(false);
   const [convertingItem, setConvertingItem] = useState<ActionItem | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composePayload, setComposePayload] = useState<{ to: string[]; subject: string; html: string } | null>(null);
   const canDelete = role === "admin" || meeting.created_by === userId;
 
   const load = async () => {
@@ -193,6 +195,13 @@ function MeetingDetail({
 
   useEffect(() => { void load(); /* eslint-disable-next-line */ }, [meeting.id]);
 
+  // Build the owner lookup for action items (used in the summary email)
+  const ownerNames = useMemo(() => {
+    const m: Record<string, string> = {};
+    for (const a of attendees) m[a.id] = a.full_name ?? a.email ?? "Team member";
+    return m;
+  }, [attendees]);
+
   const handleConverted = async (createdTask: any) => {
     if (!convertingItem) return;
     await (supabase as any)
@@ -211,6 +220,101 @@ function MeetingDetail({
     onBack();
   };
 
+  const tasksCreatedCount = actionItems.filter((a) => a.converted_task_id).length;
+  const hasSummary = !!full?.summary_text;
+  const summarySent = !!full?.summary_sent_at;
+
+  const openSendSummary = () => {
+    const toList = attendees.map((a) => a.email).filter((e): e is string => !!e);
+    if (!toList.length) {
+      toast.error("No attendees with email addresses found");
+      return;
+    }
+    const meetingDateLabel = format(new Date(meeting.meeting_date), "MMMM d, yyyy");
+    const subject = `Meeting Summary — ${meeting.title} — ${meetingDateLabel}`;
+    const organizer = userFullName ?? "Vitalis Health Strategies";
+
+    // Action items HTML
+    const actionItemsHtml = actionItems.length === 0 ? "" : `
+      <h3 style="font-family:Georgia,serif;color:#172620;font-size:16px;margin:28px 0 12px 0;letter-spacing:0.5px;text-transform:uppercase;">Action Items</h3>
+      <div style="border-left:3px solid #60766B;padding:4px 0 4px 16px;margin-bottom:8px;">
+        ${actionItems.map((a) => {
+          const owner = a.owner_id ? (ownerNames[a.owner_id] ?? "Team") : "Unassigned";
+          const due = a.due_date ? format(new Date(a.due_date), "MMM d, yyyy") : "No due date";
+          return `
+            <div style="margin-bottom:14px;">
+              <div style="font-weight:600;color:#172620;font-size:14px;line-height:1.5;">${escapeHtml(a.description)}</div>
+              <div style="color:#60766B;font-size:13px;margin-top:2px;">Assigned to: ${escapeHtml(owner)} · Due: ${escapeHtml(due)}</div>
+            </div>`;
+        }).join("")}
+      </div>
+    `;
+
+    const nextMeetingHtml = full?.next_meeting_date
+      ? `<p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:24px 0 0 0;">Our next meeting is scheduled for <strong>${escapeHtml(format(new Date(full.next_meeting_date), "EEEE, MMMM d, yyyy · h:mm a"))}</strong>.</p>`
+      : "";
+
+    const summaryParagraphs = (full?.summary_text ?? "")
+      .split(/\n\n+/)
+      .map((p: string) => p.trim())
+      .filter(Boolean)
+      .map((p: string) => `<p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 14px 0;">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`)
+      .join("");
+
+    const html = `
+<div style="background:#FAF8F5;padding:40px 16px;font-family:Georgia,serif;">
+  <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(23,38,32,0.06);">
+    <div style="background:#ffffff;border-radius:8px 8px 0 0;padding:28px 40px 20px;text-align:center;border-bottom:3px solid #C89741;">
+      <img src="https://www.vitalisstrategies.com/vitalis-logo-email.png" alt="Vitalis Health Strategies" style="height:48px;width:auto;display:inline-block;" />
+    </div>
+    <div style="padding:32px 40px 8px;">
+      <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 18px 0;">Hello {{first_name}},</p>
+      <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 22px 0;">
+        Thank you for joining <strong>${escapeHtml(meeting.title)}</strong> on <strong>${escapeHtml(meetingDateLabel)}</strong>.
+        Below is a summary of what was discussed and the action items coming out of our conversation.
+      </p>
+
+      <h3 style="font-family:Georgia,serif;color:#172620;font-size:16px;margin:28px 0 12px 0;letter-spacing:0.5px;text-transform:uppercase;">Meeting Summary</h3>
+      <div style="border-left:3px solid #60766B;padding:4px 0 4px 16px;">
+        ${summaryParagraphs || '<p style="font-family:Georgia,serif;color:#60766B;font-size:14px;margin:0;">(No summary recorded.)</p>'}
+      </div>
+
+      ${actionItemsHtml}
+
+      ${nextMeetingHtml}
+
+      <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:28px 0 8px 0;">
+        If you have any questions about the above, please don't hesitate to reach out.
+      </p>
+
+      <div style="margin-top:32px;padding-top:20px;border-top:1px solid #EFEAE2;">
+        <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.5;margin:0;font-weight:600;">${escapeHtml(organizer)}</p>
+        <p style="font-family:Georgia,serif;color:#60766B;font-size:13px;line-height:1.5;margin:2px 0 0 0;">Vitalis Health Strategies</p>
+      </div>
+    </div>
+    <div style="background:#FAF8F5;padding:18px 40px;text-align:center;border-top:1px solid #EFEAE2;">
+      <p style="font-family:Georgia,serif;color:#60766B;font-size:12px;line-height:1.5;margin:0;">
+        Vitalis Health Strategies Inc. &nbsp;|&nbsp; Calgary, Alberta, Canada &nbsp;|&nbsp;
+        <a href="mailto:info@vitalisstrategies.com" style="color:#60766B;text-decoration:underline;">info@vitalisstrategies.com</a> &nbsp;|&nbsp;
+        <a href="https://vitalisstrategies.com" style="color:#60766B;text-decoration:underline;">vitalisstrategies.com</a>
+      </p>
+    </div>
+  </div>
+</div>`.trim();
+
+    setComposePayload({ to: toList, subject, html });
+    setComposeOpen(true);
+  };
+
+  const handleSummarySent = async () => {
+    await (supabase as any)
+      .from("meetings")
+      .update({ summary_sent_at: new Date().toISOString(), summary_sent_by: userId })
+      .eq("id", meeting.id);
+    toast.success("Meeting marked as summary sent");
+    void load();
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -218,6 +322,9 @@ function MeetingDetail({
           <ArrowLeft className="h-4 w-4" /> Back to meetings
         </Button>
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={openSendSummary} disabled={!hasSummary}>
+            <Mail className="h-4 w-4 mr-1.5" /> Send Summary
+          </Button>
           <Button size="sm" variant="outline" onClick={onEdit}>
             <Pencil className="h-4 w-4 mr-1.5" /> Edit
           </Button>
@@ -236,6 +343,17 @@ function MeetingDetail({
           {format(new Date(meeting.meeting_date), "EEEE, MMMM d, yyyy · h:mm a")}
         </p>
       </div>
+
+      <ProgressTrail
+        steps={[
+          { label: "Transcribed", done: true },
+          { label: "Summarised", done: hasSummary },
+          { label: "Tasks Created", done: tasksCreatedCount > 0, hint: tasksCreatedCount ? `${tasksCreatedCount} task${tasksCreatedCount === 1 ? "" : "s"}` : undefined },
+          { label: "Summary Sent", done: summarySent, hint: summarySent ? format(new Date(full.summary_sent_at), "MMM d, h:mm a") : undefined },
+        ]}
+      />
+
+
 
       <Section title="Attendees">
         {attendees.length === 0 && (!full?.external_attendees || full.external_attendees.length === 0) ? (
