@@ -56,6 +56,18 @@ interface Props {
   onChange: (next: { html: string; text: string }) => void;
 }
 
+// Detect "raw HTML" content that the rich editor would mangle:
+// full documents, tables, style attributes, <style> blocks, divs, spans
+// with attrs, etc. If detected we default to HTML mode so we don't lose
+// inline styles/layout on round-trip through TipTap.
+function isRichHtmlContent(html: string): boolean {
+  if (!html) return false;
+  // Markers that StarterKit doesn't preserve
+  return /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(
+    html,
+  );
+}
+
 // HTML → plain text (preserves line breaks).
 function htmlToPlain(html: string): string {
   if (!html) return "";
@@ -87,7 +99,6 @@ function insertAtCursor(el: HTMLTextAreaElement, snippet: string, onCommit: (v: 
   const end = el.selectionEnd ?? el.value.length;
   const next = el.value.slice(0, start) + snippet + el.value.slice(end);
   onCommit(next);
-  // Restore cursor after React updates
   requestAnimationFrame(() => {
     el.focus();
     const pos = start + snippet.length;
@@ -106,14 +117,20 @@ interface ContactOption {
 
 export function TemplateEditor({ html, text, onChange }: Props) {
   const { workspaceId } = useWorkspace();
-  const [mode, setMode] = useState<Mode>("rich");
+  // Auto-detect HTML mode for content with inline styles / tables / full docs.
+  const initialMode: Mode = useMemo(() => (isRichHtmlContent(html) ? "html" : "rich"), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [htmlSource, setHtmlSource] = useState(html);
   const [plainSource, setPlainSource] = useState(text || htmlToPlain(html));
   const skipNextEditorSync = useRef(false);
+  // True until the user has actively edited the rich editor in this session.
+  // While true, the canonical HTML is `htmlSource` (the raw value the user
+  // saved last time), not whatever TipTap parses on mount.
+  const richDirty = useRef(false);
   const plainRef = useRef<HTMLTextAreaElement>(null);
   const htmlRef = useRef<HTMLTextAreaElement>(null);
 
-  // Preview state
   const [previewOpen, setPreviewOpen] = useState(false);
   const [contacts, setContacts] = useState<ContactOption[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string>("");
@@ -124,7 +141,10 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
       TagPill,
     ],
-    content: html || "<p></p>",
+    // Don't preload raw-HTML content into TipTap — it would silently strip
+    // inline styles / tables. The rich editor only seeds itself when the user
+    // explicitly switches to Rich mode.
+    content: initialMode === "rich" ? html || "<p></p>" : "<p></p>",
     editorProps: {
       attributes: {
         class: "prose prose-sm max-w-none min-h-[240px] focus:outline-none px-3 py-3",
@@ -135,6 +155,7 @@ export function TemplateEditor({ html, text, onChange }: Props) {
         skipNextEditorSync.current = false;
         return;
       }
+      richDirty.current = true;
       const nextHtml = editor.getHTML();
       setHtmlSource(nextHtml);
       const nextText = htmlToPlain(nextHtml);
@@ -145,7 +166,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
 
   useEffect(() => () => editor?.destroy(), [editor]);
 
-  // Load contacts (with their client) for the live preview selector.
   useEffect(() => {
     if (!workspaceId || !previewOpen || contacts.length > 0) return;
     (async () => {
@@ -174,7 +194,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
         } | null;
       }>;
 
-      // Resolve owner names in a single batch.
       const ownerIds = Array.from(
         new Set(rows.map((r) => r.clients?.account_owner_id).filter(Boolean) as string[]),
       );
@@ -228,8 +247,11 @@ export function TemplateEditor({ html, text, onChange }: Props) {
     if (!next || next === mode) return;
 
     if (next === "plain") {
-      const sourceHtml = mode === "rich" ? editor?.getHTML() ?? htmlSource : htmlSource;
-      const hasFormatting = /<\/?(strong|em|b|i|h[1-6]|ul|ol|li|a|br|p)[\s>]/i.test(sourceHtml);
+      const sourceHtml =
+        mode === "rich" && richDirty.current ? editor?.getHTML() ?? htmlSource : htmlSource;
+      const hasFormatting = /<\/?(strong|em|b|i|h[1-6]|ul|ol|li|a|br|p|div|span|table|tr|td)[\s>]/i.test(
+        sourceHtml,
+      );
       if (hasFormatting) {
         const ok = window.confirm(
           "Switching to Plain Text will strip all formatting (bold, links, lists, headings). Continue?",
@@ -241,11 +263,22 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       const asHtml = plainToHtml(stripped);
       setHtmlSource(asHtml);
       onChange({ html: asHtml, text: stripped });
+      // Reset rich editor to match new plain content next time we enter rich.
+      skipNextEditorSync.current = true;
+      editor?.commands.setContent(asHtml || "<p></p>");
+      richDirty.current = false;
       setMode("plain");
       return;
     }
 
     if (next === "rich") {
+      // Warn before letting TipTap mangle inline styles / tables / full docs.
+      if (mode === "html" && isRichHtmlContent(htmlSource)) {
+        const ok = window.confirm(
+          "Switching to Rich Text may strip inline styles, tables and other custom HTML that the visual editor doesn't support. Continue?",
+        );
+        if (!ok) return;
+      }
       let sourceHtml = htmlSource;
       if (mode === "plain") sourceHtml = plainToHtml(plainSource);
       skipNextEditorSync.current = true;
@@ -255,14 +288,19 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       const t = htmlToPlain(finalHtml);
       setPlainSource(t);
       onChange({ html: finalHtml, text: t });
+      richDirty.current = false;
       setMode("rich");
       return;
     }
 
     if (next === "html") {
+      // Raw HTML mode: prefer the canonical raw source over TipTap's reserialized
+      // version unless the user actually edited the rich editor this session.
       const sourceHtml =
         mode === "rich"
-          ? editor?.getHTML() ?? htmlSource
+          ? richDirty.current
+            ? editor?.getHTML() ?? htmlSource
+            : htmlSource
           : mode === "plain"
           ? plainToHtml(plainSource)
           : htmlSource;
@@ -280,6 +318,8 @@ export function TemplateEditor({ html, text, onChange }: Props) {
   };
 
   const onHtmlChange = (v: string) => {
+    // HTML mode is authoritative: store the raw string verbatim, with
+    // a tag-stripped plain text fallback. No sanitization.
     setHtmlSource(v);
     onChange({ html: v, text: htmlToPlain(v) });
   };
@@ -302,7 +342,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       insertAtCursor(htmlRef.current, snippet, onHtmlChange);
       return;
     }
-    // Fallback: append
     if (mode === "plain") onPlainChange((plainSource ? plainSource + " " : "") + snippet);
     else if (mode === "html") onHtmlChange((htmlSource ? htmlSource + " " : "") + snippet);
   };
