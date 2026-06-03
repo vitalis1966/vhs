@@ -31,7 +31,7 @@ function Inner() {
             <span className="text-accent font-semibold tracking-widest uppercase text-sm">Platform</span>
           </div>
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
-            VHS Management
+            VHS Administration
           </h1>
           <p className="text-sm text-muted-foreground mt-3 max-w-2xl">
             Manage and administer the Vitalis Health Strategies website platform.

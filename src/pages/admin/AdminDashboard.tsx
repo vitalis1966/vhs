@@ -15,7 +15,7 @@ const topLevelPages = [
     icon: LayoutDashboard,
   },
   {
-    title: "VHS Management",
+    title: "VHS Administration",
     description: "Manage and administer the Vitalis Health Strategies website platform.",
     href: "/admin/vhs-management",
     icon: Settings2,
