@@ -109,12 +109,6 @@ function TemplatesPanel({ workspaceId }: { workspaceId: string }) {
       body_html: editing.body_html ?? "",
       body_text: editing.body_text ?? "",
     };
-      workspace_id: workspaceId,
-      name: editing.name.trim(),
-      subject: editing.subject,
-      body_html: editing.body_html,
-      body_text: editing.body_text,
-    };
     const res = editing.id
       ? await supabase.from("email_templates").update(payload).eq("id", editing.id)
       : await supabase.from("email_templates").insert(payload);
