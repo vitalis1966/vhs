@@ -102,23 +102,40 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     })();
   }, [open, workspaceId]);
 
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [clientFull, setClientFull] = useState<ClientFull | null>(null);
+  const [ownerName, setOwnerName] = useState<string | null>(null);
+
   // Load client-specific data when client changes
   useEffect(() => {
     if (!open || !selectedClientId) {
       setClientDocs([]);
+      setContacts([]);
+      setClientFull(null);
+      setOwnerName(null);
       return;
     }
     (async () => {
-      const [{ data: contacts }, { data: docs }] = await Promise.all([
-        (supabase as any).from("contacts").select("id, name, email, is_primary").eq("client_id", selectedClientId),
+      const [{ data: contactsData }, { data: docs }, { data: client }] = await Promise.all([
+        (supabase as any).from("contacts").select("id, name, email, phone, is_primary, title").eq("client_id", selectedClientId),
         (supabase as any).from("platform_documents").select("id, file_name, storage_path").order("file_name"),
+        (supabase as any).from("clients").select("id, name, industry, start_date, account_owner_id").eq("id", selectedClientId).maybeSingle(),
       ]);
+      setContacts(contactsData ?? []);
+      setClientFull(client ?? null);
       // Pre-fill TO with primary contact emails
-      const primaries = (contacts ?? []).filter((c: Contact) => c.is_primary && c.email).map((c: Contact) => c.email!);
+      const primaries = (contactsData ?? []).filter((c: Contact) => c.is_primary && c.email).map((c: Contact) => c.email!);
       if (primaries.length && toEmails.length === 0) {
         setToEmails(primaries);
       }
       setClientDocs(docs ?? []);
+      if (client?.account_owner_id) {
+        const { data: owner } = await (supabase as any)
+          .from("profiles").select("full_name").eq("id", client.account_owner_id).maybeSingle();
+        setOwnerName(owner?.full_name ?? null);
+      } else {
+        setOwnerName(null);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, selectedClientId]);
@@ -152,27 +169,57 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     }
   };
 
+  const buildContext = (): TagContext => {
+    // Prefer primary contact, fall back to first contact, or match first TO email
+    const primary =
+      contacts.find((c) => c.is_primary && c.email) ??
+      contacts.find((c) => toEmails.includes(c.email ?? "")) ??
+      contacts[0];
+    const fullName = (primary?.name ?? "").trim();
+    const [firstName, ...rest] = fullName.split(/\s+/);
+    const startDate = clientFull?.start_date
+      ? new Date(clientFull.start_date).toLocaleDateString(undefined, {
+          year: "numeric", month: "long", day: "numeric",
+        })
+      : "";
+    return {
+      first_name: firstName || "",
+      last_name: rest.join(" "),
+      full_name: fullName,
+      email: primary?.email ?? "",
+      phone: (primary as any)?.phone ?? "",
+      practice_name: clientFull?.name ?? "",
+      practice_type: clientFull?.industry ?? "",
+      practice_city: "",
+      practice_province: "",
+      engagement_type: "",
+      start_date: startDate,
+      lead_consultant: ownerName ?? userFullName ?? "",
+    };
+  };
+
   const applyTemplate = (t: Template) => {
-    setSubject(t.subject);
     if (!editor) return;
-    if (t.body_html) {
-      // Let TipTap handle simple HTML it understands first…
-      editor.commands.setContent(t.body_html);
-      // …then, if the template contains raw HTML with inline styles / tables /
-      // <div>s that StarterKit strips, inject it directly into the editor DOM
-      // so the user sees the real formatted output. On send we read straight
-      // from the editor's DOM, preserving those inline styles.
-      const looksRaw = /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(
-        t.body_html,
-      );
-      if (looksRaw) {
-        // Defer to next tick so TipTap has finished its own DOM update first.
-        requestAnimationFrame(() => {
-          if (editor?.view?.dom) {
-            editor.view.dom.innerHTML = t.body_html;
-          }
-        });
-      }
+    const ctx = buildContext();
+    const subjectFilled = substitute(t.subject ?? "", ctx);
+    setSubject(subjectFilled);
+
+    const rawHtml = t.body_html ? substitute(t.body_html, ctx) : "";
+    const rawText = t.body_text ? substitute(t.body_text, ctx) : "";
+
+    if (rawHtml) {
+      // Always inject raw HTML so inline styles / tables / divs render exactly
+      // as authored. Reading from editor.view.dom.innerHTML on send preserves it.
+      editor.commands.setContent(rawHtml);
+      requestAnimationFrame(() => {
+        if (editor?.view?.dom) {
+          editor.view.dom.innerHTML = rawHtml;
+        }
+      });
+    } else {
+      editor.commands.setContent(`<p>${rawText.replace(/\n/g, "<br/>")}</p>`);
+    }
+  };
     } else {
       editor.commands.setContent(`<p>${t.body_text.replace(/\n/g, "<br/>")}</p>`);
     }
