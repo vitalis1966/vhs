@@ -186,6 +186,7 @@ function MyTasksTodayTile() {
       const { data: tasks } = await (supabase as any)
         .from("tasks")
         .select("id, due_date, completed_at")
+        .is("deleted_at", null)
         .in("id", ids)
         .is("completed_at", null)
         .eq("workspace_id", workspaceId);
@@ -241,6 +242,7 @@ function OpenTasksFirmTile() {
       const { data: tasks } = await (supabase as any)
         .from("tasks")
         .select("id, priority")
+        .is("deleted_at", null)
         .eq("workspace_id", workspaceId)
         .is("completed_at", null);
       const counts = { urgent: 0, high: 0, medium: 0, low: 0 };
@@ -297,6 +299,7 @@ function ActiveClientsTile() {
       const { data: overdue } = await (supabase as any)
         .from("tasks")
         .select("client_id")
+        .is("deleted_at", null)
         .in("client_id", ids)
         .is("completed_at", null)
         .lt("due_date", nowIso);
@@ -362,6 +365,7 @@ function MyUpcomingTasksTile({ onOpenTask }: { onOpenTask: (id: string) => void 
       const { data: tasks } = await (supabase as any)
         .from("tasks")
         .select("id, title, priority, due_date, client_id, clients(name)")
+        .is("deleted_at", null)
         .in("id", ids)
         .is("completed_at", null)
         .eq("workspace_id", workspaceId)
@@ -500,6 +504,7 @@ function AtRiskClientsTile() {
       const { data: tasks } = await (supabase as any)
         .from("tasks")
         .select("id, title, due_date, client_id, clients(id, name, status)")
+        .is("deleted_at", null)
         .eq("workspace_id", workspaceId)
         .is("completed_at", null)
         .lt("due_date", nowIso)
@@ -621,6 +626,7 @@ function TaskCompletionTrendTile() {
       let query = (supabase as any)
         .from("tasks")
         .select("id, completed_at")
+        .is("deleted_at", null)
         .eq("workspace_id", workspaceId)
         .not("completed_at", "is", null)
         .gte("completed_at", start.toISOString());
@@ -700,7 +706,7 @@ function PinnedClientsTile() {
         .from("clients").select("id, name, status").in("id", pinned);
       const ids = (clients ?? []).map((c: any) => c.id);
       const { data: tasks } = ids.length ? await (supabase as any)
-        .from("tasks").select("client_id").in("client_id", ids).is("completed_at", null) : { data: [] };
+        .from("tasks").select("client_id").in("client_id", ids).is("completed_at", null).is("deleted_at", null) : { data: [] };
       const counts = new Map<string, number>();
       for (const t of tasks ?? []) counts.set(t.client_id, (counts.get(t.client_id) ?? 0) + 1);
       return (clients ?? []).map((c: any) => ({ ...c, open: counts.get(c.id) ?? 0 }));
@@ -861,7 +867,7 @@ function ProjectsNearingDeadlineTile() {
       if (!filtered.length) return [];
       const ids = filtered.map((p: any) => p.id);
       const { data: tasks } = await (supabase as any)
-        .from("tasks").select("project_id, completed_at").in("project_id", ids);
+        .from("tasks").select("project_id, completed_at").in("project_id", ids).is("deleted_at", null);
       const total = new Map<string, number>();
       const done = new Map<string, number>();
       for (const t of tasks ?? []) {

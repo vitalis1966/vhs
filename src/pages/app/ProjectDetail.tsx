@@ -67,7 +67,7 @@ export default function ProjectDetail() {
     setMilestones(ms ?? []);
 
     const { data: ts } = await (supabase as any)
-      .from("tasks").select("id, title, status_id, priority, due_date, completed_at")
+      .from("tasks").select("id, title, status_id, priority, due_date, completed_at").is("deleted_at", null)
       .eq("project_id", projectId).order("created_at", { ascending: false });
     const taskRows: Task[] = ts ?? [];
     setTasks(taskRows);
