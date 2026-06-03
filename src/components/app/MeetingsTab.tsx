@@ -268,7 +268,7 @@ function MeetingDetail({
       <img src="https://www.vitalisstrategies.com/vitalis-logo-email.png" alt="Vitalis Health Strategies" style="height:48px;width:auto;display:inline-block;" />
     </div>
     <div style="padding:32px 40px 8px;">
-      <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 18px 0;">Hello {{first_name}},</p>
+      <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 18px 0;">Hello team,</p>
       <p style="font-family:Georgia,serif;color:#172620;font-size:15px;line-height:1.7;margin:0 0 22px 0;">
         Thank you for joining <strong>${escapeHtml(meeting.title)}</strong> on <strong>${escapeHtml(meetingDateLabel)}</strong>.
         Below is a summary of what was discussed and the action items coming out of our conversation.
