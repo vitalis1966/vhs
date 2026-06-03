@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Users } from "lucide-react";
+import { setPlatform, clearPlatform } from "@/lib/platformContext";
 
 export default function EmployeeLogin() {
   const [email, setEmail] = useState("");
@@ -22,47 +23,47 @@ export default function EmployeeLogin() {
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+    if (error || !data.user) {
+      toast({ title: "Login failed", description: error?.message ?? "Unknown error", variant: "destructive" });
       setLoading(false);
       return;
     }
 
-    if (data.user) {
-      const { data: profile } = await (supabase as any)
-        .from("profiles")
-        .select("must_change_password")
-        .eq("id", data.user.id)
-        .maybeSingle();
-
-      if (profile?.must_change_password) {
-        toast({
-          title: "Please set a new password",
-          description: "You're using a temporary password. Choose a permanent one to continue.",
-        });
-        navigate("/reset-password");
-        setLoading(false);
-        return;
-      }
-
-      const { data: memberships } = await (supabase as any)
-        .from("workspace_members")
-        .select("workspace_id")
-        .eq("user_id", data.user.id)
-        .eq("status", "active")
-        .limit(1);
-
-      if (memberships && memberships.length > 0) {
-        navigate("/app/home");
-      } else {
-        toast({
-          title: "Access not yet granted",
-          description: "You do not have access yet. Contact your administrator.",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-      }
+    const { data: ok, error: rpcErr } = await (supabase as any).rpc("has_platform_access", {
+      _user: data.user.id,
+      _platform: "vitalis_os",
+    });
+    if (rpcErr || !ok) {
+      clearPlatform();
+      await supabase.auth.signOut();
+      toast({
+        title: "Access denied",
+        description: "This account does not have Vitalis OS access.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
     }
+
+    setPlatform("vitalis_os");
+
+    const { data: profile } = await (supabase as any)
+      .from("profiles")
+      .select("must_change_password")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (profile?.must_change_password) {
+      toast({
+        title: "Please set a new password",
+        description: "You're using a temporary password. Choose a permanent one to continue.",
+      });
+      navigate("/reset-password");
+      setLoading(false);
+      return;
+    }
+
+    navigate("/app/home");
     setLoading(false);
   };
 

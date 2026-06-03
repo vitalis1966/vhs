@@ -1555,6 +1555,36 @@ export type Database = {
           },
         ]
       }
+      platform_roles: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          platform: Database["public"]["Enums"]["platform_kind"]
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform: Database["public"]["Enums"]["platform_kind"]
+          role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform?: Database["public"]["Enums"]["platform_kind"]
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_cases: {
         Row: {
           body: string | null
@@ -2643,6 +2673,13 @@ export type Database = {
           title: string
         }[]
       }
+      has_platform_access: {
+        Args: {
+          _platform: Database["public"]["Enums"]["platform_kind"]
+          _user: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2709,6 +2746,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "client"
+      platform_kind: "vhs" | "vitalis_os"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2837,6 +2875,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "client"],
+      platform_kind: ["vhs", "vitalis_os"],
     },
   },
 } as const

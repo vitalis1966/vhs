@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { clearPlatform, getPlatform } from "@/lib/platformContext";
+import { toast } from "@/hooks/use-toast";
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -11,36 +13,44 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
+    const deny = async (reason?: string) => {
+      clearPlatform();
+      await supabase.auth.signOut().catch(() => {});
+      if (reason) {
+        toast({ title: "Access denied", description: reason, variant: "destructive" });
+      }
+      if (!cancelled) {
+        setAuthorized(false);
+        setLoading(false);
+      }
+      navigate("/admin/login", { replace: true });
+    };
+
     const check = async (session: any) => {
       if (!session) {
+        clearPlatform();
         navigate("/admin/login", { replace: true });
         if (!cancelled) setLoading(false);
         return;
       }
-      const { data, error } = await (supabase as any).rpc("has_role", {
-        _user_id: session.user.id,
-        _role: "admin",
+
+      // Platform context must be VHS for this guard.
+      if (getPlatform() !== "vhs") {
+        await deny("Please sign in to VHS Administration.");
+        return;
+      }
+
+      const { data, error } = await (supabase as any).rpc("has_platform_access", {
+        _user: session.user.id,
+        _platform: "vhs",
       });
       if (cancelled) return;
       if (error || !data) {
-        // Not an admin. If they have an active workspace membership, send them
-        // into the platform instead of signing them out.
-        const { data: memberships } = await (supabase as any)
-          .from("workspace_members")
-          .select("workspace_id")
-          .eq("user_id", session.user.id)
-          .eq("status", "active")
-          .limit(1);
-        if (memberships && memberships.length > 0) {
-          navigate("/app/home", { replace: true });
-        } else {
-          await supabase.auth.signOut();
-          navigate("/admin/login", { replace: true });
-        }
-        setAuthorized(false);
-      } else {
-        setAuthorized(true);
+        await deny("This account does not have VHS Administration access.");
+        return;
       }
+
+      setAuthorized(true);
       setLoading(false);
     };
 
