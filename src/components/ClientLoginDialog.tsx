@@ -54,6 +54,7 @@ export function ClientLoginDialog({ open, onOpenChange }: Props) {
       onOpenChange(false);
       navigate("/portal/documents");
     } else if (isAdmin) {
+      setPlatform("vhs");
       onOpenChange(false);
       navigate("/admin/client-management/documents");
     } else {
