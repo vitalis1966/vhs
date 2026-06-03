@@ -152,7 +152,7 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     if (!editor) return;
     if (t.body_html) {
       // Let TipTap handle simple HTML it understands first…
-      editor.commands.setContent(t.body_html, false, { preserveWhitespace: "full" });
+      editor.commands.setContent(t.body_html);
       // …then, if the template contains raw HTML with inline styles / tables /
       // <div>s that StarterKit strips, inject it directly into the editor DOM
       // so the user sees the real formatted output. On send we read straight
