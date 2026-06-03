@@ -229,7 +229,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
         .filter(Boolean)
         .map((d) => ({ id: d!.id, file_name: d!.file_name, storage_path: d!.storage_path ?? "" }));
 
-      const html = editor?.getHTML() ?? "";
+      // Read straight from the editor's DOM so any raw HTML we injected
+      // (inline styles, tables, custom markup from a template) survives.
+      const html = editor?.view?.dom?.innerHTML ?? editor?.getHTML() ?? "";
       const text = editor?.getText() ?? "";
 
       const { data, error } = await supabase.functions.invoke("send-email", {
