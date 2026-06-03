@@ -131,7 +131,9 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
                   client={clients[t.client_id]}
                   assigneeIds={assigneesByTask[t.id] ?? []}
                   profiles={profiles}
+                  workspaceId={workspaceId!}
                   onClick={() => onOpenTask(t.id)}
+                  onEdit={onOpenTask}
                 />
               ))}
             </Column>
