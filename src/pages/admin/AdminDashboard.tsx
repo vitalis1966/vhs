@@ -2,126 +2,25 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { ClipboardList, FileSearch, LogOut, Newspaper, Search, Briefcase, MessageSquare, ShieldCheck, ScrollText, Users, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
-const vitalisOsPage = {
-  title: "Vitalis OS",
-  description: "Go to Vitalis OS: clients, projects, tasks, meetings, and dashboards.",
-  href: "/app/home",
-  icon: LayoutDashboard,
-};
-
-const clientManagementPage = {
-  title: "Client Management",
-  description: "Manage client portal users and review documentation submissions.",
-  href: "/admin/client-management",
-  icon: Users,
-};
-
-const vhsManagementPages = [
+const topLevelPages = [
   {
-    title: "Assessment Builder",
-    description: "Create and manage assessment questionnaires, sections, and questions.",
-    href: "/admin/assessments",
-    icon: ClipboardList,
+    title: "Vitalis OS",
+    description: "Go to Vitalis OS: clients, projects, tasks, meetings, and dashboards.",
+    href: "/app/home",
+    icon: LayoutDashboard,
   },
   {
-    title: "Submissions Review",
-    description: "Review submitted assessments, run AI analysis, and generate internal reports.",
-    href: "/admin/submissions",
-    icon: FileSearch,
-  },
-  {
-    title: "Insights",
-    description: "Create and manage blog articles and insights content.",
-    href: "/admin/insights",
-    icon: Newspaper,
-  },
-  {
-    title: "Portfolio",
-    description: "Create and manage portfolio case studies and advisory entries.",
-    href: "/admin/portfolio",
-    icon: Briefcase,
-  },
-  {
-    title: "Contact Submissions",
-    description: "View and manage incoming contact form submissions.",
-    href: "/admin/contacts",
-    icon: MessageSquare,
-  },
-  {
-    title: "SEO Settings",
-    description: "Manage meta tags, Open Graph, schemas, tracking, and redirects for all pages.",
-    href: "/admin/seo",
-    icon: Search,
-  },
-  {
-    title: "Administrators",
-    description: "Create and manage admin accounts. Reset passwords, toggle access, and protect the built-in administrator.",
-    href: "/admin/administrators",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Logging",
-    description: "View login attempts, file activity, and password change events across the platform.",
-    href: "/admin/logging",
-    icon: ScrollText,
+    title: "VHS Management",
+    description: "Manage and administer the Vitalis Health Strategies website platform.",
+    href: "/admin/vhs-management",
+    icon: Settings2,
   },
 ];
-
-type AdminPage = {
-  title: string;
-  description: string;
-  href: string;
-  icon: typeof LayoutDashboard;
-};
-
-function StandaloneCard({ page }: { page: AdminPage }) {
-  return (
-    <Link to={page.href}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-card rounded-2xl shadow-soft border border-border/40 p-8 hover:shadow-elevated hover:border-primary/20 transition-all group cursor-pointer h-full"
-      >
-        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-          <page.icon className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="font-display text-lg font-bold text-foreground mb-2">
-          {page.title}
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {page.description}
-        </p>
-      </motion.div>
-    </Link>
-  );
-}
-
-function InnerCard({ page }: { page: AdminPage }) {
-  return (
-    <Link to={page.href}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-background rounded-xl border border-border/40 p-6 hover:shadow-elevated hover:border-primary/20 transition-all group cursor-pointer h-full"
-      >
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-          <page.icon className="h-5 w-5 text-primary" />
-        </div>
-        <h3 className="font-display text-base font-bold text-foreground mb-1.5">
-          {page.title}
-        </h3>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {page.description}
-        </p>
-      </motion.div>
-    </Link>
-  );
-}
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -137,10 +36,7 @@ export default function AdminDashboard() {
       <section className="pt-32 pb-10 lg:pt-40 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="flex items-center justify-between">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-2 mb-4">
                 <span className="h-px w-12 bg-accent" />
                 <span className="text-accent font-semibold tracking-widest uppercase text-sm">Internal Admin</span>
@@ -158,37 +54,27 @@ export default function AdminDashboard() {
       </section>
 
       <section className="py-16 bg-background flex-1">
-        <div className="container mx-auto px-4 lg:px-8 max-w-6xl space-y-6">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <StandaloneCard page={vitalisOsPage} />
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-card rounded-2xl shadow-soft border border-border/40 p-6 md:p-8"
-          >
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="h-px w-8 bg-accent" />
-                <span className="text-accent font-semibold tracking-widest uppercase text-xs">Platform</span>
-              </div>
-              <h2 className="font-display text-xl lg:text-2xl font-bold text-foreground">
-                VHS Management
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Manage and administer the Vitalis Health Strategies website platform.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {vhsManagementPages.map((page) => (
-                <InnerCard key={page.href} page={page} />
-              ))}
-            </div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <StandaloneCard page={clientManagementPage} />
+            {topLevelPages.map((page) => (
+              <Link key={page.href} to={page.href}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card rounded-2xl shadow-soft border border-border/40 p-8 hover:shadow-elevated hover:border-primary/20 transition-all group cursor-pointer h-full"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+                    <page.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-foreground mb-2">
+                    {page.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {page.description}
+                  </p>
+                </motion.div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -196,4 +82,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
