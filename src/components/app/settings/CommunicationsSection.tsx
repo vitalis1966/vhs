@@ -146,7 +146,7 @@ function TemplatesPanel({ workspaceId }: { workspaceId: string }) {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editing?.id ? "Edit template" : "New template"}</DialogTitle></DialogHeader>
           {editing && (
             <div className="space-y-3">
