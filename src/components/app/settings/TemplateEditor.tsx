@@ -105,7 +105,7 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       if (mode === "plain") sourceHtml = plainToHtml(plainSource);
       if (mode === "html") sourceHtml = htmlSource;
       skipNextEditorSync.current = true;
-      editor?.commands.setContent(sourceHtml || "<p></p>", false);
+      editor?.commands.setContent(sourceHtml || "<p></p>");
       const finalHtml = editor?.getHTML() ?? sourceHtml;
       setHtmlSource(finalHtml);
       const t = htmlToPlain(finalHtml);
