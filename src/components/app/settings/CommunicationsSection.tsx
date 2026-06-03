@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Plus, Trash2, Mail, Users } from "lucide-react";
 import { TemplateEditor } from "./TemplateEditor";
+import { countTags } from "./templateTags";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
