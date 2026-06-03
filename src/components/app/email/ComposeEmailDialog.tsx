@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
+import { substitute, TagContext } from "@/components/app/settings/templateTags";
 import {
   Bold, Italic, Heading1, Heading2, List, ListOrdered, Link as LinkIcon,
   Paperclip, FileText, Loader2, X, Upload,
