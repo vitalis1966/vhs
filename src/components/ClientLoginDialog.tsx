@@ -54,7 +54,7 @@ export function ClientLoginDialog({ open, onOpenChange }: Props) {
       navigate("/portal/documents");
     } else if (isAdmin) {
       onOpenChange(false);
-      navigate("/admin");
+      navigate("/admin/client-management/documents");
     } else {
       await supabase.auth.signOut();
       toast({ title: "Access denied", description: "This account has no access.", variant: "destructive" });
