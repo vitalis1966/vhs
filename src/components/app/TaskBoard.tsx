@@ -6,10 +6,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DndContext, DragEndEvent, DragOverlay, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import { format } from "date-fns";
 import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
+import { onTasksChanged } from "./tasks/taskMutations";
 
 interface TaskCard {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; completed_at: string | null;
+  meeting_id: string | null;
 }
 interface Status { id: string; name: string; color: string | null; position: number; category: string; }
 interface ClientLite { id: string; name: string; }
