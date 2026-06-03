@@ -425,10 +425,65 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
             </Popover>
           </div>
 
-          <RichToolbar editor={editor} />
-          <div className="border border-border rounded-md bg-card">
-            <EditorContent editor={editor} />
+          <div className="flex items-center justify-between gap-2">
+            <ToggleGroup
+              type="single"
+              size="sm"
+              value={bodyMode}
+              onValueChange={(v) => v && setBodyMode(v as BodyMode)}
+              className="border border-border rounded-md"
+            >
+              <ToggleGroupItem value="rich" className="h-7 px-2 text-xs gap-1">
+                <FileText className="h-3.5 w-3.5" /> Rich Text
+              </ToggleGroupItem>
+              <ToggleGroupItem value="html" className="h-7 px-2 text-xs gap-1">
+                <Code2 className="h-3.5 w-3.5" /> HTML
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {bodyMode === "html" && (
+              <Button
+                type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1"
+                onClick={() => setShowHtmlSource((s) => !s)}
+              >
+                {showHtmlSource ? <Eye className="h-3.5 w-3.5" /> : <Code2 className="h-3.5 w-3.5" />}
+                {showHtmlSource ? "Preview" : "Edit source"}
+              </Button>
+            )}
           </div>
+
+          {bodyMode === "rich" ? (
+            <>
+              <RichToolbar editor={editor} />
+              <div className="border border-border rounded-md bg-card">
+                <EditorContent editor={editor} />
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <div className="border border-border rounded-md bg-white overflow-hidden">
+                <iframe
+                  title="Email preview"
+                  sandbox=""
+                  srcDoc={htmlSource || "<p style='font-family:sans-serif;color:#999;padding:16px'>No content</p>"}
+                  className="w-full"
+                  style={{ minHeight: 360, border: 0, display: "block" }}
+                />
+              </div>
+              {showHtmlSource && (
+                <Textarea
+                  value={htmlSource}
+                  onChange={(e) => setHtmlSource(e.target.value)}
+                  className="font-mono text-xs min-h-[200px]"
+                  placeholder="<html>…</html>"
+                  spellCheck={false}
+                />
+              )}
+              <p className="text-xs text-muted-foreground">
+                Recipients will see the preview above. Use <span className="font-medium">Edit source</span> to tweak the HTML directly.
+              </p>
+            </div>
+          )}
+
 
           <div>
             <Label className="text-xs flex items-center gap-1.5"><Paperclip className="h-3 w-3" /> Attachments</Label>
