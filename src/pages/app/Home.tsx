@@ -706,7 +706,7 @@ function PinnedClientsTile() {
         .from("clients").select("id, name, status").in("id", pinned);
       const ids = (clients ?? []).map((c: any) => c.id);
       const { data: tasks } = ids.length ? await (supabase as any)
-        .from("tasks").select("client_id").in("client_id", ids).is("completed_at", null) : { data: [] };
+        .from("tasks").select("client_id").in("client_id", ids).is("completed_at", null).is("deleted_at", null) : { data: [] };
       const counts = new Map<string, number>();
       for (const t of tasks ?? []) counts.set(t.client_id, (counts.get(t.client_id) ?? 0) + 1);
       return (clients ?? []).map((c: any) => ({ ...c, open: counts.get(c.id) ?? 0 }));
