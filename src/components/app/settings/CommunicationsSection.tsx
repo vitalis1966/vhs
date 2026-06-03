@@ -106,6 +106,12 @@ function TemplatesPanel({ workspaceId }: { workspaceId: string }) {
       workspace_id: workspaceId,
       name: editing.name.trim(),
       subject: editing.subject,
+      body_html: editing.body_html ?? "",
+      body_text: editing.body_text ?? "",
+    };
+      workspace_id: workspaceId,
+      name: editing.name.trim(),
+      subject: editing.subject,
       body_html: editing.body_html,
       body_text: editing.body_text,
     };
