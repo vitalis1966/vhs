@@ -1,10 +1,26 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import {
   Bold,
   Italic,
@@ -15,8 +31,22 @@ import {
   ListOrdered,
   Link as LinkIcon,
   Unlink,
+  Tag as TagIcon,
+  ChevronDown,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { TagPill } from "./TagPillNode";
+import {
+  TAG_CATEGORIES,
+  TAG_LABELS,
+  buildContext,
+  substitute,
+  type RawContactRow,
+  type TagContext,
+} from "./templateTags";
 
 type Mode = "plain" | "rich" | "html";
 
@@ -26,7 +56,7 @@ interface Props {
   onChange: (next: { html: string; text: string }) => void;
 }
 
-// Convert HTML → plain text (preserve line breaks).
+// HTML → plain text (preserves line breaks).
 function htmlToPlain(html: string): string {
   if (!html) return "";
   const tmp = document.createElement("div");
@@ -36,25 +66,63 @@ function htmlToPlain(html: string): string {
   return (tmp.textContent || tmp.innerText || "").replace(/\n{3,}/g, "\n\n").trim();
 }
 
-// Convert plain text → HTML (paragraphs from blank-line groups, <br> for single newlines).
+// Plain text → HTML.
 function plainToHtml(text: string): string {
   if (!text.trim()) return "";
   return text
     .split(/\n{2,}/)
-    .map((para) => `<p>${para.replace(/\n/g, "<br />").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`)
+    .map(
+      (para) =>
+        `<p>${para
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br />")}</p>`,
+    )
     .join("");
 }
 
+// Insert text into a textarea at the cursor, preserving selection.
+function insertAtCursor(el: HTMLTextAreaElement, snippet: string, onCommit: (v: string) => void) {
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  const next = el.value.slice(0, start) + snippet + el.value.slice(end);
+  onCommit(next);
+  // Restore cursor after React updates
+  requestAnimationFrame(() => {
+    el.focus();
+    const pos = start + snippet.length;
+    el.setSelectionRange(pos, pos);
+  });
+}
+
+interface ContactOption {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  client_name: string | null;
+  raw: RawContactRow;
+}
+
 export function TemplateEditor({ html, text, onChange }: Props) {
+  const { workspaceId } = useWorkspace();
   const [mode, setMode] = useState<Mode>("rich");
   const [htmlSource, setHtmlSource] = useState(html);
   const [plainSource, setPlainSource] = useState(text || htmlToPlain(html));
   const skipNextEditorSync = useRef(false);
+  const plainRef = useRef<HTMLTextAreaElement>(null);
+  const htmlRef = useRef<HTMLTextAreaElement>(null);
+
+  // Preview state
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [contacts, setContacts] = useState<ContactOption[]>([]);
+  const [selectedContactId, setSelectedContactId] = useState<string>("");
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer" } }),
+      TagPill,
     ],
     content: html || "<p></p>",
     editorProps: {
@@ -77,11 +145,89 @@ export function TemplateEditor({ html, text, onChange }: Props) {
 
   useEffect(() => () => editor?.destroy(), [editor]);
 
+  // Load contacts (with their client) for the live preview selector.
+  useEffect(() => {
+    if (!workspaceId || !previewOpen || contacts.length > 0) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from("contacts")
+        .select(
+          "id,name,email,phone,clients!inner(name,industry,start_date,workspace_id,account_owner_id)",
+        )
+        .eq("clients.workspace_id", workspaceId)
+        .order("name")
+        .limit(100);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      const rows = (data ?? []) as Array<{
+        id: string;
+        name: string | null;
+        email: string | null;
+        phone: string | null;
+        clients: {
+          name: string | null;
+          industry: string | null;
+          start_date: string | null;
+          account_owner_id: string | null;
+        } | null;
+      }>;
+
+      // Resolve owner names in a single batch.
+      const ownerIds = Array.from(
+        new Set(rows.map((r) => r.clients?.account_owner_id).filter(Boolean) as string[]),
+      );
+      const ownerMap: Record<string, string> = {};
+      if (ownerIds.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id,full_name")
+          .in("id", ownerIds);
+        (profs ?? []).forEach((p: { id: string; full_name: string | null }) => {
+          if (p.full_name) ownerMap[p.id] = p.full_name;
+        });
+      }
+
+      setContacts(
+        rows.map((r) => ({
+          id: r.id,
+          name: r.name ?? "Unnamed contact",
+          email: r.email,
+          phone: r.phone,
+          client_name: r.clients?.name ?? null,
+          raw: {
+            id: r.id,
+            name: r.name,
+            email: r.email,
+            phone: r.phone,
+            client: r.clients
+              ? {
+                  name: r.clients.name,
+                  industry: r.clients.industry,
+                  start_date: r.clients.start_date,
+                  account_owner_full_name: r.clients.account_owner_id
+                    ? ownerMap[r.clients.account_owner_id] ?? ""
+                    : "",
+                }
+              : null,
+          },
+        })),
+      );
+    })();
+  }, [workspaceId, previewOpen, contacts.length]);
+
+  const previewCtx: TagContext = useMemo(() => {
+    const c = contacts.find((x) => x.id === selectedContactId);
+    return buildContext(c?.raw);
+  }, [contacts, selectedContactId]);
+
+  const previewedHtml = useMemo(() => substitute(htmlSource, previewCtx), [htmlSource, previewCtx]);
+
   const switchMode = (next: Mode) => {
     if (!next || next === mode) return;
 
     if (next === "plain") {
-      // Coming from rich/html — warn that formatting is lost.
       const sourceHtml = mode === "rich" ? editor?.getHTML() ?? htmlSource : htmlSource;
       const hasFormatting = /<\/?(strong|em|b|i|h[1-6]|ul|ol|li|a|br|p)[\s>]/i.test(sourceHtml);
       if (hasFormatting) {
@@ -92,7 +238,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       }
       const stripped = htmlToPlain(sourceHtml);
       setPlainSource(stripped);
-      // Persist a plain HTML version (paragraphs) so saved html stays consistent.
       const asHtml = plainToHtml(stripped);
       setHtmlSource(asHtml);
       onChange({ html: asHtml, text: stripped });
@@ -103,7 +248,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
     if (next === "rich") {
       let sourceHtml = htmlSource;
       if (mode === "plain") sourceHtml = plainToHtml(plainSource);
-      if (mode === "html") sourceHtml = htmlSource;
       skipNextEditorSync.current = true;
       editor?.commands.setContent(sourceHtml || "<p></p>");
       const finalHtml = editor?.getHTML() ?? sourceHtml;
@@ -116,7 +260,12 @@ export function TemplateEditor({ html, text, onChange }: Props) {
     }
 
     if (next === "html") {
-      const sourceHtml = mode === "rich" ? editor?.getHTML() ?? htmlSource : (mode === "plain" ? plainToHtml(plainSource) : htmlSource);
+      const sourceHtml =
+        mode === "rich"
+          ? editor?.getHTML() ?? htmlSource
+          : mode === "plain"
+          ? plainToHtml(plainSource)
+          : htmlSource;
       setHtmlSource(sourceHtml);
       onChange({ html: sourceHtml, text: htmlToPlain(sourceHtml) });
       setMode("html");
@@ -135,6 +284,29 @@ export function TemplateEditor({ html, text, onChange }: Props) {
     onChange({ html: v, text: htmlToPlain(v) });
   };
 
+  const insertTag = (tagKey: string) => {
+    if (mode === "rich" && editor) {
+      editor
+        .chain()
+        .focus()
+        .insertContent({ type: "tagPill", attrs: { tag: tagKey } })
+        .run();
+      return;
+    }
+    const snippet = `{{${tagKey}}}`;
+    if (mode === "plain" && plainRef.current) {
+      insertAtCursor(plainRef.current, snippet, onPlainChange);
+      return;
+    }
+    if (mode === "html" && htmlRef.current) {
+      insertAtCursor(htmlRef.current, snippet, onHtmlChange);
+      return;
+    }
+    // Fallback: append
+    if (mode === "plain") onPlainChange((plainSource ? plainSource + " " : "") + snippet);
+    else if (mode === "html") onHtmlChange((htmlSource ? htmlSource + " " : "") + snippet);
+  };
+
   const addLink = () => {
     if (!editor) return;
     const prev = editor.getAttributes("link").href as string | undefined;
@@ -145,7 +317,6 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       return;
     }
     try {
-      // Validate
       new URL(url);
     } catch {
       toast.error("Invalid URL");
@@ -168,8 +339,43 @@ export function TemplateEditor({ html, text, onChange }: Props) {
     </Button>
   );
 
+  const insertTagDropdown = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" size="sm" variant="outline" className="h-8 gap-1">
+          <TagIcon className="h-3.5 w-3.5" />
+          Insert tag
+          <ChevronDown className="h-3 w-3 opacity-60" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-h-[60vh] overflow-y-auto w-64">
+        {TAG_CATEGORIES.map((cat, idx) => (
+          <div key={cat.name}>
+            {idx > 0 && <DropdownMenuSeparator />}
+            <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {cat.name}
+            </DropdownMenuLabel>
+            {cat.tags.map((t) => (
+              <DropdownMenuItem
+                key={t.key}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  insertTag(t.key);
+                }}
+                className="flex flex-col items-start gap-0.5 py-1.5"
+              >
+                <span className="text-sm font-medium">{t.label}</span>
+                <span className="text-[11px] text-muted-foreground font-mono">{`{{${t.key}}}`}</span>
+              </DropdownMenuItem>
+            ))}
+          </div>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <ToggleGroup
           type="single"
@@ -182,10 +388,24 @@ export function TemplateEditor({ html, text, onChange }: Props) {
           <ToggleGroupItem value="rich">Rich text</ToggleGroupItem>
           <ToggleGroupItem value="html">HTML</ToggleGroupItem>
         </ToggleGroup>
+        <div className="flex items-center gap-2">
+          {insertTagDropdown}
+          <Button
+            type="button"
+            size="sm"
+            variant={previewOpen ? "secondary" : "outline"}
+            className="h-8 gap-1"
+            onClick={() => setPreviewOpen((v) => !v)}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            {previewOpen ? "Hide preview" : "Preview"}
+          </Button>
+        </div>
       </div>
 
       {mode === "plain" && (
         <Textarea
+          ref={plainRef}
           rows={14}
           value={plainSource}
           onChange={(e) => onPlainChange(e.target.value)}
@@ -217,6 +437,7 @@ export function TemplateEditor({ html, text, onChange }: Props) {
       {mode === "html" && (
         <div className="space-y-2">
           <Textarea
+            ref={htmlRef}
             rows={12}
             value={htmlSource}
             onChange={(e) => onHtmlChange(e.target.value)}
@@ -225,12 +446,68 @@ export function TemplateEditor({ html, text, onChange }: Props) {
             spellCheck={false}
           />
           <div>
-            <div className="text-xs font-medium text-muted-foreground mb-1">Preview</div>
+            <div className="text-xs font-medium text-muted-foreground mb-1">Source preview</div>
             <div
               className="border border-border rounded-md bg-background p-3 prose prose-sm max-w-none min-h-[120px]"
-              dangerouslySetInnerHTML={{ __html: htmlSource || "<p class='text-muted-foreground'>Nothing to preview</p>" }}
+              dangerouslySetInnerHTML={{
+                __html: htmlSource || "<p class='text-muted-foreground'>Nothing to preview</p>",
+              }}
             />
           </div>
+        </div>
+      )}
+
+      {previewOpen && (
+        <div className="border border-border rounded-md bg-muted/30 p-3 space-y-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="text-sm font-medium flex items-center gap-2">
+              <Eye className="h-3.5 w-3.5" />
+              Live preview
+            </div>
+            <div className="min-w-[260px] flex-1 max-w-md">
+              <Select value={selectedContactId} onValueChange={setSelectedContactId}>
+                <SelectTrigger className="h-8">
+                  <SelectValue placeholder="Select a contact to preview…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {contacts.length === 0 ? (
+                    <div className="p-2 text-xs text-muted-foreground">No contacts available</div>
+                  ) : (
+                    contacts.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                        {c.client_name ? ` · ${c.client_name}` : ""}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {!selectedContactId && (
+            <p className="text-xs text-muted-foreground">
+              Choose a contact to see how tags will render. Missing values use sensible defaults
+              (e.g. &quot;there&quot; for first name).
+            </p>
+          )}
+          <div
+            className="bg-background border border-border rounded-md p-4 prose prose-sm max-w-none min-h-[120px]"
+            dangerouslySetInnerHTML={{
+              __html: previewedHtml || "<p class='text-muted-foreground'>Nothing to preview</p>",
+            }}
+          />
+          {selectedContactId && (
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(previewCtx)
+                .filter(([, v]) => v)
+                .map(([k, v]) => (
+                  <Badge key={k} variant="secondary" className="text-[10px] font-normal">
+                    <span className="text-muted-foreground mr-1">{TAG_LABELS[k] ?? k}:</span>
+                    {String(v)}
+                  </Badge>
+                ))}
+            </div>
+          )}
         </div>
       )}
     </div>
