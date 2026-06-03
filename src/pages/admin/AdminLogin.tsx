@@ -62,7 +62,7 @@ export default function AdminLogin() {
               </div>
             </div>
             <h1 className="font-display text-xl font-bold text-foreground text-center mb-1">
-              Admin Login
+              VHS Login
             </h1>
             <p className="text-sm text-muted-foreground text-center mb-6">
               Sign in to access the admin dashboard
