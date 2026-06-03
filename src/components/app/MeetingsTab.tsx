@@ -469,6 +469,17 @@ function MeetingDetail({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ComposeEmailDialog
+        open={composeOpen}
+        onOpenChange={(v) => { setComposeOpen(v); if (!v) setComposePayload(null); }}
+        clientId={clientId}
+        lockClient
+        initialTo={composePayload?.to}
+        initialSubject={composePayload?.subject}
+        initialHtml={composePayload?.html}
+        onSent={() => { void handleSummarySent(); }}
+      />
     </div>
   );
 }
@@ -480,4 +491,40 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       {children}
     </div>
   );
+}
+
+function ProgressTrail({ steps }: { steps: Array<{ label: string; done: boolean; hint?: string }> }) {
+  return (
+    <div className="rounded-lg border bg-card p-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        {steps.map((s, i) => (
+          <div key={s.label} className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {s.done ? (
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+              ) : (
+                <Circle className="h-4 w-4 text-muted-foreground/50" />
+              )}
+              <div className="text-xs">
+                <span className={s.done ? "font-medium text-foreground" : "text-muted-foreground"}>{s.label}</span>
+                {s.hint && <span className="text-muted-foreground ml-1">· {s.hint}</span>}
+              </div>
+            </div>
+            {i < steps.length - 1 && (
+              <div className={`h-px w-6 ${s.done ? "bg-primary/50" : "bg-border"}`} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function escapeHtml(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
