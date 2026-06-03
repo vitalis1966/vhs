@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Plus, Trash2, Mail, Users } from "lucide-react";
+import { TemplateEditor } from "./TemplateEditor";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
