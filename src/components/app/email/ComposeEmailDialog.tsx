@@ -20,11 +20,29 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
 import { substitute, TagContext } from "@/components/app/settings/templateTags";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Bold, Italic, Heading1, Heading2, List, ListOrdered, Link as LinkIcon,
-  Paperclip, FileText, Loader2, X, Upload,
+  Paperclip, FileText, Loader2, X, Upload, Code2, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+
+type BodyMode = "rich" | "html";
+
+function isRichHtmlContent(html: string): boolean {
+  if (!html) return false;
+  return /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(html);
+}
+
+function htmlToPlain(html: string): string {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, "\n");
+  return (tmp.textContent || tmp.innerText || "").replace(/\n{3,}/g, "\n\n").trim();
+}
 
 const BUCKET = "platform-documents";
 
