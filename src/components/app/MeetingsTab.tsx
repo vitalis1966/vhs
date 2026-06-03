@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check, Sparkles, Trash2, Mail, CheckCircle2, Circle } from "lucide-react";
 import { format } from "date-fns";
 import { MeetingDialog } from "./MeetingDialog";
 import { MeetingTranscriptDialog } from "./MeetingTranscriptDialog";
 import { TaskFormDialog } from "./TaskFormDialog";
+import { ComposeEmailDialog } from "./email/ComposeEmailDialog";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
 
 interface Meeting {
   id: string;
