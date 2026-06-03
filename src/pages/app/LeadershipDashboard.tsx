@@ -29,7 +29,7 @@ export default function LeadershipDashboard() {
     (async () => {
       setLoading(true);
       const [tRes, cRes, sRes] = await Promise.all([
-        (supabase as any).from("tasks").select("id, client_id, status_id, completed_at, created_at, due_date").eq("workspace_id", workspaceId),
+        (supabase as any).from("tasks").select("id, client_id, status_id, completed_at, created_at, due_date").eq("workspace_id", workspaceId).is("deleted_at", null),
         (supabase as any).from("clients").select("id, name, status, industry").eq("workspace_id", workspaceId),
         (supabase as any).from("task_statuses").select("id, name, color, category, position").eq("workspace_id", workspaceId).order("position"),
       ]);
