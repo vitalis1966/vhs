@@ -19,11 +19,30 @@ import { Badge } from "@/components/ui/badge";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
+import { substitute, TagContext } from "@/components/app/settings/templateTags";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Bold, Italic, Heading1, Heading2, List, ListOrdered, Link as LinkIcon,
-  Paperclip, FileText, Loader2, X, Upload,
+  Paperclip, FileText, Loader2, X, Upload, Code2, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+
+type BodyMode = "rich" | "html";
+
+function isRichHtmlContent(html: string): boolean {
+  if (!html) return false;
+  return /<!doctype|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<table[\s>]|<tr[\s>]|<td[\s>]|<th[\s>]|<div[\s>]|<span[\s>]|<img[\s>]|style\s*=\s*["']/i.test(html);
+}
+
+function htmlToPlain(html: string): string {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, "\n");
+  return (tmp.textContent || tmp.innerText || "").replace(/\n{3,}/g, "\n\n").trim();
+}
 
 const BUCKET = "platform-documents";
 
@@ -31,6 +50,10 @@ type Contact = { id: string; name: string; email: string | null; is_primary: boo
 type ClientLite = { id: string; name: string };
 type DocLite = { id: string; file_name: string; storage_path?: string };
 type Template = { id: string; name: string; subject: string; body_html: string; body_text: string };
+type ClientFull = {
+  id: string; name: string; industry: string | null; start_date: string | null;
+  account_owner_id: string | null;
+};
 
 interface Props {
   open: boolean;
@@ -39,9 +62,17 @@ interface Props {
   clientId?: string | null;
   lockClient?: boolean;
   onSent?: () => void;
+  /** Optional pre-populated values (used e.g. when sending a meeting summary) */
+  initialTo?: string[];
+  initialSubject?: string;
+  initialHtml?: string;
 }
 
-export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, onSent }: Props) {
+export function ComposeEmailDialog({
+  open, onOpenChange, clientId, lockClient, onSent,
+  initialTo, initialSubject, initialHtml,
+}: Props) {
+
   const { workspaceId, userId, userFullName } = useWorkspace();
   const [allClients, setAllClients] = useState<ClientLite[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(clientId ?? null);
@@ -60,6 +91,9 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   const [newUploads, setNewUploads] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
   const [docSearch, setDocSearch] = useState("");
+  const [bodyMode, setBodyMode] = useState<BodyMode>("rich");
+  const [htmlSource, setHtmlSource] = useState("");
+  const [showHtmlSource, setShowHtmlSource] = useState(false);
 
   const editor = useEditor({
     extensions: [StarterKit, Link.configure({ openOnClick: false, HTMLAttributes: { class: "underline text-primary" } })],
@@ -75,14 +109,32 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
   useEffect(() => {
     if (!open) return;
     setSelectedClientId(clientId ?? null);
-    setToEmails([]); setToInput("");
+    setToEmails(initialTo ?? []); setToInput("");
     setCc([]); setBcc([]); setCcInput(""); setBccInput("");
     setShowCc(false); setShowBcc(false);
-    setSubject("");
+    setSubject(initialSubject ?? "");
     setSelectedDocIds(new Set());
     setNewUploads([]);
-    editor?.commands.setContent("<p></p>");
-  }, [open, clientId, editor]);
+    if (initialHtml && isRichHtmlContent(initialHtml)) {
+      setBodyMode("html");
+      setHtmlSource(initialHtml);
+      setShowHtmlSource(false);
+      editor?.commands.setContent("<p></p>");
+    } else if (initialHtml) {
+      editor?.commands.setContent(initialHtml);
+      setBodyMode("rich");
+      setHtmlSource("");
+      setShowHtmlSource(false);
+    } else {
+      editor?.commands.setContent("<p></p>");
+      setBodyMode("rich");
+      setHtmlSource("");
+      setShowHtmlSource(false);
+    }
+  }, [open, clientId, editor, initialTo, initialSubject, initialHtml]);
+
+
+
 
   // Load workspace clients + templates
   useEffect(() => {
@@ -97,23 +149,40 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     })();
   }, [open, workspaceId]);
 
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [clientFull, setClientFull] = useState<ClientFull | null>(null);
+  const [ownerName, setOwnerName] = useState<string | null>(null);
+
   // Load client-specific data when client changes
   useEffect(() => {
     if (!open || !selectedClientId) {
       setClientDocs([]);
+      setContacts([]);
+      setClientFull(null);
+      setOwnerName(null);
       return;
     }
     (async () => {
-      const [{ data: contacts }, { data: docs }] = await Promise.all([
-        (supabase as any).from("contacts").select("id, name, email, is_primary").eq("client_id", selectedClientId),
+      const [{ data: contactsData }, { data: docs }, { data: client }] = await Promise.all([
+        (supabase as any).from("contacts").select("id, name, email, phone, is_primary, title").eq("client_id", selectedClientId),
         (supabase as any).from("platform_documents").select("id, file_name, storage_path").order("file_name"),
+        (supabase as any).from("clients").select("id, name, industry, start_date, account_owner_id").eq("id", selectedClientId).maybeSingle(),
       ]);
+      setContacts(contactsData ?? []);
+      setClientFull(client ?? null);
       // Pre-fill TO with primary contact emails
-      const primaries = (contacts ?? []).filter((c: Contact) => c.is_primary && c.email).map((c: Contact) => c.email!);
+      const primaries = (contactsData ?? []).filter((c: Contact) => c.is_primary && c.email).map((c: Contact) => c.email!);
       if (primaries.length && toEmails.length === 0) {
         setToEmails(primaries);
       }
       setClientDocs(docs ?? []);
+      if (client?.account_owner_id) {
+        const { data: owner } = await (supabase as any)
+          .from("profiles").select("full_name").eq("id", client.account_owner_id).maybeSingle();
+        setOwnerName(owner?.full_name ?? null);
+      } else {
+        setOwnerName(null);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, selectedClientId]);
@@ -147,11 +216,61 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
     }
   };
 
-  const applyTemplate = (t: Template) => {
-    setSubject(t.subject);
-    if (t.body_html) editor?.commands.setContent(t.body_html);
-    else editor?.commands.setContent(`<p>${t.body_text.replace(/\n/g, "<br/>")}</p>`);
+  const buildContext = (): TagContext => {
+    // Prefer primary contact, fall back to first contact, or match first TO email
+    const primary =
+      contacts.find((c) => c.is_primary && c.email) ??
+      contacts.find((c) => toEmails.includes(c.email ?? "")) ??
+      contacts[0];
+    const fullName = (primary?.name ?? "").trim();
+    const [firstName, ...rest] = fullName.split(/\s+/);
+    const startDate = clientFull?.start_date
+      ? new Date(clientFull.start_date).toLocaleDateString(undefined, {
+          year: "numeric", month: "long", day: "numeric",
+        })
+      : "";
+    return {
+      first_name: firstName || "",
+      last_name: rest.join(" "),
+      full_name: fullName,
+      email: primary?.email ?? "",
+      phone: (primary as any)?.phone ?? "",
+      practice_name: clientFull?.name ?? "",
+      practice_type: clientFull?.industry ?? "",
+      practice_city: "",
+      practice_province: "",
+      engagement_type: "",
+      start_date: startDate,
+      lead_consultant: ownerName ?? userFullName ?? "",
+    };
   };
+
+  const applyTemplate = (t: Template) => {
+    const ctx = buildContext();
+    const subjectFilled = substitute(t.subject ?? "", ctx);
+    setSubject(subjectFilled);
+
+    const rawHtml = t.body_html ? substitute(t.body_html, ctx) : "";
+    const rawText = t.body_text ? substitute(t.body_text, ctx) : "";
+
+    if (rawHtml && isRichHtmlContent(rawHtml)) {
+      // Switch to HTML preview mode so inline styles / tables / layout render
+      // exactly as they will in the recipient's inbox.
+      setHtmlSource(rawHtml);
+      setBodyMode("html");
+      setShowHtmlSource(false);
+      return;
+    }
+
+    if (rawHtml && editor) {
+      editor.commands.setContent(rawHtml);
+      setBodyMode("rich");
+    } else if (editor) {
+      editor.commands.setContent(`<p>${rawText.replace(/\n/g, "<br/>")}</p>`);
+      setBodyMode("rich");
+    }
+  };
+
 
   const uploadNewFiles = async (): Promise<DocLite[]> => {
     if (!newUploads.length || !workspaceId) return [];
@@ -209,8 +328,15 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
         .filter(Boolean)
         .map((d) => ({ id: d!.id, file_name: d!.file_name, storage_path: d!.storage_path ?? "" }));
 
-      const html = editor?.getHTML() ?? "";
-      const text = editor?.getText() ?? "";
+      // In HTML mode the iframe-previewed source is authoritative — it carries
+      // inline styles, tables, and layout exactly as the recipient will see.
+      const html = bodyMode === "html"
+        ? htmlSource
+        : (editor?.getHTML() ?? "");
+      const text = bodyMode === "html"
+        ? htmlToPlain(htmlSource)
+        : (editor?.getText() ?? "");
+
 
       const { data, error } = await supabase.functions.invoke("send-email", {
         body: {
@@ -320,10 +446,65 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
             </Popover>
           </div>
 
-          <RichToolbar editor={editor} />
-          <div className="border border-border rounded-md bg-card">
-            <EditorContent editor={editor} />
+          <div className="flex items-center justify-between gap-2">
+            <ToggleGroup
+              type="single"
+              size="sm"
+              value={bodyMode}
+              onValueChange={(v) => v && setBodyMode(v as BodyMode)}
+              className="border border-border rounded-md"
+            >
+              <ToggleGroupItem value="rich" className="h-7 px-2 text-xs gap-1">
+                <FileText className="h-3.5 w-3.5" /> Rich Text
+              </ToggleGroupItem>
+              <ToggleGroupItem value="html" className="h-7 px-2 text-xs gap-1">
+                <Code2 className="h-3.5 w-3.5" /> HTML
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {bodyMode === "html" && (
+              <Button
+                type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1"
+                onClick={() => setShowHtmlSource((s) => !s)}
+              >
+                {showHtmlSource ? <Eye className="h-3.5 w-3.5" /> : <Code2 className="h-3.5 w-3.5" />}
+                {showHtmlSource ? "Preview" : "Edit source"}
+              </Button>
+            )}
           </div>
+
+          {bodyMode === "rich" ? (
+            <>
+              <RichToolbar editor={editor} />
+              <div className="border border-border rounded-md bg-card">
+                <EditorContent editor={editor} />
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <div className="border border-border rounded-md bg-white overflow-hidden">
+                <iframe
+                  title="Email preview"
+                  sandbox=""
+                  srcDoc={htmlSource || "<p style='font-family:sans-serif;color:#999;padding:16px'>No content</p>"}
+                  className="w-full"
+                  style={{ minHeight: 360, border: 0, display: "block" }}
+                />
+              </div>
+              {showHtmlSource && (
+                <Textarea
+                  value={htmlSource}
+                  onChange={(e) => setHtmlSource(e.target.value)}
+                  className="font-mono text-xs min-h-[200px]"
+                  placeholder="<html>…</html>"
+                  spellCheck={false}
+                />
+              )}
+              <p className="text-xs text-muted-foreground">
+                Recipients will see the preview above. Use <span className="font-medium">Edit source</span> to tweak the HTML directly.
+              </p>
+            </div>
+          )}
+
 
           <div>
             <Label className="text-xs flex items-center gap-1.5"><Paperclip className="h-3 w-3" /> Attachments</Label>

@@ -65,7 +65,7 @@ export default function Clients() {
 
     if (rows.length) {
       const { data: tasks } = await (supabase as any)
-        .from("tasks").select("client_id, completed_at")
+        .from("tasks").select("client_id, completed_at").is("deleted_at", null)
         .in("client_id", rows.map((r) => r.id))
         .is("completed_at", null);
       const counts: Record<string, number> = {};

@@ -6,10 +6,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DndContext, DragEndEvent, DragOverlay, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import { format } from "date-fns";
 import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
+import { onTasksChanged } from "./tasks/taskMutations";
 
 interface TaskCard {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; completed_at: string | null;
+  meeting_id: string | null;
 }
 interface Status { id: string; name: string; color: string | null; position: number; category: string; }
 interface ClientLite { id: string; name: string; }
@@ -39,8 +42,9 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     setStatuses(sRes.data ?? []);
 
     let q = (supabase as any).from("tasks")
-      .select("id, title, status_id, priority, due_date, client_id, completed_at")
-      .eq("workspace_id", workspaceId);
+      .select("id, title, status_id, priority, due_date, client_id, completed_at, meeting_id")
+      .eq("workspace_id", workspaceId)
+      .is("deleted_at", null);
     if (clientId) q = q.eq("client_id", clientId);
     if (projectId) q = q.eq("project_id", projectId);
     const tRes = await q.order("position");
@@ -77,6 +81,7 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
   }, [workspaceId, clientId, projectId]);
 
   useEffect(() => { load(); }, [load, reloadKey]);
+  useEffect(() => onTasksChanged(() => load()), [load]);
 
   const filtered = useMemo(() => tasks.filter((t) => {
     if (filters?.status && t.status_id !== filters.status) return false;
@@ -126,7 +131,9 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
                   client={clients[t.client_id]}
                   assigneeIds={assigneesByTask[t.id] ?? []}
                   profiles={profiles}
+                  workspaceId={workspaceId!}
                   onClick={() => onOpenTask(t.id)}
+                  onEdit={onOpenTask}
                 />
               ))}
             </Column>
@@ -158,12 +165,18 @@ function Column({ status, count, children }: { status: Status; count: number; ch
   );
 }
 
-function DraggableCard({ task, client, assigneeIds, profiles, onClick }: { task: TaskCard; client?: ClientLite; assigneeIds: string[]; profiles: Record<string, ProfileLite>; onClick: () => void }) {
+function DraggableCard({ task, client, assigneeIds, profiles, workspaceId, onClick, onEdit }: { task: TaskCard; client?: ClientLite; assigneeIds: string[]; profiles: Record<string, ProfileLite>; workspaceId: string; onClick: () => void; onEdit: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, opacity: isDragging ? 0.4 : 1 } : undefined;
+  const target: TaskActionTarget = {
+    id: task.id, workspaceId, meetingId: task.meeting_id, assigneeIds, dueDate: task.due_date,
+  };
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick}>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick} className="relative group">
       <Card task={task} client={client} assigneeIds={assigneeIds} profiles={profiles} />
+      <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition" onClick={(e) => e.stopPropagation()}>
+        <TaskActionsMenu task={target} onEdit={onEdit} />
+      </div>
     </div>
   );
 }

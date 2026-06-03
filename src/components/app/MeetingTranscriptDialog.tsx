@@ -228,42 +228,83 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
       const firstStatus = statuses?.[0]?.id ?? null;
 
       const validAI = rActionItems.filter((a) => a.description.trim());
+      // Build a lookup of attendee names → external/internal for context
+      const externalAttendeeNames = rAttendees.filter((a) => !a.userId).map((a) => a.name.trim()).filter(Boolean);
+      const meetingDateLabel = rDate ? new Date(rDate).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "";
+
       for (let i = 0; i < validAI.length; i++) {
         const a = validAI[i];
         let convertedTaskId: string | null = null;
 
         if (a.createAsTask) {
+          // Resolve assignee: prefer matched internal owner, otherwise fall back
+          // to the meeting organizer (current user) and flag for review.
+          const externalOwnerRaw = (a.owner ?? "").trim();
+          const isExternalOwner =
+            !a.ownerUserId &&
+            externalOwnerRaw &&
+            externalAttendeeNames.some((n) => n.toLowerCase() === externalOwnerRaw.toLowerCase());
+          const assigneeUserId = a.ownerUserId ?? (isExternalOwner ? null : userId);
+          const assigneeUnconfirmed = !a.ownerUserId && !isExternalOwner;
+
+          // Compose a rich description that captures meeting context.
+          const descLines: string[] = [];
+          descLines.push(a.description.trim());
+          descLines.push("");
+          descLines.push(`Source: ${rTitle.trim() || "Meeting"}${meetingDateLabel ? ` — ${meetingDateLabel}` : ""}`);
+          if (a.due_date) descLines.push(`Deadline mentioned: ${a.due_date}`);
+          if (isExternalOwner) descLines.push(`Assigned to (external): ${externalOwnerRaw}`);
+          else if (assigneeUnconfirmed) descLines.push(`Assignee not confirmed in meeting — please reassign if needed${externalOwnerRaw ? ` (transcript referenced: ${externalOwnerRaw})` : ""}.`);
+          if (rSummary.trim()) {
+            descLines.push("");
+            descLines.push("Meeting summary excerpt:");
+            descLines.push(rSummary.trim().slice(0, 600) + (rSummary.trim().length > 600 ? "…" : ""));
+          }
+          const descriptionText = descLines.join("\n");
+          const descriptionJson = {
+            type: "doc",
+            content: descriptionText.split("\n").map((line) => ({
+              type: "paragraph",
+              content: line.trim() ? [{ type: "text", text: line }] : [],
+            })),
+          };
+
           const { data: tData, error: tErr } = await (supabase as any).from("tasks").insert({
             workspace_id: workspaceId, client_id: clientId,
-            title: a.description.trim(), priority: a.priority,
+            title: a.description.trim(),
+            description: descriptionJson,
+            description_text: descriptionText,
+            priority: a.priority,
             due_date: a.due_date || null,
             status_id: firstStatus,
             created_by: userId,
+            meeting_id: meetingId,
           }).select().single();
           if (tErr) { console.error("task insert failed", tErr); }
           else {
             convertedTaskId = tData.id;
-            if (a.ownerUserId) {
+            if (assigneeUserId) {
               await (supabase as any).from("task_assignees").insert({
-                task_id: tData.id, user_id: a.ownerUserId,
+                task_id: tData.id, user_id: assigneeUserId,
               });
-              // Fire notification
-              void sendNotification({
-                user_id: a.ownerUserId,
-                workspace_id: workspaceId,
-                type: "task_assigned",
-                title: "New task assigned",
-                body: a.description.trim(),
-                link_url: `/app/tasks?taskId=${tData.id}`,
-                entity_type: "task",
-                entity_id: tData.id,
-                actor_id: userId,
-              });
+              if (assigneeUserId !== userId) {
+                void sendNotification({
+                  user_id: assigneeUserId,
+                  workspace_id: workspaceId,
+                  type: "task_assigned",
+                  title: "New task assigned",
+                  body: a.description.trim(),
+                  link_url: `/app/tasks?taskId=${tData.id}`,
+                  entity_type: "task",
+                  entity_id: tData.id,
+                  actor_id: userId,
+                });
+              }
             }
             await (supabase as any).from("activities").insert({
               workspace_id: workspaceId, actor_id: userId, verb: "created",
               target_type: "task", target_id: tData.id, client_id: clientId,
-              metadata: { title: a.description.trim(), via: "meeting_extraction" },
+              metadata: { title: a.description.trim(), via: "meeting_extraction", meeting_id: meetingId },
             });
           }
         }
@@ -278,6 +319,7 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
           position: i,
         });
       }
+
 
       // 5. Activity feed
       await (supabase as any).from("activities").insert({

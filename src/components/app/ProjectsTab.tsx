@@ -48,7 +48,7 @@ export function ProjectsTab({ clientId }: Props) {
 
     if (rows.length) {
       const { data: tasks } = await (supabase as any)
-        .from("tasks").select("project_id, completed_at")
+        .from("tasks").select("project_id, completed_at").is("deleted_at", null)
         .in("project_id", rows.map((r) => r.id));
       const totals: Record<string, { done: number; total: number }> = {};
       (tasks ?? []).forEach((t: any) => {

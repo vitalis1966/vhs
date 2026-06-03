@@ -27,6 +27,7 @@ const ClientReportView = lazy(() => import("./pages/ClientReportView"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const EmployeeLogin = lazy(() => import("./pages/EmployeeLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const VHSManagement = lazy(() => import("./pages/admin/VHSManagement"));
 const AssessmentList = lazy(() => import("./pages/admin/AssessmentList"));
 const AssessmentEditor = lazy(() => import("./pages/admin/AssessmentEditor"));
 const SubmissionsDashboard = lazy(() => import("./pages/admin/SubmissionsDashboard"));
@@ -69,7 +70,7 @@ const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ d
 const AppIndex = lazy(() => import("./pages/app/AppIndex"));
 const SetupWorkspace = lazy(() => import("./pages/app/SetupWorkspace"));
 const AppHome = lazy(() => import("./pages/app/Home"));
-const AppMyTasks = lazy(() => import("./pages/app/ShellPages").then(m => ({ default: m.AppMyTasks })));
+const AppMyTasks = lazy(() => import("./pages/app/MyTasks"));
 const AppClients = lazy(() => import("./pages/app/Clients"));
 const AppClientDetail = lazy(() => import("./pages/app/ClientDetail"));
 const AppProjects = lazy(() => import("./pages/app/Projects"));
@@ -158,6 +159,7 @@ const App = () => (
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/employee-login" element={<EmployeeLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/vhs-management" element={<VHSManagement />} />
               <Route path="/admin/assessments" element={<AdminGuard><AssessmentList /></AdminGuard>} />
               <Route path="/admin/assessments/:id" element={<AdminGuard><AssessmentEditor /></AdminGuard>} />
               <Route path="/admin/assessments/:id/import" element={<AdminGuard><AssessmentImport /></AdminGuard>} />

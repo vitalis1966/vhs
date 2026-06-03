@@ -99,7 +99,7 @@ export default function ClientDetail() {
 
     if (active.length) {
       const { data: pts } = await (supabase as any)
-        .from("tasks").select("project_id, completed_at")
+        .from("tasks").select("project_id, completed_at").is("deleted_at", null)
         .in("project_id", active.map((p: any) => p.id));
       const totals: Record<string, { done: number; total: number }> = {};
       (pts ?? []).forEach((t: any) => {
@@ -115,7 +115,7 @@ export default function ClientDetail() {
 
     // Open task count for this client
     const { count } = await (supabase as any)
-      .from("tasks").select("id", { count: "exact", head: true })
+      .from("tasks").select("id", { count: "exact", head: true }).is("deleted_at", null)
       .eq("client_id", clientId).is("completed_at", null);
     setOpenTaskCount(count ?? 0);
 
