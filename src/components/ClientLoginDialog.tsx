@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { setPlatform } from "@/lib/platformContext";
 
 interface Props {
   open: boolean;
@@ -53,6 +54,7 @@ export function ClientLoginDialog({ open, onOpenChange }: Props) {
       onOpenChange(false);
       navigate("/portal/documents");
     } else if (isAdmin) {
+      setPlatform("vhs");
       onOpenChange(false);
       navigate("/admin/client-management/documents");
     } else {
