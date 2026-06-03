@@ -307,10 +307,15 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
         .filter(Boolean)
         .map((d) => ({ id: d!.id, file_name: d!.file_name, storage_path: d!.storage_path ?? "" }));
 
-      // Read straight from the editor's DOM so any raw HTML we injected
-      // (inline styles, tables, custom markup from a template) survives.
-      const html = editor?.view?.dom?.innerHTML ?? editor?.getHTML() ?? "";
-      const text = editor?.getText() ?? "";
+      // In HTML mode the iframe-previewed source is authoritative — it carries
+      // inline styles, tables, and layout exactly as the recipient will see.
+      const html = bodyMode === "html"
+        ? htmlSource
+        : (editor?.getHTML() ?? "");
+      const text = bodyMode === "html"
+        ? htmlToPlain(htmlSource)
+        : (editor?.getText() ?? "");
+
 
       const { data, error } = await supabase.functions.invoke("send-email", {
         body: {
