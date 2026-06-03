@@ -144,6 +144,12 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Mark Vitalis OS platform access for this user.
+    await admin.from('platform_roles').upsert(
+      { user_id: userId, platform: 'vitalis_os', role, is_active: true },
+      { onConflict: 'user_id,platform' },
+    )
+
     // Send invite email
     const loginUrl = login_url || 'https://vitalisstrategies.com/employee-login'
     let email_sent = true

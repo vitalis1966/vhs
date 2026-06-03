@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Lock } from "lucide-react";
+import { setPlatform, clearPlatform } from "@/lib/platformContext";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -20,14 +21,31 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+    if (error || !data.user) {
+      toast({ title: "Login failed", description: error?.message ?? "Unknown error", variant: "destructive" });
       setLoading(false);
       return;
     }
 
+    const { data: ok, error: rpcErr } = await (supabase as any).rpc("has_platform_access", {
+      _user: data.user.id,
+      _platform: "vhs",
+    });
+    if (rpcErr || !ok) {
+      clearPlatform();
+      await supabase.auth.signOut();
+      toast({
+        title: "Access denied",
+        description: "This account does not have VHS Administration access.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    setPlatform("vhs");
     navigate("/admin");
     setLoading(false);
   };
