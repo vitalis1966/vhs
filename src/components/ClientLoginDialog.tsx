@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { setPlatform } from "@/lib/platformContext";
+import { setPlatform, clearPlatform } from "@/lib/platformContext";
 
 interface Props {
   open: boolean;
@@ -50,17 +50,24 @@ export function ClientLoginDialog({ open, onOpenChange }: Props) {
 
     await logActivity(email, "Success");
 
-    if (isClient) {
-      onOpenChange(false);
-      navigate("/portal/documents");
-    } else if (isAdmin) {
+    if (isAdmin) {
+      // VHS admin via Client Login → land on the all-clients documents view.
       setPlatform("vhs");
       onOpenChange(false);
-      navigate("/admin/client-management/documents");
-    } else {
-      await supabase.auth.signOut();
-      toast({ title: "Access denied", description: "This account has no access.", variant: "destructive" });
+      // Hard navigate so any guard listeners mounted on the current page
+      // (e.g. AdminGuard / AppGuard) don't race and hijack with a stale check.
+      window.location.assign("/admin/client-management/documents");
+      return;
     }
+    if (isClient) {
+      // Client portal user — scoped by RLS to their own submissions.
+      clearPlatform();
+      onOpenChange(false);
+      window.location.assign("/portal/documents");
+      return;
+    }
+    await supabase.auth.signOut();
+    toast({ title: "Access denied", description: "This account has no portal access.", variant: "destructive" });
     setLoading(false);
   };
 
