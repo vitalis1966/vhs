@@ -220,10 +220,6 @@ export function ComposeEmailDialog({ open, onOpenChange, clientId, lockClient, o
       editor.commands.setContent(`<p>${rawText.replace(/\n/g, "<br/>")}</p>`);
     }
   };
-    } else {
-      editor.commands.setContent(`<p>${t.body_text.replace(/\n/g, "<br/>")}</p>`);
-    }
-  };
 
   const uploadNewFiles = async (): Promise<DocLite[]> => {
     if (!newUploads.length || !workspaceId) return [];
