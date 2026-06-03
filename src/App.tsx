@@ -27,6 +27,7 @@ const ClientReportView = lazy(() => import("./pages/ClientReportView"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const EmployeeLogin = lazy(() => import("./pages/EmployeeLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const VHSManagement = lazy(() => import("./pages/admin/VHSManagement"));
 const AssessmentList = lazy(() => import("./pages/admin/AssessmentList"));
 const AssessmentEditor = lazy(() => import("./pages/admin/AssessmentEditor"));
 const SubmissionsDashboard = lazy(() => import("./pages/admin/SubmissionsDashboard"));
