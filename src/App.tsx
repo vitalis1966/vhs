@@ -158,6 +158,7 @@ const App = () => (
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/employee-login" element={<EmployeeLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/admin/vhs-management" element={<VHSManagement />} />
               <Route path="/admin/assessments" element={<AdminGuard><AssessmentList /></AdminGuard>} />
               <Route path="/admin/assessments/:id" element={<AdminGuard><AssessmentEditor /></AdminGuard>} />
               <Route path="/admin/assessments/:id/import" element={<AdminGuard><AssessmentImport /></AdminGuard>} />
