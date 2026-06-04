@@ -2957,6 +2957,10 @@ export type Database = {
         }
         Returns: string
       }
+      user_mentioned_in_task: {
+        Args: { _task_id: string; _user_id: string }
+        Returns: boolean
+      }
       workspace_role: { Args: { wid: string }; Returns: string }
     }
     Enums: {
