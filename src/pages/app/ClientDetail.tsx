@@ -15,6 +15,7 @@ import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
 import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
+import { ContractedHoursSection } from "@/components/app/time/ContractedHoursSection";
 import { ComposeEmailDialog } from "@/components/app/email/ComposeEmailDialog";
 import { EmailsTab, RecentEmailsCard } from "@/components/app/email/EmailsTab";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
