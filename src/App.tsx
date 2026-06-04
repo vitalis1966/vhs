@@ -202,6 +202,7 @@ const App = () => (
                 <Route path="clients/:clientId/projects/:projectId" element={<AppProjectDetail />} />
                 <Route path="projects" element={<AppProjects />} />
                 <Route path="tasks" element={<AppTasks />} />
+                <Route path="time" element={<AppTimeTracking />} />
                 <Route path="dashboards" element={<AppDashboards />} />
                 <Route path="settings/notifications" element={<AppNotificationSettings />} />
                 <Route path="settings" element={<AppSettings />} />
