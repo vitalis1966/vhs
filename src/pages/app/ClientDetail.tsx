@@ -15,6 +15,7 @@ import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
 import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
+import { ContractedHoursSection } from "@/components/app/time/ContractedHoursSection";
 import { ComposeEmailDialog } from "@/components/app/email/ComposeEmailDialog";
 import { EmailsTab, RecentEmailsCard } from "@/components/app/email/EmailsTab";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
@@ -234,6 +235,7 @@ export default function ClientDetail() {
           <TabsTrigger value="files">Files</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
+          <TabsTrigger value="hours">Contracted Hours</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -396,7 +398,11 @@ export default function ClientDetail() {
           <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
         </TabsContent>
         <TabsContent value="emails" className="mt-6"><EmailsTab clientId={client.id} /></TabsContent>
+        <TabsContent value="hours" className="mt-6">
+          <ContractedHoursSection clientId={client.id} workspaceId={client.workspace_id} />
+        </TabsContent>
       </Tabs>
+
 
       <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={client.id} lockClient />
 

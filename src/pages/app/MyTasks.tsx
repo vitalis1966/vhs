@@ -7,10 +7,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
-import { ListTodo } from "lucide-react";
+import { ListTodo, Play } from "lucide-react";
 import { TaskActionsMenu, type TaskActionTarget } from "@/components/app/tasks/TaskActionsMenu";
 import { BulkActionBar } from "@/components/app/tasks/BulkActionBar";
 import { DeleteTaskDialog } from "@/components/app/tasks/DeleteTaskDialog";
+import { useTimer } from "@/contexts/TimerContext";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
 import { PRIORITY_CLASS, clientColor, isOverdue } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
@@ -43,6 +44,46 @@ export default function MyTasks() {
   const [editTaskId, setEditTaskId] = useState<string | null>(null);
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
+  const { running, startTimer, stopTimer } = useTimer();
+
+  const startTimerForTask = useCallback(async (row: Row) => {
+    if (!workspaceId) return;
+    const begin = async () => {
+      const { data: pref } = await (supabase as any)
+        .from("time_tracking_settings").select("default_activity_type_id")
+        .eq("user_id", userId).eq("workspace_id", workspaceId).maybeSingle();
+      let actId = pref?.default_activity_type_id ?? null;
+      if (!actId) {
+        const { data: def } = await (supabase as any)
+          .from("time_activity_types").select("id")
+          .eq("workspace_id", workspaceId).eq("is_default", true).maybeSingle();
+        actId = def?.id;
+      }
+      if (!actId) {
+        const { data: any1 } = await (supabase as any)
+          .from("time_activity_types").select("id")
+          .eq("workspace_id", workspaceId).eq("is_active", true).order("position").limit(1).maybeSingle();
+        actId = any1?.id;
+      }
+      if (!actId) { toast.error("No activity types configured"); return; }
+      await startTimer({
+        client_id: row.client_id,
+        project_id: row.project_id,
+        task_id: row.id,
+        activity_type_id: actId,
+        description: row.title,
+      });
+    };
+    if (running) {
+      const ok = window.confirm(`You have a timer running for "${running.activity_name ?? "current task"}". Stop it and start a new one?`);
+      if (!ok) return;
+      await stopTimer();
+      await begin();
+    } else {
+      await begin();
+    }
+  }, [workspaceId, userId, running, startTimer, stopTimer]);
+
 
   const load = useCallback(async () => {
     if (!workspaceId || !userId) return;
@@ -165,6 +206,7 @@ export default function MyTasks() {
           <div className="w-24">Priority</div>
           <div className="w-28">Due</div>
           <div className="w-8" />
+          <div className="w-8" />
         </div>
 
         {loading ? (
@@ -229,6 +271,15 @@ export default function MyTasks() {
                   </div>
                   <div className={`w-28 ${overdue ? "text-red-600 font-medium" : ""}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
+                  </div>
+                  <div className="w-8" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
+                      title="Start timer for this task"
+                      onClick={() => startTimerForTask(row)}
+                    >
+                      <Play className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
                     <TaskActionsMenu
