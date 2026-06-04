@@ -228,8 +228,8 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Creating…" : "Create Task"}</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>{cancelLabel ?? "Cancel"}</Button>
+          <Button onClick={save} disabled={saving}>{saving ? "Creating…" : (saveLabel ?? "Create Task")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
