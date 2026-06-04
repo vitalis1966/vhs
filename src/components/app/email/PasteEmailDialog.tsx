@@ -463,7 +463,10 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
               </div>
             )}
 
+            <AttachmentPicker files={files} setFiles={setFiles} />
+
             <DialogFooter className="gap-2 flex-wrap">
+              {uploading && <span className="text-xs text-muted-foreground self-center mr-auto">Uploading files…</span>}
               <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
               <Button variant="secondary" onClick={() => handleSave("email_only")} disabled={saving}>
                 <Mail className="h-4 w-4" /> Save email only
