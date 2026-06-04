@@ -162,10 +162,6 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
             <Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
           </div>
           <div>
-            <Label htmlFor="t-title">Title *</Label>
-            <Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
-          </div>
-          <div>
             <Label>Client *</Label>
             <Select value={clientId} onValueChange={(v) => { setClientId(v); setProjectId("none"); }}>
               <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
