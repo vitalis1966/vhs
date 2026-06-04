@@ -123,12 +123,8 @@ export default function TimeTracking() {
         "Duration (Decimal)": d.decimal.toFixed(2),
       };
     });
-    const csv = toCSV(rows);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url;
-    a.download = `time-entries-${format(range.start, "yyyy-MM-dd")}.csv`;
-    a.click(); URL.revokeObjectURL(url);
+    const csv = toCsv(rows);
+    downloadCsv(`time-entries-${format(range.start, "yyyy-MM-dd")}.csv`, csv);
   };
 
   // Grouping
