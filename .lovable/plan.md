@@ -1,96 +1,77 @@
-# Email Inbox for Vitalis OS
 
-A new, self-contained feature. No existing functionality changes. All UI reuses Vitalis OS tokens, fonts, and the existing TaskFormDialog side panel.
+## Goal
+Refine the Email Inbox so emails are never auto-removed, extracted tasks are tracked per-email with a clear lifecycle (Extract → View → Completed), and surface email/task counts in both the Inbox and My Tasks via consistent badge styling. Add a richer extraction UX with progress, post-extraction prompt, and back/next navigation.
 
-## Decisions confirmed
-- **AI provider**: Lovable AI Gateway, model `google/gemini-2.5-pro` (no extra API key).
-- **Webhook auth**: shared secret header `X-Webhook-Secret` matched against a new secret `RESEND_WEBHOOK_SECRET`.
-- **Admin visibility**: workspace admins/managers see all inbound emails; everyone else only sees their own.
-- **Inbound address**: I'll use a placeholder `inbox@inbound.vitalisstrategies.com` in the empty state — you can swap it once Resend is configured.
+## Changes
 
-## 1. Database (single migration)
+### 1. Inbox row lifecycle (no deletions)
+- Add an `extraction_state` to `inbound_emails`:
+  - `none` (default) — shows **Extract to Task**
+  - `extracted` — tasks generated and stored, not yet reviewed. Shows **View Extracted Tasks**
+  - `completed` — user has reviewed extracted tasks. Shows **Completed** (disabled/non-clickable)
+- Emails are never auto-deleted. The existing manual Delete option in the row menu stays.
+- When extraction yields ≥1 saved tasks, email status auto-flips to **Assigned** (already partially in place; verified).
 
-**`inbound_emails`** as specified, plus:
-- index on `(workspace_id, received_at desc)` and `(assigned_to, status)`.
-- trigger to keep `updated_at` fresh.
+### 2. Inbox table updates
+- New **Tasks** column after Status: shows the count of tasks linked via `email_task_extractions` for that email (0 if none).
+- Slightly widen the Status column so "Not Assigned" no longer wraps/clips.
+- 3-dots menu items become state-aware:
+  - `none` → "Extract to Task"
+  - `extracted` → "View Extracted Tasks"
+  - `completed` → "Completed" (disabled)
+  - Delete remains available in all states.
 
-**`email_task_extractions`** as specified, plus index on `email_id`.
+### 3. Extraction flow UX
+- Clicking **Extract to Task** opens an in-row/overlay progress indicator ("Extracting…" with a progress bar) so users see activity while Gemini runs.
+- On completion, show a confirmation dialog: **"Tasks extracted. Do you want to review them now?"** with **Yes** / **Later** buttons.
+  - **Yes** → opens the stepper immediately.
+  - **Later** → stays in inbox; email enters `extracted` state and tasks are stored for later.
+- Extracted tasks are persisted (new table) so "View Extracted Tasks" can re-open the stepper without re-calling AI.
 
-**RLS / GRANTs**
-- `GRANT SELECT, UPDATE, DELETE` on `inbound_emails` to `authenticated`; `GRANT ALL` to `service_role`. No `anon`.
-- `inbound_emails` policies:
-  - SELECT/UPDATE/DELETE: `assigned_to = auth.uid()` OR `is_workspace_admin_or_manager(workspace_id)`.
-  - No INSERT policy → only `service_role` (edge function) can insert.
-- `email_task_extractions`:
-  - SELECT: visible if parent email is visible (subquery against `inbound_emails`).
-  - INSERT: `authenticated` users who can see the parent email (so "Extract to Task" works from the client).
-  - DELETE cascades via FK.
+### 4. Stepper navigation
+- Replace existing Back/Skip with three buttons: **Back**, **Next**, **Skip**.
+  - Back: previous task (disabled on first).
+  - Next: forward without saving (disabled on last unreviewed; allows moving across already-seen tasks).
+  - Skip: marks task as skipped and advances.
+- Save Task still creates the task (existing behavior).
+- Once user finishes the stepper (all tasks saved or skipped), email moves to `completed` state; menu shows "Completed".
 
-## 2. Edge function — `email-inbound`
+### 5. My Tasks: Source column + badge
+- New **Source** column with values **Extracted** (task linked in `email_task_extractions`) or **Manual** (everything else).
+- Sidebar badge for **My Tasks**: same logic as Inbox — solid primary-coloured pill when there are *new* assignments since last visit; once no new items remain, show the count as a plain number (no filled circle) representing total open tasks.
 
-- POST only, CORS headers, public (no JWT — Resend won't send one).
-- Validate `X-Webhook-Secret` header against `Deno.env.get('RESEND_WEBHOOK_SECRET')`. 401 on mismatch.
-- Parse Resend inbound payload (`from`, `subject`, `text`, `html`, `email_id`, optional `from_name`).
-- Use service role client to:
-  1. Look up `workspace_members` (joined to `profiles.email`) where `email = from_email` and `status='active'` → take first match.
-  2. If no match: look up `auth.users` by email `admin@vitalisstrategies.com` via admin API → assign to that user, use their primary workspace.
-  3. If still no match: leave `assigned_to` null and pick the oldest workspace as default.
-  4. Insert into `inbound_emails` with `on conflict (resend_email_id) do nothing`.
-- Strip attachments entirely (never read or store).
-- Returns 200 `{ok:true}`; 400 on missing required fields; 401 on bad secret.
-- Add `secrets--add_secret` request for `RESEND_WEBHOOK_SECRET` so you can paste the value Resend gives you.
+### 6. Sidebar badge logic (Inbox + My Tasks)
+- "New" = unread/unseen. Track per-user last-visited timestamp in `localStorage` (per user id) for both Inbox and My Tasks. When user opens the page, reset the marker.
+- Display rules:
+  - `newCount > 0` → solid filled badge with `newCount`.
+  - `newCount === 0` → outline/plain text badge with `totalOpenCount` (no filled circle).
+- Inbox total = all emails. My Tasks total = open (non-done/cancelled) tasks assigned to user.
 
-## 3. Frontend
+## Technical Details
 
-### Routing & sidebar
-- New route `/app/inbox` → `src/pages/app/Inbox.tsx` (lazy).
-- Add **Inbox** item to `AppSidebar` between Home and My Tasks, using the `Inbox` Lucide icon, with a small badge showing count of `status='not_assigned'` rows visible to the user (live via a polled query, every 60s).
+### Database (single migration)
+- `ALTER TABLE public.inbound_emails ADD COLUMN extraction_state text NOT NULL DEFAULT 'none' CHECK (extraction_state IN ('none','extracted','completed'));`
+- New table `public.email_extracted_tasks` to persist AI output for "Later" review:
+  - `id uuid pk`, `email_id uuid fk inbound_emails`, `title text`, `description text`, `priority text`, `position int`, `status text default 'pending' check in ('pending','saved','skipped')`, `task_id uuid null`, `created_at`, `updated_at`.
+  - GRANTs to authenticated + service_role; RLS mirroring `inbound_emails` (workspace member visibility; admins see all).
+- Existing `email_task_extractions` (email_id → task_id) continues to power the Tasks count column and the My Tasks Source column.
 
-### Inbox page
-- Header: title "Inbox" + subtitle "Emails forwarded to Vitalis OS for task extraction".
-- Table built with existing `Table` primitives (matches `TaskTable` look): From / Subject / Received / Status / Actions.
-  - From: display name + email beneath in `text-xs text-muted-foreground`.
-  - Subject: truncated with title tooltip.
-  - Received: `formatDistanceToNow` from date-fns, full date in title.
-  - Status: inline dropdown (Popover + colored dot) — red/green/orange dots matching existing Tasks status pattern.
-  - Actions: existing `DropdownMenu` with **Extract to Task** and **Delete** (confirm via `AlertDialog`).
-- Row click (outside status/menu) opens a `Sheet` showing full email (subject, from, received, body — prefer `body_text`, fall back to sanitized `body_html` rendered as `<pre>` or via `dangerouslySetInnerHTML` only after `DOMPurify`-style basic stripping; use a simple text-first render to keep dependencies untouched).
-- Empty state: centred Inbox icon + copy referencing the inbound address.
-- Default sort: `received_at desc`.
+### Edge function
+- `extract-email-tasks`: after AI returns, **persist** tasks into `email_extracted_tasks` (status `pending`) and set `inbound_emails.extraction_state = 'extracted'`. Return the inserted rows.
 
-### Extract to Task flow
-- New edge function `extract-email-tasks` (verify JWT, takes `{ email_id }`):
-  - Loads email (RLS protects access), calls Lovable AI `google/gemini-2.5-pro` with the specified system prompt and the subject + body_text.
-  - Uses tool calling with a small schema `{ tasks: [{ title, description, priority enum[low,medium,high] }] }` (max 5).
-  - Returns parsed array; surfaces 429/402 errors clearly.
-- New component `src/components/app/inbox/ExtractTasksPanel.tsx`:
-  - Wraps the existing `TaskFormDialog` (the same side panel used everywhere else) — no rebuild.
-  - If 1 task: open `TaskFormDialog` pre-filled with title/description/priority/assignee (= email's `assigned_to`).
-  - If 2–5: render a stepper "Task N of M" with Back/Next inside the same dialog frame; each step uses `TaskFormDialog`'s form preset; **Save Task** writes via existing task-create flow then inserts `email_task_extractions(email_id, task_id)`; **Skip** advances without saving.
-  - On finish: if ≥1 task saved, update email `status='assigned'`; close panel; toast.
-- Empty/parse failure: inline error "No actionable tasks found in this email."
+### Frontend
+- `StatusDropdown.tsx`: widen trigger from `w-[150px]` to `w-[170px]`.
+- `Inbox.tsx`:
+  - Add Tasks column (count from `email_task_extractions`, fetched alongside emails or via a view).
+  - Replace single "Extract to Task" menu item with state-aware item.
+  - Add progress overlay while extracting; show confirm dialog on success.
+  - Load persisted `email_extracted_tasks` when user picks "View Extracted Tasks".
+- `ExtractTasksPanel.tsx`:
+  - Add **Next** button; track per-task review state (`pending|saved|skipped`); persist updates to `email_extracted_tasks` on each action.
+  - On finish: set email `extraction_state = 'completed'` and (if any saved) `status = 'assigned'`.
+- `MyTasks.tsx`: add Source column; query `email_task_extractions` for the displayed task ids to label rows.
+- `useInboxUnreadCount.ts`: extend to return `{ newCount, totalCount }`; add `useMyTasksBadge.ts` analogue.
+- `AppSidebar.tsx`: render filled vs plain badge based on `newCount` for both items.
 
-## 4. Files to add / touch
-
-**New**
-- `supabase/migrations/<ts>_email_inbox.sql`
-- `supabase/functions/email-inbound/index.ts`
-- `supabase/functions/extract-email-tasks/index.ts`
-- `src/pages/app/Inbox.tsx`
-- `src/components/app/inbox/InboxTable.tsx`
-- `src/components/app/inbox/EmailViewerSheet.tsx`
-- `src/components/app/inbox/StatusDropdown.tsx`
-- `src/components/app/inbox/ExtractTasksPanel.tsx`
-- `src/hooks/useInboxUnreadCount.ts`
-
-**Edited (additive only)**
-- `src/App.tsx` — add lazy import + route.
-- `src/components/app/AppSidebar.tsx` — add Inbox nav item + badge.
-
-No edits to TaskFormDialog internals, tasks table, or any other existing feature.
-
-## 5. Secrets requested
-- `RESEND_WEBHOOK_SECRET` (you'll paste the value Resend gives when configuring the inbound webhook).
-
-## 6. Out of scope (per your spec)
-- Attachments, reply threading, auto-forwarding rules, automation, VHS Administration changes.
+### Out of scope
+- No changes to existing manual task creation flows, no design-system token changes, no auth changes.
