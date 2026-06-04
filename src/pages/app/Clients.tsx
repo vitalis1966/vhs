@@ -192,7 +192,7 @@ export default function Clients() {
                 <tr>
                   <th className="text-left px-4 py-3">Company</th>
                   <th className="text-left px-4 py-3">Status</th>
-                  <th className="text-left px-4 py-3">Industry</th>
+                  <th className="text-left px-4 py-3">Specialty</th>
                   <th className="text-left px-4 py-3">Tags</th>
                   <th className="text-left px-4 py-3">Account Owner</th>
                   <th className="text-left px-4 py-3">Open Tasks</th>
