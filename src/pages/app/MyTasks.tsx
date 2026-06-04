@@ -203,7 +203,12 @@ export default function MyTasks() {
                   <div className="w-6" onClick={(e) => e.stopPropagation()}>
                     <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
                   </div>
-                  <div className="flex-1 font-medium truncate">{row.title}</div>
+                  <div className="flex-1 font-medium truncate">
+                    {row.title}
+                    {!!row.comment_count && (
+                      <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
+                    )}
+                  </div>
                   <div className="w-32 truncate">
                     {client && (
                       <Link to={`/app/clients/${client.id}`} onClick={(e) => e.stopPropagation()}>
