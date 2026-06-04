@@ -51,7 +51,7 @@ export function EmailsTab({ clientId }: { clientId: string }) {
     const sentRows: ListItem[] = (sent ?? []).map((r: EmailRow) => ({ kind: "sent" as const, ...r }));
     const pastedRows: ListItem[] = (pasted ?? []).map((r: PastedRow) => ({ kind: "pasted" as const, ...r }));
 
-    // Task counts per pasted email
+    // Task counts + attachments per pasted email
     const pastedIds = pastedRows.map((r) => (r as any).id);
     if (pastedIds.length) {
       const { data: taskRows } = await (supabase as any)
@@ -61,6 +61,24 @@ export function EmailsTab({ clientId }: { clientId: string }) {
         counts[t.source_email_id] = (counts[t.source_email_id] ?? 0) + 1;
       });
       pastedRows.forEach((r: any) => (r.task_count = counts[r.id] ?? 0));
+
+      const { data: attRows } = await (supabase as any)
+        .from("attachments")
+        .select("id, attachable_id, platform_documents!inner(id, file_name, storage_path, mime_type, size_bytes)")
+        .eq("attachable_type", "pasted_email")
+        .in("attachable_id", pastedIds);
+      const attMap: Record<string, any[]> = {};
+      (attRows ?? []).forEach((a: any) => {
+        const arr = attMap[a.attachable_id] ?? (attMap[a.attachable_id] = []);
+        arr.push({
+          id: a.id,
+          file_name: a.platform_documents.file_name,
+          storage_path: a.platform_documents.storage_path,
+          mime_type: a.platform_documents.mime_type,
+          size_bytes: a.platform_documents.size_bytes,
+        });
+      });
+      pastedRows.forEach((r: any) => (r.attachments = attMap[r.id] ?? []));
     }
 
     const merged = [...sentRows, ...pastedRows].sort((a, b) => {
