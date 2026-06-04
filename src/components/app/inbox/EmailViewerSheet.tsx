@@ -31,10 +31,10 @@ export function EmailViewerSheet({ email, open, onOpenChange }: Props) {
               <div><span className="font-medium text-foreground">Received:</span> {format(new Date(email.received_at), "PPpp")}</div>
             </div>
             <div className="border-t pt-4">
-              {email.body_text ? (
-                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{email.body_text}</pre>
-              ) : email.body_html ? (
+              {email.body_html && email.body_html.trim() ? (
                 <div className="prose prose-sm max-w-none text-sm" dangerouslySetInnerHTML={{ __html: email.body_html }} />
+              ) : email.body_text && email.body_text.trim() ? (
+                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{email.body_text}</pre>
               ) : (
                 <p className="text-sm text-muted-foreground italic">No body content.</p>
               )}
