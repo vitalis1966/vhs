@@ -14,6 +14,7 @@ import { template as contactClientConfirmation } from './contact-client-confirma
 import { template as assessmentIntakeNotification } from './assessment-intake-notification.tsx'
 import { template as assessmentCompletionClient } from './assessment-completion-client.tsx'
 import { template as assessmentCompletionInternal } from './assessment-completion-internal.tsx'
+import { template as budgetAlert } from './budget-alert.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-internal-notification': contactInternalNotification,
@@ -21,4 +22,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'assessment-intake-notification': assessmentIntakeNotification,
   'assessment-completion-client': assessmentCompletionClient,
   'assessment-completion-internal': assessmentCompletionInternal,
+  'budget-alert': budgetAlert,
 }
