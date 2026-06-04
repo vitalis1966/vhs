@@ -197,6 +197,7 @@ const App = () => (
               <Route path="/app" element={<AppGuard><AppLayout /></AppGuard>}>
                 <Route index element={<AppIndex />} />
                 <Route path="home" element={<AppHome />} />
+                <Route path="inbox" element={<AppInbox />} />
                 <Route path="my-tasks" element={<AppMyTasks />} />
                 <Route path="clients" element={<AppClients />} />
                 <Route path="clients/:clientId" element={<AppClientDetail />} />
