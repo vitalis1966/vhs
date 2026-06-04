@@ -299,6 +299,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
               />
               <p className="text-xs text-muted-foreground mt-1">{raw.length.toLocaleString()} chars</p>
             </div>
+            <AttachmentPicker files={files} setFiles={setFiles} />
             <DialogFooter>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleParse} disabled={!raw.trim() || parsing}>
