@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
-import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2 } from "lucide-react";
+import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -53,6 +54,8 @@ export default function Inbox() {
   const [extractEmail, setExtractEmail] = useState<EmailRow | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [confirmExtract, setConfirmExtract] = useState<{ email: EmailRow; tasks: ExtractedTask[] } | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
@@ -109,8 +112,20 @@ export default function Inbox() {
     const { error } = await (supabase as any).from("inbound_emails").delete().eq("id", deleteTarget.id);
     if (error) { toast.error(error.message); return; }
     setEmails((rows) => rows.filter((r) => r.id !== deleteTarget.id));
+    setSelected((prev) => prev.filter((id) => id !== deleteTarget.id));
     setDeleteTarget(null);
     toast.success("Email deleted");
+  };
+
+  const confirmBulkDelete = async () => {
+    if (!selected.length) return;
+    const { error } = await (supabase as any).from("inbound_emails").delete().in("id", selected);
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.filter((r) => !selected.includes(r.id)));
+    const count = selected.length;
+    setSelected([]);
+    setBulkDeleteOpen(false);
+    toast.success(`${count} email${count === 1 ? "" : "s"} deleted`);
   };
 
   const runExtract = async (email: EmailRow) => {
@@ -179,6 +194,10 @@ export default function Inbox() {
 
   const openViewer = (e: EmailRow) => { setViewing(e); setViewerOpen(true); };
 
+  const allSelected = emails.length > 0 && emails.every((r) => selected.includes(r.id));
+  const toggleAll = () => setSelected(allSelected ? [] : emails.map((r) => r.id));
+  const toggleOne = (id: string) => setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
   return (
     <div className="space-y-4">
       <div>
@@ -203,6 +222,9 @@ export default function Inbox() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">
+                  <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" />
+                </TableHead>
                 <TableHead>From</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Received</TableHead>
@@ -225,6 +247,9 @@ export default function Inbox() {
                     className="cursor-pointer"
                     onClick={() => openViewer(e)}
                   >
+                    <TableCell onClick={(ev) => ev.stopPropagation()}>
+                      <Checkbox checked={selected.includes(e.id)} onCheckedChange={() => toggleOne(e.id)} aria-label="Select email" />
+                    </TableCell>
                     <TableCell>
                       <div className="text-sm font-medium">{e.from_name || e.from_email}</div>
                       {e.from_name && <div className="text-xs text-muted-foreground">{e.from_email}</div>}
@@ -295,6 +320,21 @@ export default function Inbox() {
         )}
       </div>
 
+      {/* Bulk delete action bar */}
+      {selected.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-full shadow-elevated px-3 py-2 flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2">
+          <span className="text-sm font-medium px-2">{selected.length} selected</span>
+          <div className="h-5 w-px bg-border mx-1" />
+          <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive" onClick={() => setBulkDeleteOpen(true)}>
+            <Trash2 className="h-4 w-4 mr-1" /> Delete
+          </Button>
+          <div className="h-5 w-px bg-border mx-1" />
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected([])} aria-label="Clear selection">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       <EmailViewerSheet email={viewing} open={viewerOpen} onOpenChange={setViewerOpen} />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
@@ -306,6 +346,19 @@ export default function Inbox() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={(o) => !o && setBulkDeleteOpen(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selected.length} email{selected.length === 1 ? "" : "s"}?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
