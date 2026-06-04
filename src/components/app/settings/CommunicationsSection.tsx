@@ -51,9 +51,6 @@ export function CommunicationsSection() {
           <ClipboardPaste className="h-4 w-4" /> Paste Email
         </Button>
       </CardHeader>
-        <CardTitle>Communications</CardTitle>
-        <CardDescription>Manage email templates and review broadcast history.</CardDescription>
-      </CardHeader>
       <CardContent>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
@@ -68,6 +65,7 @@ export function CommunicationsSection() {
           </TabsContent>
         </Tabs>
       </CardContent>
+      <PasteEmailDialog open={pasteOpen} onOpenChange={setPasteOpen} />
     </Card>
   );
 }
