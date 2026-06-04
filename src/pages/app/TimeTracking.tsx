@@ -15,7 +15,7 @@ import {
   format, addDays, addWeeks, addMonths, subDays, subWeeks, subMonths, isSameDay, eachDayOfInterval,
 } from "date-fns";
 import { toast } from "sonner";
-import { toCSV } from "@/lib/csv";
+import { toCsv, downloadCsv } from "@/lib/csv";
 
 interface Entry {
   id: string;
