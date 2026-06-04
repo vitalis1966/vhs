@@ -187,11 +187,28 @@ export default function Inbox() {
 
     if (savedCount > 0) {
       await updateStatus(extractEmail.id, "assigned");
+      await updateExtractionState(extractEmail.id, "completed");
       toast.success(`${savedCount} task${savedCount === 1 ? "" : "s"} saved`);
     }
-    await updateExtractionState(extractEmail.id, "completed");
+    // If nothing assigned, keep extraction_state as 'extracted' so user can view again
     setExtractEmail(null);
     setExtractTasks([]);
+  };
+
+  const openTasksViewer = async (email: EmailRow) => {
+    const { data, error } = await (supabase as any)
+      .from("email_extracted_tasks")
+      .select("id, title, description, priority, position, status, task_id")
+      .eq("email_id", email.id)
+      .order("position", { ascending: true });
+    if (error) { toast.error(error.message); return; }
+    const tasks = (data as ExtractedTask[]) ?? [];
+    if (!tasks.length) {
+      // Fallback to linked tasks if no extracted draft rows
+      toast.message("No extracted task drafts stored for this email.");
+      return;
+    }
+    setTasksViewer({ tasks, subject: email.subject });
   };
 
   const openViewer = (e: EmailRow) => { setViewing(e); setViewerOpen(true); };
