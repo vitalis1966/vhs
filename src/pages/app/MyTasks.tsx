@@ -129,7 +129,20 @@ export default function MyTasks() {
     } else setClients({});
 
     setRows(all);
+
+    // Identify which of these tasks were created via email extraction
+    if (all.length) {
+      const { data: ext } = await (supabase as any)
+        .from("email_task_extractions")
+        .select("task_id")
+        .in("task_id", all.map((t) => t.id));
+      setExtractedTaskIds(new Set((ext ?? []).map((r: any) => r.task_id)));
+    } else {
+      setExtractedTaskIds(new Set());
+    }
+
     setLoading(false);
+    markMyTasksVisited(userId);
   }, [workspaceId, userId]);
 
   useEffect(() => { load(); }, [load]);
