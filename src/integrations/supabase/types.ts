@@ -1039,6 +1039,60 @@ export type Database = {
           },
         ]
       }
+      email_extracted_tasks: {
+        Row: {
+          created_at: string
+          description: string | null
+          email_id: string
+          id: string
+          position: number
+          priority: string
+          status: string
+          task_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          email_id: string
+          id?: string
+          position?: number
+          priority?: string
+          status?: string
+          task_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          email_id?: string
+          id?: string
+          position?: number
+          priority?: string
+          status?: string
+          task_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_extracted_tasks_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "inbound_emails"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_extracted_tasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1204,6 +1258,7 @@ export type Database = {
           body_html: string | null
           body_text: string | null
           created_at: string
+          extraction_state: string
           from_email: string
           from_name: string | null
           id: string
@@ -1219,6 +1274,7 @@ export type Database = {
           body_html?: string | null
           body_text?: string | null
           created_at?: string
+          extraction_state?: string
           from_email: string
           from_name?: string | null
           id?: string
@@ -1234,6 +1290,7 @@ export type Database = {
           body_html?: string | null
           body_text?: string | null
           created_at?: string
+          extraction_state?: string
           from_email?: string
           from_name?: string | null
           id?: string

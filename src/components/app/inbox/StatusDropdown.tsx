@@ -17,10 +17,10 @@ interface Props {
 export function StatusDropdown({ value, onChange, className }: Props) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as InboxStatus)}>
-      <SelectTrigger className={`h-8 w-[150px] ${className ?? ""}`} onClick={(e) => e.stopPropagation()}>
+      <SelectTrigger className={`h-8 w-[170px] ${className ?? ""}`} onClick={(e) => e.stopPropagation()}>
         <SelectValue>
-          <span className="inline-flex items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${META[value].dot}`} />
+          <span className="inline-flex items-center gap-2 whitespace-nowrap">
+            <span className={`h-2 w-2 rounded-full shrink-0 ${META[value].dot}`} />
             <span className="text-sm">{META[value].label}</span>
           </span>
         </SelectValue>

@@ -8,6 +8,7 @@ import {
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { useInboxUnreadCount } from "@/hooks/useInboxUnreadCount";
+import { useMyTasksBadge } from "@/hooks/useMyTasksBadge";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
@@ -21,6 +22,24 @@ const navItems = [
   { title: "Dashboards", url: "/app/dashboards", icon: LayoutDashboard },
 ];
 
+function NavBadge({ newCount, totalCount }: { newCount: number; totalCount: number }) {
+  if (newCount > 0) {
+    return (
+      <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+        {newCount > 99 ? "99+" : newCount}
+      </span>
+    );
+  }
+  if (totalCount > 0) {
+    return (
+      <span className="ml-auto text-[11px] font-medium text-muted-foreground tabular-nums">
+        {totalCount > 999 ? "999+" : totalCount}
+      </span>
+    );
+  }
+  return null;
+}
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -28,7 +47,8 @@ export function AppSidebar() {
   const { workspaceName, userId, workspaceId, role } = useWorkspace();
   const { pinned } = usePinnedClients(userId, workspaceId);
   const [pinnedClients, setPinnedClients] = useState<Array<{ id: string; name: string }>>([]);
-  const inboxUnread = useInboxUnreadCount(userId);
+  const inboxBadge = useInboxUnreadCount(userId);
+  const myTasksBadge = useMyTasksBadge(userId, workspaceId);
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
@@ -67,10 +87,11 @@ export function AppSidebar() {
                     <NavLink to={item.url} end={item.url === "/app/home"}>
                       <item.icon className="h-4 w-4" />
                       <span className="flex-1">{item.title}</span>
-                      {item.url === "/app/inbox" && inboxUnread > 0 && !collapsed && (
-                        <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
-                          {inboxUnread > 99 ? "99+" : inboxUnread}
-                        </span>
+                      {!collapsed && item.url === "/app/inbox" && (
+                        <NavBadge newCount={inboxBadge.newCount} totalCount={inboxBadge.totalCount} />
+                      )}
+                      {!collapsed && item.url === "/app/my-tasks" && (
+                        <NavBadge newCount={myTasksBadge.newCount} totalCount={myTasksBadge.totalCount} />
                       )}
                     </NavLink>
                   </SidebarMenuButton>

@@ -16,6 +16,7 @@ import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
 import { PRIORITY_CLASS, clientColor, isOverdue } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
+import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
 
 interface Row {
   id: string;
@@ -38,6 +39,7 @@ export default function MyTasks() {
   const [rows, setRows] = useState<Row[]>([]);
   const [statuses, setStatuses] = useState<Record<string, StatusRow>>({});
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
+  const [extractedTaskIds, setExtractedTaskIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<string[]>([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -45,6 +47,8 @@ export default function MyTasks() {
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
   const { running, startTimer, stopTimer } = useTimer();
+
+  useEffect(() => { markMyTasksVisited(userId); }, [userId]);
 
   const startTimerForTask = useCallback(async (row: Row) => {
     if (!workspaceId) return;
@@ -125,7 +129,20 @@ export default function MyTasks() {
     } else setClients({});
 
     setRows(all);
+
+    // Identify which of these tasks were created via email extraction
+    if (all.length) {
+      const { data: ext } = await (supabase as any)
+        .from("email_task_extractions")
+        .select("task_id")
+        .in("task_id", all.map((t) => t.id));
+      setExtractedTaskIds(new Set((ext ?? []).map((r: any) => r.task_id)));
+    } else {
+      setExtractedTaskIds(new Set());
+    }
+
     setLoading(false);
+    markMyTasksVisited(userId);
   }, [workspaceId, userId]);
 
   useEffect(() => { load(); }, [load]);
@@ -185,7 +202,7 @@ export default function MyTasks() {
   };
 
   return (
-    <div className="max-w-5xl">
+    <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl font-bold text-foreground">My Tasks</h1>
@@ -204,6 +221,7 @@ export default function MyTasks() {
           <div className="w-32">Client</div>
           <div className="w-28">Status</div>
           <div className="w-24">Priority</div>
+          <div className="w-24">Source</div>
           <div className="w-28">Due</div>
           <div className="w-8" />
           <div className="w-8" />
@@ -268,6 +286,13 @@ export default function MyTasks() {
                   </div>
                   <div className="w-24">
                     <Badge variant="outline" className={PRIORITY_CLASS[row.priority] ?? ""}>{row.priority}</Badge>
+                  </div>
+                  <div className="w-24">
+                    {extractedTaskIds.has(row.id) ? (
+                      <Badge variant="outline" className="border-primary/30 text-primary">Extracted</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Manual</Badge>
+                    )}
                   </div>
                   <div className={`w-28 ${overdue ? "text-red-600 font-medium" : ""}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
