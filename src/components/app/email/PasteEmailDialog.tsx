@@ -360,6 +360,23 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
               </div>
             </div>
 
+            {/* Attachment confirmation */}
+            {files.length > 0 && (
+              <div className="border border-border rounded-lg p-3 bg-muted/30 flex items-start gap-3">
+                <Paperclip className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                <div className="flex-1 text-sm">
+                  {clientId ? (
+                    <>
+                      <span className="font-medium">{files.length}</span> attachment{files.length === 1 ? "" : "s"} will be saved to{" "}
+                      <span className="font-medium">{clients.find((c) => c.id === clientId)?.name ?? "this client"}</span>'s files.
+                    </>
+                  ) : (
+                    <span className="text-amber-700">Select a client above to file these {files.length} attachment{files.length === 1 ? "" : "s"} in that client's Files tab.</span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* New contact suggestion */}
             {!data.matched_contact && data.parsed.from_email && clientId && (
               <div className="border border-border rounded-lg p-3 bg-muted/30 flex items-start gap-3">
