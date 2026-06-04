@@ -26,11 +26,12 @@ interface Props {
   saveLabel?: string;
   cancelLabel?: string;
   onCreated?: (task: any) => void;
+  onValuesChange?: (v: { title: string; summary: string; priority: string }) => void;
 }
 
 const UNASSIGNED = "unassigned";
 
-export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated }: Props) {
+export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated, onValuesChange }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -56,6 +57,12 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
     setSummary(defaultSummary ?? "");
   }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary]);
+
+  useEffect(() => {
+    if (!open) return;
+    onValuesChange?.({ title, summary, priority });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, summary, priority, open]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
