@@ -38,10 +38,19 @@ interface SentEmail {
 export function CommunicationsSection() {
   const { workspaceId } = useWorkspace();
   const [tab, setTab] = useState("templates");
+  const [pasteOpen, setPasteOpen] = useState(false);
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
+        <div>
+          <CardTitle>Communications</CardTitle>
+          <CardDescription>Manage email templates and review broadcast history.</CardDescription>
+        </div>
+        <Button size="sm" variant="secondary" className="gap-1" onClick={() => setPasteOpen(true)}>
+          <ClipboardPaste className="h-4 w-4" /> Paste Email
+        </Button>
+      </CardHeader>
         <CardTitle>Communications</CardTitle>
         <CardDescription>Manage email templates and review broadcast history.</CardDescription>
       </CardHeader>
