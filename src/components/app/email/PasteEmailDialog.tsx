@@ -482,3 +482,39 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
     </Dialog>
   );
 }
+
+function AttachmentPicker({ files, setFiles }: { files: File[]; setFiles: (f: File[]) => void }) {
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(e.target.files ?? []);
+    if (!picked.length) return;
+    setFiles([...files, ...picked]);
+    e.target.value = "";
+  };
+  const remove = (i: number) => setFiles(files.filter((_, idx) => idx !== i));
+  const fmt = (n: number) =>
+    n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`;
+
+  return (
+    <div>
+      <Label className="flex items-center gap-2">
+        <Paperclip className="h-4 w-4" /> Attachments {files.length > 0 && <span className="text-xs text-muted-foreground">({files.length})</span>}
+      </Label>
+      <div className="mt-1 space-y-2">
+        <Input type="file" multiple onChange={onPick} className="cursor-pointer" />
+        {files.length > 0 && (
+          <ul className="space-y-1">
+            {files.map((f, i) => (
+              <li key={i} className="flex items-center justify-between gap-2 border border-border rounded-md px-2 py-1 text-xs bg-muted/30">
+                <span className="truncate flex-1">{f.name}</span>
+                <span className="text-muted-foreground shrink-0">{fmt(f.size)}</span>
+                <button type="button" onClick={() => remove(i)} className="text-muted-foreground hover:text-foreground shrink-0">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
