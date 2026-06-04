@@ -173,6 +173,11 @@ export function EmailsTab({ clientId }: { clientId: string }) {
                       <Badge variant="outline" className="text-[10px]">{p.task_count} task{p.task_count === 1 ? "" : "s"}</Badge>
                     </Link>
                   ) : null}
+                  {p.attachments && p.attachments.length > 0 && (
+                    <Badge variant="outline" className="text-[10px] gap-1">
+                      <Paperclip className="h-3 w-3" />{p.attachments.length}
+                    </Badge>
+                  )}
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5 truncate">
                   From: {p.from_name ?? "—"}{p.from_email ? ` <${p.from_email}>` : ""}
