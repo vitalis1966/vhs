@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Bold, Italic, Code, Bell, BellOff, Send, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { initials } from "./taskUtils";
+import { initials } from "../taskUtils";
 
 interface Member {
   id: string;
