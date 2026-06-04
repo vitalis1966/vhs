@@ -21,6 +21,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { StatusDropdown, type InboxStatus } from "@/components/app/inbox/StatusDropdown";
 import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
+import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 
 const INBOUND_ADDRESS = "inbox@inbound.vitalisstrategies.com";
