@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
 } from "@/components/ui/sidebar";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
+import { useInboxUnreadCount } from "@/hooks/useInboxUnreadCount";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { title: "Home", url: "/app/home", icon: Home },
+  { title: "Inbox", url: "/app/inbox", icon: Inbox },
   { title: "My Tasks", url: "/app/my-tasks", icon: ListTodo },
   { title: "Clients", url: "/app/clients", icon: Users },
   { title: "Projects", url: "/app/projects", icon: FolderKanban },
@@ -26,6 +28,7 @@ export function AppSidebar() {
   const { workspaceName, userId, workspaceId, role } = useWorkspace();
   const { pinned } = usePinnedClients(userId, workspaceId);
   const [pinnedClients, setPinnedClients] = useState<Array<{ id: string; name: string }>>([]);
+  const inboxUnread = useInboxUnreadCount(userId);
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
@@ -63,7 +66,12 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <NavLink to={item.url} end={item.url === "/app/home"}>
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span className="flex-1">{item.title}</span>
+                      {item.url === "/app/inbox" && inboxUnread > 0 && !collapsed && (
+                        <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                          {inboxUnread > 99 ? "99+" : inboxUnread}
+                        </span>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
