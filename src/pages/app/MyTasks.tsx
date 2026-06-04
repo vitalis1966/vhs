@@ -12,7 +12,6 @@ import { TaskActionsMenu, type TaskActionTarget } from "@/components/app/tasks/T
 import { BulkActionBar } from "@/components/app/tasks/BulkActionBar";
 import { DeleteTaskDialog } from "@/components/app/tasks/DeleteTaskDialog";
 import { useTimer } from "@/contexts/TimerContext";
-import { supabase } from "@/integrations/supabase/client";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
 import { PRIORITY_CLASS, clientColor, isOverdue } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
