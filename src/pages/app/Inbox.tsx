@@ -170,6 +170,10 @@ export default function Inbox() {
       toast.error("No extracted tasks stored for this email.");
       return;
     }
+    // Make sure the email body viewer isn't open behind the task dialog
+    setViewerOpen(false);
+    setViewing(null);
+    setTasksViewer(null);
     setExtractEmail(email);
     setExtractTasks(tasks);
     setPanelOpen(true);
