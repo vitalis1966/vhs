@@ -300,7 +300,7 @@ export default function MyTasks() {
                       <Badge variant="outline" className="text-muted-foreground">Manual</Badge>
                     )}
                   </div>
-                  <div className={`w-28 ${overdue ? "text-red-600 font-medium" : ""}`}>
+                  <div className={`w-28 ${dueClass}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
                   </div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
