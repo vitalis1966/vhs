@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Mail, FileText, AlertCircle, CheckCircle2, ClipboardPaste, Inbox } from "lucide-react";
+import { Mail, FileText, AlertCircle, CheckCircle2, ClipboardPaste, Inbox, Paperclip, Download } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { PasteEmailDialog } from "./PasteEmailDialog";
 import { Link } from "react-router-dom";
