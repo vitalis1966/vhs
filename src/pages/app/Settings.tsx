@@ -17,6 +17,7 @@ import { TaskConfigSection } from "@/components/app/settings/TaskConfigSection";
 import { SecuritySection } from "@/components/app/settings/SecuritySection";
 import { BillingSection } from "@/components/app/settings/BillingSection";
 import { CommunicationsSection } from "@/components/app/settings/CommunicationsSection";
+import { TimeTrackingSection } from "@/components/app/settings/TimeTrackingSection";
 
 const SECTIONS = [
   { id: "workspace",      label: "Workspace",            icon: Building2,    render: () => <WorkspaceSection /> },
@@ -26,6 +27,7 @@ const SECTIONS = [
   { id: "notifications",  label: "Notifications",        icon: Bell,         render: () => <NotificationsSection /> },
   { id: "communications", label: "Communications",       icon: MessageSquare,render: () => <CommunicationsSection /> },
   { id: "tasks",          label: "Task Configuration",   icon: ListChecks,   render: () => <TaskConfigSection /> },
+  { id: "time",           label: "Time Tracking",        icon: Clock,        render: () => <TimeTrackingSection /> },
   { id: "security",       label: "Security",             icon: Lock,         render: () => <SecuritySection /> },
   { id: "billing",        label: "Billing",              icon: CreditCard,   render: () => <BillingSection /> },
 ];
