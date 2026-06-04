@@ -74,6 +74,7 @@ export function AppTopBar() {
         />
       </div>
       <div className="flex-1 sm:hidden" />
+      <TimerWidget />
       <Button size="sm" variant="secondary" className="gap-1" onClick={() => setPasteOpen(true)} title="Quick Import Email (⌘⇧V)">
         <ClipboardPaste className="h-4 w-4" /> <span className="hidden md:inline">Paste Email</span>
       </Button>
