@@ -100,6 +100,8 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
   const [actions, setActions] = useState<ParsedAction[]>([]);
   const [meeting, setMeeting] = useState<ParsedMeeting | null>(null);
   const [createContact, setCreateContact] = useState(true);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -108,6 +110,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
       setData(null);
       setActions([]);
       setMeeting(null);
+      setFiles([]);
       setClientId(defaultClientId ?? "");
       setProjectId(defaultProjectId ?? "");
     }
