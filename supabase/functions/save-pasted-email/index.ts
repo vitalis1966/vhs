@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
             title: t.title,
             description_text: t.description ?? `From email: "${subject ?? ""}" (sender: ${from_name ?? from_email ?? "unknown"})`,
             priority: ["Low", "Medium", "High", "Urgent"].includes(t.priority) ? t.priority : (t.priority === "Normal" ? "Medium" : "Medium"),
-            due_date: t.due_date ?? null,
+            due_date: sanitizeDate(t.due_date),
             status_id: status?.id ?? null,
             created_by: uid,
             source_email_id: emailId,
