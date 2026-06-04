@@ -199,7 +199,7 @@ export function ClientFormDialog({ open, onOpenChange, initial, onSaved }: Props
               </Select>
             </div>
             <div>
-              <Label>Industry</Label>
+              <Label>Specialty</Label>
               <Select value={form.industry ?? ""} onValueChange={(v) => setForm({ ...form, industry: v })}>
                 <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
                 <SelectContent>
