@@ -251,6 +251,35 @@ export function EmailsTab({ clientId }: { clientId: string }) {
                   <div className="text-xs font-medium text-muted-foreground mb-1">Original email</div>
                   <pre className="whitespace-pre-wrap text-xs font-mono bg-muted/30 p-3 rounded-md max-h-96 overflow-y-auto">{selected.raw_body}</pre>
                 </div>
+                {selected.attachments && selected.attachments.length > 0 && (
+                  <div className="border-t pt-3 mt-3">
+                    <div className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                      <Paperclip className="h-3 w-3" /> Attachments ({selected.attachments.length})
+                    </div>
+                    <ul className="space-y-1">
+                      {selected.attachments.map((a) => (
+                        <li key={a.id} className="flex items-center justify-between gap-2 border border-border rounded-md px-2 py-1.5 text-sm">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <span className="truncate">{a.file_name}</span>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              const { data, error } = await supabase.storage
+                                .from("platform-documents")
+                                .createSignedUrl(a.storage_path, 60);
+                              if (error || !data?.signedUrl) return;
+                              window.open(data.signedUrl, "_blank");
+                            }}
+                            className="text-xs text-primary hover:underline flex items-center gap-1 shrink-0"
+                          >
+                            <Download className="h-3 w-3" /> Download
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </>
           )}
