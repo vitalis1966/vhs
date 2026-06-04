@@ -106,6 +106,7 @@ export function AppTopBar() {
       />
       <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={ctxClientId} />
       <BroadcastEmailDialog open={broadcastOpen} onOpenChange={setBroadcastOpen} />
+      <PasteEmailDialog open={pasteOpen} onOpenChange={setPasteOpen} defaultClientId={ctxClientId} defaultProjectId={ctxProjectId} />
       <NotificationsBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
