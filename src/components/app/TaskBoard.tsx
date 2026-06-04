@@ -193,6 +193,9 @@ function Card({ task, client, assigneeIds, profiles }: { task: TaskCard; client?
       <div className="flex items-center justify-between">
         <div className={`text-xs ${overdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
           {task.due_date ? format(new Date(task.due_date), "MMM d") : ""}
+          {!!task.comment_count && (
+            <span className="ml-2">💬 {task.comment_count}</span>
+          )}
         </div>
         <div className="flex -space-x-1.5">
           {assigneeIds.slice(0, 3).map((uid) => {
