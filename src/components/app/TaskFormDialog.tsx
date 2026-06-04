@@ -26,6 +26,7 @@ interface Props {
   saveLabel?: string;
   cancelLabel?: string;
   onCreated?: (task: any) => void;
+  onValuesChange?: (v: { title: string; summary: string; priority: string }) => void;
 }
 
 const UNASSIGNED = "unassigned";
