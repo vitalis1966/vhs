@@ -235,6 +235,7 @@ export default function ClientDetail() {
           <TabsTrigger value="files">Files</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
+          <TabsTrigger value="hours">Contracted Hours</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
