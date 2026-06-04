@@ -39,6 +39,7 @@ export default function MyTasks() {
   const [rows, setRows] = useState<Row[]>([]);
   const [statuses, setStatuses] = useState<Record<string, StatusRow>>({});
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
+  const [extractedTaskIds, setExtractedTaskIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<string[]>([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -46,6 +47,8 @@ export default function MyTasks() {
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
   const { running, startTimer, stopTimer } = useTimer();
+
+  useEffect(() => { markMyTasksVisited(userId); }, [userId]);
 
   const startTimerForTask = useCallback(async (row: Row) => {
     if (!workspaceId) return;
