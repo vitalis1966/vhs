@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Sparkles, Mail, Calendar, ClipboardPaste, UserPlus, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Mail, Calendar, ClipboardPaste, UserPlus, Wand2, Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
 
 type ClientLite = { id: string; name: string };
