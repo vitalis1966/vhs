@@ -28,6 +28,7 @@ type PastedRow = {
   created_at: string;
   imported_by: string | null;
   task_count?: number;
+  attachments?: Array<{ id: string; file_name: string; storage_path: string; mime_type: string | null; size_bytes: number | null }>;
 };
 
 type ListItem =
