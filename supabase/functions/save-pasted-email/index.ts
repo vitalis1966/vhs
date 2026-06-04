@@ -186,7 +186,7 @@ Deno.serve(async (req) => {
             client_id,
             project_id: project_id ?? null,
             title: meeting.title ?? subject ?? "Meeting from email",
-            meeting_date: meeting.starts_at ?? new Date().toISOString(),
+            meeting_date: sanitizeTimestamp(meeting.starts_at) ?? new Date().toISOString(),
             external_attendees: Array.isArray(meeting.external_attendees) ? meeting.external_attendees : [],
             created_by: uid,
             source_email_id: emailId,
