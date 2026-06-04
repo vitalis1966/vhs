@@ -26,6 +26,7 @@ interface Row {
   project_id: string | null;
   completed_at: string | null;
   meeting_id: string | null;
+  comment_count?: number;
 }
 
 interface StatusRow { id: string; name: string; color: string | null; category: string }
