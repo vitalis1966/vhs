@@ -25,18 +25,18 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const supabase = createClient(
+  const userClient = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_ANON_KEY")!,
     { global: { headers: { Authorization: authHeader } } },
   );
 
-  const { data: claims } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+  const { data: claims } = await userClient.auth.getClaims(authHeader.replace("Bearer ", ""));
   if (!claims?.claims) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  let body: { email_id?: string };
+  let body: { email_id?: string; reuse?: boolean };
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: "invalid json" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
@@ -44,7 +44,25 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "email_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const { data: email, error: loadErr } = await supabase
+  // Service client for persistence (bypass RLS — we already verified user above)
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  // If extraction has already been done and reuse=true, just return existing
+  if (body.reuse) {
+    const { data: existing } = await admin
+      .from("email_extracted_tasks")
+      .select("id, title, description, priority, position, status, task_id")
+      .eq("email_id", body.email_id)
+      .order("position", { ascending: true });
+    if (existing && existing.length) {
+      return new Response(JSON.stringify({ tasks: existing, reused: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
+
+  const { data: email, error: loadErr } = await admin
     .from("inbound_emails")
     .select("id, subject, body_text, body_html")
     .eq("id", body.email_id)
@@ -118,15 +136,40 @@ Deno.serve(async (req) => {
 
   const aiJson = await aiRes.json();
   const toolCall = aiJson?.choices?.[0]?.message?.tool_calls?.[0];
-  let tasks: Array<{ title: string; description: string; priority: string }> = [];
+  let aiTasks: Array<{ title: string; description: string; priority: string }> = [];
   if (toolCall?.function?.arguments) {
     try {
       const parsed = JSON.parse(toolCall.function.arguments);
-      if (Array.isArray(parsed?.tasks)) tasks = parsed.tasks.slice(0, 5);
+      if (Array.isArray(parsed?.tasks)) aiTasks = parsed.tasks.slice(0, 5);
     } catch (e) {
       console.error("parse error", e);
     }
   }
 
-  return new Response(JSON.stringify({ tasks }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  // Persist: replace any existing extracted tasks for this email
+  await admin.from("email_extracted_tasks").delete().eq("email_id", body.email_id);
+
+  let stored: any[] = [];
+  if (aiTasks.length) {
+    const rows = aiTasks.map((t, i) => ({
+      email_id: body.email_id!,
+      position: i,
+      title: t.title,
+      description: t.description,
+      priority: (t.priority || "medium").toLowerCase(),
+      status: "pending",
+    }));
+    const { data: inserted, error: insErr } = await admin
+      .from("email_extracted_tasks")
+      .insert(rows)
+      .select("id, title, description, priority, position, status, task_id");
+    if (insErr) {
+      console.error("persist error", insErr);
+    } else {
+      stored = inserted ?? [];
+    }
+    await admin.from("inbound_emails").update({ extraction_state: "extracted" }).eq("id", body.email_id);
+  }
+
+  return new Response(JSON.stringify({ tasks: stored }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
