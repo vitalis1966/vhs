@@ -26,6 +26,7 @@ interface Row {
   project_id: string | null;
   completed_at: string | null;
   meeting_id: string | null;
+  comment_count?: number;
 }
 
 interface StatusRow { id: string; name: string; color: string | null; category: string }
@@ -62,7 +63,7 @@ export default function MyTasks() {
 
     const [tRes, sRes] = await Promise.all([
       (supabase as any).from("tasks")
-        .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id, deleted_at")
+        .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id, comment_count, deleted_at")
         .in("id", ids)
         .eq("workspace_id", workspaceId)
         .is("deleted_at", null),
@@ -202,7 +203,12 @@ export default function MyTasks() {
                   <div className="w-6" onClick={(e) => e.stopPropagation()}>
                     <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
                   </div>
-                  <div className="flex-1 font-medium truncate">{row.title}</div>
+                  <div className="flex-1 font-medium truncate">
+                    {row.title}
+                    {!!row.comment_count && (
+                      <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
+                    )}
+                  </div>
                   <div className="w-32 truncate">
                     {client && (
                       <Link to={`/app/clients/${client.id}`} onClick={(e) => e.stopPropagation()}>

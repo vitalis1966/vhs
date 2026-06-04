@@ -2352,6 +2352,97 @@ export type Database = {
           },
         ]
       }
+      task_comments: {
+        Row: {
+          author_id: string
+          body_html: string
+          body_text: string
+          created_at: string
+          id: string
+          mentioned_user_ids: string[]
+          task_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          author_id: string
+          body_html: string
+          body_text?: string
+          created_at?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          task_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          author_id?: string
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          task_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_mutes: {
+        Row: {
+          created_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_mutes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_mutes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_statuses: {
         Row: {
           category: string
@@ -2391,6 +2482,7 @@ export type Database = {
         Row: {
           checklist: Json
           client_id: string
+          comment_count: number
           completed_at: string | null
           created_at: string
           created_by: string | null
@@ -2413,6 +2505,7 @@ export type Database = {
         Insert: {
           checklist?: Json
           client_id: string
+          comment_count?: number
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
@@ -2435,6 +2528,7 @@ export type Database = {
         Update: {
           checklist?: Json
           client_id?: string
+          comment_count?: number
           completed_at?: string | null
           created_at?: string
           created_by?: string | null

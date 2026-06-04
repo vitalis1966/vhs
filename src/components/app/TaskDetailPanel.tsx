@@ -16,6 +16,7 @@ import { PRIORITIES, PRIORITY_CLASS, initials } from "./taskUtils";
 import { TaskRichText } from "./TaskRichText";
 import { TagPicker } from "./TagPicker";
 import { Attachments } from "./Attachments";
+import { TaskComments } from "./tasks/TaskComments";
 import { sendNotification } from "@/lib/notify";
 
 interface Props {
@@ -326,9 +327,7 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
 
               <div>
                 <Label className="text-xs mb-1.5 block">Comments</Label>
-                <div className="text-sm text-muted-foreground italic border border-dashed rounded-md p-3">
-                  Comments coming soon.
-                </div>
+                <TaskComments taskId={task.id} workspaceId={task.workspace_id} />
               </div>
             </div>
           </>
