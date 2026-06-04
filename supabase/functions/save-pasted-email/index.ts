@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
       meeting = null, // {title, starts_at, location, attendees:[user_ids], external_attendees:[strings]}
       create_contact = false,
       contact_name,
+      attachments = [], // [{storage_path, file_name, mime_type, size_bytes}]
       mode = "all", // "all" | "email_only"
     } = body ?? {};
 
