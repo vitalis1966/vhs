@@ -21,6 +21,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { StatusDropdown, type InboxStatus } from "@/components/app/inbox/StatusDropdown";
 import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
+import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 
 const INBOUND_ADDRESS = "inbox@inbound.vitalisstrategies.com";
@@ -56,6 +57,7 @@ export default function Inbox() {
   const [confirmExtract, setConfirmExtract] = useState<{ email: EmailRow; tasks: ExtractedTask[] } | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
@@ -185,11 +187,28 @@ export default function Inbox() {
 
     if (savedCount > 0) {
       await updateStatus(extractEmail.id, "assigned");
+      await updateExtractionState(extractEmail.id, "completed");
       toast.success(`${savedCount} task${savedCount === 1 ? "" : "s"} saved`);
     }
-    await updateExtractionState(extractEmail.id, "completed");
+    // If nothing assigned, keep extraction_state as 'extracted' so user can view again
     setExtractEmail(null);
     setExtractTasks([]);
+  };
+
+  const openTasksViewer = async (email: EmailRow) => {
+    const { data, error } = await (supabase as any)
+      .from("email_extracted_tasks")
+      .select("id, title, description, priority, position, status, task_id")
+      .eq("email_id", email.id)
+      .order("position", { ascending: true });
+    if (error) { toast.error(error.message); return; }
+    const tasks = (data as ExtractedTask[]) ?? [];
+    if (!tasks.length) {
+      // Fallback to linked tasks if no extracted draft rows
+      toast.message("No extracted task drafts stored for this email.");
+      return;
+    }
+    setTasksViewer({ tasks, subject: email.subject });
   };
 
   const openViewer = (e: EmailRow) => { setViewing(e); setViewerOpen(true); };
@@ -271,11 +290,16 @@ export default function Inbox() {
                     <TableCell onClick={(ev) => ev.stopPropagation()}>
                       <StatusDropdown value={e.status} onChange={(v) => updateStatus(e.id, v)} />
                     </TableCell>
-                    <TableCell className="text-center text-sm">
+                    <TableCell className="text-center text-sm" onClick={(ev) => ev.stopPropagation()}>
                       {tcount > 0 ? (
-                        <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-muted text-foreground font-medium">
+                        <button
+                          type="button"
+                          onClick={() => openTasksViewer(e)}
+                          className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-muted text-foreground font-medium hover:bg-muted/70 transition-colors"
+                          title="View extracted tasks"
+                        >
                           {tcount}
-                        </span>
+                        </button>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
@@ -336,6 +360,13 @@ export default function Inbox() {
       )}
 
       <EmailViewerSheet email={viewing} open={viewerOpen} onOpenChange={setViewerOpen} />
+
+      <ExtractedTasksViewerSheet
+        open={!!tasksViewer}
+        onOpenChange={(o) => !o && setTasksViewer(null)}
+        tasks={tasksViewer?.tasks ?? []}
+        subject={tasksViewer?.subject}
+      />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
