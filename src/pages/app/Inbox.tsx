@@ -361,6 +361,13 @@ export default function Inbox() {
 
       <EmailViewerSheet email={viewing} open={viewerOpen} onOpenChange={setViewerOpen} />
 
+      <ExtractedTasksViewerSheet
+        open={!!tasksViewer}
+        onOpenChange={(o) => !o && setTasksViewer(null)}
+        tasks={tasksViewer?.tasks ?? []}
+        subject={tasksViewer?.subject}
+      />
+
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
