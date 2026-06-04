@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Sparkles, Mail, Calendar, ClipboardPaste, UserPlus, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Mail, Calendar, ClipboardPaste, UserPlus, Wand2, Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
 
 type ClientLite = { id: string; name: string };
@@ -100,6 +100,8 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
   const [actions, setActions] = useState<ParsedAction[]>([]);
   const [meeting, setMeeting] = useState<ParsedMeeting | null>(null);
   const [createContact, setCreateContact] = useState(true);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -108,6 +110,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
       setData(null);
       setActions([]);
       setMeeting(null);
+      setFiles([]);
       setClientId(defaultClientId ?? "");
       setProjectId(defaultProjectId ?? "");
     }
@@ -173,6 +176,30 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
     }
     setSaving(true);
     try {
+      // Upload attachments to storage first
+      let uploadedAttachments: { storage_path: string; file_name: string; mime_type: string; size_bytes: number }[] = [];
+      if (files.length > 0) {
+        setUploading(true);
+        for (const f of files) {
+          const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+          const path = `${workspaceId}/pasted-emails/${crypto.randomUUID()}-${safeName}`;
+          const { error: upErr } = await supabase.storage
+            .from("platform-documents")
+            .upload(path, f, { contentType: f.type || "application/octet-stream", upsert: false });
+          if (upErr) {
+            toast.error(`Failed to upload ${f.name}: ${upErr.message}`);
+            setUploading(false);
+            setSaving(false);
+            return;
+          }
+          uploadedAttachments.push({
+            storage_path: path, file_name: f.name,
+            mime_type: f.type || "application/octet-stream", size_bytes: f.size,
+          });
+        }
+        setUploading(false);
+      }
+
       const p = data.parsed;
       const tasksPayload = mode === "all"
         ? actions.filter((a) => a._enabled && a.title.trim()).map((a) => ({
@@ -204,14 +231,16 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
           meeting: meetingPayload,
           create_contact: mode === "all" && createContact && !data.matched_contact,
           contact_name: p.from_name,
+          attachments: uploadedAttachments,
           mode,
         },
       });
       if (error) throw error;
       if ((res as any)?.error) throw new Error((res as any).error);
 
-      const r = res as { task_ids: string[]; meeting_id: string | null; contact_id: string | null };
+      const r = res as { task_ids: string[]; meeting_id: string | null; contact_id: string | null; attachment_ids: string[] };
       const parts: string[] = ["Email saved"];
+      if (r.attachment_ids?.length) parts.push(`${r.attachment_ids.length} file${r.attachment_ids.length === 1 ? "" : "s"}`);
       if (r.task_ids?.length) parts.push(`${r.task_ids.length} task${r.task_ids.length === 1 ? "" : "s"}`);
       if (r.meeting_id) parts.push("1 meeting");
       if (r.contact_id) parts.push("1 contact");
@@ -221,6 +250,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
       toast.error(e?.message ?? "Failed to save");
     } finally {
       setSaving(false);
+      setUploading(false);
     }
   };
 
@@ -269,6 +299,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
               />
               <p className="text-xs text-muted-foreground mt-1">{raw.length.toLocaleString()} chars</p>
             </div>
+            <AttachmentPicker files={files} setFiles={setFiles} />
             <DialogFooter>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleParse} disabled={!raw.trim() || parsing}>
@@ -432,7 +463,10 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
               </div>
             )}
 
+            <AttachmentPicker files={files} setFiles={setFiles} />
+
             <DialogFooter className="gap-2 flex-wrap">
+              {uploading && <span className="text-xs text-muted-foreground self-center mr-auto">Uploading files…</span>}
               <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
               <Button variant="secondary" onClick={() => handleSave("email_only")} disabled={saving}>
                 <Mail className="h-4 w-4" /> Save email only
@@ -446,5 +480,41 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AttachmentPicker({ files, setFiles }: { files: File[]; setFiles: (f: File[]) => void }) {
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(e.target.files ?? []);
+    if (!picked.length) return;
+    setFiles([...files, ...picked]);
+    e.target.value = "";
+  };
+  const remove = (i: number) => setFiles(files.filter((_, idx) => idx !== i));
+  const fmt = (n: number) =>
+    n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`;
+
+  return (
+    <div>
+      <Label className="flex items-center gap-2">
+        <Paperclip className="h-4 w-4" /> Attachments {files.length > 0 && <span className="text-xs text-muted-foreground">({files.length})</span>}
+      </Label>
+      <div className="mt-1 space-y-2">
+        <Input type="file" multiple onChange={onPick} className="cursor-pointer" />
+        {files.length > 0 && (
+          <ul className="space-y-1">
+            {files.map((f, i) => (
+              <li key={i} className="flex items-center justify-between gap-2 border border-border rounded-md px-2 py-1 text-xs bg-muted/30">
+                <span className="truncate flex-1">{f.name}</span>
+                <span className="text-muted-foreground shrink-0">{fmt(f.size)}</span>
+                <button type="button" onClick={() => remove(i)} className="text-muted-foreground hover:text-foreground shrink-0">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }

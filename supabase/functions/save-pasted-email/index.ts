@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
       meeting = null, // {title, starts_at, location, attendees:[user_ids], external_attendees:[strings]}
       create_contact = false,
       contact_name,
+      attachments = [], // [{storage_path, file_name, mime_type, size_bytes}]
       mode = "all", // "all" | "email_only"
     } = body ?? {};
 
@@ -85,6 +86,37 @@ Deno.serve(async (req) => {
       .single();
     if (emErr || !emailRow) return json({ error: emErr?.message ?? "Insert failed" }, 500);
     const emailId = emailRow.id;
+
+    // Persist attachments: create platform_documents rows + attachments linking to this email
+    const created_attachment_ids: string[] = [];
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      for (const a of attachments) {
+        if (!a?.storage_path || !a?.file_name) continue;
+        const { data: doc, error: docErr } = await client
+          .from("platform_documents")
+          .insert({
+            workspace_id,
+            storage_path: a.storage_path,
+            file_name: a.file_name,
+            mime_type: a.mime_type ?? null,
+            size_bytes: a.size_bytes ?? null,
+            uploaded_by: uid,
+          })
+          .select("id")
+          .single();
+        if (docErr || !doc) continue;
+        const { data: att } = await client
+          .from("attachments")
+          .insert({
+            document_id: doc.id,
+            attachable_type: "pasted_email",
+            attachable_id: emailId,
+          })
+          .select("id")
+          .single();
+        if (att) created_attachment_ids.push(att.id);
+      }
+    }
 
     const created_task_ids: string[] = [];
     let created_meeting_id: string | null = null;
@@ -158,6 +190,7 @@ Deno.serve(async (req) => {
       contact_id: new_contact_id,
       task_ids: created_task_ids,
       meeting_id: created_meeting_id,
+      attachment_ids: created_attachment_ids,
     });
   } catch (e) {
     console.error(e);

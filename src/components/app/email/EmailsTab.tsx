@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Mail, FileText, AlertCircle, CheckCircle2, ClipboardPaste, Inbox } from "lucide-react";
+import { Mail, FileText, AlertCircle, CheckCircle2, ClipboardPaste, Inbox, Paperclip, Download } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { PasteEmailDialog } from "./PasteEmailDialog";
 import { Link } from "react-router-dom";
@@ -28,6 +28,7 @@ type PastedRow = {
   created_at: string;
   imported_by: string | null;
   task_count?: number;
+  attachments?: Array<{ id: string; file_name: string; storage_path: string; mime_type: string | null; size_bytes: number | null }>;
 };
 
 type ListItem =
@@ -50,7 +51,7 @@ export function EmailsTab({ clientId }: { clientId: string }) {
     const sentRows: ListItem[] = (sent ?? []).map((r: EmailRow) => ({ kind: "sent" as const, ...r }));
     const pastedRows: ListItem[] = (pasted ?? []).map((r: PastedRow) => ({ kind: "pasted" as const, ...r }));
 
-    // Task counts per pasted email
+    // Task counts + attachments per pasted email
     const pastedIds = pastedRows.map((r) => (r as any).id);
     if (pastedIds.length) {
       const { data: taskRows } = await (supabase as any)
@@ -60,6 +61,24 @@ export function EmailsTab({ clientId }: { clientId: string }) {
         counts[t.source_email_id] = (counts[t.source_email_id] ?? 0) + 1;
       });
       pastedRows.forEach((r: any) => (r.task_count = counts[r.id] ?? 0));
+
+      const { data: attRows } = await (supabase as any)
+        .from("attachments")
+        .select("id, attachable_id, platform_documents!inner(id, file_name, storage_path, mime_type, size_bytes)")
+        .eq("attachable_type", "pasted_email")
+        .in("attachable_id", pastedIds);
+      const attMap: Record<string, any[]> = {};
+      (attRows ?? []).forEach((a: any) => {
+        const arr = attMap[a.attachable_id] ?? (attMap[a.attachable_id] = []);
+        arr.push({
+          id: a.id,
+          file_name: a.platform_documents.file_name,
+          storage_path: a.platform_documents.storage_path,
+          mime_type: a.platform_documents.mime_type,
+          size_bytes: a.platform_documents.size_bytes,
+        });
+      });
+      pastedRows.forEach((r: any) => (r.attachments = attMap[r.id] ?? []));
     }
 
     const merged = [...sentRows, ...pastedRows].sort((a, b) => {
@@ -154,6 +173,11 @@ export function EmailsTab({ clientId }: { clientId: string }) {
                       <Badge variant="outline" className="text-[10px]">{p.task_count} task{p.task_count === 1 ? "" : "s"}</Badge>
                     </Link>
                   ) : null}
+                  {p.attachments && p.attachments.length > 0 && (
+                    <Badge variant="outline" className="text-[10px] gap-1">
+                      <Paperclip className="h-3 w-3" />{p.attachments.length}
+                    </Badge>
+                  )}
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5 truncate">
                   From: {p.from_name ?? "—"}{p.from_email ? ` <${p.from_email}>` : ""}
@@ -227,6 +251,35 @@ export function EmailsTab({ clientId }: { clientId: string }) {
                   <div className="text-xs font-medium text-muted-foreground mb-1">Original email</div>
                   <pre className="whitespace-pre-wrap text-xs font-mono bg-muted/30 p-3 rounded-md max-h-96 overflow-y-auto">{selected.raw_body}</pre>
                 </div>
+                {selected.attachments && selected.attachments.length > 0 && (
+                  <div className="border-t pt-3 mt-3">
+                    <div className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                      <Paperclip className="h-3 w-3" /> Attachments ({selected.attachments.length})
+                    </div>
+                    <ul className="space-y-1">
+                      {selected.attachments.map((a) => (
+                        <li key={a.id} className="flex items-center justify-between gap-2 border border-border rounded-md px-2 py-1.5 text-sm">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <span className="truncate">{a.file_name}</span>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              const { data, error } = await supabase.storage
+                                .from("platform-documents")
+                                .createSignedUrl(a.storage_path, 60);
+                              if (error || !data?.signedUrl) return;
+                              window.open(data.signedUrl, "_blank");
+                            }}
+                            className="text-xs text-primary hover:underline flex items-center gap-1 shrink-0"
+                          >
+                            <Download className="h-3 w-3" /> Download
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </>
           )}
