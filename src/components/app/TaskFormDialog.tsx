@@ -152,8 +152,15 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>New Task</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{titleLabel ?? "New Task"}</DialogTitle>
+          {headerSlot}
+        </DialogHeader>
         <div className="space-y-4 py-2">
+          <div>
+            <Label htmlFor="t-title">Title *</Label>
+            <Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+          </div>
           <div>
             <Label htmlFor="t-title">Title *</Label>
             <Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
