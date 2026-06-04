@@ -18,6 +18,7 @@ interface Row {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; project_id: string | null;
   completed_at: string | null; meeting_id: string | null;
+  comment_count?: number;
 }
 
 interface Props {
@@ -46,7 +47,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const load = useCallback(async () => {
     if (!workspaceId) return;
     let q = (supabase as any).from("tasks")
-      .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id")
+      .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id, comment_count")
       .eq("workspace_id", workspaceId)
       .is("deleted_at", null);
     if (clientId) q = q.eq("client_id", clientId);
@@ -171,7 +172,12 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                 <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                   <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
                 </td>
-                <td className="px-3 py-2 font-medium">{t.title}</td>
+                <td className="px-3 py-2 font-medium">
+                  <span>{t.title}</span>
+                  {!!t.comment_count && (
+                    <span className="ml-2 text-[11px] text-muted-foreground">💬 {t.comment_count}</span>
+                  )}
+                </td>
                 <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
                 <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
                 <td className="px-3 py-2">

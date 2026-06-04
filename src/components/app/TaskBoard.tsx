@@ -12,7 +12,7 @@ import { onTasksChanged } from "./tasks/taskMutations";
 interface TaskCard {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; completed_at: string | null;
-  meeting_id: string | null;
+  meeting_id: string | null; comment_count?: number;
 }
 interface Status { id: string; name: string; color: string | null; position: number; category: string; }
 interface ClientLite { id: string; name: string; }
@@ -42,7 +42,7 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     setStatuses(sRes.data ?? []);
 
     let q = (supabase as any).from("tasks")
-      .select("id, title, status_id, priority, due_date, client_id, completed_at, meeting_id")
+      .select("id, title, status_id, priority, due_date, client_id, completed_at, meeting_id, comment_count")
       .eq("workspace_id", workspaceId)
       .is("deleted_at", null);
     if (clientId) q = q.eq("client_id", clientId);
@@ -193,6 +193,9 @@ function Card({ task, client, assigneeIds, profiles }: { task: TaskCard; client?
       <div className="flex items-center justify-between">
         <div className={`text-xs ${overdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
           {task.due_date ? format(new Date(task.due_date), "MMM d") : ""}
+          {!!task.comment_count && (
+            <span className="ml-2">💬 {task.comment_count}</span>
+          )}
         </div>
         <div className="flex -space-x-1.5">
           {assigneeIds.slice(0, 3).map((uid) => {

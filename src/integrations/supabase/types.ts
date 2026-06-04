@@ -512,6 +512,55 @@ export type Database = {
           },
         ]
       }
+      client_budget_alerts_sent: {
+        Row: {
+          activity_type_id: string | null
+          client_id: string
+          contracted_hours_id: string
+          id: string
+          sent_at: string
+          threshold: number
+        }
+        Insert: {
+          activity_type_id?: string | null
+          client_id: string
+          contracted_hours_id: string
+          id?: string
+          sent_at?: string
+          threshold: number
+        }
+        Update: {
+          activity_type_id?: string | null
+          client_id?: string
+          contracted_hours_id?: string
+          id?: string
+          sent_at?: string
+          threshold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_budget_alerts_sent_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "time_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_budget_alerts_sent_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_budget_alerts_sent_contracted_hours_id_fkey"
+            columns: ["contracted_hours_id"]
+            isOneToOne: false
+            referencedRelation: "contracted_hours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_members: {
         Row: {
           client_id: string
@@ -801,6 +850,96 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracted_hours: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          period_end: string | null
+          period_start: string | null
+          total_hours: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          total_hours?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          total_hours?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracted_hours_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracted_hours_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracted_hours_by_activity: {
+        Row: {
+          activity_type_id: string
+          allocated_hours: number
+          contracted_hours_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          activity_type_id: string
+          allocated_hours?: number
+          contracted_hours_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          activity_type_id?: string
+          allocated_hours?: number
+          contracted_hours_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracted_hours_by_activity_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "time_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracted_hours_by_activity_contracted_hours_id_fkey"
+            columns: ["contracted_hours_id"]
+            isOneToOne: false
+            referencedRelation: "contracted_hours"
             referencedColumns: ["id"]
           },
         ]
@@ -2352,6 +2491,97 @@ export type Database = {
           },
         ]
       }
+      task_comments: {
+        Row: {
+          author_id: string
+          body_html: string
+          body_text: string
+          created_at: string
+          id: string
+          mentioned_user_ids: string[]
+          task_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          author_id: string
+          body_html: string
+          body_text?: string
+          created_at?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          task_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          author_id?: string
+          body_html?: string
+          body_text?: string
+          created_at?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          task_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_mutes: {
+        Row: {
+          created_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_mutes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_mutes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_statuses: {
         Row: {
           category: string
@@ -2391,6 +2621,7 @@ export type Database = {
         Row: {
           checklist: Json
           client_id: string
+          comment_count: number
           completed_at: string | null
           created_at: string
           created_by: string | null
@@ -2413,6 +2644,7 @@ export type Database = {
         Insert: {
           checklist?: Json
           client_id: string
+          comment_count?: number
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
@@ -2435,6 +2667,7 @@ export type Database = {
         Update: {
           checklist?: Json
           client_id?: string
+          comment_count?: number
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
@@ -2555,6 +2788,266 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "teams_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_activity_types: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          name: string
+          position: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          position?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          position?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_activity_types_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_entries: {
+        Row: {
+          activity_type_id: string
+          client_id: string
+          created_at: string
+          description: string | null
+          duration_seconds: number
+          ended_at: string | null
+          id: string
+          is_manual: boolean
+          project_id: string | null
+          source: string
+          started_at: string
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          activity_type_id: string
+          client_id: string
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          is_manual?: boolean
+          project_id?: string | null
+          source?: string
+          started_at: string
+          task_id?: string | null
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          activity_type_id?: string
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          is_manual?: boolean
+          project_id?: string | null
+          source?: string
+          started_at?: string
+          task_id?: string | null
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "time_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_entries_running: {
+        Row: {
+          activity_type_id: string
+          client_id: string
+          description: string | null
+          project_id: string | null
+          started_at: string
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          activity_type_id: string
+          client_id: string
+          description?: string | null
+          project_id?: string | null
+          started_at?: string
+          task_id?: string | null
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          activity_type_id?: string
+          client_id?: string
+          description?: string | null
+          project_id?: string | null
+          started_at?: string
+          task_id?: string | null
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_running_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "time_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_running_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_running_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_running_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_running_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_tracking_settings: {
+        Row: {
+          created_at: string
+          default_activity_type_id: string | null
+          id: string
+          reminder_enabled: boolean
+          reminder_time: string | null
+          rounding_minutes: number
+          show_decimal: boolean
+          show_widget: boolean
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_activity_type_id?: string | null
+          id?: string
+          reminder_enabled?: boolean
+          reminder_time?: string | null
+          rounding_minutes?: number
+          show_decimal?: boolean
+          show_widget?: boolean
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          default_activity_type_id?: string | null
+          id?: string
+          reminder_enabled?: boolean
+          reminder_time?: string | null
+          rounding_minutes?: number
+          show_decimal?: boolean
+          show_widget?: boolean
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_tracking_settings_default_activity_type_id_fkey"
+            columns: ["default_activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "time_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_tracking_settings_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -2712,6 +3205,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_client_time_summary: { Args: { p_client_id: string }; Returns: Json }
       get_intake_for_session: {
         Args: { p_token: string }
         Returns: {
@@ -2814,6 +3308,7 @@ export type Database = {
         Returns: boolean
       }
       is_workspace_admin: { Args: { wid: string }; Returns: boolean }
+      is_workspace_admin_or_manager: { Args: { wid: string }; Returns: boolean }
       is_workspace_member: { Args: { wid: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
@@ -2862,6 +3357,10 @@ export type Database = {
           p_token: string
         }
         Returns: string
+      }
+      user_mentioned_in_task: {
+        Args: { _task_id: string; _user_id: string }
+        Returns: boolean
       }
       workspace_role: { Args: { wid: string }; Returns: string }
     }

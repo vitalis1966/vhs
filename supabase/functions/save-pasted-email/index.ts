@@ -106,16 +106,26 @@ Deno.serve(async (req) => {
     const emailId = emailRow.id;
 
     // Persist attachments: create platform_documents rows + attachments linking to this email
+    // AND, if a client is selected, also link to the client so they appear in the client's Files tab.
     const created_attachment_ids: string[] = [];
     if (Array.isArray(attachments) && attachments.length > 0) {
+      // Build display name: "[YYYY-MM-DD] [Sender Name] [Original Filename]"
+      const dateForName = (() => {
+        const ts = sanitizeTimestamp(sent_at);
+        const d = ts ? new Date(ts) : new Date();
+        return d.toISOString().slice(0, 10);
+      })();
+      const senderForName = (from_name || from_email || "Unknown sender").toString().trim();
+
       for (const a of attachments) {
         if (!a?.storage_path || !a?.file_name) continue;
+        const displayName = `${dateForName} ${senderForName} ${a.file_name}`;
         const { data: doc, error: docErr } = await client
           .from("platform_documents")
           .insert({
             workspace_id,
             storage_path: a.storage_path,
-            file_name: a.file_name,
+            file_name: displayName,
             mime_type: a.mime_type ?? null,
             size_bytes: a.size_bytes ?? null,
             uploaded_by: uid,
@@ -123,6 +133,7 @@ Deno.serve(async (req) => {
           .select("id")
           .single();
         if (docErr || !doc) continue;
+        // Link to the source email
         const { data: att } = await client
           .from("attachments")
           .insert({
@@ -133,6 +144,16 @@ Deno.serve(async (req) => {
           .select("id")
           .single();
         if (att) created_attachment_ids.push(att.id);
+        // Also surface on the client's Files tab when a client is linked
+        if (client_id) {
+          await client
+            .from("attachments")
+            .insert({
+              document_id: doc.id,
+              attachable_type: "client",
+              attachable_id: client_id,
+            });
+        }
       }
     }
 

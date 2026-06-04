@@ -116,6 +116,20 @@ export function Attachments({ attachableType, attachableId, workspaceId: wsProp 
 
   useEffect(() => { void load(); }, [load]);
 
+  // Realtime: refresh when an attachment for this entity is added or removed elsewhere
+  // (e.g. Paste Email dialog files into a client's Files tab).
+  useEffect(() => {
+    const ch = supabase
+      .channel(`attachments-${attachableType}-${attachableId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "attachments", filter: `attachable_id=eq.${attachableId}` },
+        () => { void load(); },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [attachableType, attachableId, load]);
+
   const upload = async (file: File) => {
     if (!workspaceId || !userId) { toast.error("No workspace context"); return; }
     if (file.size > MAX_BYTES) { toast.error("File exceeds 25 MB limit"); return; }
