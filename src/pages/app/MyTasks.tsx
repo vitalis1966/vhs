@@ -206,6 +206,7 @@ export default function MyTasks() {
           <div className="w-24">Priority</div>
           <div className="w-28">Due</div>
           <div className="w-8" />
+          <div className="w-8" />
         </div>
 
         {loading ? (
