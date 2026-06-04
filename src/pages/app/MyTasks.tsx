@@ -287,6 +287,13 @@ export default function MyTasks() {
                   <div className="w-24">
                     <Badge variant="outline" className={PRIORITY_CLASS[row.priority] ?? ""}>{row.priority}</Badge>
                   </div>
+                  <div className="w-24">
+                    {extractedTaskIds.has(row.id) ? (
+                      <Badge variant="outline" className="border-primary/30 text-primary">Extracted</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Manual</Badge>
+                    )}
+                  </div>
                   <div className={`w-28 ${overdue ? "text-red-600 font-medium" : ""}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
                   </div>
