@@ -290,11 +290,16 @@ export default function Inbox() {
                     <TableCell onClick={(ev) => ev.stopPropagation()}>
                       <StatusDropdown value={e.status} onChange={(v) => updateStatus(e.id, v)} />
                     </TableCell>
-                    <TableCell className="text-center text-sm">
+                    <TableCell className="text-center text-sm" onClick={(ev) => ev.stopPropagation()}>
                       {tcount > 0 ? (
-                        <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-muted text-foreground font-medium">
+                        <button
+                          type="button"
+                          onClick={() => openTasksViewer(e)}
+                          className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-muted text-foreground font-medium hover:bg-muted/70 transition-colors"
+                          title="View extracted tasks"
+                        >
                           {tcount}
-                        </span>
+                        </button>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
