@@ -190,6 +190,7 @@ export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssignee
       cancelLabel="Close"
       headerSlot={header}
       onCreated={handleCreated}
+      onValuesChange={setLiveValues}
     />
   );
 }
