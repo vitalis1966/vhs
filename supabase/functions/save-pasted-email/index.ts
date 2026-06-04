@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
         from_name, from_email,
         to_addresses: to_addresses ?? [],
         cc_addresses: cc_addresses ?? [],
-        subject, sent_at,
+        subject, sent_at: sanitizeTimestamp(sent_at),
         raw_body,
         ai_summary, ai_category,
         ai_payload: ai_payload ?? null,
