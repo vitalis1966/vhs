@@ -3,7 +3,9 @@ import { useState } from "react";
 import { TaskFormDialog } from "./TaskFormDialog";
 import { ComposeEmailDialog } from "./email/ComposeEmailDialog";
 import { BroadcastEmailDialog } from "./email/BroadcastEmailDialog";
-import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon, CheckSquare, Mail, Megaphone, ChevronDown } from "lucide-react";
+import { PasteEmailDialog } from "./email/PasteEmailDialog";
+import { Search, Plus, LogOut, User as UserIcon, Bell as BellIcon, CheckSquare, Mail, Megaphone, ChevronDown, ClipboardPaste } from "lucide-react";
+import { useEffect } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +27,22 @@ export function AppTopBar() {
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [pasteOpen, setPasteOpen] = useState(false);
+
+  // Cmd/Ctrl + Shift + V opens the paste-email modal globally
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "v" || e.key === "V")) {
+        const target = e.target as HTMLElement | null;
+        const inField = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+        if (inField) return;
+        e.preventDefault();
+        setPasteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const clientMatch = matchPath("/app/clients/:clientId/*", location.pathname)
     ?? matchPath("/app/clients/:clientId", location.pathname);
@@ -55,6 +73,9 @@ export function AppTopBar() {
         />
       </div>
       <div className="flex-1 sm:hidden" />
+      <Button size="sm" variant="secondary" className="gap-1" onClick={() => setPasteOpen(true)} title="Quick Import Email (⌘⇧V)">
+        <ClipboardPaste className="h-4 w-4" /> <span className="hidden md:inline">Paste Email</span>
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button size="sm" variant="default" className="gap-1">
@@ -69,6 +90,9 @@ export function AppTopBar() {
           <DropdownMenuItem onClick={() => setComposeOpen(true)}>
             <Mail className="h-4 w-4 mr-2" /> Send Email
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setPasteOpen(true)}>
+            <ClipboardPaste className="h-4 w-4 mr-2" /> Paste Email
+          </DropdownMenuItem>
           {canBroadcast && (
             <DropdownMenuItem onClick={() => setBroadcastOpen(true)}>
               <Megaphone className="h-4 w-4 mr-2" /> Broadcast Email
@@ -82,6 +106,7 @@ export function AppTopBar() {
       />
       <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={ctxClientId} />
       <BroadcastEmailDialog open={broadcastOpen} onOpenChange={setBroadcastOpen} />
+      <PasteEmailDialog open={pasteOpen} onOpenChange={setPasteOpen} defaultClientId={ctxClientId} defaultProjectId={ctxProjectId} />
       <NotificationsBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

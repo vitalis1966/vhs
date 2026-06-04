@@ -764,28 +764,34 @@ export type Database = {
       contacts: {
         Row: {
           client_id: string
+          created_from: string | null
           email: string | null
           id: string
           is_primary: boolean | null
           name: string
+          needs_review: boolean
           phone: string | null
           title: string | null
         }
         Insert: {
           client_id: string
+          created_from?: string | null
           email?: string | null
           id?: string
           is_primary?: boolean | null
           name: string
+          needs_review?: boolean
           phone?: string | null
           title?: string | null
         }
         Update: {
           client_id?: string
+          created_from?: string | null
           email?: string | null
           id?: string
           is_primary?: boolean | null
           name?: string
+          needs_review?: boolean
           phone?: string | null
           title?: string | null
         }
@@ -1251,6 +1257,7 @@ export type Database = {
           meeting_date: string
           next_meeting_date: string | null
           project_id: string | null
+          source_email_id: string | null
           summary: Json | null
           summary_sent_at: string | null
           summary_sent_by: string | null
@@ -1269,6 +1276,7 @@ export type Database = {
           meeting_date?: string
           next_meeting_date?: string | null
           project_id?: string | null
+          source_email_id?: string | null
           summary?: Json | null
           summary_sent_at?: string | null
           summary_sent_by?: string | null
@@ -1287,6 +1295,7 @@ export type Database = {
           meeting_date?: string
           next_meeting_date?: string | null
           project_id?: string | null
+          source_email_id?: string | null
           summary?: Json | null
           summary_sent_at?: string | null
           summary_sent_by?: string | null
@@ -1316,6 +1325,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_source_email_id_fkey"
+            columns: ["source_email_id"]
+            isOneToOne: false
+            referencedRelation: "pasted_emails"
             referencedColumns: ["id"]
           },
           {
@@ -1500,6 +1516,98 @@ export type Database = {
           },
           {
             foreignKeyName: "notifications_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pasted_emails: {
+        Row: {
+          ai_category: string | null
+          ai_payload: Json | null
+          ai_summary: string | null
+          cc_addresses: Json
+          client_id: string | null
+          created_at: string
+          from_email: string | null
+          from_name: string | null
+          id: string
+          imported_by: string | null
+          project_id: string | null
+          raw_body: string
+          sent_at: string | null
+          source: string
+          subject: string | null
+          to_addresses: Json
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          ai_category?: string | null
+          ai_payload?: Json | null
+          ai_summary?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          imported_by?: string | null
+          project_id?: string | null
+          raw_body: string
+          sent_at?: string | null
+          source?: string
+          subject?: string | null
+          to_addresses?: Json
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          ai_category?: string | null
+          ai_payload?: Json | null
+          ai_summary?: string | null
+          cc_addresses?: Json
+          client_id?: string | null
+          created_at?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          imported_by?: string | null
+          project_id?: string | null
+          raw_body?: string
+          sent_at?: string | null
+          source?: string
+          subject?: string | null
+          to_addresses?: Json
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pasted_emails_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pasted_emails_imported_by_fkey"
+            columns: ["imported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pasted_emails_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pasted_emails_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -2295,6 +2403,8 @@ export type Database = {
           position: number
           priority: string
           project_id: string | null
+          source_email_id: string | null
+          source_kind: string | null
           status_id: string | null
           title: string
           updated_at: string
@@ -2315,6 +2425,8 @@ export type Database = {
           position?: number
           priority?: string
           project_id?: string | null
+          source_email_id?: string | null
+          source_kind?: string | null
           status_id?: string | null
           title: string
           updated_at?: string
@@ -2335,6 +2447,8 @@ export type Database = {
           position?: number
           priority?: string
           project_id?: string | null
+          source_email_id?: string | null
+          source_kind?: string | null
           status_id?: string | null
           title?: string
           updated_at?: string
@@ -2367,6 +2481,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_source_email_id_fkey"
+            columns: ["source_email_id"]
+            isOneToOne: false
+            referencedRelation: "pasted_emails"
             referencedColumns: ["id"]
           },
           {

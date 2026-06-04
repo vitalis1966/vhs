@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Plus, Trash2, Mail, Users } from "lucide-react";
+import { Pencil, Plus, Trash2, Mail, Users, ClipboardPaste } from "lucide-react";
 import { TemplateEditor } from "./TemplateEditor";
+import { PasteEmailDialog } from "@/components/app/email/PasteEmailDialog";
 import { countTags } from "./templateTags";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -37,12 +38,18 @@ interface SentEmail {
 export function CommunicationsSection() {
   const { workspaceId } = useWorkspace();
   const [tab, setTab] = useState("templates");
+  const [pasteOpen, setPasteOpen] = useState(false);
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Communications</CardTitle>
-        <CardDescription>Manage email templates and review broadcast history.</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
+        <div>
+          <CardTitle>Communications</CardTitle>
+          <CardDescription>Manage email templates and review broadcast history.</CardDescription>
+        </div>
+        <Button size="sm" variant="secondary" className="gap-1" onClick={() => setPasteOpen(true)}>
+          <ClipboardPaste className="h-4 w-4" /> Paste Email
+        </Button>
       </CardHeader>
       <CardContent>
         <Tabs value={tab} onValueChange={setTab}>
@@ -58,6 +65,7 @@ export function CommunicationsSection() {
           </TabsContent>
         </Tabs>
       </CardContent>
+      <PasteEmailDialog open={pasteOpen} onOpenChange={setPasteOpen} />
     </Card>
   );
 }
