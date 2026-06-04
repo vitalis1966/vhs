@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { NotificationsBell } from "./NotificationsBell";
 import { CommandPalette } from "./CommandPalette";
+import { TimerWidget } from "./time/TimerWidget";
 
 export function AppTopBar() {
   const navigate = useNavigate();
