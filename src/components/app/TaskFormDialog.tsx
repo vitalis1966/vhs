@@ -59,6 +59,12 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
   }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary]);
 
   useEffect(() => {
+    if (!open) return;
+    onValuesChange?.({ title, summary, priority });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, summary, priority, open]);
+
+  useEffect(() => {
     if (!open || !workspaceId) return;
     (async () => {
       const [c, p, s, wm] = await Promise.all([
