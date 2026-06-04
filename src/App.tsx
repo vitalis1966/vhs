@@ -80,6 +80,7 @@ const AppDashboards = lazy(() => import("./pages/app/LeadershipDashboard"));
 const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSettings"));
 const AppSettings = lazy(() => import("./pages/app/Settings"));
 const AppTimeTracking = lazy(() => import("./pages/app/TimeTracking"));
+const AppInbox = lazy(() => import("./pages/app/Inbox"));
 
 import { supabase } from "@/integrations/supabase/client";
 
