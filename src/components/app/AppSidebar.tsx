@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
 } from "@/components/ui/sidebar";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
+import { useInboxUnreadCount } from "@/hooks/useInboxUnreadCount";
+import { useMyTasksBadge } from "@/hooks/useMyTasksBadge";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { title: "Home", url: "/app/home", icon: Home },
+  { title: "Inbox", url: "/app/inbox", icon: Inbox },
   { title: "My Tasks", url: "/app/my-tasks", icon: ListTodo },
   { title: "Clients", url: "/app/clients", icon: Users },
   { title: "Projects", url: "/app/projects", icon: FolderKanban },
@@ -19,6 +22,24 @@ const navItems = [
   { title: "Dashboards", url: "/app/dashboards", icon: LayoutDashboard },
 ];
 
+function NavBadge({ newCount, totalCount }: { newCount: number; totalCount: number }) {
+  if (newCount > 0) {
+    return (
+      <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+        {newCount > 99 ? "99+" : newCount}
+      </span>
+    );
+  }
+  if (totalCount > 0) {
+    return (
+      <span className="ml-auto text-[11px] font-medium text-muted-foreground tabular-nums">
+        {totalCount > 999 ? "999+" : totalCount}
+      </span>
+    );
+  }
+  return null;
+}
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -26,6 +47,8 @@ export function AppSidebar() {
   const { workspaceName, userId, workspaceId, role } = useWorkspace();
   const { pinned } = usePinnedClients(userId, workspaceId);
   const [pinnedClients, setPinnedClients] = useState<Array<{ id: string; name: string }>>([]);
+  const inboxBadge = useInboxUnreadCount(userId);
+  const myTasksBadge = useMyTasksBadge(userId, workspaceId);
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
@@ -63,7 +86,13 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <NavLink to={item.url} end={item.url === "/app/home"}>
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span className="flex-1">{item.title}</span>
+                      {!collapsed && item.url === "/app/inbox" && (
+                        <NavBadge newCount={inboxBadge.newCount} totalCount={inboxBadge.totalCount} />
+                      )}
+                      {!collapsed && item.url === "/app/my-tasks" && (
+                        <NavBadge newCount={myTasksBadge.newCount} totalCount={myTasksBadge.totalCount} />
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

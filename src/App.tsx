@@ -80,6 +80,7 @@ const AppDashboards = lazy(() => import("./pages/app/LeadershipDashboard"));
 const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSettings"));
 const AppSettings = lazy(() => import("./pages/app/Settings"));
 const AppTimeTracking = lazy(() => import("./pages/app/TimeTracking"));
+const AppInbox = lazy(() => import("./pages/app/Inbox"));
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -196,6 +197,7 @@ const App = () => (
               <Route path="/app" element={<AppGuard><AppLayout /></AppGuard>}>
                 <Route index element={<AppIndex />} />
                 <Route path="home" element={<AppHome />} />
+                <Route path="inbox" element={<AppInbox />} />
                 <Route path="my-tasks" element={<AppMyTasks />} />
                 <Route path="clients" element={<AppClients />} />
                 <Route path="clients/:clientId" element={<AppClientDetail />} />

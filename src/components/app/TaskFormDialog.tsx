@@ -19,12 +19,18 @@ interface Props {
   defaultTitle?: string;
   defaultDueDate?: string;
   defaultAssigneeId?: string | null;
+  defaultPriority?: string;
+  defaultSummary?: string;
+  headerSlot?: React.ReactNode;
+  titleLabel?: string;
+  saveLabel?: string;
+  cancelLabel?: string;
   onCreated?: (task: any) => void;
 }
 
 const UNASSIGNED = "unassigned";
 
-export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, onCreated }: Props) {
+export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -45,11 +51,11 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setTitle(defaultTitle ?? "");
     setClientId(defaultClientId ?? "");
     setProjectId(defaultProjectId ?? "none");
-    setPriority("Medium");
+    setPriority(defaultPriority ?? "Medium");
     setDueDate(defaultDueDate ?? "");
     setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
-    setSummary("");
-  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId]);
+    setSummary(defaultSummary ?? "");
+  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
@@ -146,7 +152,10 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>New Task</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{titleLabel ?? "New Task"}</DialogTitle>
+          {headerSlot}
+        </DialogHeader>
         <div className="space-y-4 py-2">
           <div>
             <Label htmlFor="t-title">Title *</Label>
@@ -219,8 +228,8 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={save} disabled={saving}>{saving ? "Creating…" : "Create Task"}</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>{cancelLabel ?? "Cancel"}</Button>
+          <Button onClick={save} disabled={saving}>{saving ? "Creating…" : (saveLabel ?? "Create Task")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

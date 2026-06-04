@@ -1039,6 +1039,60 @@ export type Database = {
           },
         ]
       }
+      email_extracted_tasks: {
+        Row: {
+          created_at: string
+          description: string | null
+          email_id: string
+          id: string
+          position: number
+          priority: string
+          status: string
+          task_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          email_id: string
+          id?: string
+          position?: number
+          priority?: string
+          status?: string
+          task_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          email_id?: string
+          id?: string
+          position?: number
+          priority?: string
+          status?: string
+          task_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_extracted_tasks_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "inbound_emails"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_extracted_tasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1102,6 +1156,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_task_extractions: {
+        Row: {
+          created_at: string
+          email_id: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_id: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          email_id?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_task_extractions_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "inbound_emails"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_task_extractions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_templates: {
         Row: {
           body_html: string
@@ -1161,6 +1251,65 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      inbound_emails: {
+        Row: {
+          assigned_to: string | null
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          extraction_state: string
+          from_email: string
+          from_name: string | null
+          id: string
+          received_at: string
+          resend_email_id: string | null
+          status: string
+          subject: string | null
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          extraction_state?: string
+          from_email: string
+          from_name?: string | null
+          id?: string
+          received_at?: string
+          resend_email_id?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          extraction_state?: string
+          from_email?: string
+          from_name?: string | null
+          id?: string
+          received_at?: string
+          resend_email_id?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inbound_emails_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insights_articles: {
         Row: {

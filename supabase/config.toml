@@ -49,3 +49,7 @@ project_id = "ilbhphreyvaoomhpvaxi"
     verify_jwt = false
   [functions.notify-document-event]
     verify_jwt = false
+  [functions.email-inbound]
+    verify_jwt = false
+  [functions.extract-email-tasks]
+    verify_jwt = true
