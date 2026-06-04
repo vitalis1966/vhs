@@ -18,6 +18,7 @@ interface Row {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; project_id: string | null;
   completed_at: string | null; meeting_id: string | null;
+  comment_count?: number;
 }
 
 interface Props {
