@@ -7,6 +7,24 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+function sanitizeTimestamp(v: unknown): string | null {
+  if (!v || typeof v !== "string") return null;
+  let s = v.trim();
+  if (!s) return null;
+  // Strip stray trailing letters like "F" that AI sometimes appends
+  s = s.replace(/[^0-9TZ:+\-.\s]+$/i, "");
+  // If no timezone, leave as-is (Postgres will assume UTC for timestamptz with proper format)
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function sanitizeDate(v: unknown): string | null {
+  if (!v || typeof v !== "string") return null;
+  const s = v.trim().slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -77,7 +95,7 @@ Deno.serve(async (req) => {
         from_name, from_email,
         to_addresses: to_addresses ?? [],
         cc_addresses: cc_addresses ?? [],
-        subject, sent_at,
+        subject, sent_at: sanitizeTimestamp(sent_at),
         raw_body,
         ai_summary, ai_category,
         ai_payload: ai_payload ?? null,
@@ -143,7 +161,7 @@ Deno.serve(async (req) => {
             title: t.title,
             description_text: t.description ?? `From email: "${subject ?? ""}" (sender: ${from_name ?? from_email ?? "unknown"})`,
             priority: ["Low", "Medium", "High", "Urgent"].includes(t.priority) ? t.priority : (t.priority === "Normal" ? "Medium" : "Medium"),
-            due_date: t.due_date ?? null,
+            due_date: sanitizeDate(t.due_date),
             status_id: status?.id ?? null,
             created_by: uid,
             source_email_id: emailId,
@@ -168,7 +186,7 @@ Deno.serve(async (req) => {
             client_id,
             project_id: project_id ?? null,
             title: meeting.title ?? subject ?? "Meeting from email",
-            meeting_date: meeting.starts_at ?? new Date().toISOString(),
+            meeting_date: sanitizeTimestamp(meeting.starts_at) ?? new Date().toISOString(),
             external_attendees: Array.isArray(meeting.external_attendees) ? meeting.external_attendees : [],
             created_by: uid,
             source_email_id: emailId,
