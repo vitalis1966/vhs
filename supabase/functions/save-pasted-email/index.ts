@@ -7,6 +7,24 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+function sanitizeTimestamp(v: unknown): string | null {
+  if (!v || typeof v !== "string") return null;
+  let s = v.trim();
+  if (!s) return null;
+  // Strip stray trailing letters like "F" that AI sometimes appends
+  s = s.replace(/[^0-9TZ:+\-.\s]+$/i, "");
+  // If no timezone, leave as-is (Postgres will assume UTC for timestamptz with proper format)
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function sanitizeDate(v: unknown): string | null {
+  if (!v || typeof v !== "string") return null;
+  const s = v.trim().slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
