@@ -27,6 +27,22 @@ export function AppTopBar() {
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [pasteOpen, setPasteOpen] = useState(false);
+
+  // Cmd/Ctrl + Shift + V opens the paste-email modal globally
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "v" || e.key === "V")) {
+        const target = e.target as HTMLElement | null;
+        const inField = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+        if (inField) return;
+        e.preventDefault();
+        setPasteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const clientMatch = matchPath("/app/clients/:clientId/*", location.pathname)
     ?? matchPath("/app/clients/:clientId", location.pathname);
