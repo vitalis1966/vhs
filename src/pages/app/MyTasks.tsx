@@ -238,7 +238,13 @@ export default function MyTasks() {
           filtered.map((row) => {
             const status = row.status_id ? statuses[row.status_id] : null;
             const overdue = isOverdue(row.due_date, row.completed_at);
+            const approaching = !overdue && isApproachingDue(row.due_date, row.completed_at);
             const client = clients[row.client_id];
+            const dueClass = overdue
+              ? "text-red-600 font-bold"
+              : approaching
+              ? "text-amber-500 font-semibold"
+              : "";
             const target: TaskActionTarget = {
               id: row.id,
               workspaceId: workspaceId!,
