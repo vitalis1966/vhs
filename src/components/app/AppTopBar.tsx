@@ -73,6 +73,9 @@ export function AppTopBar() {
         />
       </div>
       <div className="flex-1 sm:hidden" />
+      <Button size="sm" variant="secondary" className="gap-1" onClick={() => setPasteOpen(true)} title="Quick Import Email (⌘⇧V)">
+        <ClipboardPaste className="h-4 w-4" /> <span className="hidden md:inline">Paste Email</span>
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button size="sm" variant="default" className="gap-1">
@@ -86,6 +89,9 @@ export function AppTopBar() {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setComposeOpen(true)}>
             <Mail className="h-4 w-4 mr-2" /> Send Email
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setPasteOpen(true)}>
+            <ClipboardPaste className="h-4 w-4 mr-2" /> Paste Email
           </DropdownMenuItem>
           {canBroadcast && (
             <DropdownMenuItem onClick={() => setBroadcastOpen(true)}>
