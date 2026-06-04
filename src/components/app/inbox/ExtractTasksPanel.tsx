@@ -31,18 +31,22 @@ function normalisePriority(p: string): string {
 
 type ReviewState = "pending" | "saved" | "skipped";
 
-export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssigneeId, tasks, onFinished }: Props) {
+export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssigneeId, tasks: initialTasks, onFinished }: Props) {
   const [index, setIndex] = useState(0);
+  const [tasks, setTasks] = useState<ExtractedTask[]>(initialTasks);
   const [reviewStates, setReviewStates] = useState<ReviewState[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [liveValues, setLiveValues] = useState<{ title: string; summary: string; priority: string } | null>(null);
 
   useEffect(() => {
     if (open) {
       setIndex(0);
-      setReviewStates(tasks.map((t) => (t.status as ReviewState) || "pending"));
+      setTasks(initialTasks);
+      setReviewStates(initialTasks.map((t) => (t.status as ReviewState) || "pending"));
       setDialogOpen(true);
+      setLiveValues(null);
     }
-  }, [open, tasks]);
+  }, [open, initialTasks]);
 
   if (!open || tasks.length === 0) return null;
   const current = tasks[index];
@@ -61,12 +65,37 @@ export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssignee
     }
   };
 
+  // Persist current form edits to the draft row + local tasks array
+  const captureCurrent = async () => {
+    if (!liveValues) return;
+    const updated = [...tasks];
+    updated[index] = {
+      ...updated[index],
+      title: liveValues.title,
+      description: liveValues.summary,
+      priority: (liveValues.priority || "Medium").toLowerCase(),
+    };
+    setTasks(updated);
+    const row = updated[index];
+    if (row.id) {
+      try {
+        await (supabase as any)
+          .from("email_extracted_tasks")
+          .update({ title: row.title, description: row.description, priority: row.priority })
+          .eq("id", row.id);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   const closeDialogTransiently = () => {
     setDialogOpen(false);
     setTimeout(() => setDialogOpen(true), 50);
   };
 
-  const finish = () => {
+  const finish = async () => {
+    await captureCurrent();
     setDialogOpen(false);
     onOpenChange(false);
     onFinished(reviewStates.filter((s) => s === "saved").length);
@@ -83,41 +112,49 @@ export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssignee
     const next = [...reviewStates];
     next[index] = "saved";
     setReviewStates(next);
-    if (index + 1 >= total) {
-      // Finish with updated count
+
+    // Find next non-final task; if none, finish
+    const nextIdx = next.findIndex((s, i) => i !== index && s === "pending");
+    const allDone = next.every((s) => s !== "pending");
+    if (allDone) {
       setDialogOpen(false);
       onOpenChange(false);
       onFinished(next.filter((s) => s === "saved").length);
     } else {
-      setIndex(index + 1);
+      setIndex(nextIdx >= 0 ? nextIdx : Math.min(index + 1, total - 1));
       closeDialogTransiently();
     }
   };
 
   const skip = async () => {
+    await captureCurrent();
     await persistStatus(current.id, "skipped");
     const next = [...reviewStates];
     next[index] = "skipped";
     setReviewStates(next);
-    if (index + 1 >= total) {
+    const allDone = next.every((s) => s !== "pending");
+    if (allDone) {
       setDialogOpen(false);
       onOpenChange(false);
       onFinished(next.filter((s) => s === "saved").length);
     } else {
-      setIndex(index + 1);
+      const nextIdx = next.findIndex((s, i) => i !== index && s === "pending");
+      setIndex(nextIdx >= 0 ? nextIdx : Math.min(index + 1, total - 1));
       closeDialogTransiently();
     }
   };
 
-  const back = () => {
+  const back = async () => {
     if (index > 0) {
+      await captureCurrent();
       setIndex(index - 1);
       closeDialogTransiently();
     }
   };
 
-  const next = () => {
+  const next = async () => {
     if (index + 1 < total) {
+      await captureCurrent();
       setIndex(index + 1);
       closeDialogTransiently();
     }
