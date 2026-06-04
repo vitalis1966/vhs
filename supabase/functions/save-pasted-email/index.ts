@@ -190,6 +190,7 @@ Deno.serve(async (req) => {
       contact_id: new_contact_id,
       task_ids: created_task_ids,
       meeting_id: created_meeting_id,
+      attachment_ids: created_attachment_ids,
     });
   } catch (e) {
     console.error(e);
