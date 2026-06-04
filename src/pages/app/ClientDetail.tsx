@@ -398,7 +398,11 @@ export default function ClientDetail() {
           <Attachments attachableType="client" attachableId={client.id} workspaceId={client.workspace_id} />
         </TabsContent>
         <TabsContent value="emails" className="mt-6"><EmailsTab clientId={client.id} /></TabsContent>
+        <TabsContent value="hours" className="mt-6">
+          <ContractedHoursSection clientId={client.id} workspaceId={client.workspace_id} />
+        </TabsContent>
       </Tabs>
+
 
       <ComposeEmailDialog open={composeOpen} onOpenChange={setComposeOpen} clientId={client.id} lockClient />
 
