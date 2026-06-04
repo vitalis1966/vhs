@@ -221,6 +221,7 @@ export default function MyTasks() {
           <div className="w-32">Client</div>
           <div className="w-28">Status</div>
           <div className="w-24">Priority</div>
+          <div className="w-24">Source</div>
           <div className="w-28">Due</div>
           <div className="w-8" />
           <div className="w-8" />
