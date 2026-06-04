@@ -1,99 +1,96 @@
-# Time Tracking System Plan
+# Email Inbox for Vitalis OS
 
-This is a large, multi-part feature. I'll build it in phased migrations + UI drops, with each phase shippable.
+A new, self-contained feature. No existing functionality changes. All UI reuses Vitalis OS tokens, fonts, and the existing TaskFormDialog side panel.
 
-## Phase 1 — Data model & RLS
+## Decisions confirmed
+- **AI provider**: Lovable AI Gateway, model `google/gemini-2.5-pro` (no extra API key).
+- **Webhook auth**: shared secret header `X-Webhook-Secret` matched against a new secret `RESEND_WEBHOOK_SECRET`.
+- **Admin visibility**: workspace admins/managers see all inbound emails; everyone else only sees their own.
+- **Inbound address**: I'll use a placeholder `inbox@inbound.vitalisstrategies.com` in the empty state — you can swap it once Resend is configured.
 
-New tables:
-- `time_activity_types` (workspace_id, name, position, is_active, is_default) — seeded with the 10 defaults
-- `time_entries` (user_id, workspace_id, client_id, project_id?, task_id?, activity_type_id, description, started_at, ended_at?, duration_seconds, is_manual, source)
-- `time_entries_running` (one row per user — persists active timer)
-- `contracted_hours` (client_id, total_hours, period_start, period_end, created_by)
-- `contracted_hours_by_activity` (contracted_hours_id, activity_type_id, allocated_hours)
-- `time_tracking_settings` (per user: rounding, reminder time, show_widget, show_decimal, default_activity_id)
-- `client_budget_alerts_sent` (dedupe 75/90/100% notifications per client+activity+threshold)
+## 1. Database (single migration)
 
-RLS:
-- `time_entries`: admins on workspace see all; members only their own. INSERT/UPDATE/DELETE: own rows for members, all for admins.
-- `contracted_hours*`: admins manage; members SELECT for clients they can access.
-- `time_activity_types`: workspace-scoped; admins write, members read.
+**`inbound_emails`** as specified, plus:
+- index on `(workspace_id, received_at desc)` and `(assigned_to, status)`.
+- trigger to keep `updated_at` fresh.
 
-Trigger: on `time_entries` INSERT/UPDATE, recompute `duration_seconds` and call `check_budget_thresholds(client_id, activity_type_id)` which inserts notifications + invokes the budget-alert edge function via pg_net for 90/100%.
+**`email_task_extractions`** as specified, plus index on `email_id`.
 
-## Phase 2 — Live timer widget
+**RLS / GRANTs**
+- `GRANT SELECT, UPDATE, DELETE` on `inbound_emails` to `authenticated`; `GRANT ALL` to `service_role`. No `anon`.
+- `inbound_emails` policies:
+  - SELECT/UPDATE/DELETE: `assigned_to = auth.uid()` OR `is_workspace_admin_or_manager(workspace_id)`.
+  - No INSERT policy → only `service_role` (edge function) can insert.
+- `email_task_extractions`:
+  - SELECT: visible if parent email is visible (subquery against `inbound_emails`).
+  - INSERT: `authenticated` users who can see the parent email (so "Extract to Task" works from the client).
+  - DELETE cascades via FK.
 
-- `TimerWidget` in `AppTopBar` (always visible)
-- Idle: ▶ Start timer button → opens `TimerStartPopover` (Client/Project/Task/Activity/Description)
-- Running: live HH:MM:SS counter (client-side `setInterval`), client + activity label, ⏹ Stop, ▼ edit-without-stopping
-- Persistence: `time_entries_running` table + localStorage; on mount, restore + show "still running" banner if started >2h ago
-- Stop: writes to `time_entries`, deletes from `time_entries_running`, toast "1h 23m logged to [Client]"
+## 2. Edge function — `email-inbound`
 
-## Phase 3 — Manual entry
+- POST only, CORS headers, public (no JWT — Resend won't send one).
+- Validate `X-Webhook-Secret` header against `Deno.env.get('RESEND_WEBHOOK_SECRET')`. 401 on mismatch.
+- Parse Resend inbound payload (`from`, `subject`, `text`, `html`, `email_id`, optional `from_name`).
+- Use service role client to:
+  1. Look up `workspace_members` (joined to `profiles.email`) where `email = from_email` and `status='active'` → take first match.
+  2. If no match: look up `auth.users` by email `admin@vitalisstrategies.com` via admin API → assign to that user, use their primary workspace.
+  3. If still no match: leave `assigned_to` null and pick the oldest workspace as default.
+  4. Insert into `inbound_emails` with `on conflict (resend_email_id) do nothing`.
+- Strip attachments entirely (never read or store).
+- Returns 200 `{ok:true}`; 400 on missing required fields; 401 on bad secret.
+- Add `secrets--add_secret` request for `RESEND_WEBHOOK_SECRET` so you can paste the value Resend gives you.
 
-- `ManualEntryDialog` — date picker, start/end OR duration (mutually exclusive, last-edited wins), client/project/task/activity/description
-- Zod validation: client+activity required, end>start, duration>0, not in future
+## 3. Frontend
 
-## Phase 4 — Time Tracking section
+### Routing & sidebar
+- New route `/app/inbox` → `src/pages/app/Inbox.tsx` (lazy).
+- Add **Inbox** item to `AppSidebar` between Home and My Tasks, using the `Inbox` Lucide icon, with a small badge showing count of `status='not_assigned'` rows visible to the user (live via a polled query, every 60s).
 
-- New route `/app/time` + sidebar entry under main nav
-- Tabs: Day | Week | Month with date navigator
-- Group by client (day) / day (week) / week (month)
-- Row: client, project, task, activity badge, description, "1h 23m / 1.38h", edit/delete
-- Totals shown in HH:MM + decimal
+### Inbox page
+- Header: title "Inbox" + subtitle "Emails forwarded to Vitalis OS for task extraction".
+- Table built with existing `Table` primitives (matches `TaskTable` look): From / Subject / Received / Status / Actions.
+  - From: display name + email beneath in `text-xs text-muted-foreground`.
+  - Subject: truncated with title tooltip.
+  - Received: `formatDistanceToNow` from date-fns, full date in title.
+  - Status: inline dropdown (Popover + colored dot) — red/green/orange dots matching existing Tasks status pattern.
+  - Actions: existing `DropdownMenu` with **Extract to Task** and **Delete** (confirm via `AlertDialog`).
+- Row click (outside status/menu) opens a `Sheet` showing full email (subject, from, received, body — prefer `body_text`, fall back to sanitized `body_html` rendered as `<pre>` or via `dangerouslySetInnerHTML` only after `DOMPurify`-style basic stripping; use a simple text-first render to keep dependencies untouched).
+- Empty state: centred Inbox icon + copy referencing the inbound address.
+- Default sort: `received_at desc`.
 
-## Phase 5 — Contracted hours per client
+### Extract to Task flow
+- New edge function `extract-email-tasks` (verify JWT, takes `{ email_id }`):
+  - Loads email (RLS protects access), calls Lovable AI `google/gemini-2.5-pro` with the specified system prompt and the subject + body_text.
+  - Uses tool calling with a small schema `{ tasks: [{ title, description, priority enum[low,medium,high] }] }` (max 5).
+  - Returns parsed array; surfaces 429/402 errors clearly.
+- New component `src/components/app/inbox/ExtractTasksPanel.tsx`:
+  - Wraps the existing `TaskFormDialog` (the same side panel used everywhere else) — no rebuild.
+  - If 1 task: open `TaskFormDialog` pre-filled with title/description/priority/assignee (= email's `assigned_to`).
+  - If 2–5: render a stepper "Task N of M" with Back/Next inside the same dialog frame; each step uses `TaskFormDialog`'s form preset; **Save Task** writes via existing task-create flow then inserts `email_task_extractions(email_id, task_id)`; **Skip** advances without saving.
+  - On finish: if ≥1 task saved, update email `status='assigned'`; close panel; toast.
+- Empty/parse failure: inline error "No actionable tasks found in this email."
 
-- New tab on `ClientDetail`: "Contracted Hours"
-- Admin form: total hours, period, per-activity allocation table
-- Live summary card: total + per-activity allocated/used/remaining with progress bars (green/amber/red at 75/90%)
+## 4. Files to add / touch
 
-## Phase 6 — Budget alerts
+**New**
+- `supabase/migrations/<ts>_email_inbox.sql`
+- `supabase/functions/email-inbound/index.ts`
+- `supabase/functions/extract-email-tasks/index.ts`
+- `src/pages/app/Inbox.tsx`
+- `src/components/app/inbox/InboxTable.tsx`
+- `src/components/app/inbox/EmailViewerSheet.tsx`
+- `src/components/app/inbox/StatusDropdown.tsx`
+- `src/components/app/inbox/ExtractTasksPanel.tsx`
+- `src/hooks/useInboxUnreadCount.ts`
 
-- DB trigger detects threshold crossings, inserts `notifications` and (for 90/100) invokes `send-budget-alert` edge function via pg_net
-- New email template `budget-alert-90` and `budget-alert-100` in `_shared/transactional-email-templates/`
-- Dedupe via `client_budget_alerts_sent`
+**Edited (additive only)**
+- `src/App.tsx` — add lazy import + route.
+- `src/components/app/AppSidebar.tsx` — add Inbox nav item + badge.
 
-## Phase 7 — Reports
+No edits to TaskFormDialog internals, tasks table, or any other existing feature.
 
-- `/app/time/reports` with 4 report types (Client, Member [admin], Project, Activity Type)
-- Filters: date-range presets + custom, client (admin), member (admin), activity, project
-- Charts (recharts): stacked bar, donut, line, gauge
-- All totals show HH:MM + decimal
-- CSV export via existing `lib/csv.ts`
+## 5. Secrets requested
+- `RESEND_WEBHOOK_SECRET` (you'll paste the value Resend gives when configuring the inbound webhook).
 
-## Phase 8 — Timer in My Tasks
-
-- Add ▶ icon button per row in `MyTasks.tsx` and `TaskTable.tsx`
-- Click → start timer pre-filled with task context
-- If timer running → confirm dialog "Stop & Switch | Keep Running"
-
-## Phase 9 — Settings
-
-- New `TimeTrackingSection` in Settings (admin: manage activity types, default activity, rounding)
-- User-level prefs: reminder time, show widget, show decimal
-
-## Permissions matrix (RLS-enforced)
-
-| Role | time_entries | contracted_hours | activity_types | alerts |
-|------|--------------|------------------|----------------|--------|
-| admin | all | manage | manage | receive |
-| member | own only | read (for accessible clients) | read | none |
-
-## Technical notes
-
-- `formatDuration(seconds)` util → returns `{ hhmm: "1:23", hms: "1:23:45", decimal: "1.38h" }`
-- Apply rounding only on save (not on display) per user setting
-- All charts in `recharts` (already in deps)
-- Use existing `notifications` table + `NotificationsBell`
-- Email templates use Vitalis brand (#172620 / #C89741 / #60766B) per existing brand memory
-
-## Out of scope (not requested)
-
-- Stopwatch keyboard shortcuts
-- Approval workflows / time-entry locking
-- Billing rate / invoicing
-- Mobile-specific timer UI
-
----
-
-This is roughly 25-30 new files + 1 big migration + 2 edge function emails. I'll execute it in the order above. Shall I proceed?
+## 6. Out of scope (per your spec)
+- Attachments, reply threading, auto-forwarding rules, automation, VHS Administration changes.
