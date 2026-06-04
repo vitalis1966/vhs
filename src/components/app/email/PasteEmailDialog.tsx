@@ -176,6 +176,30 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
     }
     setSaving(true);
     try {
+      // Upload attachments to storage first
+      let uploadedAttachments: { storage_path: string; file_name: string; mime_type: string; size_bytes: number }[] = [];
+      if (files.length > 0) {
+        setUploading(true);
+        for (const f of files) {
+          const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+          const path = `${workspaceId}/pasted-emails/${crypto.randomUUID()}-${safeName}`;
+          const { error: upErr } = await supabase.storage
+            .from("platform-documents")
+            .upload(path, f, { contentType: f.type || "application/octet-stream", upsert: false });
+          if (upErr) {
+            toast.error(`Failed to upload ${f.name}: ${upErr.message}`);
+            setUploading(false);
+            setSaving(false);
+            return;
+          }
+          uploadedAttachments.push({
+            storage_path: path, file_name: f.name,
+            mime_type: f.type || "application/octet-stream", size_bytes: f.size,
+          });
+        }
+        setUploading(false);
+      }
+
       const p = data.parsed;
       const tasksPayload = mode === "all"
         ? actions.filter((a) => a._enabled && a.title.trim()).map((a) => ({
@@ -207,14 +231,16 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
           meeting: meetingPayload,
           create_contact: mode === "all" && createContact && !data.matched_contact,
           contact_name: p.from_name,
+          attachments: uploadedAttachments,
           mode,
         },
       });
       if (error) throw error;
       if ((res as any)?.error) throw new Error((res as any).error);
 
-      const r = res as { task_ids: string[]; meeting_id: string | null; contact_id: string | null };
+      const r = res as { task_ids: string[]; meeting_id: string | null; contact_id: string | null; attachment_ids: string[] };
       const parts: string[] = ["Email saved"];
+      if (r.attachment_ids?.length) parts.push(`${r.attachment_ids.length} file${r.attachment_ids.length === 1 ? "" : "s"}`);
       if (r.task_ids?.length) parts.push(`${r.task_ids.length} task${r.task_ids.length === 1 ? "" : "s"}`);
       if (r.meeting_id) parts.push("1 meeting");
       if (r.contact_id) parts.push("1 contact");
@@ -224,6 +250,7 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
       toast.error(e?.message ?? "Failed to save");
     } finally {
       setSaving(false);
+      setUploading(false);
     }
   };
 
