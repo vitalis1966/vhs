@@ -12,7 +12,7 @@ import { onTasksChanged } from "./tasks/taskMutations";
 interface TaskCard {
   id: string; title: string; status_id: string | null; priority: string;
   due_date: string | null; client_id: string; completed_at: string | null;
-  meeting_id: string | null;
+  meeting_id: string | null; comment_count?: number;
 }
 interface Status { id: string; name: string; color: string | null; position: number; category: string; }
 interface ClientLite { id: string; name: string; }
