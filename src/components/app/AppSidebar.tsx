@@ -28,6 +28,7 @@ export function AppSidebar() {
   const { workspaceName, userId, workspaceId, role } = useWorkspace();
   const { pinned } = usePinnedClients(userId, workspaceId);
   const [pinnedClients, setPinnedClients] = useState<Array<{ id: string; name: string }>>([]);
+  const inboxUnread = useInboxUnreadCount(userId);
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
