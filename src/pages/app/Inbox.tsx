@@ -57,6 +57,7 @@ export default function Inbox() {
   const [confirmExtract, setConfirmExtract] = useState<{ email: EmailRow; tasks: ExtractedTask[] } | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
