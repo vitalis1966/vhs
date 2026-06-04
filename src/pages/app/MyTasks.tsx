@@ -272,6 +272,15 @@ export default function MyTasks() {
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
                   </div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
+                      title="Start timer for this task"
+                      onClick={() => startTimerForTask(row)}
+                    >
+                      <Play className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  <div className="w-8" onClick={(e) => e.stopPropagation()}>
                     <TaskActionsMenu
                       task={target}
                       onEdit={(id) => setOpenTaskId(id)}
