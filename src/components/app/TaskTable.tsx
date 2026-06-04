@@ -172,7 +172,12 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                 <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                   <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
                 </td>
-                <td className="px-3 py-2 font-medium">{t.title}</td>
+                <td className="px-3 py-2 font-medium">
+                  <span>{t.title}</span>
+                  {!!t.comment_count && (
+                    <span className="ml-2 text-[11px] text-muted-foreground">💬 {t.comment_count}</span>
+                  )}
+                </td>
                 <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
                 <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
                 <td className="px-3 py-2">
