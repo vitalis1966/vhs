@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
 } from "@/components/ui/sidebar";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
+import { useInboxUnreadCount } from "@/hooks/useInboxUnreadCount";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { title: "Home", url: "/app/home", icon: Home },
+  { title: "Inbox", url: "/app/inbox", icon: Inbox },
   { title: "My Tasks", url: "/app/my-tasks", icon: ListTodo },
   { title: "Clients", url: "/app/clients", icon: Users },
   { title: "Projects", url: "/app/projects", icon: FolderKanban },
