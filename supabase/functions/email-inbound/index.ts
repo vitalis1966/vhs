@@ -154,14 +154,17 @@ Deno.serve(async (req) => {
     resend_email_id,
   };
 
+  console.log("[email-inbound] inserting", { from_email, subject, workspace_id, assigned_to, resend_email_id });
+
   const { error } = await supabase
     .from("inbound_emails")
     .upsert(insertPayload, { onConflict: "resend_email_id", ignoreDuplicates: true });
 
   if (error) {
-    console.error("inbound insert error", error);
+    console.error("[email-inbound] insert error", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
+  console.log("[email-inbound] stored ok");
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
