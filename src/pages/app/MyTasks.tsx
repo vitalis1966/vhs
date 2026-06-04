@@ -16,6 +16,7 @@ import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
 import { PRIORITY_CLASS, clientColor, isOverdue } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
+import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
 
 interface Row {
   id: string;
