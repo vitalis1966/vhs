@@ -19,12 +19,18 @@ interface Props {
   defaultTitle?: string;
   defaultDueDate?: string;
   defaultAssigneeId?: string | null;
+  defaultPriority?: string;
+  defaultSummary?: string;
+  headerSlot?: React.ReactNode;
+  titleLabel?: string;
+  saveLabel?: string;
+  cancelLabel?: string;
   onCreated?: (task: any) => void;
 }
 
 const UNASSIGNED = "unassigned";
 
-export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, onCreated }: Props) {
+export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
