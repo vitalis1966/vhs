@@ -63,7 +63,7 @@ export default function MyTasks() {
 
     const [tRes, sRes] = await Promise.all([
       (supabase as any).from("tasks")
-        .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id, deleted_at")
+        .select("id, title, status_id, priority, due_date, client_id, project_id, completed_at, meeting_id, comment_count, deleted_at")
         .in("id", ids)
         .eq("workspace_id", workspaceId)
         .is("deleted_at", null),
