@@ -51,11 +51,11 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setTitle(defaultTitle ?? "");
     setClientId(defaultClientId ?? "");
     setProjectId(defaultProjectId ?? "none");
-    setPriority("Medium");
+    setPriority(defaultPriority ?? "Medium");
     setDueDate(defaultDueDate ?? "");
     setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
-    setSummary("");
-  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId]);
+    setSummary(defaultSummary ?? "");
+  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
