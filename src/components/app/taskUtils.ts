@@ -35,3 +35,17 @@ export function isOverdue(due: string | null | undefined, completedAt: string | 
   const today = new Date(); today.setHours(0, 0, 0, 0);
   return new Date(due) < today;
 }
+
+/**
+ * True if the due date is between today (inclusive) and 3 days from now (inclusive),
+ * and the task is not completed.
+ */
+export function isApproachingDue(due: string | null | undefined, completedAt: string | null | undefined) {
+  if (!due || completedAt) return false;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const dueDate = new Date(due); dueDate.setHours(0, 0, 0, 0);
+  if (dueDate < today) return false; // overdue handled separately
+  const threeDaysFromNow = new Date(today);
+  threeDaysFromNow.setDate(today.getDate() + 3);
+  return dueDate <= threeDaysFromNow;
+}
