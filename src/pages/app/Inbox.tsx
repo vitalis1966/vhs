@@ -24,7 +24,7 @@ import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/Ex
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 
-const INBOUND_ADDRESS = "inbox@inbound.vitalisstrategies.com";
+const INBOUND_ADDRESS = "inbox@mail.vitalisstrategies.com";
 
 type ExtractionState = "none" | "extracted" | "completed";
 
