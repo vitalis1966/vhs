@@ -22,13 +22,21 @@ export function ClientAccessSection() {
 
   const load = async () => {
     if (!workspaceId) return;
-    const [{ data: mrows }, { data: crows }] = await Promise.all([
+    const [{ data: wm }, { data: crows }] = await Promise.all([
       (supabase as any).from("workspace_members")
-        .select("user_id, role, profile:profiles!workspace_members_user_id_fkey(full_name, email)")
+        .select("user_id, role")
         .eq("workspace_id", workspaceId).eq("status", "active").not("user_id", "is", null),
       (supabase as any).from("clients").select("id, name, status").eq("workspace_id", workspaceId).order("name"),
     ]);
-    setMembers((mrows ?? []).filter((m: any) => m.user_id));
+    const ids = (wm ?? []).map((m: any) => m.user_id).filter(Boolean);
+    let profMap = new Map<string, { full_name: string | null; email: string | null }>();
+    if (ids.length) {
+      const { data: profs } = await (supabase as any).from("profiles").select("id, full_name, email").in("id", ids);
+      profMap = new Map((profs ?? []).map((p: any) => [p.id, { full_name: p.full_name, email: p.email }]));
+    }
+    setMembers((wm ?? []).map((m: any) => ({
+      user_id: m.user_id, role: m.role, profile: profMap.get(m.user_id) ?? null,
+    })));
     setClients(crows ?? []);
     const clientIds = (crows ?? []).map((c: any) => c.id);
     if (clientIds.length) {
