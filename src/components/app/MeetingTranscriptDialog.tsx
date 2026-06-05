@@ -364,6 +364,7 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
       });
 
       toast.success("Meeting saved");
+      clearDraft();
       onSaved?.();
       onOpenChange(false);
     } catch (e: any) {
