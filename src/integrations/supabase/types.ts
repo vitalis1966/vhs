@@ -3335,6 +3335,10 @@ export type Database = {
         Args: { p_email: string; p_user_id: string }
         Returns: number
       }
+      admin_update_member_name: {
+        Args: { p_member_id: string; p_name: string }
+        Returns: undefined
+      }
       can_access_client: { Args: { cid: string }; Returns: boolean }
       cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
       create_workspace_for_user: {

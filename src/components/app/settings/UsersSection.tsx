@@ -49,6 +49,7 @@ export function UsersSection() {
   const [roleDialog, setRoleDialog] = useState<Member | null>(null);
   const [accessDialog, setAccessDialog] = useState<Member | null>(null);
   const [removeDialog, setRemoveDialog] = useState<Member | null>(null);
+  const [nameDialog, setNameDialog] = useState<Member | null>(null);
 
   const load = async () => {
     if (!workspaceId) return;
@@ -171,11 +172,13 @@ export function UsersSection() {
             <DropdownMenuContent align="end">
               {m.status === "pending" ? (
                 <>
+                  <DropdownMenuItem onClick={() => setNameDialog(m)}>Edit Name</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => resendInvite(m)}>Resend Invite</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => cancelInvite(m)} className="text-destructive">Cancel Invite</DropdownMenuItem>
                 </>
               ) : (
                 <>
+                  <DropdownMenuItem onClick={() => setNameDialog(m)}>Edit Name</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setRoleDialog(m)}>Edit Role</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setAccessDialog(m)}>Manage Client Access</DropdownMenuItem>
                   {m.status === "active" ? (
@@ -244,6 +247,9 @@ export function UsersSection() {
       )}
       {accessDialog && (
         <ClientAccessDialog member={accessDialog} clients={clients} onClose={() => setAccessDialog(null)} onSaved={() => { setAccessDialog(null); void load(); }} />
+      )}
+      {nameDialog && (
+        <EditNameDialog member={nameDialog} onClose={() => setNameDialog(null)} onSaved={() => { setNameDialog(null); void load(); }} />
       )}
       <AlertDialog open={!!removeDialog} onOpenChange={(o) => !o && setRemoveDialog(null)}>
         <AlertDialogContent>
@@ -446,6 +452,41 @@ function ClientAccessDialog({ member, clients, onClose, onSaved }:
           ))}
         </div>
         <DialogFooter><Button onClick={() => { onSaved(); toast({ title: "Access updated" }); }}>Done</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditNameDialog({ member, onClose, onSaved }: { member: Member; onClose: () => void; onSaved: () => void }) {
+  const { toast } = useToast();
+  const initial = member.profile?.full_name ?? member.invited_name ?? "";
+  const [name, setName] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  const save = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) { toast({ title: "Name is required", variant: "destructive" }); return; }
+    setSaving(true);
+    const { error } = await (supabase as any).rpc("admin_update_member_name", {
+      p_member_id: member.id,
+      p_name: trimmed,
+    });
+    setSaving(false);
+    if (error) { toast({ title: "Update failed", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Name updated" });
+    onSaved();
+  };
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Edit Name</DialogTitle></DialogHeader>
+        <div className="space-y-2">
+          <Label>Full Name</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={saving}>{saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Save</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
