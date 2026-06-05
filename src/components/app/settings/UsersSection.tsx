@@ -456,3 +456,38 @@ function ClientAccessDialog({ member, clients, onClose, onSaved }:
     </Dialog>
   );
 }
+
+function EditNameDialog({ member, onClose, onSaved }: { member: Member; onClose: () => void; onSaved: () => void }) {
+  const { toast } = useToast();
+  const initial = member.profile?.full_name ?? member.invited_name ?? "";
+  const [name, setName] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  const save = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) { toast({ title: "Name is required", variant: "destructive" }); return; }
+    setSaving(true);
+    const { error } = await (supabase as any).rpc("admin_update_member_name", {
+      p_member_id: member.id,
+      p_name: trimmed,
+    });
+    setSaving(false);
+    if (error) { toast({ title: "Update failed", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Name updated" });
+    onSaved();
+  };
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Edit Name</DialogTitle></DialogHeader>
+        <div className="space-y-2">
+          <Label>Full Name</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={saving}>{saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
