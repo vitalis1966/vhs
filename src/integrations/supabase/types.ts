@@ -856,34 +856,40 @@ export type Database = {
       }
       contracted_hours: {
         Row: {
+          cadence: string
           client_id: string
           created_at: string
           created_by: string | null
           id: string
           period_end: string | null
           period_start: string | null
+          rollover_unused: boolean
           total_hours: number
           updated_at: string
           workspace_id: string
         }
         Insert: {
+          cadence?: string
           client_id: string
           created_at?: string
           created_by?: string | null
           id?: string
           period_end?: string | null
           period_start?: string | null
+          rollover_unused?: boolean
           total_hours?: number
           updated_at?: string
           workspace_id: string
         }
         Update: {
+          cadence?: string
           client_id?: string
           created_at?: string
           created_by?: string | null
           id?: string
           period_end?: string | null
           period_start?: string | null
+          rollover_unused?: boolean
           total_hours?: number
           updated_at?: string
           workspace_id?: string
@@ -2100,6 +2106,88 @@ export type Database = {
           notification_preferences?: Json
         }
         Relationships: []
+      }
+      project_contracted_hours: {
+        Row: {
+          cadence: string
+          created_at: string
+          created_by: string | null
+          id: string
+          period_end: string | null
+          period_start: string | null
+          project_id: string
+          rollover_unused: boolean
+          total_hours: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          cadence?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          project_id: string
+          rollover_unused?: boolean
+          total_hours?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          cadence?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          project_id?: string
+          rollover_unused?: boolean
+          total_hours?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_contracted_hours_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_contracted_hours_by_activity: {
+        Row: {
+          activity_type_id: string
+          allocated_hours: number
+          created_at: string
+          id: string
+          project_contracted_hours_id: string
+        }
+        Insert: {
+          activity_type_id: string
+          allocated_hours?: number
+          created_at?: string
+          id?: string
+          project_contracted_hours_id: string
+        }
+        Update: {
+          activity_type_id?: string
+          allocated_hours?: number
+          created_at?: string
+          id?: string
+          project_contracted_hours_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_contracted_hours_by_ac_project_contracted_hours_id_fkey"
+            columns: ["project_contracted_hours_id"]
+            isOneToOne: false
+            referencedRelation: "project_contracted_hours"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -3359,6 +3447,10 @@ export type Database = {
         Returns: number
       }
       get_client_time_summary: { Args: { p_client_id: string }; Returns: Json }
+      get_client_time_summary_window: {
+        Args: { p_client_id: string; p_end: string; p_start: string }
+        Returns: Json
+      }
       get_intake_for_session: {
         Args: { p_token: string }
         Returns: {
@@ -3366,6 +3458,10 @@ export type Database = {
           full_name: string
           organization_name: string
         }[]
+      }
+      get_project_time_summary_window: {
+        Args: { p_end: string; p_project_id: string; p_start: string }
+        Returns: Json
       }
       get_public_seo_global: {
         Args: never
