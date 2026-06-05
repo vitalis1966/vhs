@@ -248,6 +248,9 @@ export function UsersSection() {
       {accessDialog && (
         <ClientAccessDialog member={accessDialog} clients={clients} onClose={() => setAccessDialog(null)} onSaved={() => { setAccessDialog(null); void load(); }} />
       )}
+      {nameDialog && (
+        <EditNameDialog member={nameDialog} onClose={() => setNameDialog(null)} onSaved={() => { setNameDialog(null); void load(); }} />
+      )}
       <AlertDialog open={!!removeDialog} onOpenChange={(o) => !o && setRemoveDialog(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
