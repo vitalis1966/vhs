@@ -49,6 +49,7 @@ export function UsersSection() {
   const [roleDialog, setRoleDialog] = useState<Member | null>(null);
   const [accessDialog, setAccessDialog] = useState<Member | null>(null);
   const [removeDialog, setRemoveDialog] = useState<Member | null>(null);
+  const [nameDialog, setNameDialog] = useState<Member | null>(null);
 
   const load = async () => {
     if (!workspaceId) return;
