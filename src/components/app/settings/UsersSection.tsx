@@ -172,11 +172,13 @@ export function UsersSection() {
             <DropdownMenuContent align="end">
               {m.status === "pending" ? (
                 <>
+                  <DropdownMenuItem onClick={() => setNameDialog(m)}>Edit Name</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => resendInvite(m)}>Resend Invite</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => cancelInvite(m)} className="text-destructive">Cancel Invite</DropdownMenuItem>
                 </>
               ) : (
                 <>
+                  <DropdownMenuItem onClick={() => setNameDialog(m)}>Edit Name</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setRoleDialog(m)}>Edit Role</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setAccessDialog(m)}>Manage Client Access</DropdownMenuItem>
                   {m.status === "active" ? (
