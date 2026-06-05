@@ -94,7 +94,16 @@ async function readFileForExtraction(file: File): Promise<{ transcript?: string;
   }
   if (ext === "pdf") {
     const buf = await file.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const bytes = new Uint8Array(buf);
+    // Chunked base64 encoding — spreading a large Uint8Array into
+    // String.fromCharCode(...) overflows the JS call stack on files >~125KB.
+    let binary = "";
+    const CHUNK = 0x8000; // 32KB
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      const sub = bytes.subarray(i, Math.min(i + CHUNK, bytes.length));
+      binary += String.fromCharCode.apply(null, Array.from(sub) as unknown as number[]);
+    }
+    const base64 = btoa(binary);
     return { file_base64: base64, file_mime: "application/pdf" };
   }
   throw new Error(`Unsupported file type: .${ext}`);
