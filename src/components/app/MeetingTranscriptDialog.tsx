@@ -121,24 +121,59 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
   const [rTopicInput, setRTopicInput] = useState("");
   const [rNextMeeting, setRNextMeeting] = useState("");
 
+  const draftKey = `meeting-draft:${workspaceId}:${clientId}`;
+
   useEffect(() => {
-    if (!open) {
-      // reset on close
-      setStep("input"); setFile(null); setTranscript("");
-      setMeetingDate(todayLocal()); setTab("paste");
-      return;
-    }
+    if (!open) return;
     if (!workspaceId) return;
     (async () => {
       const { data: wm } = await (supabase as any)
         .from("workspace_members").select("user_id").eq("workspace_id", workspaceId).eq("status", "active");
       const ids = (wm ?? []).map((w: any) => w.user_id).filter(Boolean);
-      if (!ids.length) { setMembers([]); return; }
+      if (!ids.length) { setMembers([]); return;}
       const { data: profs } = await (supabase as any)
         .from("profiles").select("id, full_name, email").in("id", ids);
       setMembers(profs ?? []);
     })();
+
+    // Restore draft if available
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) {
+        const d = JSON.parse(raw);
+        setStep("review");
+        setRTitle(d.rTitle ?? ""); setRDate(d.rDate ?? "");
+        setRSummary(d.rSummary ?? ""); setRAttendees(d.rAttendees ?? []);
+        setRDecisions(d.rDecisions ?? []); setRActionItems(d.rActionItems ?? []);
+        setRTopics(d.rTopics ?? []); setRNextMeeting(d.rNextMeeting ?? "");
+        toast.info("Restored unsaved meeting draft");
+      }
+    } catch {}
   }, [open, workspaceId]);
+
+  const persistDraft = () => {
+    try {
+      localStorage.setItem(draftKey, JSON.stringify({
+        rTitle, rDate, rSummary, rAttendees, rDecisions, rActionItems, rTopics, rNextMeeting,
+      }));
+    } catch {}
+  };
+
+  const clearDraft = () => { try { localStorage.removeItem(draftKey); } catch {} };
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
+      if (step === "review") {
+        persistDraft();
+        toast.info("Saved as draft — reopen to continue");
+      }
+      // Reset local state for next open
+      setStep("input"); setFile(null); setTranscript("");
+      setMeetingDate(todayLocal()); setTab("paste");
+    }
+    onOpenChange(next);
+  };
+
 
   const extract = async () => {
     try {
@@ -329,6 +364,7 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
       });
 
       toast.success("Meeting saved");
+      clearDraft();
       onSaved?.();
       onOpenChange(false);
     } catch (e: any) {
@@ -338,8 +374,13 @@ export function MeetingTranscriptDialog({ open, onOpenChange, clientId, workspac
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="max-w-3xl max-h-[92vh] overflow-y-auto"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => { if (step === "extracting") e.preventDefault(); }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
