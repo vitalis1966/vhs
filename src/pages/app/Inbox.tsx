@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { StatusDropdown, type InboxStatus } from "@/components/app/inbox/StatusDropdown";
 import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
-import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
+import { ExtractTasksPanel, type ExtractedTask, type PanelFinishSummary } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 import {
@@ -153,7 +153,9 @@ export default function Inbox() {
       const tasks: ExtractedTask[] = data?.tasks ?? [];
       setExtractProgress(100);
       if (!tasks.length) {
-        toast.error("No actionable tasks found in this email.");
+        // No action items extracted → Status: Not Assigned, Action: Complete
+        await updateExtractionState(email.id, "completed");
+        toast.message("No actionable tasks found in this email.");
         return;
       }
       // Update local state to 'extracted'
@@ -188,7 +190,26 @@ export default function Inbox() {
     setPanelOpen(true);
   };
 
-  const onPanelFinish = async (summary: { saved: number; skipped: number; deferred: number; closedMidFlow: boolean }) => {
+  const resolveEmailState = (s: PanelFinishSummary): { status: InboxStatus; extractionState: ExtractionState } => {
+    // Branch 1: nothing extracted
+    if (s.total === 0) return { status: "not_assigned", extractionState: "completed" };
+    // Branch 2: closed mid-flow, nothing saved yet
+    if (s.closedMidFlow && s.saved === 0) return { status: "not_assigned", extractionState: "extracted" };
+    // Branch 3: closed mid-flow, some saved
+    if (s.closedMidFlow && s.saved > 0) return { status: "waiting", extractionState: "extracted" };
+    // Branch 4: all Yes-skipped, nothing created
+    if (s.saved === 0 && s.skipped === s.total) return { status: "not_assigned", extractionState: "completed" };
+    // Branch 5: fully resolved, at least one created (mix of created + Yes-skipped)
+    if (s.saved > 0 && s.saved + s.skipped === s.total) return { status: "assigned", extractionState: "completed" };
+    // Branch 6: outstanding work + something saved
+    if ((s.pending + s.deferred) > 0 && s.saved > 0) return { status: "waiting", extractionState: "extracted" };
+    // Branch 7: outstanding work + nothing saved
+    if ((s.pending + s.deferred) > 0 && s.saved === 0) return { status: "not_assigned", extractionState: "extracted" };
+    // Safety fallback (should be unreachable given the table above)
+    return { status: "not_assigned", extractionState: "extracted" };
+  };
+
+  const onPanelFinish = async (summary: PanelFinishSummary) => {
     setPanelOpen(false);
     if (!extractEmail) return;
     const emailRef = extractEmail;
@@ -200,20 +221,11 @@ export default function Inbox() {
       .eq("email_id", emailRef.id);
     setTaskCounts((c) => ({ ...c, [emailRef.id]: (ext ?? []).length }));
 
-    if (!summary.closedMidFlow) {
-      const { saved, skipped, deferred } = summary;
-      if (saved > 0 && skipped === 0 && deferred === 0) {
-        await updateStatus(emailRef.id, "assigned");
-        await updateExtractionState(emailRef.id, "completed");
-      } else if (saved > 0 && (skipped > 0 || deferred > 0)) {
-        await updateStatus(emailRef.id, "assigned");
-        await updateExtractionState(emailRef.id, "extracted");
-      } else {
-        // saved === 0 → keep status, ensure action remains "View Extracted Tasks"
-        await updateExtractionState(emailRef.id, "extracted");
-      }
-      if (saved > 0) toast.success(`${saved} task${saved === 1 ? "" : "s"} saved`);
-    }
+    const { status, extractionState } = resolveEmailState(summary);
+    await updateStatus(emailRef.id, status);
+    await updateExtractionState(emailRef.id, extractionState);
+
+    if (summary.saved > 0) toast.success(`${summary.saved} task${summary.saved === 1 ? "" : "s"} saved`);
 
     setExtractEmail(null);
     setExtractTasks([]);
