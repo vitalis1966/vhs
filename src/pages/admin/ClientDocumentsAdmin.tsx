@@ -67,13 +67,6 @@ function Inner() {
 
     setLoading(false);
   };
-    const { data: docs } = await (supabase as any).from("documents").select("*").order("created_at", { ascending: false });
-    const { data: clients } = await (supabase as any).from("client_users").select("id, business_name");
-    const map = new Map((clients || []).map((c: any) => [c.id, c.business_name]));
-    setRows((docs || []).map((d: any) => ({ ...d, business_name: map.get(d.client_user_id) || null })));
-    setSelected(new Set());
-    setLoading(false);
-  };
   useEffect(() => { fetchRows(); }, []);
 
   const downloadBlob = (blob: Blob, name: string) => {
