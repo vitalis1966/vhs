@@ -21,7 +21,7 @@ function initials(s?: string | null) {
 }
 
 export function ProjectsTab({ clientId }: Props) {
-  const { role } = useWorkspace();
+  const { role, userId } = useWorkspace();
   const canManage = role === "admin" || role === "manager";
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [owners, setOwners] = useState<Record<string, any>>({});
@@ -31,9 +31,14 @@ export function ProjectsTab({ clientId }: Props) {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await (supabase as any)
+    let query = (supabase as any)
       .from("projects").select("id, name, status, target_date, owner_id")
-      .eq("client_id", clientId).order("created_at", { ascending: false });
+      .eq("client_id", clientId);
+    // Rule 2: non-admins see only projects they own
+    if (role && role !== "admin" && userId) {
+      query = query.eq("owner_id", userId);
+    }
+    const { data } = await query.order("created_at", { ascending: false });
     const rows: ProjectRow[] = data ?? [];
     setProjects(rows);
 

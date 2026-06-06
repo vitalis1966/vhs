@@ -209,6 +209,13 @@ export default function AssessmentClient() {
       p_submitted_at: new Date().toISOString(),
     });
 
+    // Best-effort: link to a matching Vitalis OS client by organization name
+    try {
+      await supabase.rpc("auto_assign_assessment_to_client" as any, { p_session_id: session.id });
+    } catch (assignErr) {
+      console.error("auto_assign_assessment_to_client failed (non-blocking):", assignErr);
+    }
+
     // Cancel pending reminders via secure RPC
     await supabase.rpc("cancel_reminders_by_token" as any, { p_token: token });
 

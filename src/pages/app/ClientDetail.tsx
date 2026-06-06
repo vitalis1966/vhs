@@ -15,6 +15,8 @@ import { TasksTab } from "@/components/app/TasksTab";
 import { NotesTab } from "@/components/app/NotesTab";
 import { MeetingsTab } from "@/components/app/MeetingsTab";
 import { Attachments } from "@/components/app/Attachments";
+import { AssessmentsTab } from "@/components/app/clients/AssessmentsTab";
+import { SubmissionsTab } from "@/components/app/clients/SubmissionsTab";
 import { ContractedHoursSection } from "@/components/app/time/ContractedHoursSection";
 import { ComposeEmailDialog } from "@/components/app/email/ComposeEmailDialog";
 import { EmailsTab, RecentEmailsCard } from "@/components/app/email/EmailsTab";
@@ -233,10 +235,20 @@ export default function ClientDetail() {
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
+          <TabsTrigger value="assessments">Assessments</TabsTrigger>
+          <TabsTrigger value="submissions">Submissions</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="hours">Contracted Hours</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="assessments" className="mt-6">
+          <AssessmentsTab clientId={client.id} />
+        </TabsContent>
+
+        <TabsContent value="submissions" className="mt-6">
+          <SubmissionsTab clientId={client.id} />
+        </TabsContent>
 
         <TabsContent value="overview" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
