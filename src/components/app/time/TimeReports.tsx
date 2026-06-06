@@ -14,6 +14,9 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, LineChart, Line, Legend,
 } from "recharts";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 type ReportKind = "client" | "member" | "project" | "activity";
 type RangeKey = "this_week" | "this_month" | "last_month" | "last_3_months" | "custom";
