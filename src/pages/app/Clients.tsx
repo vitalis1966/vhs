@@ -10,6 +10,9 @@ import { Plus, LayoutGrid, Table as TableIcon, Tag as TagIcon, X } from "lucide-
 import { ClientFormDialog, CLIENT_STATUSES } from "@/components/app/ClientFormDialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 type ClientRow = {
   id: string; name: string; status: string | null; industry: string | null;
