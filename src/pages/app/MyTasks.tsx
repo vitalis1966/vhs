@@ -13,7 +13,7 @@ import { BulkActionBar } from "@/components/app/tasks/BulkActionBar";
 import { DeleteTaskDialog } from "@/components/app/tasks/DeleteTaskDialog";
 import { useTimer } from "@/contexts/TimerContext";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
-import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue } from "@/components/app/taskUtils";
+import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue, parseDateOnly } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
