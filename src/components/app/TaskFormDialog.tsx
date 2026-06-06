@@ -162,7 +162,7 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
       });
       toast.success("Task created");
       onCreated?.(data);
-      onOpenChange(false);
+      if (!keepOpenOnSave) onOpenChange(false);
     } catch (e: any) {
       toast.error(e.message ?? "Failed to create task");
     } finally { setSaving(false); }
