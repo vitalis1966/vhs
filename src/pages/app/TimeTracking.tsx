@@ -314,7 +314,7 @@ export default function TimeTracking() {
                               </div>
                               <Badge variant="outline" className="text-[10px]">{activities[e.activity_type_id]?.name ?? ""}</Badge>
                               <div className="flex-1 text-xs text-muted-foreground truncate">{e.description}</div>
-                              {scope === "all" && (
+                              {selection !== "mine" && (
                                 <div className="text-xs text-muted-foreground">{users[e.user_id]?.full_name ?? users[e.user_id]?.email ?? ""}</div>
                               )}
                               <div className="tabular-nums text-sm font-medium min-w-[140px] text-right">
