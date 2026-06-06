@@ -8,7 +8,15 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ColumnDef, SortableFilterableTable } from "@/components/admin/SortableFilterableTable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Loader2, ArrowLeft, Download } from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Download, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AssignToClientDialog } from "@/components/admin/AssignToClientDialog";
 import { Link } from "react-router-dom";
 import { mimeLabel } from "@/lib/mimeLabel";
 import { formatBytes } from "@/lib/formatBytes";
@@ -33,9 +41,32 @@ function Inner() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteOne, setDeleteOne] = useState<DocRow | null>(null);
+  const [assignedIds, setAssignedIds] = useState<Set<string>>(new Set());
+  const [assignTarget, setAssignTarget] = useState<DocRow | null>(null);
 
   const fetchRows = async () => {
     setLoading(true);
+    const { data: docs } = await (supabase as any).from("documents").select("*").order("created_at", { ascending: false });
+    const { data: clients } = await (supabase as any).from("client_users").select("id, business_name");
+    const map = new Map((clients || []).map((c: any) => [c.id, c.business_name]));
+    const mapped = (docs || []).map((d: any) => ({ ...d, business_name: map.get(d.client_user_id) || null }));
+    setRows(mapped);
+    setSelected(new Set());
+
+    const docIds = mapped.map((d: any) => d.id);
+    if (docIds.length > 0) {
+      const { data: assigned } = await (supabase as any)
+        .from("client_submission_assignments")
+        .select("source_id")
+        .eq("source_type", "submission")
+        .in("source_id", docIds);
+      setAssignedIds(new Set((assigned ?? []).map((a: any) => a.source_id as string)));
+    } else {
+      setAssignedIds(new Set());
+    }
+
+    setLoading(false);
+  };
     const { data: docs } = await (supabase as any).from("documents").select("*").order("created_at", { ascending: false });
     const { data: clients } = await (supabase as any).from("client_users").select("id, business_name");
     const map = new Map((clients || []).map((c: any) => [c.id, c.business_name]));
