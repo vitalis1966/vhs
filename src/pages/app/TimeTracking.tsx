@@ -5,7 +5,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Pencil, Trash2, Plus, Download, Clock } from "lucide-react";
 import { ManualEntryDialog } from "@/components/app/time/ManualEntryDialog";
 import { TimeReports } from "@/components/app/time/TimeReports";
@@ -16,6 +16,9 @@ import {
 } from "date-fns";
 import { toast } from "sonner";
 import { toCsv, downloadCsv } from "@/lib/csv";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 interface Entry {
   id: string;
