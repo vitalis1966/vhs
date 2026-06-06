@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
-import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { PRIORITY_CLASS, clientColor, initials, isOverdue, parseDateOnly } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { BulkActionBar } from "./tasks/BulkActionBar";
 import { DeleteTaskDialog } from "./tasks/DeleteTaskDialog";
