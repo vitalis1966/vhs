@@ -53,13 +53,15 @@ interface EmailRow {
 }
 
 export default function Inbox() {
-  const { workspaceId, userId } = useWorkspace();
+  const { workspaceId, userId, role } = useWorkspace();
+  const isAdminOrManager = role === "admin" || role === "manager";
   const [emails, setEmails] = useState<EmailRow[]>([]);
   const [taskCounts, setTaskCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [viewing, setViewing] = useState<EmailRow | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<EmailRow | null>(null);
+  const [hardDeleteTarget, setHardDeleteTarget] = useState<EmailRow | null>(null);
   const [extractingId, setExtractingId] = useState<string | null>(null);
   const [extractProgress, setExtractProgress] = useState(0);
   const [extractTasks, setExtractTasks] = useState<ExtractedTask[]>([]);
@@ -69,17 +71,22 @@ export default function Inbox() {
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
+  const [view, setView] = useState<"inbox" | "trash">("inbox");
+  const [deletedByNames, setDeletedByNames] = useState<Record<string, string>>({});
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await (supabase as any)
+    setSelected([]);
+    let q = (supabase as any)
       .from("inbound_emails")
-      .select("id, from_email, from_name, subject, body_text, body_html, received_at, status, assigned_to, extraction_state")
-      .order("received_at", { ascending: false })
+      .select("id, from_email, from_name, subject, body_text, body_html, received_at, status, assigned_to, extraction_state, deleted_at, deleted_by")
+      .order(view === "trash" ? "deleted_at" : "received_at", { ascending: false })
       .limit(200);
+    q = view === "trash" ? q.not("deleted_at", "is", null) : q.is("deleted_at", null);
+    const { data, error } = await q;
     if (error) toast.error(error.message);
     const rows = (data as EmailRow[]) ?? [];
     setEmails(rows);
@@ -98,10 +105,24 @@ export default function Inbox() {
       setTaskCounts({});
     }
 
+    // Resolve deleted_by names for trash view
+    if (view === "trash" && rows.length) {
+      const uids = Array.from(new Set(rows.map((r) => r.deleted_by).filter(Boolean) as string[]));
+      if (uids.length) {
+        const { data: profs } = await (supabase as any)
+          .from("profiles")
+          .select("id, full_name, email")
+          .in("id", uids);
+        const map: Record<string, string> = {};
+        (profs ?? []).forEach((p: any) => { map[p.id] = p.full_name || p.email || p.id; });
+        setDeletedByNames(map);
+      }
+    }
+
     setLoading(false);
     // Refresh the visited marker after load so badge resets
     markInboxVisited(userId);
-  }, [userId]);
+  }, [userId, view]);
 
   useEffect(() => { if (workspaceId) load(); }, [workspaceId, load]);
 
@@ -122,24 +143,41 @@ export default function Inbox() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    const { error } = await (supabase as any).from("inbound_emails").delete().eq("id", deleteTarget.id);
+    const { error } = await (supabase as any).rpc("soft_delete_inbound_email", { p_id: deleteTarget.id });
     if (error) { toast.error(error.message); return; }
     setEmails((rows) => rows.filter((r) => r.id !== deleteTarget.id));
     setSelected((prev) => prev.filter((id) => id !== deleteTarget.id));
     setDeleteTarget(null);
-    toast.success("Email deleted");
+    toast.success("Email moved to Trash");
   };
 
   const confirmBulkDelete = async () => {
     if (!selected.length) return;
-    const { error } = await (supabase as any).from("inbound_emails").delete().in("id", selected);
+    const { error } = await (supabase as any).rpc("soft_delete_inbound_emails", { p_ids: selected });
     if (error) { toast.error(error.message); return; }
     setEmails((rows) => rows.filter((r) => !selected.includes(r.id)));
     const count = selected.length;
     setSelected([]);
     setBulkDeleteOpen(false);
-    toast.success(`${count} email${count === 1 ? "" : "s"} deleted`);
+    toast.success(`${count} email${count === 1 ? "" : "s"} moved to Trash`);
   };
+
+  const restoreEmail = async (id: string) => {
+    const { error } = await (supabase as any).rpc("restore_inbound_email", { p_id: id });
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.filter((r) => r.id !== id));
+    toast.success("Email restored");
+  };
+
+  const confirmHardDelete = async () => {
+    if (!hardDeleteTarget) return;
+    const { error } = await (supabase as any).rpc("hard_delete_inbound_email", { p_id: hardDeleteTarget.id });
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.filter((r) => r.id !== hardDeleteTarget.id));
+    setHardDeleteTarget(null);
+    toast.success("Email permanently deleted");
+  };
+
 
   const runExtract = async (email: EmailRow) => {
     setExtractingId(email.id);
