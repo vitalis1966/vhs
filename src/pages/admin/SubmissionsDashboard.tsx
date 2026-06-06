@@ -23,17 +23,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Loader2,
   ArrowLeft,
   FileSearch,
   RefreshCw,
   BarChart3,
-  Trash2,
+  MoreVertical,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AssignToClientDialog } from "@/components/admin/AssignToClientDialog";
 
 interface SubmissionRow {
   session_id: string;
@@ -83,6 +90,9 @@ export default function SubmissionsDashboard() {
   const [loading, setLoading] = useState(true);
   const [runningAnalysis, setRunningAnalysis] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [assignedIds, setAssignedIds] = useState<Set<string>>(new Set());
+  const [assignTarget, setAssignTarget] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
