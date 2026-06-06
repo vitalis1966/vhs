@@ -96,9 +96,11 @@ export function TaskActionsMenu({ task, onEdit, onDeleted, variant = "menu", chi
         </ContextMenu>
       )}
 
-      <Popover open={dateOpen} onOpenChange={setDateOpen}>
-        <PopoverTrigger asChild><span className="hidden" /></PopoverTrigger>
-        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+      <Dialog open={dateOpen} onOpenChange={setDateOpen}>
+        <DialogContent className="w-auto max-w-sm p-0">
+          <DialogHeader className="px-4 pt-4">
+            <DialogTitle>Change due date</DialogTitle>
+          </DialogHeader>
           <Calendar
             mode="single"
             selected={task.dueDate ? new Date(task.dueDate) : undefined}
@@ -111,8 +113,9 @@ export function TaskActionsMenu({ task, onEdit, onDeleted, variant = "menu", chi
             initialFocus
             className="p-3 pointer-events-auto"
           />
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
+
 
       <ReassignPopover
         open={reassignOpen}
