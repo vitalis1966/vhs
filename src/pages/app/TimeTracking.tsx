@@ -281,6 +281,43 @@ export default function TimeTracking() {
               </div>
             </div>
 
+            {entries.length > 0 && (
+              <div className="px-4 py-2 border-b border-border bg-muted/30 flex items-center gap-3 text-xs">
+                <div className="min-w-[120px]">
+                  <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctClientOpts} />} />
+                </div>
+                <div className="min-w-[140px]">
+                  <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctProjectOpts} />} />
+                </div>
+                <div>
+                  <ColumnHeader label="Task" columnKey="task" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.task} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter task…" />} />
+                </div>
+                <div>
+                  <ColumnHeader label="Activity" columnKey="activity" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.activity} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctActivityOpts} />} />
+                </div>
+                <div className="flex-1" />
+                <div>
+                  <ColumnHeader label="Date" columnKey="date" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.date} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
+                </div>
+                <div className="min-w-[140px] text-right">
+                  <ColumnHeader label="Duration" columnKey="duration" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.duration} onFilterChange={tf.setFilter}
+                    align="right"
+                    renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} unit="min" scale={60} />} />
+                </div>
+              </div>
+            )}
+
             {entries.length === 0 ? (
               <div className="p-12 text-center text-sm text-muted-foreground">
                 <Clock className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
