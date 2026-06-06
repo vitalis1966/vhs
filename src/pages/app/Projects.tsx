@@ -155,12 +155,39 @@ export default function Projects() {
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="text-left px-4 py-3">Project</th>
-                  <th className="text-left px-4 py-3">Client</th>
-                  <th className="text-left px-4 py-3">Status</th>
-                  <th className="text-left px-4 py-3">Target</th>
-                  <th className="text-left px-4 py-3">Owner</th>
-                  <th className="text-left px-4 py-3 w-48">Progress</th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Project" columnKey="name" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.name} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter name…" />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                        options={clientList.map((c: any) => ({ value: c.id, label: c.name }))} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                        options={PROJECT_STATUSES.map((s) => ({ value: s, label: s }))} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Target" columnKey="target" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.target} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                        options={ownerList.map((o: any) => ({ value: o.id, label: o.full_name ?? o.email }))} />} />
+                  </th>
+                  <th className="text-left px-4 py-3 w-48">
+                    <ColumnHeader label="Progress" columnKey="progress" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.progress} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} unit="%" />} />
+                  </th>
                 </tr>
               </thead>
               <tbody>
