@@ -178,7 +178,7 @@ export default function MyTasks() {
     defaultSort: { key: "due", dir: "asc" },
   });
 
-  const projectIdShort = (pid: string | null) => pid ? pid.slice(0, 8) : "";
+  const projectLabel = (pid: string | null) => pid ? (projects[pid]?.name ?? pid.slice(0, 8)) : "";
   const distinctProjectIds = useMemo(
     () => Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean) as string[])),
     [rows],
