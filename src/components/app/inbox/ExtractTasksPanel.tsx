@@ -21,6 +21,8 @@ export interface PanelFinishSummary {
   saved: number;
   skipped: number;
   deferred: number;
+  pending: number;
+  total: number;
   closedMidFlow: boolean;
 }
 
