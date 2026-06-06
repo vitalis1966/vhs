@@ -160,9 +160,19 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
     <DndContext sensors={sensors} onDragStart={(e) => setDraggingId(String(e.active.id))} onDragEnd={onDragEnd}>
       <div className="flex gap-4 overflow-x-auto pb-4">
         {statuses.map((s) => {
-          const col = filtered.filter((t) => t.status_id === s.id);
+          const col = applyColumn(s.id, filtered.filter((t) => t.status_id === s.id));
+          const st = getColState(s.id);
           return (
-            <Column key={s.id} status={s} count={col.length}>
+            <Column
+              key={s.id}
+              status={s}
+              count={col.length}
+              search={st.search}
+              onSearchChange={(v) => setColSearch(s.id, v)}
+              sort={st.sort}
+              onSortChange={(key, dir) => setColSort(s.id, key, dir)}
+              onClearSort={() => clearColSort(s.id)}
+            >
               {col.map((t) => (
                 <DraggableCard
                   key={t.id} task={t}
@@ -187,16 +197,66 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
   );
 }
 
-function Column({ status, count, children }: { status: Status; count: number; children: React.ReactNode }) {
+function Column({
+  status, count, children, search, onSearchChange, sort, onSortChange, onClearSort,
+}: {
+  status: Status; count: number; children: React.ReactNode;
+  search: string; onSearchChange: (v: string) => void;
+  sort: { key: SortKey; dir: SortDir } | null;
+  onSortChange: (key: SortKey, dir: SortDir) => void;
+  onClearSort: () => void;
+}) {
   const { setNodeRef, isOver } = useDroppable({ id: status.id });
+  const filterActive = search.trim().length > 0;
+  const sortActive = sort != null;
   return (
     <div ref={setNodeRef} className={`min-w-[280px] w-[280px] flex-shrink-0 rounded-lg p-3 ${isOver ? "bg-muted/80" : "bg-muted/40"}`}>
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: status.color ?? "#94a3b8" }} />
-          <span className="font-medium text-sm">{status.name}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: status.color ?? "#94a3b8" }} />
+          <span className="font-medium text-sm truncate">{status.name}</span>
         </div>
-        <span className="text-xs text-muted-foreground">{count}</span>
+        <div className="flex items-center gap-0.5">
+          <span className="text-xs text-muted-foreground mr-1">{count}</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className={`h-6 w-6 relative ${filterActive ? "text-primary" : ""}`} aria-label="Filter column">
+                <Filter className="h-3 w-3" />
+                {filterActive && <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-primary" />}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="p-2 w-56">
+              <Input autoFocus placeholder="Search by task name…" value={search} onChange={(e) => onSearchChange(e.target.value)} className="h-8" />
+              {filterActive && (
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs mt-2 w-full justify-start" onClick={() => onSearchChange("")}>Clear</Button>
+              )}
+            </PopoverContent>
+          </Popover>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className={`h-6 w-6 ${sortActive ? "text-primary" : ""}`} aria-label="Sort column">
+                <ArrowUpDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-xs">Sort by</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => onSortChange("title", "asc")}>Task Name A–Z</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSortChange("title", "desc")}>Task Name Z–A</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onSortChange("priority", "asc")}>Priority High → Low</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSortChange("priority", "desc")}>Priority Low → High</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onSortChange("due", "asc")}>Due Earliest → Latest</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSortChange("due", "desc")}>Due Latest → Earliest</DropdownMenuItem>
+              {sortActive && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={onClearSort}>Clear sort</DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="space-y-2 min-h-[60px]">{children}</div>
     </div>
