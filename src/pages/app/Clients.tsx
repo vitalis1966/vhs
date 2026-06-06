@@ -100,13 +100,30 @@ export default function Clients() {
 
   const tagMap = useMemo(() => Object.fromEntries(allTags.map((t) => [t.id, t])), [allTags]);
 
-  const filteredClients = useMemo(() => {
+  const tf = useTableFilters<"company" | "status" | "specialty" | "tags" | "owner" | "open">();
+
+  const filteredByTags = useMemo(() => {
     if (!selectedTagIds.length) return clients;
     return clients.filter((c) => {
       const ids = clientTagMap[c.id] ?? [];
       return selectedTagIds.every((t) => ids.includes(t));
     });
   }, [clients, clientTagMap, selectedTagIds]);
+
+  const filteredClients = useMemo(() => tf.apply(filteredByTags, {
+    company: { filterValue: (c) => c.name, sortValue: (c) => c.name.toLowerCase() },
+    status: { filterValue: (c) => c.status ?? "", sortValue: (c) => c.status ?? "" },
+    specialty: { filterValue: (c) => c.industry ?? "", sortValue: (c) => (c.industry ?? "").toLowerCase() },
+    tags: { filterValue: (c) => clientTagMap[c.id] ?? [] },
+    owner: { filterValue: (c) => c.account_owner_id ?? "", sortValue: (c) => (c.account_owner_id ? owners[c.account_owner_id]?.full_name ?? owners[c.account_owner_id]?.email ?? "" : "") },
+    open: { filterValue: (c) => openCounts[c.id] ?? 0, sortValue: (c) => openCounts[c.id] ?? 0 },
+  }), [filteredByTags, tf.state, clientTagMap, owners, openCounts]);
+
+  const distinctStatuses = useMemo(() => Array.from(new Set(clients.map((c) => c.status).filter(Boolean))) as string[], [clients]);
+  const distinctOwners = useMemo(() => {
+    const ids = Array.from(new Set(clients.map((c) => c.account_owner_id).filter(Boolean))) as string[];
+    return ids.map((id) => ({ value: id, label: owners[id]?.full_name ?? owners[id]?.email ?? id }));
+  }, [clients, owners]);
 
   const grouped = useMemo(() => {
     const g: Record<string, ClientRow[]> = { Prospect: [], Active: [], "On Hold": [], Closed: [] };
