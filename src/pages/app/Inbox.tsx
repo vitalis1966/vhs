@@ -48,6 +48,8 @@ interface EmailRow {
   status: InboxStatus;
   assigned_to: string | null;
   extraction_state: ExtractionState;
+  deleted_at: string | null;
+  deleted_by: string | null;
 }
 
 export default function Inbox() {
