@@ -8,6 +8,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table as TableIcon, LayoutGrid } from "lucide-react";
 import { PROJECT_STATUSES, PROJECT_STATUS_COLOR } from "@/components/app/ProjectFormDialog";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 interface ProjectRow {
   id: string; name: string; status: string | null; target_date: string | null;
