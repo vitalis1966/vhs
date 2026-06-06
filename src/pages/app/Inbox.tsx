@@ -226,8 +226,31 @@ export default function Inbox() {
 
   const openViewer = (e: EmailRow) => { setViewing(e); setViewerOpen(true); };
 
-  const allSelected = emails.length > 0 && emails.every((r) => selected.includes(r.id));
-  const toggleAll = () => setSelected(allSelected ? [] : emails.map((r) => r.id));
+  const tf = useTableFilters<"from" | "subject" | "status" | "received">({
+    defaultSort: { key: "received", dir: "desc" },
+  });
+
+  const visibleEmails = useMemo(() => tf.apply(emails, {
+    from: {
+      filterValue: (e) => `${e.from_name ?? ""} ${e.from_email}`,
+      sortValue: (e) => (e.from_name ?? e.from_email).toLowerCase(),
+    },
+    subject: {
+      filterValue: (e) => e.subject ?? "",
+      sortValue: (e) => (e.subject ?? "").toLowerCase(),
+    },
+    status: {
+      filterValue: (e) => e.status,
+      sortValue: (e) => e.status,
+    },
+    received: {
+      filterValue: (e) => new Date(e.received_at),
+      sortValue: (e) => new Date(e.received_at).getTime(),
+    },
+  }), [emails, tf.state]);
+
+  const allSelected = visibleEmails.length > 0 && visibleEmails.every((r) => selected.includes(r.id));
+  const toggleAll = () => setSelected(allSelected ? [] : visibleEmails.map((r) => r.id));
   const toggleOne = (id: string) => setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   return (
