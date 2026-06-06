@@ -86,7 +86,8 @@ export default function TimeTracking() {
       .gte("started_at", range.start.toISOString())
       .lte("started_at", range.end.toISOString())
       .order("started_at", { ascending: false });
-    if (scope === "mine" && userId) q = q.eq("user_id", userId);
+    if (selection === "mine" && userId) q = q.eq("user_id", userId);
+    else if (selection !== "all" && selection !== "mine") q = q.eq("user_id", selection);
     const { data } = await q;
     const list: Entry[] = data ?? [];
     setEntries(list);
