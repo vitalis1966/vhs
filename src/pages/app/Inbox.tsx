@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { StatusDropdown, type InboxStatus } from "@/components/app/inbox/StatusDropdown";
 import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
-import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
+import { ExtractTasksPanel, type ExtractedTask, type PanelFinishSummary } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 import {
