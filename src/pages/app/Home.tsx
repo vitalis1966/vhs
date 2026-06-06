@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow, format, startOfWeek, addWeeks, isBefore } from "date-fns";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
-import { PRIORITY_CLASS, initials } from "@/components/app/taskUtils";
+import { PRIORITY_CLASS, initials, parseDateOnly } from "@/components/app/taskUtils";
 
 // ---------- Types & tile registry ----------
 type TileId =
