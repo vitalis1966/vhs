@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2, X } from "lucide-react";
@@ -23,8 +23,17 @@ import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 const INBOUND_ADDRESS = "inbox@mail.vitalisstrategies.com";
+
+const INBOX_STATUS_LABELS: Record<InboxStatus, string> = {
+  not_assigned: "Not Assigned",
+  assigned: "Assigned",
+  waiting: "Waiting",
+};
 
 type ExtractionState = "none" | "extracted" | "completed";
 
@@ -217,8 +226,31 @@ export default function Inbox() {
 
   const openViewer = (e: EmailRow) => { setViewing(e); setViewerOpen(true); };
 
-  const allSelected = emails.length > 0 && emails.every((r) => selected.includes(r.id));
-  const toggleAll = () => setSelected(allSelected ? [] : emails.map((r) => r.id));
+  const tf = useTableFilters<"from" | "subject" | "status" | "received">({
+    defaultSort: { key: "received", dir: "desc" },
+  });
+
+  const visibleEmails = useMemo(() => tf.apply(emails, {
+    from: {
+      filterValue: (e) => `${e.from_name ?? ""} ${e.from_email}`,
+      sortValue: (e) => (e.from_name ?? e.from_email).toLowerCase(),
+    },
+    subject: {
+      filterValue: (e) => e.subject ?? "",
+      sortValue: (e) => (e.subject ?? "").toLowerCase(),
+    },
+    status: {
+      filterValue: (e) => e.status,
+      sortValue: (e) => e.status,
+    },
+    received: {
+      filterValue: (e) => new Date(e.received_at),
+      sortValue: (e) => new Date(e.received_at).getTime(),
+    },
+  }), [emails, tf.state]);
+
+  const allSelected = visibleEmails.length > 0 && visibleEmails.every((r) => selected.includes(r.id));
+  const toggleAll = () => setSelected(allSelected ? [] : visibleEmails.map((r) => r.id));
   const toggleOne = (id: string) => setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   return (
@@ -248,16 +280,33 @@ export default function Inbox() {
                 <TableHead className="w-10">
                   <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" />
                 </TableHead>
-                <TableHead>From</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Received</TableHead>
-                <TableHead className="w-[190px]">Status</TableHead>
+                <TableHead>
+                  <ColumnHeader label="From" columnKey="from" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.from} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter sender…" />} />
+                </TableHead>
+                <TableHead>
+                  <ColumnHeader label="Subject" columnKey="subject" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.subject} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter subject…" />} />
+                </TableHead>
+                <TableHead>
+                  <ColumnHeader label="Date" columnKey="received" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.received} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
+                </TableHead>
+                <TableHead className="w-[190px]">
+                  <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                      options={(Object.keys(INBOX_STATUS_LABELS) as InboxStatus[]).map((k) => ({ value: k, label: INBOX_STATUS_LABELS[k] }))} />} />
+                </TableHead>
                 <TableHead className="w-20 text-center">Tasks</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {emails.map((e) => {
+              {visibleEmails.map((e) => {
                 const subjectTrunc = (e.subject ?? "(no subject)").length > 70
                   ? (e.subject ?? "").slice(0, 70) + "…"
                   : (e.subject ?? "(no subject)");

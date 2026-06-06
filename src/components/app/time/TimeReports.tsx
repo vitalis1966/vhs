@@ -14,6 +14,9 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, LineChart, Line, Legend,
 } from "recharts";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 type ReportKind = "client" | "member" | "project" | "activity";
 type RangeKey = "this_week" | "this_month" | "last_month" | "last_3_months" | "custom";
@@ -225,32 +228,19 @@ export function TimeReports() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2 rounded-md border border-border bg-card p-4">
           <div className="text-sm font-medium mb-3">{primaryLabel} breakdown</div>
-          {primary.length === 0 ? (
+          {entries.length === 0 ? (
             <div className="text-sm text-muted-foreground py-8 text-center">No data</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="text-left font-medium py-2">{primaryLabel}</th>
-                  <th className="text-right font-medium py-2">HH:MM</th>
-                  <th className="text-right font-medium py-2">Decimal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {primary.map((r) => (
-                  <tr key={r.id} className="border-b border-border/50">
-                    <td className="py-2">{r.label}</td>
-                    <td className="py-2 text-right tabular-nums">{r.hhmm}</td>
-                    <td className="py-2 text-right tabular-nums text-muted-foreground">{r.hours.toFixed(2)}h</td>
-                  </tr>
-                ))}
-                <tr className="font-semibold">
-                  <td className="py-2">Total</td>
-                  <td className="py-2 text-right tabular-nums">{totalD.hhmm}</td>
-                  <td className="py-2 text-right tabular-nums">{totalD.decimalLabel}</td>
-                </tr>
-              </tbody>
-            </table>
+            <EntriesReportTable
+              entries={entries}
+              clients={clients}
+              projects={projects}
+              activities={activities}
+              users={users}
+              isAdmin={isAdmin}
+              totalHHMM={totalD.hhmm}
+              totalDecimal={totalD.decimalLabel}
+            />
           )}
         </div>
 
@@ -280,5 +270,107 @@ export function TimeReports() {
         </ResponsiveContainer>
       </div>
     </div>
+  );
+}
+
+function EntriesReportTable({
+  entries, clients, projects, activities, users, isAdmin, totalHHMM, totalDecimal,
+}: {
+  entries: Entry[];
+  clients: Record<string, string>;
+  projects: Record<string, string>;
+  activities: Record<string, string>;
+  users: Record<string, string>;
+  isAdmin: boolean;
+  totalHHMM: string;
+  totalDecimal: string;
+}) {
+  const tf = useTableFilters<"client" | "project" | "task" | "activity" | "user" | "date" | "duration">({
+    defaultSort: { key: "date", dir: "desc" },
+  });
+
+  const visible = useMemo(() => tf.apply(entries, {
+    client: { filterValue: (e) => clients[e.client_id] ?? "", sortValue: (e) => (clients[e.client_id] ?? "").toLowerCase() },
+    project: { filterValue: (e) => (e.project_id ? projects[e.project_id] ?? "" : ""), sortValue: (e) => (e.project_id ? (projects[e.project_id] ?? "").toLowerCase() : "") },
+    task: { filterValue: (e) => (e as any).task_id ?? "", sortValue: (e) => (e as any).task_id ?? "" },
+    activity: { filterValue: (e) => activities[e.activity_type_id] ?? "", sortValue: (e) => (activities[e.activity_type_id] ?? "").toLowerCase() },
+    user: { filterValue: (e) => users[e.user_id] ?? "", sortValue: (e) => (users[e.user_id] ?? "").toLowerCase() },
+    date: { filterValue: (e) => new Date(e.started_at), sortValue: (e) => new Date(e.started_at).getTime() },
+    duration: { filterValue: (e) => e.duration_seconds, sortValue: (e) => e.duration_seconds },
+  }), [entries, tf.state, clients, projects, activities, users]);
+
+  const distinctClientOpts = useMemo(() => Array.from(new Set(entries.map((e) => clients[e.client_id]).filter(Boolean))).map((n) => ({ value: n!, label: n! })), [entries, clients]);
+  const distinctProjectOpts = useMemo(() => Array.from(new Set(entries.map((e) => e.project_id ? projects[e.project_id] : null).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, projects]);
+  const distinctActivityOpts = useMemo(() => Array.from(new Set(entries.map((e) => activities[e.activity_type_id]).filter(Boolean))).map((n) => ({ value: n!, label: n! })), [entries, activities]);
+  const distinctUserOpts = useMemo(() => Array.from(new Set(entries.map((e) => users[e.user_id]).filter(Boolean))).map((n) => ({ value: n!, label: n! })), [entries, users]);
+
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border">
+          <th className="text-left py-2">
+            <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+              renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctClientOpts} />} />
+          </th>
+          <th className="text-left py-2">
+            <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+              renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctProjectOpts} />} />
+          </th>
+          <th className="text-left py-2">
+            <ColumnHeader label="Task" columnKey="task" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.task} onFilterChange={tf.setFilter}
+              renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter task…" />} />
+          </th>
+          <th className="text-left py-2">
+            <ColumnHeader label="Activity" columnKey="activity" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.activity} onFilterChange={tf.setFilter}
+              renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctActivityOpts} />} />
+          </th>
+          {isAdmin && (
+            <th className="text-left py-2">
+              <ColumnHeader label="User" columnKey="user" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.user} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctUserOpts} />} />
+            </th>
+          )}
+          <th className="text-left py-2">
+            <ColumnHeader label="Date" columnKey="date" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.date} onFilterChange={tf.setFilter}
+              renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
+          </th>
+          <th className="text-right py-2">
+            <ColumnHeader label="Duration" columnKey="duration" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.duration} onFilterChange={tf.setFilter}
+              align="right"
+              renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} unit="min" scale={60} />} />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {visible.length === 0 ? (
+          <tr><td colSpan={isAdmin ? 7 : 6} className="py-4 text-center text-muted-foreground">No entries match filters.</td></tr>
+        ) : visible.map((e) => {
+          const d = formatDuration(e.duration_seconds);
+          return (
+            <tr key={e.id} className="border-b border-border/50">
+              <td className="py-2">{clients[e.client_id] ?? "—"}</td>
+              <td className="py-2">{e.project_id ? projects[e.project_id] ?? "—" : "—"}</td>
+              <td className="py-2 text-muted-foreground">{(e as any).task_id ? String((e as any).task_id).slice(0, 8) : "—"}</td>
+              <td className="py-2">{activities[e.activity_type_id] ?? "—"}</td>
+              {isAdmin && <td className="py-2">{users[e.user_id] ?? "—"}</td>}
+              <td className="py-2 tabular-nums text-muted-foreground">{format(new Date(e.started_at), "MMM d, yyyy")}</td>
+              <td className="py-2 text-right tabular-nums">{d.human}</td>
+            </tr>
+          );
+        })}
+        <tr className="font-semibold">
+          <td className="py-2" colSpan={isAdmin ? 5 : 4}>Total</td>
+          <td className="py-2 tabular-nums">{totalHHMM}</td>
+          <td className="py-2 text-right tabular-nums">{totalDecimal}</td>
+        </tr>
+      </tbody>
+    </table>
   );
 }

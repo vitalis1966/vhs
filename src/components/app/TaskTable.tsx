@@ -4,15 +4,16 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { BulkActionBar } from "./tasks/BulkActionBar";
 import { DeleteTaskDialog } from "./tasks/DeleteTaskDialog";
 import { onTasksChanged, setTaskStatus, softDeleteTasks } from "./tasks/taskMutations";
 import { toast } from "sonner";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 interface Row {
   id: string; title: string; status_id: string | null; priority: string;
@@ -39,9 +40,11 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [statuses, setStatuses] = useState<Record<string, { id: string; name: string; color: string | null; category: string }>>({});
   const [assigneesByTask, setAssigneesByTask] = useState<Record<string, string[]>>({});
   const [profiles, setProfiles] = useState<Record<string, any>>({});
-  const [sortBy, setSortBy] = useState<"due" | "priority">("due");
   const [selected, setSelected] = useState<string[]>([]);
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignees">({
+    defaultSort: { key: "due", dir: "asc" },
+  });
 
   const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const load = useCallback(async () => {
@@ -87,8 +90,8 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   useEffect(() => { load(); }, [load, reloadKey]);
   useEffect(() => onTasksChanged(() => load()), [load]);
 
-  const filtered = useMemo(() => {
-    const out = rows.filter((t) => {
+  const baseFiltered = useMemo(() => {
+    return rows.filter((t) => {
       if (filters?.status && t.status_id !== filters.status) return false;
       if (filters?.priority && t.priority !== filters.priority) return false;
       if (filters?.clientFilter && t.client_id !== filters.clientFilter) return false;
@@ -97,14 +100,23 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       if (filters?.tag && !(tagsByTask[t.id] ?? []).includes(filters.tag)) return false;
       return true;
     });
-    out.sort((a, b) => {
-      if (sortBy === "priority") return (PRIORITY_ORDER[a.priority] ?? 99) - (PRIORITY_ORDER[b.priority] ?? 99);
-      const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-      const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity;
-      return ad - bd;
-    });
-    return out;
-  }, [rows, filters, assigneesByTask, tagsByTask, sortBy]);
+  }, [rows, filters, assigneesByTask, tagsByTask]);
+
+  const filtered = useMemo(() => tf.apply(baseFiltered, {
+    title: { filterValue: (t) => t.title, sortValue: (t) => t.title.toLowerCase() },
+    client: { filterValue: (t) => t.client_id, sortValue: (t) => (clients[t.client_id]?.name ?? "").toLowerCase() },
+    project: { filterValue: (t) => t.project_id ?? "", sortValue: (t) => (t.project_id ? projects[t.project_id]?.name ?? "" : "") },
+    status: { filterValue: (t) => t.status_id ?? "", sortValue: (t) => (t.status_id ? statuses[t.status_id]?.name ?? "" : "") },
+    priority: {
+      filterValue: (t) => t.priority,
+      sortValue: (t) => PRIORITY_ORDER[t.priority] ?? 99,
+    },
+    due: {
+      filterValue: (t) => (t.due_date ? new Date(t.due_date) : null),
+      sortValue: (t) => (t.due_date ? new Date(t.due_date).getTime() : null),
+    },
+    assignees: { filterValue: (t) => assigneesByTask[t.id] ?? [] },
+  }), [baseFiltered, tf.state, clients, projects, statuses, assigneesByTask]);
 
   const allSelected = filtered.length > 0 && filtered.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : filtered.map((r) => r.id));
@@ -122,6 +134,15 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
     }
   };
 
+  const distinctClients = useMemo(() => Array.from(new Set(rows.map((r) => r.client_id))).map((id) => ({ value: id, label: clients[id]?.name ?? id })), [rows, clients]);
+  const distinctProjects = useMemo(() => Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean) as string[])).map((id) => ({ value: id, label: projects[id]?.name ?? id })), [rows, projects]);
+  const distinctStatuses = useMemo(() => Array.from(new Set(rows.map((r) => r.status_id).filter(Boolean) as string[])).map((id) => ({ value: id, label: statuses[id]?.name ?? id })), [rows, statuses]);
+  const distinctAssignees = useMemo(() => {
+    const set = new Set<string>();
+    Object.values(assigneesByTask).forEach((arr) => arr.forEach((u) => set.add(u)));
+    return Array.from(set).map((id) => ({ value: id, label: profiles[id]?.full_name ?? profiles[id]?.email ?? id }));
+  }, [assigneesByTask, profiles]);
+
   return (
     <>
     <div className="border border-border rounded-lg overflow-hidden bg-card">
@@ -129,21 +150,42 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
         <thead className="bg-muted/50">
           <tr className="text-left">
             <th className="px-3 py-2 w-8"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></th>
-            <th className="px-3 py-2 font-medium">Title</th>
-            <th className="px-3 py-2 font-medium">Client</th>
-            <th className="px-3 py-2 font-medium">Project</th>
-            <th className="px-3 py-2 font-medium">Status</th>
             <th className="px-3 py-2 font-medium">
-              <Button variant="ghost" size="sm" className="h-7 px-2 -ml-2" onClick={() => setSortBy("priority")}>
-                Priority <ArrowUpDown className="h-3 w-3 ml-1" />
-              </Button>
+              <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.title} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter title…" />} />
             </th>
             <th className="px-3 py-2 font-medium">
-              <Button variant="ghost" size="sm" className="h-7 px-2 -ml-2" onClick={() => setSortBy("due")}>
-                Due <ArrowUpDown className="h-3 w-3 ml-1" />
-              </Button>
+              <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctClients} />} />
             </th>
-            <th className="px-3 py-2 font-medium">Assignees</th>
+            <th className="px-3 py-2 font-medium">
+              <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctProjects} />} />
+            </th>
+            <th className="px-3 py-2 font-medium">
+              <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctStatuses} />} />
+            </th>
+            <th className="px-3 py-2 font-medium">
+              <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                  options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
+            </th>
+            <th className="px-3 py-2 font-medium">
+              <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.due} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
+            </th>
+            <th className="px-3 py-2 font-medium">
+              <ColumnHeader label="Assignees" columnKey="assignees" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.assignees} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctAssignees} />} />
+            </th>
             <th className="px-3 py-2 w-8" />
           </tr>
         </thead>
