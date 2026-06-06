@@ -60,18 +60,24 @@ export default function TimeTracking() {
   useEffect(() => {
     if (!workspaceId || !isAdmin) { setMemberList([]); return; }
     (async () => {
-      const { data } = await (supabase as any)
+      const { data: members } = await (supabase as any)
         .from("workspace_members")
-        .select("user_id, profiles:profiles!workspace_members_user_id_fkey(id, full_name, email)")
+        .select("user_id")
         .eq("workspace_id", workspaceId)
         .eq("status", "active");
-      const list: UserRow[] = (data ?? [])
-        .map((m: any) => m.profiles)
-        .filter((p: any) => p?.id)
+      const ids = (members ?? []).map((m: any) => m.user_id).filter(Boolean);
+      if (!ids.length) { setMemberList([]); return; }
+      const { data: profs } = await (supabase as any)
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", ids);
+      const list: UserRow[] = (profs ?? [])
+        .slice()
         .sort((a: any, b: any) => (a.full_name ?? a.email ?? "").localeCompare(b.full_name ?? b.email ?? ""));
       setMemberList(list);
     })();
   }, [workspaceId, isAdmin]);
+
 
   const range = useMemo(() => {
     if (view === "day") return { start: startOfDay(cursor), end: endOfDay(cursor) };
