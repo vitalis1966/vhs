@@ -250,12 +250,47 @@ export default function MyTasks() {
       <div className="border border-border rounded-lg overflow-hidden bg-card">
         <div className="bg-muted/50 px-3 py-2 flex items-center gap-3 text-xs font-medium text-muted-foreground">
           <div className="w-6"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></div>
-          <div className="flex-1">Title</div>
-          <div className="w-32">Client</div>
-          <div className="w-28">Status</div>
-          <div className="w-24">Priority</div>
+          <div className="flex-1">
+            <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.title} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter title…" />} />
+          </div>
+          <div className="w-32">
+            <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={Object.values(clients).map((c) => ({ value: c.id, label: c.name }))} />} />
+          </div>
+          <div className="w-28">
+            <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={distinctProjectIds.map((id) => ({ value: id, label: projectIdShort(id) }))} />} />
+          </div>
+          <div className="w-28">
+            <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={Object.values(statuses).map((s) => ({ value: s.id, label: s.name }))} />} />
+          </div>
+          <div className="w-24">
+            <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
+          </div>
           <div className="w-24">Source</div>
-          <div className="w-28">Due</div>
+          <div className="w-28">
+            <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.due} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
+          </div>
+          <div className="w-24">
+            <ColumnHeader label="Assignee" columnKey="assignee" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.assignee} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={userId ? [{ value: userId, label: "Me" }] : []} />} />
+          </div>
           <div className="w-8" />
           <div className="w-8" />
         </div>
