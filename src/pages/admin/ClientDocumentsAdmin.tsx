@@ -203,8 +203,23 @@ function Inner() {
       key: "actions", header: "", sortable: false, filterable: false,
       cell: (r) => (
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" onClick={() => handleDownloadOne(r)} title="Download"><Download className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => setDeleteOne(r)} title="Delete"><Trash2 className="h-4 w-4" /></Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" title="Actions"><MoreVertical className="h-4 w-4" /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleDownloadOne(r)}>Download</DropdownMenuItem>
+              {assignedIds.has(r.id) ? (
+                <DropdownMenuItem disabled className="text-muted-foreground">Assigned</DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => setAssignTarget(r)}>Assign to Client</DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setDeleteOne(r)} className="text-destructive focus:text-destructive">
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
     },
@@ -282,6 +297,15 @@ function Inner() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {assignTarget && (
+        <AssignToClientDialog
+          open={!!assignTarget}
+          onOpenChange={(o) => !o && setAssignTarget(null)}
+          sourceType="submission"
+          sourceId={assignTarget.id}
+          onAssigned={() => { setAssignTarget(null); void fetchRows(); }}
+        />
+      )}
       <Footer />
     </div>
   );
