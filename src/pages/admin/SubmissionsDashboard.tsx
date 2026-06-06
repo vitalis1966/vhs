@@ -410,23 +410,29 @@ export default function SubmissionsDashboard() {
                           const status = getStatusInfo(sub.assessment_purpose);
                           return <Badge className={`${status.color} text-xs`}>{status.label}</Badge>;
                         })()}
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" disabled={deletingId === sub.session_id}>
-                              {deletingId === sub.session_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" disabled={deletingId === sub.session_id}>
+                              {deletingId === sub.session_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreVertical className="h-3.5 w-3.5" />}
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
-                              <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(sub.session_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {assignedIds.has(sub.session_id) ? (
+                              <DropdownMenuItem disabled className="text-muted-foreground">Assigned</DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem onClick={() => setAssignTarget(sub.session_id)}>
+                                Assign to Client
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => setConfirmDeleteId(sub.session_id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
 
@@ -477,6 +483,34 @@ export default function SubmissionsDashboard() {
         </div>
       </section>
       <Footer />
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (confirmDeleteId) { void handleDelete(confirmDeleteId); setConfirmDeleteId(null); } }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {assignTarget && (
+        <AssignToClientDialog
+          open={!!assignTarget}
+          onOpenChange={(o) => !o && setAssignTarget(null)}
+          sourceType="assessment"
+          sourceId={assignTarget}
+          onAssigned={() => { setAssignTarget(null); void loadSubmissions(); }}
+        />
+      )}
     </div>
   );
 }
