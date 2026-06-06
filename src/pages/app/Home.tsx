@@ -398,7 +398,7 @@ function MyUpcomingTasksTile({ onOpenTask }: { onOpenTask: (id: string) => void 
                     {t.priority}
                   </span>
                   <span className="text-xs text-muted-foreground w-20 text-right">
-                    {t.due_date ? format(new Date(t.due_date), "MMM d") : "—"}
+                    {t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d") : "—"}
                   </span>
                 </div>
               </button>

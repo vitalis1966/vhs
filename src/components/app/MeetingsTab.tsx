@@ -241,7 +241,7 @@ function MeetingDetail({
       <div style="border-left:3px solid #60766B;padding:4px 0 4px 16px;margin-bottom:8px;">
         ${actionItems.map((a) => {
           const owner = a.owner_id ? (ownerNames[a.owner_id] ?? "Team") : "Unassigned";
-          const due = a.due_date ? format(new Date(a.due_date), "MMM d, yyyy") : "No due date";
+          const due = a.due_date ? format(parseDateOnly(a.due_date)!, "MMM d, yyyy") : "No due date";
           return `
             <div style="margin-bottom:14px;">
               <div style="font-weight:600;color:#172620;font-size:14px;line-height:1.5;">${escapeHtml(a.description)}</div>
@@ -406,7 +406,7 @@ function MeetingDetail({
                   <p className="text-sm font-medium">{a.description}</p>
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <p className="text-xs text-muted-foreground">
-                      {a.due_date ? `Due ${format(new Date(a.due_date), "MMM d, yyyy")}` : "No due date"}
+                      {a.due_date ? `Due ${format(parseDateOnly(a.due_date)!, "MMM d, yyyy")}` : "No due date"}
                     </p>
                     {a.priority && a.priority !== "Medium" && (
                       <Badge variant="outline" className="text-[10px]">{a.priority}</Badge>
