@@ -40,9 +40,11 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [statuses, setStatuses] = useState<Record<string, { id: string; name: string; color: string | null; category: string }>>({});
   const [assigneesByTask, setAssigneesByTask] = useState<Record<string, string[]>>({});
   const [profiles, setProfiles] = useState<Record<string, any>>({});
-  const [sortBy, setSortBy] = useState<"due" | "priority">("due");
   const [selected, setSelected] = useState<string[]>([]);
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignees">({
+    defaultSort: { key: "due", dir: "asc" },
+  });
 
   const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const load = useCallback(async () => {
