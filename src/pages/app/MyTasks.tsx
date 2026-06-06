@@ -43,6 +43,7 @@ export default function MyTasks() {
   const [rows, setRows] = useState<Row[]>([]);
   const [statuses, setStatuses] = useState<Record<string, StatusRow>>({});
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
+  const [projects, setProjects] = useState<Record<string, ProjectLite>>({});
   const [extractedTaskIds, setExtractedTaskIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<string[]>([]);
   const [showCompleted, setShowCompleted] = useState(false);
