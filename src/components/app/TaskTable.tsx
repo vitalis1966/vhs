@@ -4,15 +4,16 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { BulkActionBar } from "./tasks/BulkActionBar";
 import { DeleteTaskDialog } from "./tasks/DeleteTaskDialog";
 import { onTasksChanged, setTaskStatus, softDeleteTasks } from "./tasks/taskMutations";
 import { toast } from "sonner";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 interface Row {
   id: string; title: string; status_id: string | null; priority: string;
