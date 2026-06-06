@@ -11,6 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { PRIORITIES } from "./taskUtils";
 
+export interface TaskFormValues {
+  title: string;
+  summary: string;
+  priority: string;
+  clientId: string;
+  projectId: string;
+  assigneeId: string;
+  dueDate: string;
+  statusId: string;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -21,17 +32,20 @@ interface Props {
   defaultAssigneeId?: string | null;
   defaultPriority?: string;
   defaultSummary?: string;
+  defaultStatusId?: string;
+  defaultsKey?: string | number;
+  keepOpenOnSave?: boolean;
   headerSlot?: React.ReactNode;
   titleLabel?: string;
   saveLabel?: string;
   cancelLabel?: string;
   onCreated?: (task: any) => void;
-  onValuesChange?: (v: { title: string; summary: string; priority: string }) => void;
+  onValuesChange?: (v: TaskFormValues) => void;
 }
 
 const UNASSIGNED = "unassigned";
 
-export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated, onValuesChange }: Props) {
+export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, defaultStatusId, defaultsKey, keepOpenOnSave, headerSlot, titleLabel, saveLabel, cancelLabel, onCreated, onValuesChange }: Props) {
   const { workspaceId, userId } = useWorkspace();
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -56,13 +70,14 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
     setDueDate(defaultDueDate ?? "");
     setAssigneeId(defaultAssigneeId ?? UNASSIGNED);
     setSummary(defaultSummary ?? "");
-  }, [open, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary]);
+    if (defaultStatusId) setStatusId(defaultStatusId);
+  }, [open, defaultsKey, defaultClientId, defaultProjectId, defaultTitle, defaultDueDate, defaultAssigneeId, defaultPriority, defaultSummary, defaultStatusId]);
 
   useEffect(() => {
     if (!open) return;
-    onValuesChange?.({ title, summary, priority });
+    onValuesChange?.({ title, summary, priority, clientId, projectId, assigneeId, dueDate, statusId });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, summary, priority, open]);
+  }, [title, summary, priority, clientId, projectId, assigneeId, dueDate, statusId, open]);
 
   useEffect(() => {
     if (!open || !workspaceId) return;
@@ -147,7 +162,7 @@ export function TaskFormDialog({ open, onOpenChange, defaultClientId, defaultPro
       });
       toast.success("Task created");
       onCreated?.(data);
-      onOpenChange(false);
+      if (!keepOpenOnSave) onOpenChange(false);
     } catch (e: any) {
       toast.error(e.message ?? "Failed to create task");
     } finally { setSaving(false); }
