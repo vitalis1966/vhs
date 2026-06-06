@@ -78,11 +78,25 @@ export default function Projects() {
     })();
   }, [workspaceId]);
 
-  const filtered = useMemo(() => rows.filter((r) =>
+  const tf = useTableFilters<"name" | "client" | "status" | "target" | "owner" | "progress">();
+
+  const baseFiltered = useMemo(() => rows.filter((r) =>
     (filterClient === "all" || r.client_id === filterClient) &&
     (filterStatus === "all" || r.status === filterStatus) &&
     (filterOwner === "all" || r.owner_id === filterOwner)
   ), [rows, filterClient, filterStatus, filterOwner]);
+
+  const filtered = useMemo(() => tf.apply(baseFiltered, {
+    name: { filterValue: (r) => r.name, sortValue: (r) => r.name.toLowerCase() },
+    client: { filterValue: (r) => r.client_id, sortValue: (r) => (clients[r.client_id]?.name ?? "").toLowerCase() },
+    status: { filterValue: (r) => r.status ?? "", sortValue: (r) => r.status ?? "" },
+    target: {
+      filterValue: (r) => (r.target_date ? new Date(r.target_date) : null),
+      sortValue: (r) => (r.target_date ? new Date(r.target_date).getTime() : null),
+    },
+    owner: { filterValue: (r) => r.owner_id ?? "", sortValue: (r) => (r.owner_id ? owners[r.owner_id]?.full_name ?? owners[r.owner_id]?.email ?? "" : "") },
+    progress: { filterValue: (r) => progress[r.id] ?? 0, sortValue: (r) => progress[r.id] ?? 0 },
+  }), [baseFiltered, tf.state, clients, owners, progress]);
 
   const grouped = useMemo(() => {
     const g: Record<string, ProjectRow[]> = {};
