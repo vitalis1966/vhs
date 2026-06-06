@@ -474,29 +474,48 @@ export default function Inbox() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {state === "none" && (
+                          {view === "inbox" && state === "none" && (
                             <DropdownMenuItem onClick={() => runExtract(e)} disabled={isExtracting}>
                               <Sparkles className="h-4 w-4 mr-2" />
                               {isExtracting ? "Extracting…" : "Extract to Task"}
                             </DropdownMenuItem>
                           )}
-                          {state === "extracted" && (
+                          {view === "inbox" && state === "extracted" && (
                             <DropdownMenuItem onClick={() => viewExtracted(e)}>
                               <Eye className="h-4 w-4 mr-2" />
                               View Extracted Tasks
                             </DropdownMenuItem>
                           )}
-                          {state === "completed" && (
+                          {view === "inbox" && state === "completed" && (
                             <DropdownMenuItem disabled>
                               <CheckCircle2 className="h-4 w-4 mr-2" />
                               Completed
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem onClick={() => setDeleteTarget(e)} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete
-                          </DropdownMenuItem>
+                          {view === "inbox" ? (
+                            <DropdownMenuItem onClick={() => setDeleteTarget(e)} className="text-destructive focus:text-destructive">
+                              <Trash2 className="h-4 w-4 mr-2" /> Move to Trash
+                            </DropdownMenuItem>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => restoreEmail(e.id)}>
+                                <RotateCcw className="h-4 w-4 mr-2" /> Restore
+                              </DropdownMenuItem>
+                              {isAdminOrManager && (
+                                <DropdownMenuItem onClick={() => setHardDeleteTarget(e)} className="text-destructive focus:text-destructive">
+                                  <Trash2 className="h-4 w-4 mr-2" /> Delete permanently
+                                </DropdownMenuItem>
+                              )}
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      {view === "trash" && e.deleted_at && (
+                        <div className="text-[11px] text-muted-foreground mt-1 text-right">
+                          {formatDistanceToNow(new Date(e.deleted_at), { addSuffix: true })}
+                          {e.deleted_by && deletedByNames[e.deleted_by] ? ` · ${deletedByNames[e.deleted_by]}` : ""}
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
