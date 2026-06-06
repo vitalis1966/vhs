@@ -326,17 +326,8 @@ export default function TimeTracking() {
             ) : (
               <div className="divide-y divide-border">
                 {grouped.groups.map(([key, list]) => {
-                  const groupTotal = list.reduce((s, e) => s + (e.duration_seconds || 0), 0);
-                  const td = formatDuration(groupTotal);
-                  const heading = view === "day"
-                    ? (clients[key]?.name ?? "Client")
-                    : key;
                   return (
                     <div key={key} className="p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{heading}</div>
-                        <div className="text-xs tabular-nums text-muted-foreground">{td.human} / {td.decimalLabel}</div>
-                      </div>
                       <div className="space-y-1">
                         {list.map((e) => {
                           const d = formatDuration(e.duration_seconds);
@@ -370,6 +361,7 @@ export default function TimeTracking() {
                     </div>
                   );
                 })}
+
               </div>
             )}
           </div>
