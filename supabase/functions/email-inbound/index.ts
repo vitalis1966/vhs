@@ -65,6 +65,72 @@ function pickBody(data: any): { text: string | null; html: string | null } {
   return { text, html };
 }
 
+async function fetchReceivedEmailFromResend(emailId: string, apiKey: string): Promise<any | null> {
+  const endpoints = [
+    `https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}?html_format=data_uri`,
+    `https://api.resend.com/emails/${encodeURIComponent(emailId)}`,
+  ];
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    for (const endpoint of endpoints) {
+      const r = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (r.ok) {
+        const raw = await r.json();
+        return raw?.data ?? raw;
+      }
+
+      const body = await r.text();
+      console.warn("[email-inbound] Resend API fetch failed", {
+        endpoint: endpoint.replace(emailId, "<email_id>"),
+        attempt: attempt + 1,
+        status: r.status,
+        body,
+      });
+    }
+
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 750 * (attempt + 1)));
+  }
+
+  return null;
+}
+
+function scheduleResendBodyBackfill(supabase: any, rowId: string, emailId: string, apiKey: string) {
+  const task = (async () => {
+    for (const delayMs of [2_000, 5_000, 10_000, 20_000]) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      const ed = await fetchReceivedEmailFromResend(emailId, apiKey);
+      if (!ed) continue;
+
+      const apiBody = pickBody(ed);
+      const patch: Record<string, any> = {};
+      if (apiBody.text) patch.body_text = apiBody.text;
+      if (apiBody.html) patch.body_html = apiBody.html;
+      if (Object.keys(patch).length === 0) continue;
+
+      const { error } = await supabase
+        .from("inbound_emails")
+        .update(patch)
+        .eq("id", rowId)
+        .is("body_text", null)
+        .is("body_html", null);
+
+      if (error) console.error("[email-inbound] delayed body backfill error", error);
+      else console.log("[email-inbound] delayed body backfill ok", { id: rowId, patched: Object.keys(patch) });
+      return;
+    }
+  })();
+
+  const waitUntil = (globalThis as any).EdgeRuntime?.waitUntil;
+  if (waitUntil) waitUntil(task);
+  else task.catch((e) => console.error("[email-inbound] delayed body backfill task error", e));
+}
+
 async function verifySvix(secret: string, req: Request, body: string): Promise<boolean> {
   const id = req.headers.get("svix-id");
   const timestamp = req.headers.get("svix-timestamp");
@@ -137,15 +203,15 @@ Deno.serve(async (req) => {
 
   // Fallback: if webhook payload lacks body (Resend sends metadata-only events
   // for some event types), fetch the full email from Resend's API.
+  const resendKey = Deno.env.get("VHS_Website");
   if ((!body_text && !body_html) && resend_email_id) {
-    const resendKey = Deno.env.get("VHS_Website");
     if (resendKey) {
       try {
-        const r = await fetch(`https://api.resend.com/emails/${resend_email_id}`, {
-          headers: { Authorization: `Bearer ${resendKey}` },
-        });
-        if (r.ok) {
-          const ed: any = await r.json();
+        const ed = await fetchReceivedEmailFromResend(String(resend_email_id), resendKey);
+        if (ed) {
+          const apiBody = pickBody(ed);
+          if (!body_text && apiBody.text) body_text = apiBody.text;
+          if (!body_html && apiBody.html) body_html = apiBody.html;
           if (!body_text && typeof ed.text === "string") body_text = ed.text;
           if (!body_html && typeof ed.html === "string") body_html = ed.html;
           if (!subject && typeof ed.subject === "string") subject = ed.subject;
@@ -155,8 +221,6 @@ Deno.serve(async (req) => {
             from_name = from_name || p.name;
           }
           console.log("[email-inbound] fetched from Resend API", { id: resend_email_id, has_text: !!body_text, has_html: !!body_html });
-        } else {
-          console.warn("[email-inbound] Resend API fetch failed", { status: r.status, body: await r.text() });
         }
       } catch (e) {
         console.error("[email-inbound] Resend API fetch error", e);
@@ -285,13 +349,19 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { error } = await supabase
+  const { data: inserted, error } = await supabase
     .from("inbound_emails")
-    .insert(insertPayload);
+    .insert(insertPayload)
+    .select("id")
+    .single();
 
   if (error) {
     console.error("[email-inbound] insert error", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+
+  if (inserted?.id && resendKey && resend_email_id && !body_text && !body_html) {
+    scheduleResendBodyBackfill(supabase, inserted.id, String(resend_email_id), resendKey);
   }
 
   console.log("[email-inbound] stored ok");
