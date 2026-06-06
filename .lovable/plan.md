@@ -1,77 +1,86 @@
 
 ## Goal
-Refine the Email Inbox so emails are never auto-removed, extracted tasks are tracked per-email with a clear lifecycle (Extract → View → Completed), and surface email/task counts in both the Inbox and My Tasks via consistent badge styling. Add a richer extraction UX with progress, post-extraction prompt, and back/next navigation.
 
-## Changes
+Add per-column filter + sort controls to 6 list views (Inbox, My Tasks, Clients, Projects, Tasks Table, Tasks Board, Time Tracking Entries, Time Tracking Reports) and expand the Time Tracking user dropdown. All work is client-side over already-loaded data — no schema, RLS, edge function, or `types.ts` changes. VHS Administration is untouched.
 
-### 1. Inbox row lifecycle (no deletions)
-- Add an `extraction_state` to `inbound_emails`:
-  - `none` (default) — shows **Extract to Task**
-  - `extracted` — tasks generated and stored, not yet reviewed. Shows **View Extracted Tasks**
-  - `completed` — user has reviewed extracted tasks. Shows **Completed** (disabled/non-clickable)
-- Emails are never auto-deleted. The existing manual Delete option in the row menu stays.
-- When extraction yields ≥1 saved tasks, email status auto-flips to **Assigned** (already partially in place; verified).
+## Shared building blocks (new) — `src/components/app/columns/`
 
-### 2. Inbox table updates
-- New **Tasks** column after Status: shows the count of tasks linked via `email_task_extractions` for that email (0 if none).
-- Slightly widen the Status column so "Not Assigned" no longer wraps/clips.
-- 3-dots menu items become state-aware:
-  - `none` → "Extract to Task"
-  - `extracted` → "View Extracted Tasks"
-  - `completed` → "Completed" (disabled)
-  - Delete remains available in all states.
+- **`ColumnHeader.tsx`** — label + tri-state sort caret (`ArrowUpDown` / `ArrowUp` / `ArrowDown`) + optional `Filter` icon button. When the column's filter is active, render a `bg-primary` dot on the icon. Filter icon opens a `Popover` containing the supplied filter primitive.
+- **`useTableFilters.ts`** — `useState`-backed: `{ sort: { key, dir: 'asc'|'desc' } | null, filters: Record<key, FilterValue> }`. Exposes `toggleSort(key)`, `setFilter(key, value)`, `clearFilter(key)`, and `apply<T>(rows, { getters, comparators })` returning sorted+filtered array. State lives in the consuming component, so it persists while mounted and resets on unmount (matches "persist while user remains on the view").
+- **Filter primitives** in same folder:
+  - `TextFilter` — `Input`; case-insensitive `includes`.
+  - `MultiSelectFilter` — scrollable list of `Checkbox` rows with a "Clear" button.
+  - `DateRangeFilter` — two `Input type="date"` (mirrors `TimeReports` pattern).
+  - `NumberRangeFilter` — two `Input type="number"`; consumer translates min/max → seconds for duration filtering, UI labels say "minutes".
 
-### 3. Extraction flow UX
-- Clicking **Extract to Task** opens an in-row/overlay progress indicator ("Extracting…" with a progress bar) so users see activity while Gemini runs.
-- On completion, show a confirmation dialog: **"Tasks extracted. Do you want to review them now?"** with **Yes** / **Later** buttons.
-  - **Yes** → opens the stepper immediately.
-  - **Later** → stays in inbox; email enters `extracted` state and tasks are stored for later.
-- Extracted tasks are persisted (new table) so "View Extracted Tasks" can re-open the stepper without re-calling AI.
+No new dependencies. Uses existing `Popover`, `Input`, `Checkbox`, `Button`, and lucide icons already imported elsewhere.
 
-### 4. Stepper navigation
-- Replace existing Back/Skip with three buttons: **Back**, **Next**, **Skip**.
-  - Back: previous task (disabled on first).
-  - Next: forward without saving (disabled on last unreviewed; allows moving across already-seen tasks).
-  - Skip: marks task as skipped and advances.
-- Save Task still creates the task (existing behavior).
-- Once user finishes the stepper (all tasks saved or skipped), email moves to `completed` state; menu shows "Completed".
+## Per-view changes
 
-### 5. My Tasks: Source column + badge
-- New **Source** column with values **Extracted** (task linked in `email_task_extractions`) or **Manual** (everything else).
-- Sidebar badge for **My Tasks**: same logic as Inbox — solid primary-coloured pill when there are *new* assignments since last visit; once no new items remain, show the count as a plain number (no filled circle) representing total open tasks.
+### 1. Inbox (`src/pages/app/Inbox.tsx`)
+Replace plain `TableHead` cells for From / Subject / Received / Status with `ColumnHeader`. Apply `useTableFilters` to the `emails` array before mapping. Default sort = `received_at desc` (current). Row layout, action dots, status dropdown, and bulk-select behavior unchanged. Header label "Received" kept (Date is already present).
 
-### 6. Sidebar badge logic (Inbox + My Tasks)
-- "New" = unread/unseen. Track per-user last-visited timestamp in `localStorage` (per user id) for both Inbox and My Tasks. When user opens the page, reset the marker.
-- Display rules:
-  - `newCount > 0` → solid filled badge with `newCount`.
-  - `newCount === 0` → outline/plain text badge with `totalOpenCount` (no filled circle).
-- Inbox total = all emails. My Tasks total = open (non-done/cancelled) tasks assigned to user.
+### 2. My Tasks (`src/pages/app/MyTasks.tsx`)
+- Replace the column-label `div` row at lines 218–228 with `ColumnHeader`s for: Title (text), Client (multi-select from loaded `clients`), **Project** (new — presentational), Status (multi-select from loaded `statuses`), Priority (multi-select), Due (date range), Assignee (multi-select; only the current user is present here, included for parity).
+- The Project column is presentational only and **uses already-loaded row data** (`row.project_id`). Since no projects lookup is loaded today and the spec forbids a new query/join, the cell renders either the raw project label embedded in the loaded data (currently just `project_id` — shown truncated to first 8 chars) or "—" when null. Multi-select filter lists distinct project IDs found on the loaded rows.
+- Row body gains a matching `project` cell with the same width allocation; existing column widths for other cells are preserved.
+- Source, action dots, timer button, side panel, sort-by-due default, and `showCompleted` switch all unchanged.
 
-## Technical Details
+### 3. Clients (`src/pages/app/Clients.tsx`)
+Table view headers (`Company`, `Status`, `Specialty`, `Tags`, `Account Owner`, `Open Tasks`) become `ColumnHeader`s:
+- Company → text + sort
+- Status → multi-select of distinct statuses
+- Specialty (industry) → text + sort
+- Tags → multi-select of all workspace tags (reuses `allTags`)
+- Account Owner → multi-select of distinct owners (reuses `owners`)
+- Open Tasks → number range + sort
+Existing top-of-page tag popover, board view, and creation dialog untouched.
 
-### Database (single migration)
-- `ALTER TABLE public.inbound_emails ADD COLUMN extraction_state text NOT NULL DEFAULT 'none' CHECK (extraction_state IN ('none','extracted','completed'));`
-- New table `public.email_extracted_tasks` to persist AI output for "Later" review:
-  - `id uuid pk`, `email_id uuid fk inbound_emails`, `title text`, `description text`, `priority text`, `position int`, `status text default 'pending' check in ('pending','saved','skipped')`, `task_id uuid null`, `created_at`, `updated_at`.
-  - GRANTs to authenticated + service_role; RLS mirroring `inbound_emails` (workspace member visibility; admins see all).
-- Existing `email_task_extractions` (email_id → task_id) continues to power the Tasks count column and the My Tasks Source column.
+### 4. Projects (`src/pages/app/Projects.tsx`)
+Table view headers (`Project`, `Client`, `Status`, `Target`, `Owner`, `Progress`) become `ColumnHeader`s with: text, multi-select, multi-select, date range, multi-select, number range. Existing top-bar `Select` filters and board view remain. Note: only `target_date` exists on the model (no Start Date) — only that single date column is wired.
 
-### Edge function
-- `extract-email-tasks`: after AI returns, **persist** tasks into `email_extracted_tasks` (status `pending`) and set `inbound_emails.extraction_state = 'extracted'`. Return the inserted rows.
+### 5. Tasks Table (`src/components/app/TaskTable.tsx`)
+Headers become `ColumnHeader`s for: Title (text), Client (multi-select), Project (multi-select), Status (multi-select), Priority (multi-select), Due (date range), Assignees (multi-select from `profiles`). Existing `sortBy` buttons are removed in favor of the unified header sort. `TasksFilters` top bar remains and composes with column filters. Bulk action bar, row click, and action menu unchanged.
 
-### Frontend
-- `StatusDropdown.tsx`: widen trigger from `w-[150px]` to `w-[170px]`.
-- `Inbox.tsx`:
-  - Add Tasks column (count from `email_task_extractions`, fetched alongside emails or via a view).
-  - Replace single "Extract to Task" menu item with state-aware item.
-  - Add progress overlay while extracting; show confirm dialog on success.
-  - Load persisted `email_extracted_tasks` when user picks "View Extracted Tasks".
-- `ExtractTasksPanel.tsx`:
-  - Add **Next** button; track per-task review state (`pending|saved|skipped`); persist updates to `email_extracted_tasks` on each action.
-  - On finish: set email `extraction_state = 'completed'` and (if any saved) `status = 'assigned'`.
-- `MyTasks.tsx`: add Source column; query `email_task_extractions` for the displayed task ids to label rows.
-- `useInboxUnreadCount.ts`: extend to return `{ newCount, totalCount }`; add `useMyTasksBadge.ts` analogue.
-- `AppSidebar.tsx`: render filled vs plain badge based on `newCount` for both items.
+### 6. Tasks Board (`src/components/app/TaskBoard.tsx`)
+Each `Column`'s header gains:
+- A `Filter` icon → popover with a single text input that searches task name **within this column only**.
+- A sort icon → `DropdownMenu` with: Task Name A–Z / Z–A, Priority High→Low / Low→High, Due Earliest→Latest / Latest→Earliest.
+- State stored as `Record<statusId, { search: string; sort: { key, dir } | null }>` inside `TaskBoard`, fully independent per column.
+- Drag-and-drop wiring, `useDraggable` IDs, `onDragEnd`, and the underlying `tasks` array are not modified. Filtering only changes which cards are rendered inside the column; cross-column drags continue to call the same status-update logic.
 
-### Out of scope
-- No changes to existing manual task creation flows, no design-system token changes, no auth changes.
+### 7. Time Tracking user dropdown (`src/pages/app/TimeTracking.tsx`)
+- Replace `scope: 'mine' | 'all'` with `selection: 'mine' | 'all' | <userId>`.
+- Fetch active workspace members via the **same query pattern already used by `TimeReports`** (`workspace_members` + `profiles` join, `status='active'`). Only fired when `isAdmin` (matches current gating).
+- `Select` content: `My entries`, `All team members`, a divider (`<SelectSeparator>`), then one `SelectItem` per member sorted alphabetically by `full_name ?? email`.
+- `load()` query branching: `mine` → `eq('user_id', userId)`; `all` → no user filter; otherwise → `eq('user_id', selection)`.
+
+### 8. Time Tracking Entries list (`src/pages/app/TimeTracking.tsx`)
+- Add a sticky header row above the grouped entries block with `ColumnHeader`s: Client, Project, Task, Activity, Date, Duration. Header width allocations match the row layout already rendered inside groups (left-aligned columns + right-aligned duration).
+- Filters apply across the full entry set; a group whose entries are all filtered out is **omitted entirely** (no orphan group header). Specifically for the date-range filter, this collapses entire date/week groups, not individual rows.
+- Sort applies within each group (default keeps `started_at desc`).
+- Duration filter UI in minutes; comparison done in seconds against `duration_seconds`. Display continues to use `formatDuration`.
+- Manual entry dialog, edit, delete, CSV export, view selector, and date navigation unchanged.
+
+### 9. Time Tracking Reports (`src/components/app/time/TimeReports.tsx`)
+- Modify the **existing** breakdown table only — no new sub-tables.
+- Replace the table that currently lists primary `label / HH:MM / Decimal` rows so each entry is rendered inline with the required columns: Client, Project, Task, Activity, User (admin only), Date, Duration. Each column header uses `ColumnHeader` with the right filter primitive (text/multi-select/date range/number range).
+- The footer "Total" row remains pinned and is computed from the **unfiltered** `entries` set (the report's primary date+scope filters), so totals are not affected by inline column filters. Same for the pie chart, line chart, and breakdown aggregates above/around the table.
+- CSV export keeps using the unfiltered `primary` set — unchanged.
+
+## Out of scope (explicit)
+
+- No DB migrations, RLS, edge functions, or `types.ts` changes.
+- Board drag-and-drop, card layout, and inter-column moves are not modified.
+- Task creation, side panels, and existing top-bar filters are not modified.
+- VHS Administration is not touched.
+- No new npm dependencies.
+
+## Verification after build
+
+- Inbox: header sort cycles asc/desc/none; status multi-select narrows rows; date range filters by `received_at`; action dots still open viewer/extract; bulk-select still works.
+- My Tasks: new Project column present; filters compose; due-date asc default preserved; side panel + timer unaffected.
+- Clients / Projects tables: column filters compose with existing top-level filters; board views untouched.
+- Tasks Table: removal of old `sortBy` buttons does not break sort; `TasksFilters` bar still works.
+- Tasks Board: filter in column A leaves column B unchanged; dragging a card between columns still persists the status update.
+- Time Tracking: dropdown shows My / All / divider / alphabetized members; selecting a user reloads only that user's entries; entries-list header filters collapse groups; reports column filters do not change totals or charts.

@@ -10,6 +10,9 @@ import { Plus, LayoutGrid, Table as TableIcon, Tag as TagIcon, X } from "lucide-
 import { ClientFormDialog, CLIENT_STATUSES } from "@/components/app/ClientFormDialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 type ClientRow = {
   id: string; name: string; status: string | null; industry: string | null;
@@ -97,13 +100,30 @@ export default function Clients() {
 
   const tagMap = useMemo(() => Object.fromEntries(allTags.map((t) => [t.id, t])), [allTags]);
 
-  const filteredClients = useMemo(() => {
+  const tf = useTableFilters<"company" | "status" | "specialty" | "tags" | "owner" | "open">();
+
+  const filteredByTags = useMemo(() => {
     if (!selectedTagIds.length) return clients;
     return clients.filter((c) => {
       const ids = clientTagMap[c.id] ?? [];
       return selectedTagIds.every((t) => ids.includes(t));
     });
   }, [clients, clientTagMap, selectedTagIds]);
+
+  const filteredClients = useMemo(() => tf.apply(filteredByTags, {
+    company: { filterValue: (c) => c.name, sortValue: (c) => c.name.toLowerCase() },
+    status: { filterValue: (c) => c.status ?? "", sortValue: (c) => c.status ?? "" },
+    specialty: { filterValue: (c) => c.industry ?? "", sortValue: (c) => (c.industry ?? "").toLowerCase() },
+    tags: { filterValue: (c) => clientTagMap[c.id] ?? [] },
+    owner: { filterValue: (c) => c.account_owner_id ?? "", sortValue: (c) => (c.account_owner_id ? owners[c.account_owner_id]?.full_name ?? owners[c.account_owner_id]?.email ?? "" : "") },
+    open: { filterValue: (c) => openCounts[c.id] ?? 0, sortValue: (c) => openCounts[c.id] ?? 0 },
+  }), [filteredByTags, tf.state, clientTagMap, owners, openCounts]);
+
+  const distinctStatuses = useMemo(() => Array.from(new Set(clients.map((c) => c.status).filter(Boolean))) as string[], [clients]);
+  const distinctOwners = useMemo(() => {
+    const ids = Array.from(new Set(clients.map((c) => c.account_owner_id).filter(Boolean))) as string[];
+    return ids.map((id) => ({ value: id, label: owners[id]?.full_name ?? owners[id]?.email ?? id }));
+  }, [clients, owners]);
 
   const grouped = useMemo(() => {
     const g: Record<string, ClientRow[]> = { Prospect: [], Active: [], "On Hold": [], Closed: [] };
@@ -190,12 +210,38 @@ export default function Clients() {
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="text-left px-4 py-3">Company</th>
-                  <th className="text-left px-4 py-3">Status</th>
-                  <th className="text-left px-4 py-3">Specialty</th>
-                  <th className="text-left px-4 py-3">Tags</th>
-                  <th className="text-left px-4 py-3">Account Owner</th>
-                  <th className="text-left px-4 py-3">Open Tasks</th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Company" columnKey="company" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.company} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter company…" />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                        options={distinctStatuses.map((s) => ({ value: s, label: s }))} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Specialty" columnKey="specialty" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.specialty} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter specialty…" />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Tags" columnKey="tags" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.tags} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                        options={allTags.map((t) => ({ value: t.id, label: t.name }))} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Account Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctOwners} />} />
+                  </th>
+                  <th className="text-left px-4 py-3">
+                    <ColumnHeader label="Open Tasks" columnKey="open" sort={tf.sort} onToggleSort={tf.toggleSort}
+                      filterValue={tf.filters.open} onFilterChange={tf.setFilter}
+                      renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} />} />
+                  </th>
                 </tr>
               </thead>
               <tbody>

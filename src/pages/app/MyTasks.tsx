@@ -17,6 +17,9 @@ import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue } from "@/comp
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 interface Row {
   id: string;
@@ -161,23 +164,53 @@ export default function MyTasks() {
   // Cross-component task mutations
   useEffect(() => onTasksChanged(() => load()), [load]);
 
-  const filtered = useMemo(() => {
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignee">({
+    defaultSort: { key: "due", dir: "asc" },
+  });
+
+  const projectIdShort = (pid: string | null) => pid ? pid.slice(0, 8) : "";
+  const distinctProjectIds = useMemo(
+    () => Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean) as string[])),
+    [rows],
+  );
+
+  const baseFiltered = useMemo(() => {
     return rows.filter((t) => {
       const cat = t.status_id ? statuses[t.status_id]?.category : null;
       const overdue = isOverdue(t.due_date, t.completed_at);
       if (!showCompleted) {
         if (cat === "done" || cat === "cancelled") {
-          // Hide completed/cancelled unless overdue (overdue can't be done anyway)
           return overdue;
         }
       }
       return true;
-    }).sort((a, b) => {
-      const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-      const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity;
-      return ad - bd;
     });
   }, [rows, statuses, showCompleted]);
+
+  const filtered = useMemo(() => tf.apply(baseFiltered, {
+    title: { filterValue: (r) => r.title, sortValue: (r) => r.title.toLowerCase() },
+    client: {
+      filterValue: (r) => r.client_id,
+      sortValue: (r) => (clients[r.client_id]?.name ?? "").toLowerCase(),
+    },
+    project: {
+      filterValue: (r) => r.project_id ?? "",
+      sortValue: (r) => r.project_id ?? "",
+    },
+    status: {
+      filterValue: (r) => r.status_id ?? "",
+      sortValue: (r) => (r.status_id ? statuses[r.status_id]?.name ?? "" : ""),
+    },
+    priority: { filterValue: (r) => r.priority, sortValue: (r) => r.priority },
+    due: {
+      filterValue: (r) => (r.due_date ? new Date(r.due_date) : null),
+      sortValue: (r) => (r.due_date ? new Date(r.due_date).getTime() : null),
+    },
+    assignee: {
+      filterValue: () => (userId ? [userId] : []),
+      sortValue: () => userId ?? "",
+    },
+  }), [baseFiltered, tf.state, clients, statuses, userId]);
 
   const allSelected = filtered.length > 0 && filtered.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : filtered.map((r) => r.id));
@@ -217,12 +250,47 @@ export default function MyTasks() {
       <div className="border border-border rounded-lg overflow-hidden bg-card">
         <div className="bg-muted/50 px-3 py-2 flex items-center gap-3 text-xs font-medium text-muted-foreground">
           <div className="w-6"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></div>
-          <div className="flex-1">Title</div>
-          <div className="w-32">Client</div>
-          <div className="w-28">Status</div>
-          <div className="w-24">Priority</div>
+          <div className="flex-1">
+            <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.title} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter title…" />} />
+          </div>
+          <div className="w-32">
+            <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={Object.values(clients).map((c) => ({ value: c.id, label: c.name }))} />} />
+          </div>
+          <div className="w-28">
+            <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={distinctProjectIds.map((id) => ({ value: id, label: projectIdShort(id) }))} />} />
+          </div>
+          <div className="w-28">
+            <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={Object.values(statuses).map((s) => ({ value: s.id, label: s.name }))} />} />
+          </div>
+          <div className="w-24">
+            <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
+          </div>
           <div className="w-24">Source</div>
-          <div className="w-28">Due</div>
+          <div className="w-28">
+            <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.due} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
+          </div>
+          <div className="w-24">
+            <ColumnHeader label="Assignee" columnKey="assignee" sort={tf.sort} onToggleSort={tf.toggleSort}
+              filterValue={tf.filters.assignee} onFilterChange={tf.setFilter}
+              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                options={userId ? [{ value: userId, label: "Me" }] : []} />} />
+          </div>
           <div className="w-8" />
           <div className="w-8" />
         </div>
@@ -282,6 +350,9 @@ export default function MyTasks() {
                       </Link>
                     )}
                   </div>
+                  <div className="w-28 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
+                    {row.project_id ? projectIdShort(row.project_id) : "—"}
+                  </div>
                   <div className="w-28">
                     {status ? (
                       <span className="inline-flex items-center gap-1.5 text-xs">
@@ -303,6 +374,7 @@ export default function MyTasks() {
                   <div className={`w-28 ${dueClass}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
                   </div>
+                  <div className="w-24 text-xs text-muted-foreground">Me</div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
                     <Button
                       size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"

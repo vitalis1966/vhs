@@ -5,7 +5,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Pencil, Trash2, Plus, Download, Clock } from "lucide-react";
 import { ManualEntryDialog } from "@/components/app/time/ManualEntryDialog";
 import { TimeReports } from "@/components/app/time/TimeReports";
@@ -16,6 +16,9 @@ import {
 } from "date-fns";
 import { toast } from "sonner";
 import { toCsv, downloadCsv } from "@/lib/csv";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+} from "@/components/app/columns";
 
 interface Entry {
   id: string;
@@ -42,15 +45,33 @@ export default function TimeTracking() {
   const [tab, setTab] = useState<"entries" | "reports">("entries");
   const [view, setView] = useState<ViewMode>("day");
   const [cursor, setCursor] = useState<Date>(new Date());
-  const [scope, setScope] = useState<"mine" | "all">("mine");
+  const [selection, setSelection] = useState<string>("mine"); // 'mine' | 'all' | <userId>
   const [entries, setEntries] = useState<Entry[]>([]);
   const [clients, setClients] = useState<Record<string, NameRow>>({});
   const [projects, setProjects] = useState<Record<string, NameRow>>({});
   const [tasks, setTasks] = useState<Record<string, { id: string; title: string }>>({});
   const [activities, setActivities] = useState<Record<string, NameRow>>({});
   const [users, setUsers] = useState<Record<string, UserRow>>({});
+  const [memberList, setMemberList] = useState<UserRow[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
   const [manualOpen, setManualOpen] = useState(false);
+
+  // Load active workspace members for dropdown (admin/manager only)
+  useEffect(() => {
+    if (!workspaceId || !isAdmin) { setMemberList([]); return; }
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("workspace_members")
+        .select("user_id, profiles:profiles!workspace_members_user_id_fkey(id, full_name, email)")
+        .eq("workspace_id", workspaceId)
+        .eq("status", "active");
+      const list: UserRow[] = (data ?? [])
+        .map((m: any) => m.profiles)
+        .filter((p: any) => p?.id)
+        .sort((a: any, b: any) => (a.full_name ?? a.email ?? "").localeCompare(b.full_name ?? b.email ?? ""));
+      setMemberList(list);
+    })();
+  }, [workspaceId, isAdmin]);
 
   const range = useMemo(() => {
     if (view === "day") return { start: startOfDay(cursor), end: endOfDay(cursor) };
@@ -65,7 +86,8 @@ export default function TimeTracking() {
       .gte("started_at", range.start.toISOString())
       .lte("started_at", range.end.toISOString())
       .order("started_at", { ascending: false });
-    if (scope === "mine" && userId) q = q.eq("user_id", userId);
+    if (selection === "mine" && userId) q = q.eq("user_id", userId);
+    else if (selection !== "all" && selection !== "mine") q = q.eq("user_id", selection);
     const { data } = await q;
     const list: Entry[] = data ?? [];
     setEntries(list);
@@ -85,7 +107,7 @@ export default function TimeTracking() {
     const tm: any = {}; (ts ?? []).forEach((x: any) => tm[x.id] = x); setTasks(tm);
     const am: any = {}; (ac ?? []).forEach((x: any) => am[x.id] = x); setActivities(am);
     const um: any = {}; (us ?? []).forEach((x: any) => um[x.id] = x); setUsers(um);
-  }, [workspaceId, userId, scope, range.start, range.end]);
+  }, [workspaceId, userId, selection, range.start, range.end]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -127,31 +149,66 @@ export default function TimeTracking() {
     downloadCsv(`time-entries-${format(range.start, "yyyy-MM-dd")}.csv`, csv);
   };
 
-  // Grouping
+  const tf = useTableFilters<"client" | "project" | "task" | "activity" | "date" | "duration">();
+
+  const visibleEntries = useMemo(() => tf.apply(entries, {
+    client: {
+      filterValue: (e) => clients[e.client_id]?.name ?? "",
+      sortValue: (e) => (clients[e.client_id]?.name ?? "").toLowerCase(),
+    },
+    project: {
+      filterValue: (e) => (e.project_id ? projects[e.project_id]?.name ?? "" : ""),
+      sortValue: (e) => (e.project_id ? (projects[e.project_id]?.name ?? "").toLowerCase() : ""),
+    },
+    task: {
+      filterValue: (e) => (e.task_id ? tasks[e.task_id]?.title ?? "" : ""),
+      sortValue: (e) => (e.task_id ? (tasks[e.task_id]?.title ?? "").toLowerCase() : ""),
+    },
+    activity: {
+      filterValue: (e) => activities[e.activity_type_id]?.name ?? "",
+      sortValue: (e) => (activities[e.activity_type_id]?.name ?? "").toLowerCase(),
+    },
+    date: {
+      filterValue: (e) => new Date(e.started_at),
+      sortValue: (e) => new Date(e.started_at).getTime(),
+    },
+    duration: {
+      filterValue: (e) => e.duration_seconds,
+      sortValue: (e) => e.duration_seconds,
+    },
+  }), [entries, tf.state, clients, projects, tasks, activities]);
+
+  // Grouping (operates on filtered list; empty groups dropped)
   const grouped = useMemo(() => {
     if (view === "day") {
       const byClient: Record<string, Entry[]> = {};
-      entries.forEach((e) => { (byClient[e.client_id] ||= []).push(e); });
+      visibleEntries.forEach((e) => { (byClient[e.client_id] ||= []).push(e); });
       return { kind: "day", groups: Object.entries(byClient) } as const;
     }
     if (view === "week") {
       const days = eachDayOfInterval(range);
       return {
         kind: "week",
-        groups: days.map((d) => [
-          format(d, "EEEE, MMM d"),
-          entries.filter((e) => isSameDay(new Date(e.started_at), d)),
-        ] as [string, Entry[]]),
+        groups: days
+          .map((d) => [
+            format(d, "EEEE, MMM d"),
+            visibleEntries.filter((e) => isSameDay(new Date(e.started_at), d)),
+          ] as [string, Entry[]])
+          .filter(([, list]) => list.length > 0),
       } as const;
     }
-    // month — group by week
     const weeks: Record<string, Entry[]> = {};
-    entries.forEach((e) => {
+    visibleEntries.forEach((e) => {
       const key = format(startOfWeek(new Date(e.started_at), { weekStartsOn: 1 }), "MMM d");
       (weeks[key] ||= []).push(e);
     });
     return { kind: "month", groups: Object.entries(weeks) } as const;
-  }, [view, range, entries]);
+  }, [view, range, visibleEntries]);
+
+  // Distinct option lists for multi-selects
+  const distinctClientOpts = useMemo(() => Array.from(new Set(entries.map((e) => clients[e.client_id]?.name).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, clients]);
+  const distinctProjectOpts = useMemo(() => Array.from(new Set(entries.map((e) => e.project_id ? projects[e.project_id]?.name : null).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, projects]);
+  const distinctActivityOpts = useMemo(() => Array.from(new Set(entries.map((e) => activities[e.activity_type_id]?.name).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, activities]);
 
   const headerLabel = view === "day"
     ? format(cursor, "EEEE, MMMM d, yyyy")
@@ -197,11 +254,15 @@ export default function TimeTracking() {
             <div className="text-sm font-medium">{headerLabel}</div>
 
             {isAdmin && (
-              <Select value={scope} onValueChange={(v: any) => setScope(v)}>
-                <SelectTrigger className="w-36 h-9 ml-auto"><SelectValue /></SelectTrigger>
+              <Select value={selection} onValueChange={setSelection}>
+                <SelectTrigger className="w-48 h-9 ml-auto"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="mine">My entries</SelectItem>
                   <SelectItem value="all">All team members</SelectItem>
+                  {memberList.length > 0 && <SelectSeparator />}
+                  {memberList.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email ?? "Unknown"}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
@@ -219,6 +280,43 @@ export default function TimeTracking() {
                 <span className="text-muted-foreground ml-2">/ {totalD.decimalLabel}</span>
               </div>
             </div>
+
+            {entries.length > 0 && (
+              <div className="px-4 py-2 border-b border-border bg-muted/30 flex items-center gap-3 text-xs">
+                <div className="min-w-[120px]">
+                  <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctClientOpts} />} />
+                </div>
+                <div className="min-w-[140px]">
+                  <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctProjectOpts} />} />
+                </div>
+                <div>
+                  <ColumnHeader label="Task" columnKey="task" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.task} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter task…" />} />
+                </div>
+                <div>
+                  <ColumnHeader label="Activity" columnKey="activity" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.activity} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctActivityOpts} />} />
+                </div>
+                <div className="flex-1" />
+                <div>
+                  <ColumnHeader label="Date" columnKey="date" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.date} onFilterChange={tf.setFilter}
+                    renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
+                </div>
+                <div className="min-w-[140px] text-right">
+                  <ColumnHeader label="Duration" columnKey="duration" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.duration} onFilterChange={tf.setFilter}
+                    align="right"
+                    renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} unit="min" scale={60} />} />
+                </div>
+              </div>
+            )}
 
             {entries.length === 0 ? (
               <div className="p-12 text-center text-sm text-muted-foreground">
@@ -253,7 +351,7 @@ export default function TimeTracking() {
                               </div>
                               <Badge variant="outline" className="text-[10px]">{activities[e.activity_type_id]?.name ?? ""}</Badge>
                               <div className="flex-1 text-xs text-muted-foreground truncate">{e.description}</div>
-                              {scope === "all" && (
+                              {selection !== "mine" && (
                                 <div className="text-xs text-muted-foreground">{users[e.user_id]?.full_name ?? users[e.user_id]?.email ?? ""}</div>
                               )}
                               <div className="tabular-nums text-sm font-medium min-w-[140px] text-right">
