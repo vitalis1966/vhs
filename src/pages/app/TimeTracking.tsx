@@ -107,7 +107,7 @@ export default function TimeTracking() {
     const tm: any = {}; (ts ?? []).forEach((x: any) => tm[x.id] = x); setTasks(tm);
     const am: any = {}; (ac ?? []).forEach((x: any) => am[x.id] = x); setActivities(am);
     const um: any = {}; (us ?? []).forEach((x: any) => um[x.id] = x); setUsers(um);
-  }, [workspaceId, userId, scope, range.start, range.end]);
+  }, [workspaceId, userId, selection, range.start, range.end]);
 
   useEffect(() => { load(); }, [load]);
 
