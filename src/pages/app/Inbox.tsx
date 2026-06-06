@@ -153,7 +153,9 @@ export default function Inbox() {
       const tasks: ExtractedTask[] = data?.tasks ?? [];
       setExtractProgress(100);
       if (!tasks.length) {
-        toast.error("No actionable tasks found in this email.");
+        // No action items extracted → Status: Not Assigned, Action: Complete
+        await updateExtractionState(email.id, "completed");
+        toast.message("No actionable tasks found in this email.");
         return;
       }
       // Update local state to 'extracted'
