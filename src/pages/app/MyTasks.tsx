@@ -133,6 +133,14 @@ export default function MyTasks() {
       setClients(cm);
     } else setClients({});
 
+    const projectIds = Array.from(new Set(all.map((t) => t.project_id).filter(Boolean) as string[]));
+    if (projectIds.length) {
+      const { data: ps } = await (supabase as any).from("projects").select("id, name").in("id", projectIds);
+      const pm: Record<string, ProjectLite> = {};
+      (ps ?? []).forEach((p: any) => pm[p.id] = p);
+      setProjects(pm);
+    } else setProjects({});
+
     setRows(all);
 
     // Identify which of these tasks were created via email extraction
