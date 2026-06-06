@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { StatusDropdown, type InboxStatus } from "@/components/app/inbox/StatusDropdown";
 import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
-import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
+import { ExtractTasksPanel, type ExtractedTask, type PanelFinishSummary } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
 import {
@@ -153,7 +153,9 @@ export default function Inbox() {
       const tasks: ExtractedTask[] = data?.tasks ?? [];
       setExtractProgress(100);
       if (!tasks.length) {
-        toast.error("No actionable tasks found in this email.");
+        // No action items extracted → Status: Not Assigned, Action: Complete
+        await updateExtractionState(email.id, "completed");
+        toast.message("No actionable tasks found in this email.");
         return;
       }
       // Update local state to 'extracted'
@@ -179,6 +181,26 @@ export default function Inbox() {
       toast.error("No extracted tasks stored for this email.");
       return;
     }
+    // Self-heal: if every extracted task is already saved/skipped, finish the row directly.
+    const allResolved = tasks.every((t) => t.status === "saved" || t.status === "skipped");
+    if (allResolved) {
+      const saved = tasks.filter((t) => t.status === "saved").length;
+      const skipped = tasks.filter((t) => t.status === "skipped").length;
+      const summary: PanelFinishSummary = {
+        saved, skipped, deferred: 0, pending: 0, total: tasks.length, closedMidFlow: false,
+      };
+      const { status, extractionState } = resolveEmailState(summary);
+      await updateStatus(email.id, status);
+      await updateExtractionState(email.id, extractionState);
+      // Refresh task counts
+      const { data: ext } = await (supabase as any)
+        .from("email_task_extractions")
+        .select("task_id")
+        .eq("email_id", email.id);
+      setTaskCounts((c) => ({ ...c, [email.id]: (ext ?? []).length }));
+      toast.message("All extracted tasks already resolved.");
+      return;
+    }
     // Make sure the email body viewer isn't open behind the task dialog
     setViewerOpen(false);
     setViewing(null);
@@ -188,22 +210,43 @@ export default function Inbox() {
     setPanelOpen(true);
   };
 
-  const onPanelFinish = async (savedCount: number) => {
+  const resolveEmailState = (s: PanelFinishSummary): { status: InboxStatus; extractionState: ExtractionState } => {
+    // Branch 1: nothing extracted
+    if (s.total === 0) return { status: "not_assigned", extractionState: "completed" };
+    // Branch 2: closed mid-flow, nothing saved yet
+    if (s.closedMidFlow && s.saved === 0) return { status: "not_assigned", extractionState: "extracted" };
+    // Branch 3: closed mid-flow, some saved
+    if (s.closedMidFlow && s.saved > 0) return { status: "waiting", extractionState: "extracted" };
+    // Branch 4: all Yes-skipped, nothing created
+    if (s.saved === 0 && s.skipped === s.total) return { status: "not_assigned", extractionState: "completed" };
+    // Branch 5: fully resolved, at least one created (mix of created + Yes-skipped)
+    if (s.saved > 0 && s.saved + s.skipped === s.total) return { status: "assigned", extractionState: "completed" };
+    // Branch 6: outstanding work + something saved
+    if ((s.pending + s.deferred) > 0 && s.saved > 0) return { status: "waiting", extractionState: "extracted" };
+    // Branch 7: outstanding work + nothing saved
+    if ((s.pending + s.deferred) > 0 && s.saved === 0) return { status: "not_assigned", extractionState: "extracted" };
+    // Safety fallback (should be unreachable given the table above)
+    return { status: "not_assigned", extractionState: "extracted" };
+  };
+
+  const onPanelFinish = async (summary: PanelFinishSummary) => {
     setPanelOpen(false);
     if (!extractEmail) return;
-    // Refresh counts
+    const emailRef = extractEmail;
+
+    // Refresh task counts regardless
     const { data: ext } = await (supabase as any)
       .from("email_task_extractions")
       .select("task_id")
-      .eq("email_id", extractEmail.id);
-    setTaskCounts((c) => ({ ...c, [extractEmail.id]: (ext ?? []).length }));
+      .eq("email_id", emailRef.id);
+    setTaskCounts((c) => ({ ...c, [emailRef.id]: (ext ?? []).length }));
 
-    if (savedCount > 0) {
-      await updateStatus(extractEmail.id, "assigned");
-      await updateExtractionState(extractEmail.id, "completed");
-      toast.success(`${savedCount} task${savedCount === 1 ? "" : "s"} saved`);
-    }
-    // If nothing assigned, keep extraction_state as 'extracted' so user can view again
+    const { status, extractionState } = resolveEmailState(summary);
+    await updateStatus(emailRef.id, status);
+    await updateExtractionState(emailRef.id, extractionState);
+
+    if (summary.saved > 0) toast.success(`${summary.saved} task${summary.saved === 1 ? "" : "s"} saved`);
+
     setExtractEmail(null);
     setExtractTasks([]);
   };

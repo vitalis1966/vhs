@@ -36,12 +36,14 @@ interface Row {
 
 interface StatusRow { id: string; name: string; color: string | null; category: string }
 interface ClientLite { id: string; name: string }
+interface ProjectLite { id: string; name: string }
 
 export default function MyTasks() {
   const { workspaceId, userId } = useWorkspace();
   const [rows, setRows] = useState<Row[]>([]);
   const [statuses, setStatuses] = useState<Record<string, StatusRow>>({});
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
+  const [projects, setProjects] = useState<Record<string, ProjectLite>>({});
   const [extractedTaskIds, setExtractedTaskIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<string[]>([]);
   const [showCompleted, setShowCompleted] = useState(false);
@@ -131,6 +133,14 @@ export default function MyTasks() {
       setClients(cm);
     } else setClients({});
 
+    const projectIds = Array.from(new Set(all.map((t) => t.project_id).filter(Boolean) as string[]));
+    if (projectIds.length) {
+      const { data: ps } = await (supabase as any).from("projects").select("id, name").in("id", projectIds);
+      const pm: Record<string, ProjectLite> = {};
+      (ps ?? []).forEach((p: any) => pm[p.id] = p);
+      setProjects(pm);
+    } else setProjects({});
+
     setRows(all);
 
     // Identify which of these tasks were created via email extraction
@@ -168,7 +178,7 @@ export default function MyTasks() {
     defaultSort: { key: "due", dir: "asc" },
   });
 
-  const projectIdShort = (pid: string | null) => pid ? pid.slice(0, 8) : "";
+  const projectLabel = (pid: string | null) => pid ? (projects[pid]?.name ?? pid.slice(0, 8)) : "";
   const distinctProjectIds = useMemo(
     () => Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean) as string[])),
     [rows],
@@ -265,7 +275,7 @@ export default function MyTasks() {
             <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
               filterValue={tf.filters.project} onFilterChange={tf.setFilter}
               renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={distinctProjectIds.map((id) => ({ value: id, label: projectIdShort(id) }))} />} />
+                options={distinctProjectIds.map((id) => ({ value: id, label: projectLabel(id) }))} />} />
           </div>
           <div className="w-28">
             <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
@@ -351,7 +361,7 @@ export default function MyTasks() {
                     )}
                   </div>
                   <div className="w-28 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
-                    {row.project_id ? projectIdShort(row.project_id) : "—"}
+                    {row.project_id ? projectLabel(row.project_id) : "—"}
                   </div>
                   <div className="w-28">
                     {status ? (
