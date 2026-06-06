@@ -36,6 +36,7 @@ interface Row {
 
 interface StatusRow { id: string; name: string; color: string | null; category: string }
 interface ClientLite { id: string; name: string }
+interface ProjectLite { id: string; name: string }
 
 export default function MyTasks() {
   const { workspaceId, userId } = useWorkspace();
