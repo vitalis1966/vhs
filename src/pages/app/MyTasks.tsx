@@ -382,7 +382,7 @@ export default function MyTasks() {
                     )}
                   </div>
                   <div className={`w-28 ${dueClass}`}>
-                    {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
+                    {row.due_date ? format(parseDateOnly(row.due_date)!, "MMM d, yyyy") : "—"}
                   </div>
                   <div className="w-24 text-xs text-muted-foreground">Me</div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
