@@ -149,31 +149,66 @@ export default function TimeTracking() {
     downloadCsv(`time-entries-${format(range.start, "yyyy-MM-dd")}.csv`, csv);
   };
 
-  // Grouping
+  const tf = useTableFilters<"client" | "project" | "task" | "activity" | "date" | "duration">();
+
+  const visibleEntries = useMemo(() => tf.apply(entries, {
+    client: {
+      filterValue: (e) => clients[e.client_id]?.name ?? "",
+      sortValue: (e) => (clients[e.client_id]?.name ?? "").toLowerCase(),
+    },
+    project: {
+      filterValue: (e) => (e.project_id ? projects[e.project_id]?.name ?? "" : ""),
+      sortValue: (e) => (e.project_id ? (projects[e.project_id]?.name ?? "").toLowerCase() : ""),
+    },
+    task: {
+      filterValue: (e) => (e.task_id ? tasks[e.task_id]?.title ?? "" : ""),
+      sortValue: (e) => (e.task_id ? (tasks[e.task_id]?.title ?? "").toLowerCase() : ""),
+    },
+    activity: {
+      filterValue: (e) => activities[e.activity_type_id]?.name ?? "",
+      sortValue: (e) => (activities[e.activity_type_id]?.name ?? "").toLowerCase(),
+    },
+    date: {
+      filterValue: (e) => new Date(e.started_at),
+      sortValue: (e) => new Date(e.started_at).getTime(),
+    },
+    duration: {
+      filterValue: (e) => e.duration_seconds,
+      sortValue: (e) => e.duration_seconds,
+    },
+  }), [entries, tf.state, clients, projects, tasks, activities]);
+
+  // Grouping (operates on filtered list; empty groups dropped)
   const grouped = useMemo(() => {
     if (view === "day") {
       const byClient: Record<string, Entry[]> = {};
-      entries.forEach((e) => { (byClient[e.client_id] ||= []).push(e); });
+      visibleEntries.forEach((e) => { (byClient[e.client_id] ||= []).push(e); });
       return { kind: "day", groups: Object.entries(byClient) } as const;
     }
     if (view === "week") {
       const days = eachDayOfInterval(range);
       return {
         kind: "week",
-        groups: days.map((d) => [
-          format(d, "EEEE, MMM d"),
-          entries.filter((e) => isSameDay(new Date(e.started_at), d)),
-        ] as [string, Entry[]]),
+        groups: days
+          .map((d) => [
+            format(d, "EEEE, MMM d"),
+            visibleEntries.filter((e) => isSameDay(new Date(e.started_at), d)),
+          ] as [string, Entry[]])
+          .filter(([, list]) => list.length > 0),
       } as const;
     }
-    // month — group by week
     const weeks: Record<string, Entry[]> = {};
-    entries.forEach((e) => {
+    visibleEntries.forEach((e) => {
       const key = format(startOfWeek(new Date(e.started_at), { weekStartsOn: 1 }), "MMM d");
       (weeks[key] ||= []).push(e);
     });
     return { kind: "month", groups: Object.entries(weeks) } as const;
-  }, [view, range, entries]);
+  }, [view, range, visibleEntries]);
+
+  // Distinct option lists for multi-selects
+  const distinctClientOpts = useMemo(() => Array.from(new Set(entries.map((e) => clients[e.client_id]?.name).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, clients]);
+  const distinctProjectOpts = useMemo(() => Array.from(new Set(entries.map((e) => e.project_id ? projects[e.project_id]?.name : null).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, projects]);
+  const distinctActivityOpts = useMemo(() => Array.from(new Set(entries.map((e) => activities[e.activity_type_id]?.name).filter(Boolean) as string[])).map((n) => ({ value: n, label: n })), [entries, activities]);
 
   const headerLabel = view === "day"
     ? format(cursor, "EEEE, MMMM d, yyyy")
