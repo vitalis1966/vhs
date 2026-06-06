@@ -338,9 +338,33 @@ export default function Inbox() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-foreground">Inbox</h1>
-        <p className="text-sm text-muted-foreground mt-1">Emails forwarded to Vitalis OS for task extraction.</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-foreground">Inbox</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {view === "trash"
+              ? "Deleted emails. Restore them or delete permanently."
+              : "Emails forwarded to Vitalis OS for task extraction."}
+          </p>
+        </div>
+        <div className="inline-flex rounded-md border border-border bg-card p-0.5">
+          <Button
+            size="sm"
+            variant={view === "inbox" ? "secondary" : "ghost"}
+            className="h-8"
+            onClick={() => setView("inbox")}
+          >
+            <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
+          </Button>
+          <Button
+            size="sm"
+            variant={view === "trash" ? "secondary" : "ghost"}
+            className="h-8"
+            onClick={() => setView("trash")}
+          >
+            <Trash2 className="h-4 w-4 mr-1.5" /> Trash
+          </Button>
+        </div>
       </div>
 
       <div className="border border-border rounded-lg bg-card">
@@ -349,12 +373,14 @@ export default function Inbox() {
         ) : emails.length === 0 ? (
           <div className="p-16 text-center">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
-              <InboxIcon className="h-6 w-6 text-muted-foreground" />
+              {view === "trash" ? <Trash2 className="h-6 w-6 text-muted-foreground" /> : <InboxIcon className="h-6 w-6 text-muted-foreground" />}
             </div>
-            <p className="text-sm text-foreground font-medium">No emails yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Forward emails to <span className="font-mono text-foreground">{INBOUND_ADDRESS}</span> to get started.
-            </p>
+            <p className="text-sm text-foreground font-medium">{view === "trash" ? "Trash is empty" : "No emails yet"}</p>
+            {view === "inbox" && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Forward emails to <span className="font-mono text-foreground">{INBOUND_ADDRESS}</span> to get started.
+              </p>
+            )}
           </div>
         ) : (
           <Table>
