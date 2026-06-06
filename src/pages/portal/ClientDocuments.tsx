@@ -76,13 +76,13 @@ function Inner() {
       setUploading(false);
       return;
     }
-    const { error: insErr } = await (supabase as any).from("documents").insert({
+    const { data: insRow, error: insErr } = await (supabase as any).from("documents").insert({
       client_user_id: userId,
       file_name: file.name,
       file_type: file.type || "application/octet-stream",
       file_size: file.size,
       storage_path: path,
-    });
+    }).select("id").single();
     if (insErr) {
       await (supabase as any).storage.from("client-documents").remove([path]);
       await logActivity("File Upload", "Failed");
@@ -91,6 +91,14 @@ function Inner() {
       return;
     }
     await logActivity("File Upload", "Success");
+    // Best-effort: link to a matching Vitalis OS client by business name
+    if (insRow?.id) {
+      try {
+        await (supabase as any).rpc("auto_assign_document_to_client", { p_document_id: insRow.id });
+      } catch (assignErr) {
+        console.error("auto_assign_document_to_client failed (non-blocking):", assignErr);
+      }
+    }
     await (supabase as any).functions.invoke("notify-document-event", {
       body: { event: "upload", file_name: file.name, file_type: file.type, file_size: file.size, client_user_id: userId },
     });
