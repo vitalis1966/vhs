@@ -280,16 +280,33 @@ export default function Inbox() {
                 <TableHead className="w-10">
                   <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" />
                 </TableHead>
-                <TableHead>From</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Received</TableHead>
-                <TableHead className="w-[190px]">Status</TableHead>
+                <TableHead>
+                  <ColumnHeader label="From" columnKey="from" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.from} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter sender…" />} />
+                </TableHead>
+                <TableHead>
+                  <ColumnHeader label="Subject" columnKey="subject" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.subject} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter subject…" />} />
+                </TableHead>
+                <TableHead>
+                  <ColumnHeader label="Date" columnKey="received" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.received} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
+                </TableHead>
+                <TableHead className="w-[190px]">
+                  <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                    filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                    renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                      options={(Object.keys(INBOX_STATUS_LABELS) as InboxStatus[]).map((k) => ({ value: k, label: INBOX_STATUS_LABELS[k] }))} />} />
+                </TableHead>
                 <TableHead className="w-20 text-center">Tasks</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {emails.map((e) => {
+              {visibleEmails.map((e) => {
                 const subjectTrunc = (e.subject ?? "(no subject)").length > 70
                   ? (e.subject ?? "").slice(0, 70) + "…"
                   : (e.subject ?? "(no subject)");
