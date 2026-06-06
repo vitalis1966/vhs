@@ -17,6 +17,9 @@ import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue } from "@/comp
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 interface Row {
   id: string;
