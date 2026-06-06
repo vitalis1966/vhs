@@ -181,6 +181,26 @@ export default function Inbox() {
       toast.error("No extracted tasks stored for this email.");
       return;
     }
+    // Self-heal: if every extracted task is already saved/skipped, finish the row directly.
+    const allResolved = tasks.every((t) => t.status === "saved" || t.status === "skipped");
+    if (allResolved) {
+      const saved = tasks.filter((t) => t.status === "saved").length;
+      const skipped = tasks.filter((t) => t.status === "skipped").length;
+      const summary: PanelFinishSummary = {
+        saved, skipped, deferred: 0, pending: 0, total: tasks.length, closedMidFlow: false,
+      };
+      const { status, extractionState } = resolveEmailState(summary);
+      await updateStatus(email.id, status);
+      await updateExtractionState(email.id, extractionState);
+      // Refresh task counts
+      const { data: ext } = await (supabase as any)
+        .from("email_task_extractions")
+        .select("task_id")
+        .eq("email_id", email.id);
+      setTaskCounts((c) => ({ ...c, [email.id]: (ext ?? []).length }));
+      toast.message("All extracted tasks already resolved.");
+      return;
+    }
     // Make sure the email body viewer isn't open behind the task dialog
     setViewerOpen(false);
     setViewing(null);

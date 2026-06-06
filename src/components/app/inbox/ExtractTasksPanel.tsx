@@ -124,6 +124,28 @@ export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssignee
     saveDraft(emailId, { formByIndex, reviewStates });
   }, [open, emailId, formByIndex, reviewStates]);
 
+  // Self-heal: panel opened but nothing left to review (all saved/skipped).
+  // Auto-finish so the Inbox resolver can transition the row to completed.
+  useEffect(() => {
+    if (!open) return;
+    if (!hydrated.tasks.length) return;
+    if (visibleIndices.length > 0) return;
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    const summary: PanelFinishSummary = {
+      saved: hydrated.reviewStates.filter((s) => s === "saved").length,
+      skipped: hydrated.reviewStates.filter((s) => s === "skipped").length,
+      deferred: 0,
+      pending: 0,
+      total: hydrated.tasks.length,
+      closedMidFlow: false,
+    };
+    clearDraft(emailId);
+    setDialogOpen(false);
+    onOpenChange(false);
+    onFinished(summary);
+  }, [open, hydrated, visibleIndices, emailId, onOpenChange, onFinished]);
+
   if (!open || !hydrated.tasks.length || !visible.length) return null;
   const total = visible.length;
   const currentIndex = visible[Math.min(pos, total - 1)];
