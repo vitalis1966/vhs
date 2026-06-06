@@ -164,23 +164,53 @@ export default function MyTasks() {
   // Cross-component task mutations
   useEffect(() => onTasksChanged(() => load()), [load]);
 
-  const filtered = useMemo(() => {
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignee">({
+    defaultSort: { key: "due", dir: "asc" },
+  });
+
+  const projectIdShort = (pid: string | null) => pid ? pid.slice(0, 8) : "";
+  const distinctProjectIds = useMemo(
+    () => Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean) as string[])),
+    [rows],
+  );
+
+  const baseFiltered = useMemo(() => {
     return rows.filter((t) => {
       const cat = t.status_id ? statuses[t.status_id]?.category : null;
       const overdue = isOverdue(t.due_date, t.completed_at);
       if (!showCompleted) {
         if (cat === "done" || cat === "cancelled") {
-          // Hide completed/cancelled unless overdue (overdue can't be done anyway)
           return overdue;
         }
       }
       return true;
-    }).sort((a, b) => {
-      const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-      const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity;
-      return ad - bd;
     });
   }, [rows, statuses, showCompleted]);
+
+  const filtered = useMemo(() => tf.apply(baseFiltered, {
+    title: { filterValue: (r) => r.title, sortValue: (r) => r.title.toLowerCase() },
+    client: {
+      filterValue: (r) => r.client_id,
+      sortValue: (r) => (clients[r.client_id]?.name ?? "").toLowerCase(),
+    },
+    project: {
+      filterValue: (r) => r.project_id ?? "",
+      sortValue: (r) => r.project_id ?? "",
+    },
+    status: {
+      filterValue: (r) => r.status_id ?? "",
+      sortValue: (r) => (r.status_id ? statuses[r.status_id]?.name ?? "" : ""),
+    },
+    priority: { filterValue: (r) => r.priority, sortValue: (r) => r.priority },
+    due: {
+      filterValue: (r) => (r.due_date ? new Date(r.due_date) : null),
+      sortValue: (r) => (r.due_date ? new Date(r.due_date).getTime() : null),
+    },
+    assignee: {
+      filterValue: () => (userId ? [userId] : []),
+      sortValue: () => userId ?? "",
+    },
+  }), [baseFiltered, tf.state, clients, statuses, userId]);
 
   const allSelected = filtered.length > 0 && filtered.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : filtered.map((r) => r.id));
