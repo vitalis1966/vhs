@@ -361,7 +361,7 @@ export default function MyTasks() {
                     )}
                   </div>
                   <div className="w-28 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
-                    {row.project_id ? projectIdShort(row.project_id) : "—"}
+                    {row.project_id ? projectLabel(row.project_id) : "—"}
                   </div>
                   <div className="w-28">
                     {status ? (
