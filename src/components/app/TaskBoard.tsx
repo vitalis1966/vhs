@@ -12,7 +12,7 @@ import {
 import { ArrowUpDown, Filter } from "lucide-react";
 import { DndContext, DragEndEvent, DragOverlay, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import { format } from "date-fns";
-import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { PRIORITY_CLASS, clientColor, initials, isOverdue, parseDateOnly } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { onTasksChanged } from "./tasks/taskMutations";
 
