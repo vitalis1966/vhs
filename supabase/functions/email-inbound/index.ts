@@ -203,8 +203,8 @@ Deno.serve(async (req) => {
 
   // Fallback: if webhook payload lacks body (Resend sends metadata-only events
   // for some event types), fetch the full email from Resend's API.
+  const resendKey = Deno.env.get("VHS_Website");
   if ((!body_text && !body_html) && resend_email_id) {
-    const resendKey = Deno.env.get("VHS_Website");
     if (resendKey) {
       try {
         const ed = await fetchReceivedEmailFromResend(String(resend_email_id), resendKey);
@@ -349,13 +349,19 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { error } = await supabase
+  const { data: inserted, error } = await supabase
     .from("inbound_emails")
-    .insert(insertPayload);
+    .insert(insertPayload)
+    .select("id")
+    .single();
 
   if (error) {
     console.error("[email-inbound] insert error", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+
+  if (inserted?.id && resendKey && resend_email_id && !body_text && !body_html) {
+    scheduleResendBodyBackfill(supabase, inserted.id, String(resend_email_id), resendKey);
   }
 
   console.log("[email-inbound] stored ok");
