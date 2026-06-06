@@ -136,6 +136,8 @@ export function ExtractTasksPanel({ open, onOpenChange, emailId, defaultAssignee
     saved: states.filter((s) => s === "saved").length,
     skipped: states.filter((s) => s === "skipped").length,
     deferred: states.filter((s) => s === "deferred").length,
+    pending: states.filter((s) => s === "pending").length,
+    total: hydrated.tasks.length,
     closedMidFlow,
   });
 
