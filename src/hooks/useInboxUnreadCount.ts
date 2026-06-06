@@ -27,16 +27,19 @@ export function useInboxUnreadCount(userId?: string | null): InboxBadge {
 
       const totalReq = (supabase as any)
         .from("inbound_emails")
-        .select("id", { count: "exact", head: true });
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null);
 
       const newReq = lastVisited
         ? (supabase as any)
             .from("inbound_emails")
             .select("id", { count: "exact", head: true })
+            .is("deleted_at", null)
             .gt("received_at", lastVisited)
         : (supabase as any)
             .from("inbound_emails")
             .select("id", { count: "exact", head: true })
+            .is("deleted_at", null)
             .eq("status", "not_assigned");
 
       const [tRes, nRes] = await Promise.all([totalReq, newReq]);
