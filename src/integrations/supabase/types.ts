@@ -671,6 +671,50 @@ export type Database = {
           },
         ]
       }
+      client_submission_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          assigned_by_user_id: string | null
+          client_id: string
+          hidden_in_client: boolean
+          id: string
+          metadata: Json | null
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          assigned_by_user_id?: string | null
+          client_id: string
+          hidden_in_client?: boolean
+          id?: string
+          metadata?: Json | null
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          assigned_by_user_id?: string | null
+          client_id?: string
+          hidden_in_client?: boolean
+          id?: string
+          metadata?: Json | null
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_submission_assignments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_users: {
         Row: {
           business_name: string | null
@@ -3466,6 +3510,14 @@ export type Database = {
         Args: { p_member_id: string; p_name: string }
         Returns: undefined
       }
+      auto_assign_assessment_to_client: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
+      auto_assign_document_to_client: {
+        Args: { p_document_id: string }
+        Returns: undefined
+      }
       can_access_client: { Args: { cid: string }; Returns: boolean }
       can_manage_inbound_email: { Args: { p_id: string }; Returns: boolean }
       cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
@@ -3486,6 +3538,10 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_client_report_for_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: Json
+      }
       get_client_time_summary: { Args: { p_client_id: string }; Returns: Json }
       get_client_time_summary_window: {
         Args: { p_client_id: string; p_end: string; p_start: string }
@@ -3498,6 +3554,10 @@ export type Database = {
           full_name: string
           organization_name: string
         }[]
+      }
+      get_internal_report_for_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: Json
       }
       get_project_time_summary_window: {
         Args: { p_end: string; p_project_id: string; p_start: string }
@@ -3600,6 +3660,42 @@ export type Database = {
       is_workspace_admin: { Args: { wid: string }; Returns: boolean }
       is_workspace_admin_or_manager: { Args: { wid: string }; Returns: boolean }
       is_workspace_member: { Args: { wid: string }; Returns: boolean }
+      list_client_assessment_assignments: {
+        Args: { p_client_id: string }
+        Returns: {
+          analysis_status: string
+          assessment_purpose: string
+          assessment_slug: string
+          assessment_title: string
+          assigned_at: string
+          assignment_id: string
+          client_email: string
+          client_name: string
+          has_client_report: boolean
+          has_internal_report: boolean
+          meeting_booked: boolean
+          meeting_booked_by: string
+          organization: string
+          session_id: string
+          status: string
+          submitted_at: string
+        }[]
+      }
+      list_client_submission_assignments: {
+        Args: { p_client_id: string }
+        Returns: {
+          assigned_at: string
+          assignment_id: string
+          business_name: string
+          created_at: string
+          document_id: string
+          file_name: string
+          file_size: number
+          file_type: string
+          storage_path: string
+          updated_at: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -3626,6 +3722,10 @@ export type Database = {
           p_token: string
         }
         Returns: string
+      }
+      set_assignment_hidden: {
+        Args: { p_hidden: boolean; p_id: string }
+        Returns: undefined
       }
       shares_workspace_with: { Args: { _other_user: string }; Returns: boolean }
       soft_delete_inbound_email: { Args: { p_id: string }; Returns: string }

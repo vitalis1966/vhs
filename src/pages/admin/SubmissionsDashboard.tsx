@@ -23,17 +23,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Loader2,
   ArrowLeft,
   FileSearch,
   RefreshCw,
   BarChart3,
-  Trash2,
+  MoreVertical,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AssignToClientDialog } from "@/components/admin/AssignToClientDialog";
 
 interface SubmissionRow {
   session_id: string;
@@ -83,6 +90,9 @@ export default function SubmissionsDashboard() {
   const [loading, setLoading] = useState(true);
   const [runningAnalysis, setRunningAnalysis] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [assignedIds, setAssignedIds] = useState<Set<string>>(new Set());
+  const [assignTarget, setAssignTarget] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -168,6 +178,20 @@ export default function SubmissionsDashboard() {
     }
 
     setSubmissions(rows);
+
+    // Load existing assignment links so we can show "Assigned" in the row menu.
+    const sessionIds = rows.map((r) => r.session_id);
+    if (sessionIds.length > 0) {
+      const { data: assigned } = await (supabase as any)
+        .from("client_submission_assignments")
+        .select("source_id")
+        .eq("source_type", "assessment")
+        .in("source_id", sessionIds);
+      setAssignedIds(new Set((assigned ?? []).map((a: any) => a.source_id as string)));
+    } else {
+      setAssignedIds(new Set());
+    }
+
     setLoading(false);
   };
 
@@ -337,23 +361,34 @@ export default function SubmissionsDashboard() {
                           </Button>
                         </TableCell>
                         <TableCell className={`${cellClass} pl-4`}>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive" disabled={deletingId === sub.session_id}>
-                                {deletingId === sub.session_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                                disabled={deletingId === sub.session_id}
+                              >
+                                {deletingId === sub.session_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreVertical className="h-4 w-4" />}
                               </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
-                                <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(sub.session_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {assignedIds.has(sub.session_id) ? (
+                                <DropdownMenuItem disabled className="text-muted-foreground">Assigned</DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem onClick={() => setAssignTarget(sub.session_id)}>
+                                  Assign to Client
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => setConfirmDeleteId(sub.session_id)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -375,23 +410,29 @@ export default function SubmissionsDashboard() {
                           const status = getStatusInfo(sub.assessment_purpose);
                           return <Badge className={`${status.color} text-xs`}>{status.label}</Badge>;
                         })()}
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" disabled={deletingId === sub.session_id}>
-                              {deletingId === sub.session_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" disabled={deletingId === sub.session_id}>
+                              {deletingId === sub.session_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreVertical className="h-3.5 w-3.5" />}
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
-                              <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(sub.session_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {assignedIds.has(sub.session_id) ? (
+                              <DropdownMenuItem disabled className="text-muted-foreground">Assigned</DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem onClick={() => setAssignTarget(sub.session_id)}>
+                                Assign to Client
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => setConfirmDeleteId(sub.session_id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
 
@@ -442,6 +483,34 @@ export default function SubmissionsDashboard() {
         </div>
       </section>
       <Footer />
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this assessment? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (confirmDeleteId) { void handleDelete(confirmDeleteId); setConfirmDeleteId(null); } }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {assignTarget && (
+        <AssignToClientDialog
+          open={!!assignTarget}
+          onOpenChange={(o) => !o && setAssignTarget(null)}
+          sourceType="assessment"
+          sourceId={assignTarget}
+          onAssigned={() => { setAssignTarget(null); void loadSubmissions(); }}
+        />
+      )}
     </div>
   );
 }

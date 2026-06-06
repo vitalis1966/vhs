@@ -3,7 +3,13 @@
 
 export type WorkspaceRoleKey = "admin" | "manager" | "team_member";
 
-export const PERMISSION_ACTIONS = [
+export interface PermissionEntry {
+  key: string;
+  label: string;
+  section?: string;
+}
+
+export const PERMISSION_ACTIONS: ReadonlyArray<PermissionEntry> = [
   { key: "clients.view_all",   label: "View all clients" },
   { key: "clients.create",     label: "Create clients" },
   { key: "clients.edit",       label: "Edit clients" },
@@ -32,6 +38,12 @@ export const PERMISSION_ACTIONS = [
   { key: "settings.edit",      label: "Edit company settings" },
   { key: "dashboard.view",     label: "View dashboard" },
   { key: "data.export",        label: "Export data" },
+  { key: "reports.view_internal",   label: "View Internal Reports",                section: "Reports & Documents" },
+  { key: "reports.view_client",     label: "View Client Reports",                  section: "Reports & Documents" },
+  { key: "reports.delete_internal", label: "Delete Internal Report (Vitalis OS only)", section: "Reports & Documents" },
+  { key: "reports.delete_client",   label: "Delete Client Report (Vitalis OS only)",   section: "Reports & Documents" },
+  { key: "documents.view",          label: "View Documents",                       section: "Reports & Documents" },
+  { key: "documents.delete",        label: "Delete Documents (Vitalis OS only)",   section: "Reports & Documents" },
 ] as const;
 
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number]["key"];
@@ -70,6 +82,12 @@ export const DEFAULT_PERMISSIONS: PermissionsMatrix = {
   "settings.edit":     ADMIN,
   "dashboard.view":    MGRPLUS,
   "data.export":       MGRPLUS,
+  "reports.view_internal":   ALL,
+  "reports.view_client":     ALL,
+  "reports.delete_internal": MGRPLUS,
+  "reports.delete_client":   MGRPLUS,
+  "documents.view":          ALL,
+  "documents.delete":        MGRPLUS,
 };
 
 export function resolveMatrix(stored: any): PermissionsMatrix {

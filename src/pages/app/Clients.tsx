@@ -34,7 +34,7 @@ function initials(name: string | null | undefined) {
 }
 
 export default function Clients() {
-  const { workspaceId, role } = useWorkspace();
+  const { workspaceId, role, userId } = useWorkspace();
   const canManage = role === "admin" || role === "manager";
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [owners, setOwners] = useState<Record<string, { full_name: string | null; email: string | null }>>({});
@@ -54,7 +54,15 @@ export default function Clients() {
       .select("id, name, status, industry, account_owner_id, created_at")
       .eq("workspace_id", workspaceId)
       .order("name", { ascending: true });
-    const rows: ClientRow[] = data ?? [];
+    let rows: ClientRow[] = data ?? [];
+
+    // Rule 1: non-admins see only clients they own or are assigned to.
+    if (role && role !== "admin" && userId) {
+      const { data: memberships } = await (supabase as any)
+        .from("client_members").select("client_id").eq("user_id", userId);
+      const assigned = new Set<string>((memberships ?? []).map((m: any) => m.client_id));
+      rows = rows.filter((r) => r.account_owner_id === userId || assigned.has(r.id));
+    }
     setClients(rows);
 
     const ownerIds = Array.from(new Set(rows.map((r) => r.account_owner_id).filter(Boolean))) as string[];

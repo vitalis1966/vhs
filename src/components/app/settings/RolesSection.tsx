@@ -62,28 +62,47 @@ export function RolesSection() {
               </tr>
             </thead>
             <tbody>
-              {PERMISSION_ACTIONS.map((a) => (
-                <tr key={a.key} className="border-b last:border-0 hover:bg-muted/30">
-                  <td className="py-2 pr-3">{a.label}</td>
-                  {ROLES.map((r) => {
-                    const on = !!matrix[a.key]?.[r];
-                    return (
-                      <td key={r} className="text-center py-2 px-3">
-                        <button
-                          onClick={() => toggle(a.key, r)}
-                          className={`inline-flex h-7 w-7 items-center justify-center rounded transition-colors ${
-                            on ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                               : "bg-rose-50 text-rose-500 hover:bg-rose-100"
-                          }`}
-                          aria-label={on ? "allowed" : "denied"}
-                        >
-                          {on ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                        </button>
-                      </td>
+              {(() => {
+                let lastSection: string | undefined = undefined;
+                const out: JSX.Element[] = [];
+                PERMISSION_ACTIONS.forEach((a) => {
+                  if (a.section && a.section !== lastSection) {
+                    out.push(
+                      <tr key={`section-${a.section}`} className="bg-muted/40">
+                        <td colSpan={1 + ROLES.length} className="py-2 px-3 text-xs uppercase tracking-wider font-semibold text-muted-foreground">
+                          {a.section}
+                        </td>
+                      </tr>
                     );
-                  })}
-                </tr>
-              ))}
+                    lastSection = a.section;
+                  } else if (!a.section) {
+                    lastSection = undefined;
+                  }
+                  out.push(
+                    <tr key={a.key} className="border-b last:border-0 hover:bg-muted/30">
+                      <td className="py-2 pr-3">{a.label}</td>
+                      {ROLES.map((r) => {
+                        const on = !!matrix[a.key]?.[r];
+                        return (
+                          <td key={r} className="text-center py-2 px-3">
+                            <button
+                              onClick={() => toggle(a.key, r)}
+                              className={`inline-flex h-7 w-7 items-center justify-center rounded transition-colors ${
+                                on ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                                   : "bg-rose-50 text-rose-500 hover:bg-rose-100"
+                              }`}
+                              aria-label={on ? "allowed" : "denied"}
+                            >
+                              {on ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                            </button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                });
+                return out;
+              })()}
             </tbody>
           </table>
         </div>
