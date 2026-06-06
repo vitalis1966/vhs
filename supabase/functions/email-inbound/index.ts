@@ -13,12 +13,129 @@ function parseFrom(raw: string): { email: string; name: string | null } {
   return { email: raw.trim().toLowerCase(), name: null };
 }
 
+function firstNonEmpty(...vals: any[]): string | null {
+  for (const v of vals) {
+    if (typeof v === "string" && v.trim().length > 0) return v;
+  }
+  return null;
+}
+
+// Walk known body locations across inbound providers (Resend, CF Email Workers,
+// Postmark, Mailgun, SendGrid, generic parsers). Returns first non-empty match.
+function pickBody(data: any): { text: string | null; html: string | null } {
+  const d = data || {};
+  const email = d.email || {};
+  const parsed = d.parsedEmail || d.parsed_email || {};
+  const message = d.message || {};
+
+  const text = firstNonEmpty(
+    d.text,
+    d.body_text,
+    d.bodyText,
+    d.TextBody,
+    d.plain,
+    d["body-plain"],
+    d.text_body,
+    email.text,
+    email.body_text,
+    email.TextBody,
+    parsed.text,
+    parsed.body_text,
+    message.text,
+    message.body_text,
+  );
+
+  const html = firstNonEmpty(
+    d.html,
+    d.body_html,
+    d.bodyHtml,
+    d.HtmlBody,
+    d.html_content,
+    d["body-html"],
+    d.html_body,
+    email.html,
+    email.body_html,
+    email.HtmlBody,
+    parsed.html,
+    parsed.body_html,
+    message.html,
+    message.body_html,
+  );
+
+  return { text, html };
+}
+
+async function fetchReceivedEmailFromResend(emailId: string, apiKey: string): Promise<any | null> {
+  const endpoints = [
+    `https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}?html_format=data_uri`,
+    `https://api.resend.com/emails/${encodeURIComponent(emailId)}`,
+  ];
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    for (const endpoint of endpoints) {
+      const r = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (r.ok) {
+        const raw = await r.json();
+        return raw?.data ?? raw;
+      }
+
+      const body = await r.text();
+      console.warn("[email-inbound] Resend API fetch failed", {
+        endpoint: endpoint.replace(emailId, "<email_id>"),
+        attempt: attempt + 1,
+        status: r.status,
+        body,
+      });
+    }
+
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 750 * (attempt + 1)));
+  }
+
+  return null;
+}
+
+function scheduleResendBodyBackfill(supabase: any, rowId: string, emailId: string, apiKey: string) {
+  const task = (async () => {
+    for (const delayMs of [2_000, 5_000, 10_000, 20_000]) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      const ed = await fetchReceivedEmailFromResend(emailId, apiKey);
+      if (!ed) continue;
+
+      const apiBody = pickBody(ed);
+      const patch: Record<string, any> = {};
+      if (apiBody.text) patch.body_text = apiBody.text;
+      if (apiBody.html) patch.body_html = apiBody.html;
+      if (Object.keys(patch).length === 0) continue;
+
+      const { error } = await supabase
+        .from("inbound_emails")
+        .update(patch)
+        .eq("id", rowId)
+        .is("body_text", null)
+        .is("body_html", null);
+
+      if (error) console.error("[email-inbound] delayed body backfill error", error);
+      else console.log("[email-inbound] delayed body backfill ok", { id: rowId, patched: Object.keys(patch) });
+      return;
+    }
+  })();
+
+  const waitUntil = (globalThis as any).EdgeRuntime?.waitUntil;
+  if (waitUntil) waitUntil(task);
+  else task.catch((e) => console.error("[email-inbound] delayed body backfill task error", e));
+}
+
 async function verifySvix(secret: string, req: Request, body: string): Promise<boolean> {
   const id = req.headers.get("svix-id");
   const timestamp = req.headers.get("svix-timestamp");
   const sigHeader = req.headers.get("svix-signature");
   if (!id || !timestamp || !sigHeader) return false;
-  // secret format: "whsec_<base64>"
   const secretBytes = secret.startsWith("whsec_")
     ? Uint8Array.from(atob(secret.slice(6)), (c) => c.charCodeAt(0))
     : new TextEncoder().encode(secret);
@@ -63,17 +180,55 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "invalid json" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  // Resend inbound payload may be wrapped in { type, data: {...} }
+  // Payload may be wrapped in { type, data: {...} }
   const data = payload?.data ?? payload;
+  const nestedEmail = data?.email && typeof data.email === "object" ? data.email : null;
 
-  const fromRaw = data?.from ?? data?.from_email ?? "";
+  // Log top-level keys (no content) for diagnosing unknown shapes
+  try {
+    console.log("[email-inbound] payload keys", {
+      root: Object.keys(payload ?? {}),
+      data: Object.keys(data ?? {}),
+      nested_email: nestedEmail ? Object.keys(nestedEmail) : null,
+    });
+  } catch (_) { /* ignore */ }
+
+  const fromRaw = data?.from ?? data?.from_email ?? nestedEmail?.from ?? nestedEmail?.from_email ?? "";
   const fromObj = typeof fromRaw === "object" ? fromRaw : parseFrom(String(fromRaw));
-  const from_email = (fromObj.email || data?.from_email || "").toLowerCase();
-  const from_name = fromObj.name || data?.from_name || null;
-  const subject = data?.subject ?? null;
-  const body_text = data?.text ?? data?.body_text ?? null;
-  const body_html = data?.html ?? data?.body_html ?? null;
-  const resend_email_id = data?.email_id ?? data?.id ?? data?.message_id ?? null;
+  let from_email = (fromObj.email || data?.from_email || nestedEmail?.from_email || "").toLowerCase();
+  let from_name = fromObj.name || data?.from_name || nestedEmail?.from_name || null;
+  let subject = firstNonEmpty(data?.subject, nestedEmail?.subject, data?.Subject);
+  let { text: body_text, html: body_html } = pickBody(data);
+  const resend_email_id = data?.email_id ?? data?.id ?? data?.message_id ?? nestedEmail?.id ?? null;
+
+  // Fallback: if webhook payload lacks body (Resend sends metadata-only events
+  // for some event types), fetch the full email from Resend's API.
+  const resendKey = Deno.env.get("VHS_Website");
+  if ((!body_text && !body_html) && resend_email_id) {
+    if (resendKey) {
+      try {
+        const ed = await fetchReceivedEmailFromResend(String(resend_email_id), resendKey);
+        if (ed) {
+          const apiBody = pickBody(ed);
+          if (!body_text && apiBody.text) body_text = apiBody.text;
+          if (!body_html && apiBody.html) body_html = apiBody.html;
+          if (!body_text && typeof ed.text === "string") body_text = ed.text;
+          if (!body_html && typeof ed.html === "string") body_html = ed.html;
+          if (!subject && typeof ed.subject === "string") subject = ed.subject;
+          if (!from_email && typeof ed.from === "string") {
+            const p = parseFrom(ed.from);
+            from_email = p.email.toLowerCase();
+            from_name = from_name || p.name;
+          }
+          console.log("[email-inbound] fetched from Resend API", { id: resend_email_id, has_text: !!body_text, has_html: !!body_html });
+        }
+      } catch (e) {
+        console.error("[email-inbound] Resend API fetch error", e);
+      }
+    } else {
+      console.warn("[email-inbound] no Resend API key available for body fetch");
+    }
+  }
 
   if (!from_email) {
     return new Response(JSON.stringify({ error: "missing from address" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -154,15 +309,59 @@ Deno.serve(async (req) => {
     resend_email_id,
   };
 
-  console.log("[email-inbound] inserting", { from_email, subject, workspace_id, assigned_to, resend_email_id });
+  console.log("[email-inbound] inserting", {
+    from_email,
+    subject,
+    workspace_id,
+    assigned_to,
+    resend_email_id,
+    has_text: !!body_text,
+    has_html: !!body_html,
+  });
 
-  const { error } = await supabase
+  // Check for an existing row by resend_email_id so we can backfill empty bodies
+  // on retry without changing already-populated rows.
+  if (resend_email_id) {
+    const { data: existing } = await supabase
+      .from("inbound_emails")
+      .select("id, body_text, body_html")
+      .eq("resend_email_id", resend_email_id)
+      .maybeSingle();
+
+    if (existing?.id) {
+      const patch: Record<string, any> = {};
+      if (!existing.body_text && body_text) patch.body_text = body_text;
+      if (!existing.body_html && body_html) patch.body_html = body_html;
+      if (Object.keys(patch).length > 0) {
+        const { error: upErr } = await supabase
+          .from("inbound_emails")
+          .update(patch)
+          .eq("id", existing.id);
+        if (upErr) {
+          console.error("[email-inbound] backfill error", upErr);
+          return new Response(JSON.stringify({ error: upErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+        console.log("[email-inbound] backfilled body on existing row", { id: existing.id, patched: Object.keys(patch) });
+      } else {
+        console.log("[email-inbound] duplicate ignored", { id: existing.id });
+      }
+      return new Response(JSON.stringify({ ok: true, deduped: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
+
+  const { data: inserted, error } = await supabase
     .from("inbound_emails")
-    .upsert(insertPayload, { onConflict: "resend_email_id", ignoreDuplicates: true });
+    .insert(insertPayload)
+    .select("id")
+    .single();
 
   if (error) {
     console.error("[email-inbound] insert error", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+
+  if (inserted?.id && resendKey && resend_email_id && !body_text && !body_html) {
+    scheduleResendBodyBackfill(supabase, inserted.id, String(resend_email_id), resendKey);
   }
 
   console.log("[email-inbound] stored ok");
