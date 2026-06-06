@@ -1258,12 +1258,47 @@ export type Database = {
         }
         Relationships: []
       }
+      inbound_email_deletions: {
+        Row: {
+          deleted_at: string
+          deleted_by: string | null
+          email_id: string
+          from_email: string | null
+          id: string
+          mode: string
+          subject: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          deleted_at?: string
+          deleted_by?: string | null
+          email_id: string
+          from_email?: string | null
+          id?: string
+          mode: string
+          subject?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          deleted_at?: string
+          deleted_by?: string | null
+          email_id?: string
+          from_email?: string | null
+          id?: string
+          mode?: string
+          subject?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       inbound_emails: {
         Row: {
           assigned_to: string | null
           body_html: string | null
           body_text: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           extraction_state: string
           from_email: string
           from_name: string | null
@@ -1280,6 +1315,8 @@ export type Database = {
           body_html?: string | null
           body_text?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           extraction_state?: string
           from_email: string
           from_name?: string | null
@@ -1296,6 +1333,8 @@ export type Database = {
           body_html?: string | null
           body_text?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           extraction_state?: string
           from_email?: string
           from_name?: string | null
@@ -3428,6 +3467,7 @@ export type Database = {
         Returns: undefined
       }
       can_access_client: { Args: { cid: string }; Returns: boolean }
+      can_manage_inbound_email: { Args: { p_id: string }; Returns: boolean }
       cancel_reminders_by_token: { Args: { p_token: string }; Returns: number }
       create_workspace_for_user: {
         Args: {
@@ -3537,6 +3577,7 @@ export type Database = {
           title: string
         }[]
       }
+      hard_delete_inbound_email: { Args: { p_id: string }; Returns: string }
       has_platform_access: {
         Args: {
           _platform: Database["public"]["Enums"]["platform_kind"]
@@ -3576,6 +3617,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      restore_inbound_email: { Args: { p_id: string }; Returns: string }
       schedule_reminder_by_token: {
         Args: {
           p_reminder_number: number
@@ -3586,6 +3628,8 @@ export type Database = {
         Returns: string
       }
       shares_workspace_with: { Args: { _other_user: string }; Returns: boolean }
+      soft_delete_inbound_email: { Args: { p_id: string }; Returns: string }
+      soft_delete_inbound_emails: { Args: { p_ids: string[] }; Returns: number }
       task_workspace_id: { Args: { _task_id: string }; Returns: string }
       update_session_by_token: {
         Args: {

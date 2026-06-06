@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
-import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2, X } from "lucide-react";
+import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2, X, RotateCcw } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -48,16 +48,20 @@ interface EmailRow {
   status: InboxStatus;
   assigned_to: string | null;
   extraction_state: ExtractionState;
+  deleted_at: string | null;
+  deleted_by: string | null;
 }
 
 export default function Inbox() {
-  const { workspaceId, userId } = useWorkspace();
+  const { workspaceId, userId, role } = useWorkspace();
+  const isAdminOrManager = role === "admin" || role === "manager";
   const [emails, setEmails] = useState<EmailRow[]>([]);
   const [taskCounts, setTaskCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [viewing, setViewing] = useState<EmailRow | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<EmailRow | null>(null);
+  const [hardDeleteTarget, setHardDeleteTarget] = useState<EmailRow | null>(null);
   const [extractingId, setExtractingId] = useState<string | null>(null);
   const [extractProgress, setExtractProgress] = useState(0);
   const [extractTasks, setExtractTasks] = useState<ExtractedTask[]>([]);
@@ -67,17 +71,22 @@ export default function Inbox() {
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
+  const [view, setView] = useState<"inbox" | "trash">("inbox");
+  const [deletedByNames, setDeletedByNames] = useState<Record<string, string>>({});
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await (supabase as any)
+    setSelected([]);
+    let q = (supabase as any)
       .from("inbound_emails")
-      .select("id, from_email, from_name, subject, body_text, body_html, received_at, status, assigned_to, extraction_state")
-      .order("received_at", { ascending: false })
+      .select("id, from_email, from_name, subject, body_text, body_html, received_at, status, assigned_to, extraction_state, deleted_at, deleted_by")
+      .order(view === "trash" ? "deleted_at" : "received_at", { ascending: false })
       .limit(200);
+    q = view === "trash" ? q.not("deleted_at", "is", null) : q.is("deleted_at", null);
+    const { data, error } = await q;
     if (error) toast.error(error.message);
     const rows = (data as EmailRow[]) ?? [];
     setEmails(rows);
@@ -96,10 +105,24 @@ export default function Inbox() {
       setTaskCounts({});
     }
 
+    // Resolve deleted_by names for trash view
+    if (view === "trash" && rows.length) {
+      const uids = Array.from(new Set(rows.map((r) => r.deleted_by).filter(Boolean) as string[]));
+      if (uids.length) {
+        const { data: profs } = await (supabase as any)
+          .from("profiles")
+          .select("id, full_name, email")
+          .in("id", uids);
+        const map: Record<string, string> = {};
+        (profs ?? []).forEach((p: any) => { map[p.id] = p.full_name || p.email || p.id; });
+        setDeletedByNames(map);
+      }
+    }
+
     setLoading(false);
     // Refresh the visited marker after load so badge resets
     markInboxVisited(userId);
-  }, [userId]);
+  }, [userId, view]);
 
   useEffect(() => { if (workspaceId) load(); }, [workspaceId, load]);
 
@@ -120,24 +143,41 @@ export default function Inbox() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    const { error } = await (supabase as any).from("inbound_emails").delete().eq("id", deleteTarget.id);
+    const { error } = await (supabase as any).rpc("soft_delete_inbound_email", { p_id: deleteTarget.id });
     if (error) { toast.error(error.message); return; }
     setEmails((rows) => rows.filter((r) => r.id !== deleteTarget.id));
     setSelected((prev) => prev.filter((id) => id !== deleteTarget.id));
     setDeleteTarget(null);
-    toast.success("Email deleted");
+    toast.success("Email moved to Trash");
   };
 
   const confirmBulkDelete = async () => {
     if (!selected.length) return;
-    const { error } = await (supabase as any).from("inbound_emails").delete().in("id", selected);
+    const { error } = await (supabase as any).rpc("soft_delete_inbound_emails", { p_ids: selected });
     if (error) { toast.error(error.message); return; }
     setEmails((rows) => rows.filter((r) => !selected.includes(r.id)));
     const count = selected.length;
     setSelected([]);
     setBulkDeleteOpen(false);
-    toast.success(`${count} email${count === 1 ? "" : "s"} deleted`);
+    toast.success(`${count} email${count === 1 ? "" : "s"} moved to Trash`);
   };
+
+  const restoreEmail = async (id: string) => {
+    const { error } = await (supabase as any).rpc("restore_inbound_email", { p_id: id });
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.filter((r) => r.id !== id));
+    toast.success("Email restored");
+  };
+
+  const confirmHardDelete = async () => {
+    if (!hardDeleteTarget) return;
+    const { error } = await (supabase as any).rpc("hard_delete_inbound_email", { p_id: hardDeleteTarget.id });
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.filter((r) => r.id !== hardDeleteTarget.id));
+    setHardDeleteTarget(null);
+    toast.success("Email permanently deleted");
+  };
+
 
   const runExtract = async (email: EmailRow) => {
     setExtractingId(email.id);
@@ -298,9 +338,33 @@ export default function Inbox() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-foreground">Inbox</h1>
-        <p className="text-sm text-muted-foreground mt-1">Emails forwarded to Vitalis OS for task extraction.</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-foreground">Inbox</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {view === "trash"
+              ? "Deleted emails. Restore them or delete permanently."
+              : "Emails forwarded to Vitalis OS for task extraction."}
+          </p>
+        </div>
+        <div className="inline-flex rounded-md border border-border bg-card p-0.5">
+          <Button
+            size="sm"
+            variant={view === "inbox" ? "secondary" : "ghost"}
+            className="h-8"
+            onClick={() => setView("inbox")}
+          >
+            <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
+          </Button>
+          <Button
+            size="sm"
+            variant={view === "trash" ? "secondary" : "ghost"}
+            className="h-8"
+            onClick={() => setView("trash")}
+          >
+            <Trash2 className="h-4 w-4 mr-1.5" /> Trash
+          </Button>
+        </div>
       </div>
 
       <div className="border border-border rounded-lg bg-card">
@@ -309,12 +373,14 @@ export default function Inbox() {
         ) : emails.length === 0 ? (
           <div className="p-16 text-center">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
-              <InboxIcon className="h-6 w-6 text-muted-foreground" />
+              {view === "trash" ? <Trash2 className="h-6 w-6 text-muted-foreground" /> : <InboxIcon className="h-6 w-6 text-muted-foreground" />}
             </div>
-            <p className="text-sm text-foreground font-medium">No emails yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Forward emails to <span className="font-mono text-foreground">{INBOUND_ADDRESS}</span> to get started.
-            </p>
+            <p className="text-sm text-foreground font-medium">{view === "trash" ? "Trash is empty" : "No emails yet"}</p>
+            {view === "inbox" && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Forward emails to <span className="font-mono text-foreground">{INBOUND_ADDRESS}</span> to get started.
+              </p>
+            )}
           </div>
         ) : (
           <Table>
@@ -408,29 +474,48 @@ export default function Inbox() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {state === "none" && (
+                          {view === "inbox" && state === "none" && (
                             <DropdownMenuItem onClick={() => runExtract(e)} disabled={isExtracting}>
                               <Sparkles className="h-4 w-4 mr-2" />
                               {isExtracting ? "Extracting…" : "Extract to Task"}
                             </DropdownMenuItem>
                           )}
-                          {state === "extracted" && (
+                          {view === "inbox" && state === "extracted" && (
                             <DropdownMenuItem onClick={() => viewExtracted(e)}>
                               <Eye className="h-4 w-4 mr-2" />
                               View Extracted Tasks
                             </DropdownMenuItem>
                           )}
-                          {state === "completed" && (
+                          {view === "inbox" && state === "completed" && (
                             <DropdownMenuItem disabled>
                               <CheckCircle2 className="h-4 w-4 mr-2" />
                               Completed
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem onClick={() => setDeleteTarget(e)} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete
-                          </DropdownMenuItem>
+                          {view === "inbox" ? (
+                            <DropdownMenuItem onClick={() => setDeleteTarget(e)} className="text-destructive focus:text-destructive">
+                              <Trash2 className="h-4 w-4 mr-2" /> Move to Trash
+                            </DropdownMenuItem>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => restoreEmail(e.id)}>
+                                <RotateCcw className="h-4 w-4 mr-2" /> Restore
+                              </DropdownMenuItem>
+                              {isAdminOrManager && (
+                                <DropdownMenuItem onClick={() => setHardDeleteTarget(e)} className="text-destructive focus:text-destructive">
+                                  <Trash2 className="h-4 w-4 mr-2" /> Delete permanently
+                                </DropdownMenuItem>
+                              )}
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      {view === "trash" && e.deleted_at && (
+                        <div className="text-[11px] text-muted-foreground mt-1 text-right">
+                          {formatDistanceToNow(new Date(e.deleted_at), { addSuffix: true })}
+                          {e.deleted_by && deletedByNames[e.deleted_by] ? ` · ${deletedByNames[e.deleted_by]}` : ""}
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
@@ -440,13 +525,13 @@ export default function Inbox() {
         )}
       </div>
 
-      {/* Bulk delete action bar */}
-      {selected.length > 0 && (
+      {/* Bulk action bar — only on inbox view */}
+      {selected.length > 0 && view === "inbox" && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-full shadow-elevated px-3 py-2 flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2">
           <span className="text-sm font-medium px-2">{selected.length} selected</span>
           <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive" onClick={() => setBulkDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4 mr-1" /> Delete
+            <Trash2 className="h-4 w-4 mr-1" /> Move to Trash
           </Button>
           <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected([])} aria-label="Clear selection">
@@ -467,12 +552,12 @@ export default function Inbox() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this email?</AlertDialogTitle>
-            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>Move this email to Trash?</AlertDialogTitle>
+            <AlertDialogDescription>You can restore it from Trash later.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Move to Trash</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -480,12 +565,25 @@ export default function Inbox() {
       <AlertDialog open={bulkDeleteOpen} onOpenChange={(o) => !o && setBulkDeleteOpen(false)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selected.length} email{selected.length === 1 ? "" : "s"}?</AlertDialogTitle>
-            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>Move {selected.length} email{selected.length === 1 ? "" : "s"} to Trash?</AlertDialogTitle>
+            <AlertDialogDescription>You can restore them from Trash later.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={confirmBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Move to Trash</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!hardDeleteTarget} onOpenChange={(o) => !o && setHardDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete permanently?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone. The email will be removed from the system.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmHardDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete permanently</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
