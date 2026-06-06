@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "@/components/ui/context-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -96,9 +96,11 @@ export function TaskActionsMenu({ task, onEdit, onDeleted, variant = "menu", chi
         </ContextMenu>
       )}
 
-      <Popover open={dateOpen} onOpenChange={setDateOpen}>
-        <PopoverTrigger asChild><span className="hidden" /></PopoverTrigger>
-        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+      <Dialog open={dateOpen} onOpenChange={setDateOpen}>
+        <DialogContent className="w-auto max-w-sm p-0">
+          <DialogHeader className="px-4 pt-4">
+            <DialogTitle>Change due date</DialogTitle>
+          </DialogHeader>
           <Calendar
             mode="single"
             selected={task.dueDate ? new Date(task.dueDate) : undefined}
@@ -111,8 +113,9 @@ export function TaskActionsMenu({ task, onEdit, onDeleted, variant = "menu", chi
             initialFocus
             className="p-3 pointer-events-auto"
           />
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
+
 
       <ReassignPopover
         open={reassignOpen}
@@ -142,12 +145,14 @@ export function ReassignPopover({ open, onOpenChange, workspaceId, value, onAppl
   workspaceId: string; value: string[]; onApply: (ids: string[]) => void;
 }) {
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild><span className="hidden" /></PopoverTrigger>
-      <PopoverContent className="w-72 p-0 pointer-events-auto" align="start">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full max-w-sm p-0">
+        <DialogHeader className="px-4 pt-4">
+          <DialogTitle>Reassign task</DialogTitle>
+        </DialogHeader>
         <MemberList workspaceId={workspaceId} initial={value} onApply={onApply} onCancel={() => onOpenChange(false)} />
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 }
 
