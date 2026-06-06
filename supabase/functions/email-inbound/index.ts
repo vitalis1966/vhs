@@ -65,6 +65,41 @@ function pickBody(data: any): { text: string | null; html: string | null } {
   return { text, html };
 }
 
+async function fetchReceivedEmailFromResend(emailId: string, apiKey: string): Promise<any | null> {
+  const endpoints = [
+    `https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}?html_format=data_uri`,
+    `https://api.resend.com/emails/${encodeURIComponent(emailId)}`,
+  ];
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    for (const endpoint of endpoints) {
+      const r = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (r.ok) {
+        const raw = await r.json();
+        return raw?.data ?? raw;
+      }
+
+      const body = await r.text();
+      console.warn("[email-inbound] Resend API fetch failed", {
+        endpoint: endpoint.replace(emailId, "<email_id>"),
+        attempt: attempt + 1,
+        status: r.status,
+        body,
+      });
+    }
+
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 750 * (attempt + 1)));
+  }
+
+  return null;
+}
+
 async function verifySvix(secret: string, req: Request, body: string): Promise<boolean> {
   const id = req.headers.get("svix-id");
   const timestamp = req.headers.get("svix-timestamp");
