@@ -350,6 +350,9 @@ export default function MyTasks() {
                       </Link>
                     )}
                   </div>
+                  <div className="w-28 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
+                    {row.project_id ? projectIdShort(row.project_id) : "—"}
+                  </div>
                   <div className="w-28">
                     {status ? (
                       <span className="inline-flex items-center gap-1.5 text-xs">
@@ -371,6 +374,7 @@ export default function MyTasks() {
                   <div className={`w-28 ${dueClass}`}>
                     {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
                   </div>
+                  <div className="w-24 text-xs text-muted-foreground">Me</div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>
                     <Button
                       size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
