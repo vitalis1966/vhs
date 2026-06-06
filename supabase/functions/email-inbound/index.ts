@@ -129,11 +129,42 @@ Deno.serve(async (req) => {
 
   const fromRaw = data?.from ?? data?.from_email ?? nestedEmail?.from ?? nestedEmail?.from_email ?? "";
   const fromObj = typeof fromRaw === "object" ? fromRaw : parseFrom(String(fromRaw));
-  const from_email = (fromObj.email || data?.from_email || nestedEmail?.from_email || "").toLowerCase();
-  const from_name = fromObj.name || data?.from_name || nestedEmail?.from_name || null;
-  const subject = firstNonEmpty(data?.subject, nestedEmail?.subject, data?.Subject);
-  const { text: body_text, html: body_html } = pickBody(data);
+  let from_email = (fromObj.email || data?.from_email || nestedEmail?.from_email || "").toLowerCase();
+  let from_name = fromObj.name || data?.from_name || nestedEmail?.from_name || null;
+  let subject = firstNonEmpty(data?.subject, nestedEmail?.subject, data?.Subject);
+  let { text: body_text, html: body_html } = pickBody(data);
   const resend_email_id = data?.email_id ?? data?.id ?? data?.message_id ?? nestedEmail?.id ?? null;
+
+  // Fallback: if webhook payload lacks body (Resend sends metadata-only events
+  // for some event types), fetch the full email from Resend's API.
+  if ((!body_text && !body_html) && resend_email_id) {
+    const resendKey = Deno.env.get("VHS_Website");
+    if (resendKey) {
+      try {
+        const r = await fetch(`https://api.resend.com/emails/${resend_email_id}`, {
+          headers: { Authorization: `Bearer ${resendKey}` },
+        });
+        if (r.ok) {
+          const ed: any = await r.json();
+          if (!body_text && typeof ed.text === "string") body_text = ed.text;
+          if (!body_html && typeof ed.html === "string") body_html = ed.html;
+          if (!subject && typeof ed.subject === "string") subject = ed.subject;
+          if (!from_email && typeof ed.from === "string") {
+            const p = parseFrom(ed.from);
+            from_email = p.email.toLowerCase();
+            from_name = from_name || p.name;
+          }
+          console.log("[email-inbound] fetched from Resend API", { id: resend_email_id, has_text: !!body_text, has_html: !!body_html });
+        } else {
+          console.warn("[email-inbound] Resend API fetch failed", { status: r.status, body: await r.text() });
+        }
+      } catch (e) {
+        console.error("[email-inbound] Resend API fetch error", e);
+      }
+    } else {
+      console.warn("[email-inbound] no Resend API key available for body fetch");
+    }
+  }
 
   if (!from_email) {
     return new Response(JSON.stringify({ error: "missing from address" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
