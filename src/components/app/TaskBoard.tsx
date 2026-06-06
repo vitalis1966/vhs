@@ -3,11 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { ArrowUpDown, Filter } from "lucide-react";
 import { DndContext, DragEndEvent, DragOverlay, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import { format } from "date-fns";
 import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { onTasksChanged } from "./tasks/taskMutations";
+
+type SortKey = "title" | "priority" | "due";
+type SortDir = "asc" | "desc";
+type ColumnState = { search: string; sort: { key: SortKey; dir: SortDir } | null };
+const PRIORITY_ORDER: Record<string, number> = { Urgent: 0, High: 1, Medium: 2, Low: 3 };
 
 interface TaskCard {
   id: string; title: string; status_id: string | null; priority: string;
