@@ -176,11 +176,11 @@ Deno.serve(async (req) => {
     const resendKey = Deno.env.get("VHS_Website");
     if (resendKey) {
       try {
-        const r = await fetch(`https://api.resend.com/emails/${resend_email_id}`, {
-          headers: { Authorization: `Bearer ${resendKey}` },
-        });
-        if (r.ok) {
-          const ed: any = await r.json();
+        const ed = await fetchReceivedEmailFromResend(String(resend_email_id), resendKey);
+        if (ed) {
+          const apiBody = pickBody(ed);
+          if (!body_text && apiBody.text) body_text = apiBody.text;
+          if (!body_html && apiBody.html) body_html = apiBody.html;
           if (!body_text && typeof ed.text === "string") body_text = ed.text;
           if (!body_html && typeof ed.html === "string") body_html = ed.html;
           if (!subject && typeof ed.subject === "string") subject = ed.subject;
@@ -190,8 +190,6 @@ Deno.serve(async (req) => {
             from_name = from_name || p.name;
           }
           console.log("[email-inbound] fetched from Resend API", { id: resend_email_id, has_text: !!body_text, has_html: !!body_html });
-        } else {
-          console.warn("[email-inbound] Resend API fetch failed", { status: r.status, body: await r.text() });
         }
       } catch (e) {
         console.error("[email-inbound] Resend API fetch error", e);
