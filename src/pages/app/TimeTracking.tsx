@@ -254,11 +254,15 @@ export default function TimeTracking() {
             <div className="text-sm font-medium">{headerLabel}</div>
 
             {isAdmin && (
-              <Select value={scope} onValueChange={(v: any) => setScope(v)}>
-                <SelectTrigger className="w-36 h-9 ml-auto"><SelectValue /></SelectTrigger>
+              <Select value={selection} onValueChange={setSelection}>
+                <SelectTrigger className="w-48 h-9 ml-auto"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="mine">My entries</SelectItem>
                   <SelectItem value="all">All team members</SelectItem>
+                  {memberList.length > 0 && <SelectSeparator />}
+                  {memberList.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>{m.full_name ?? m.email ?? "Unknown"}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
