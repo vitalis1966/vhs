@@ -275,7 +275,7 @@ export default function MyTasks() {
             <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
               filterValue={tf.filters.project} onFilterChange={tf.setFilter}
               renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={distinctProjectIds.map((id) => ({ value: id, label: projectIdShort(id) }))} />} />
+                options={distinctProjectIds.map((id) => ({ value: id, label: projectLabel(id) }))} />} />
           </div>
           <div className="w-28">
             <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
