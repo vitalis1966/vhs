@@ -47,6 +47,32 @@ export function TaskBoard({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [tagsByTask, setTagsByTask] = useState<Record<string, string[]>>({});
   const [profiles, setProfiles] = useState<Record<string, ProfileLite>>({});
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [columnState, setColumnState] = useState<Record<string, ColumnState>>({});
+
+  const getColState = (id: string): ColumnState => columnState[id] ?? { search: "", sort: null };
+  const setColSearch = (id: string, search: string) => setColumnState((p) => ({ ...p, [id]: { ...getColState(id), search } }));
+  const setColSort = (id: string, key: SortKey, dir: SortDir) => setColumnState((p) => ({ ...p, [id]: { ...getColState(id), sort: { key, dir } } }));
+  const clearColSort = (id: string) => setColumnState((p) => ({ ...p, [id]: { ...getColState(id), sort: null } }));
+
+  const applyColumn = (statusId: string, list: TaskCard[]): TaskCard[] => {
+    const st = getColState(statusId);
+    let out = list;
+    if (st.search.trim()) {
+      const q = st.search.trim().toLowerCase();
+      out = out.filter((t) => t.title.toLowerCase().includes(q));
+    }
+    if (st.sort) {
+      const dir = st.sort.dir === "asc" ? 1 : -1;
+      out = [...out].sort((a, b) => {
+        if (st.sort!.key === "title") return a.title.localeCompare(b.title) * dir;
+        if (st.sort!.key === "priority") return ((PRIORITY_ORDER[a.priority] ?? 99) - (PRIORITY_ORDER[b.priority] ?? 99)) * dir;
+        const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+        const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+        return (ad - bd) * dir;
+      });
+    }
+    return out;
+  };
 
   const load = useCallback(async () => {
     if (!workspaceId) return;
