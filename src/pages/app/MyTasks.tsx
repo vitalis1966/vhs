@@ -13,7 +13,7 @@ import { BulkActionBar } from "@/components/app/tasks/BulkActionBar";
 import { DeleteTaskDialog } from "@/components/app/tasks/DeleteTaskDialog";
 import { useTimer } from "@/contexts/TimerContext";
 import { TaskDetailPanel } from "@/components/app/TaskDetailPanel";
-import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue } from "@/components/app/taskUtils";
+import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue, parseDateOnly } from "@/components/app/taskUtils";
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
@@ -382,7 +382,7 @@ export default function MyTasks() {
                     )}
                   </div>
                   <div className={`w-28 ${dueClass}`}>
-                    {row.due_date ? format(new Date(row.due_date), "MMM d, yyyy") : "—"}
+                    {row.due_date ? format(parseDateOnly(row.due_date)!, "MMM d, yyyy") : "—"}
                   </div>
                   <div className="w-24 text-xs text-muted-foreground">Me</div>
                   <div className="w-8" onClick={(e) => e.stopPropagation()}>

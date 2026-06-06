@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
-import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { PRIORITY_CLASS, clientColor, initials, isOverdue, parseDateOnly } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { BulkActionBar } from "./tasks/BulkActionBar";
 import { DeleteTaskDialog } from "./tasks/DeleteTaskDialog";
@@ -231,7 +231,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                   ) : "—"}
                 </td>
                 <td className="px-3 py-2"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
-                <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(new Date(t.due_date), "MMM d, yyyy") : "—"}</td>
+                <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d, yyyy") : "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex -space-x-1.5">
                     {aids.slice(0, 3).map((uid) => {

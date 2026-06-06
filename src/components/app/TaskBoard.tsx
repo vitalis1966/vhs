@@ -12,7 +12,7 @@ import {
 import { ArrowUpDown, Filter } from "lucide-react";
 import { DndContext, DragEndEvent, DragOverlay, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import { format } from "date-fns";
-import { PRIORITY_CLASS, clientColor, initials, isOverdue } from "./taskUtils";
+import { PRIORITY_CLASS, clientColor, initials, isOverdue, parseDateOnly } from "./taskUtils";
 import { TaskActionsMenu, type TaskActionTarget } from "./tasks/TaskActionsMenu";
 import { onTasksChanged } from "./tasks/taskMutations";
 
@@ -290,7 +290,7 @@ function Card({ task, client, assigneeIds, profiles }: { task: TaskCard; client?
       </div>
       <div className="flex items-center justify-between">
         <div className={`text-xs ${overdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
-          {task.due_date ? format(new Date(task.due_date), "MMM d") : ""}
+          {task.due_date ? format(parseDateOnly(task.due_date)!, "MMM d") : ""}
           {!!task.comment_count && (
             <span className="ml-2">💬 {task.comment_count}</span>
           )}
