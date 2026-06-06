@@ -100,6 +100,37 @@ async function fetchReceivedEmailFromResend(emailId: string, apiKey: string): Pr
   return null;
 }
 
+function scheduleResendBodyBackfill(supabase: any, rowId: string, emailId: string, apiKey: string) {
+  const task = (async () => {
+    for (const delayMs of [2_000, 5_000, 10_000, 20_000]) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      const ed = await fetchReceivedEmailFromResend(emailId, apiKey);
+      if (!ed) continue;
+
+      const apiBody = pickBody(ed);
+      const patch: Record<string, any> = {};
+      if (apiBody.text) patch.body_text = apiBody.text;
+      if (apiBody.html) patch.body_html = apiBody.html;
+      if (Object.keys(patch).length === 0) continue;
+
+      const { error } = await supabase
+        .from("inbound_emails")
+        .update(patch)
+        .eq("id", rowId)
+        .is("body_text", null)
+        .is("body_html", null);
+
+      if (error) console.error("[email-inbound] delayed body backfill error", error);
+      else console.log("[email-inbound] delayed body backfill ok", { id: rowId, patched: Object.keys(patch) });
+      return;
+    }
+  })();
+
+  const waitUntil = (globalThis as any).EdgeRuntime?.waitUntil;
+  if (waitUntil) waitUntil(task);
+  else task.catch((e) => console.error("[email-inbound] delayed body backfill task error", e));
+}
+
 async function verifySvix(secret: string, req: Request, body: string): Promise<boolean> {
   const id = req.headers.get("svix-id");
   const timestamp = req.headers.get("svix-timestamp");
