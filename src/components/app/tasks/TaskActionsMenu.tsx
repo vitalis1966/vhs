@@ -145,12 +145,14 @@ export function ReassignPopover({ open, onOpenChange, workspaceId, value, onAppl
   workspaceId: string; value: string[]; onApply: (ids: string[]) => void;
 }) {
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild><span className="hidden" /></PopoverTrigger>
-      <PopoverContent className="w-72 p-0 pointer-events-auto" align="start">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full max-w-sm p-0">
+        <DialogHeader className="px-4 pt-4">
+          <DialogTitle>Reassign task</DialogTitle>
+        </DialogHeader>
         <MemberList workspaceId={workspaceId} initial={value} onApply={onApply} onCancel={() => onOpenChange(false)} />
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 }
 
