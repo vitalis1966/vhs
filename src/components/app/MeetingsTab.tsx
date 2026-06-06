@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, Calendar, ArrowLeft, Pencil, ArrowRight, Check, Sparkles, Trash2, Mail, CheckCircle2, Circle } from "lucide-react";
 import { format } from "date-fns";
+import { parseDateOnly } from "@/components/app/taskUtils";
 import { MeetingDialog } from "./MeetingDialog";
 import { MeetingTranscriptDialog } from "./MeetingTranscriptDialog";
 import { TaskFormDialog } from "./TaskFormDialog";
