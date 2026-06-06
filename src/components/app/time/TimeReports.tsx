@@ -228,32 +228,19 @@ export function TimeReports() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2 rounded-md border border-border bg-card p-4">
           <div className="text-sm font-medium mb-3">{primaryLabel} breakdown</div>
-          {primary.length === 0 ? (
+          {entries.length === 0 ? (
             <div className="text-sm text-muted-foreground py-8 text-center">No data</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="text-left font-medium py-2">{primaryLabel}</th>
-                  <th className="text-right font-medium py-2">HH:MM</th>
-                  <th className="text-right font-medium py-2">Decimal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {primary.map((r) => (
-                  <tr key={r.id} className="border-b border-border/50">
-                    <td className="py-2">{r.label}</td>
-                    <td className="py-2 text-right tabular-nums">{r.hhmm}</td>
-                    <td className="py-2 text-right tabular-nums text-muted-foreground">{r.hours.toFixed(2)}h</td>
-                  </tr>
-                ))}
-                <tr className="font-semibold">
-                  <td className="py-2">Total</td>
-                  <td className="py-2 text-right tabular-nums">{totalD.hhmm}</td>
-                  <td className="py-2 text-right tabular-nums">{totalD.decimalLabel}</td>
-                </tr>
-              </tbody>
-            </table>
+            <EntriesReportTable
+              entries={entries}
+              clients={clients}
+              projects={projects}
+              activities={activities}
+              users={users}
+              isAdmin={isAdmin}
+              totalHHMM={totalD.hhmm}
+              totalDecimal={totalD.decimalLabel}
+            />
           )}
         </div>
 
