@@ -13,12 +13,63 @@ function parseFrom(raw: string): { email: string; name: string | null } {
   return { email: raw.trim().toLowerCase(), name: null };
 }
 
+function firstNonEmpty(...vals: any[]): string | null {
+  for (const v of vals) {
+    if (typeof v === "string" && v.trim().length > 0) return v;
+  }
+  return null;
+}
+
+// Walk known body locations across inbound providers (Resend, CF Email Workers,
+// Postmark, Mailgun, SendGrid, generic parsers). Returns first non-empty match.
+function pickBody(data: any): { text: string | null; html: string | null } {
+  const d = data || {};
+  const email = d.email || {};
+  const parsed = d.parsedEmail || d.parsed_email || {};
+  const message = d.message || {};
+
+  const text = firstNonEmpty(
+    d.text,
+    d.body_text,
+    d.bodyText,
+    d.TextBody,
+    d.plain,
+    d["body-plain"],
+    d.text_body,
+    email.text,
+    email.body_text,
+    email.TextBody,
+    parsed.text,
+    parsed.body_text,
+    message.text,
+    message.body_text,
+  );
+
+  const html = firstNonEmpty(
+    d.html,
+    d.body_html,
+    d.bodyHtml,
+    d.HtmlBody,
+    d.html_content,
+    d["body-html"],
+    d.html_body,
+    email.html,
+    email.body_html,
+    email.HtmlBody,
+    parsed.html,
+    parsed.body_html,
+    message.html,
+    message.body_html,
+  );
+
+  return { text, html };
+}
+
 async function verifySvix(secret: string, req: Request, body: string): Promise<boolean> {
   const id = req.headers.get("svix-id");
   const timestamp = req.headers.get("svix-timestamp");
   const sigHeader = req.headers.get("svix-signature");
   if (!id || !timestamp || !sigHeader) return false;
-  // secret format: "whsec_<base64>"
   const secretBytes = secret.startsWith("whsec_")
     ? Uint8Array.from(atob(secret.slice(6)), (c) => c.charCodeAt(0))
     : new TextEncoder().encode(secret);
@@ -63,17 +114,26 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "invalid json" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  // Resend inbound payload may be wrapped in { type, data: {...} }
+  // Payload may be wrapped in { type, data: {...} }
   const data = payload?.data ?? payload;
+  const nestedEmail = data?.email && typeof data.email === "object" ? data.email : null;
 
-  const fromRaw = data?.from ?? data?.from_email ?? "";
+  // Log top-level keys (no content) for diagnosing unknown shapes
+  try {
+    console.log("[email-inbound] payload keys", {
+      root: Object.keys(payload ?? {}),
+      data: Object.keys(data ?? {}),
+      nested_email: nestedEmail ? Object.keys(nestedEmail) : null,
+    });
+  } catch (_) { /* ignore */ }
+
+  const fromRaw = data?.from ?? data?.from_email ?? nestedEmail?.from ?? nestedEmail?.from_email ?? "";
   const fromObj = typeof fromRaw === "object" ? fromRaw : parseFrom(String(fromRaw));
-  const from_email = (fromObj.email || data?.from_email || "").toLowerCase();
-  const from_name = fromObj.name || data?.from_name || null;
-  const subject = data?.subject ?? null;
-  const body_text = data?.text ?? data?.body_text ?? null;
-  const body_html = data?.html ?? data?.body_html ?? null;
-  const resend_email_id = data?.email_id ?? data?.id ?? data?.message_id ?? null;
+  const from_email = (fromObj.email || data?.from_email || nestedEmail?.from_email || "").toLowerCase();
+  const from_name = fromObj.name || data?.from_name || nestedEmail?.from_name || null;
+  const subject = firstNonEmpty(data?.subject, nestedEmail?.subject, data?.Subject);
+  const { text: body_text, html: body_html } = pickBody(data);
+  const resend_email_id = data?.email_id ?? data?.id ?? data?.message_id ?? nestedEmail?.id ?? null;
 
   if (!from_email) {
     return new Response(JSON.stringify({ error: "missing from address" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -154,11 +214,49 @@ Deno.serve(async (req) => {
     resend_email_id,
   };
 
-  console.log("[email-inbound] inserting", { from_email, subject, workspace_id, assigned_to, resend_email_id });
+  console.log("[email-inbound] inserting", {
+    from_email,
+    subject,
+    workspace_id,
+    assigned_to,
+    resend_email_id,
+    has_text: !!body_text,
+    has_html: !!body_html,
+  });
+
+  // Check for an existing row by resend_email_id so we can backfill empty bodies
+  // on retry without changing already-populated rows.
+  if (resend_email_id) {
+    const { data: existing } = await supabase
+      .from("inbound_emails")
+      .select("id, body_text, body_html")
+      .eq("resend_email_id", resend_email_id)
+      .maybeSingle();
+
+    if (existing?.id) {
+      const patch: Record<string, any> = {};
+      if (!existing.body_text && body_text) patch.body_text = body_text;
+      if (!existing.body_html && body_html) patch.body_html = body_html;
+      if (Object.keys(patch).length > 0) {
+        const { error: upErr } = await supabase
+          .from("inbound_emails")
+          .update(patch)
+          .eq("id", existing.id);
+        if (upErr) {
+          console.error("[email-inbound] backfill error", upErr);
+          return new Response(JSON.stringify({ error: upErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+        console.log("[email-inbound] backfilled body on existing row", { id: existing.id, patched: Object.keys(patch) });
+      } else {
+        console.log("[email-inbound] duplicate ignored", { id: existing.id });
+      }
+      return new Response(JSON.stringify({ ok: true, deduped: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
 
   const { error } = await supabase
     .from("inbound_emails")
-    .upsert(insertPayload, { onConflict: "resend_email_id", ignoreDuplicates: true });
+    .insert(insertPayload);
 
   if (error) {
     console.error("[email-inbound] insert error", error);
