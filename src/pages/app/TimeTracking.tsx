@@ -45,15 +45,33 @@ export default function TimeTracking() {
   const [tab, setTab] = useState<"entries" | "reports">("entries");
   const [view, setView] = useState<ViewMode>("day");
   const [cursor, setCursor] = useState<Date>(new Date());
-  const [scope, setScope] = useState<"mine" | "all">("mine");
+  const [selection, setSelection] = useState<string>("mine"); // 'mine' | 'all' | <userId>
   const [entries, setEntries] = useState<Entry[]>([]);
   const [clients, setClients] = useState<Record<string, NameRow>>({});
   const [projects, setProjects] = useState<Record<string, NameRow>>({});
   const [tasks, setTasks] = useState<Record<string, { id: string; title: string }>>({});
   const [activities, setActivities] = useState<Record<string, NameRow>>({});
   const [users, setUsers] = useState<Record<string, UserRow>>({});
+  const [memberList, setMemberList] = useState<UserRow[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
   const [manualOpen, setManualOpen] = useState(false);
+
+  // Load active workspace members for dropdown (admin/manager only)
+  useEffect(() => {
+    if (!workspaceId || !isAdmin) { setMemberList([]); return; }
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("workspace_members")
+        .select("user_id, profiles:profiles!workspace_members_user_id_fkey(id, full_name, email)")
+        .eq("workspace_id", workspaceId)
+        .eq("status", "active");
+      const list: UserRow[] = (data ?? [])
+        .map((m: any) => m.profiles)
+        .filter((p: any) => p?.id)
+        .sort((a: any, b: any) => (a.full_name ?? a.email ?? "").localeCompare(b.full_name ?? b.email ?? ""));
+      setMemberList(list);
+    })();
+  }, [workspaceId, isAdmin]);
 
   const range = useMemo(() => {
     if (view === "day") return { start: startOfDay(cursor), end: endOfDay(cursor) };
