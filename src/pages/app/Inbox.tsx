@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Inbox as InboxIcon, MoreHorizontal, Sparkles, Trash2, Eye, CheckCircle2, X } from "lucide-react";
@@ -23,8 +23,17 @@ import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
+import {
+  ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+} from "@/components/app/columns";
 
 const INBOUND_ADDRESS = "inbox@mail.vitalisstrategies.com";
+
+const INBOX_STATUS_LABELS: Record<InboxStatus, string> = {
+  not_assigned: "Not Assigned",
+  assigned: "Assigned",
+  waiting: "Waiting",
+};
 
 type ExtractionState = "none" | "extracted" | "completed";
 
