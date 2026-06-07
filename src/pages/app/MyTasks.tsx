@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
 
 interface Row {
