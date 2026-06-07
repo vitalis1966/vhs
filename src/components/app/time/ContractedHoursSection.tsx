@@ -138,8 +138,9 @@ export function ContractedHoursSection({ clientId, workspaceId }: Props) {
   const save = async () => {
     if (!workspaceId || !clientId) return;
     let chId = contract?.id ?? null;
+    const allocSum = draftAllocs.reduce((s, d) => s + (Number(d.allocated_hours) || 0), 0);
     const payload = {
-      total_hours: draft.total_hours,
+      total_hours: allocSum,
       period_start: draft.period_start,
       period_end: draft.period_end,
       cadence: draft.cadence,
