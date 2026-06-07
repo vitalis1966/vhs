@@ -221,15 +221,15 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                 <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                   <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
                 </td>
-                <td className="px-3 py-2 font-medium">
+                <td className="px-3 py-2 font-medium whitespace-normal break-words">
                   <span>{t.title}</span>
                   {!!t.comment_count && (
                     <span className="ml-2 text-[11px] text-muted-foreground">💬 {t.comment_count}</span>
                   )}
                 </td>
-                <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
-                <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 whitespace-normal break-words">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
+                <td className="px-3 py-2 text-muted-foreground whitespace-normal break-words">{p?.name ?? "—"}</td>
+                <td className="px-3 py-2 whitespace-normal break-words">
                   {s ? (
                     <span className="inline-flex items-center gap-1.5 text-xs">
                       <span className="w-2 h-2 rounded-full" style={{ background: s.color ?? "#94a3b8" }} />
@@ -237,8 +237,8 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                     </span>
                   ) : "—"}
                 </td>
-                <td className="px-3 py-2"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
-                <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d, yyyy") : "—"}</td>
+                <td className="px-3 py-2 whitespace-normal break-words"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
+                <td className={`px-3 py-2 whitespace-normal break-words ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d, yyyy") : "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex -space-x-1.5">
                     {aids.slice(0, 3).map((uid) => {
