@@ -355,7 +355,7 @@ function ClientsTable({
             const tagIds = clientTagMap[c.id] ?? [];
             return (
               <tr key={c.id} className="border-t hover:bg-muted/30">
-                <td className="px-4 py-3 truncate" style={{ width: widths.company, maxWidth: widths.company }}>
+                <td className="px-4 py-3 whitespace-normal break-words" style={{ width: widths.company, maxWidth: widths.company }}>
                   <Link to={`/app/clients/${c.id}`} className="font-medium text-foreground hover:underline">
                     {c.name}
                   </Link>
@@ -365,7 +365,7 @@ function ClientsTable({
                     {c.status ?? "—"}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground truncate" style={{ width: widths.specialty, maxWidth: widths.specialty }}>{c.industry ?? "—"}</td>
+                <td className="px-4 py-3 text-muted-foreground whitespace-normal break-words" style={{ width: widths.specialty, maxWidth: widths.specialty }}>{c.industry ?? "—"}</td>
                 <td className="px-4 py-3" style={{ width: widths.tags, maxWidth: widths.tags }}>
                   <div className="flex flex-wrap gap-1">
                     {tagIds.map((id) => {
@@ -381,11 +381,11 @@ function ClientsTable({
                     {tagIds.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3 truncate" style={{ width: widths.owner, maxWidth: widths.owner }}>
+                <td className="px-4 py-3 whitespace-normal break-words" style={{ width: widths.owner, maxWidth: widths.owner }}>
                   {owner ? (
                     <div className="flex items-center gap-2 min-w-0">
                       <Avatar className="h-6 w-6 shrink-0"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
-                      <span className="truncate">{owner.full_name ?? owner.email}</span>
+                      <span className="whitespace-normal break-words">{owner.full_name ?? owner.email}</span>
                     </div>
                   ) : <span className="text-muted-foreground">Unassigned</span>}
                 </td>

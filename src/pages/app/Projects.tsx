@@ -207,23 +207,23 @@ export default function Projects() {
                   const pct = progress[p.id] ?? 0;
                   return (
                     <tr key={p.id} className="border-t hover:bg-muted/30">
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         <Link to={`/app/clients/${p.client_id}/projects/${p.id}`} className="font-medium hover:underline">
                           {p.name}
                         </Link>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         {c && <Link to={`/app/clients/${c.id}`} className="text-muted-foreground hover:underline">{c.name}</Link>}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         <Badge variant="outline" className={PROJECT_STATUS_COLOR[p.status ?? "Active"] ?? ""}>{p.status ?? "—"}</Badge>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground tabular-nums">{p.target_date ?? "—"}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         {owner ? (
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
-                            <span>{owner.full_name ?? owner.email}</span>
+                            <span className="whitespace-normal break-words">{owner.full_name ?? owner.email}</span>
                           </div>
                         ) : <span className="text-muted-foreground">Unassigned</span>}
                       </td>

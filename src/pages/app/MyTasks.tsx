@@ -356,20 +356,20 @@ export default function MyTasks() {
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
                       </td>
-                      <td className="px-3 py-2 font-medium truncate">
+                      <td className="px-3 py-2 font-medium whitespace-normal break-words">
                         {row.title}
                         {!!row.comment_count && (
                           <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
                         )}
                       </td>
-                      <td className="px-3 py-2 truncate">
+                      <td className="px-3 py-2 whitespace-normal break-words">
                         {client && (
                           <Link to={`/app/clients/${client.id}`} onClick={(e) => e.stopPropagation()}>
                             <Badge variant="outline" className={`${clientColor(client.id)} border-transparent`}>{client.name}</Badge>
                           </Link>
                         )}
                       </td>
-                      <td className="px-3 py-2 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
+                      <td className="px-3 py-2 whitespace-normal break-words text-xs text-muted-foreground" title={row.project_id ?? ""}>
                         {row.project_id ? projectLabel(row.project_id) : "—"}
                       </td>
                       <td className="px-3 py-2">
