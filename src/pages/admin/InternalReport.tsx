@@ -62,22 +62,50 @@ const severityIcons: Record<string, string> = {
   critical: "✕",
 };
 
-export default function InternalReport() {
-  const { sessionId } = useParams<{ sessionId: string }>();
+export interface InternalReportData {
+  session: any;
+  assessment: any;
+  intake: any;
+  report: any;
+  sections: any[];
+  responses: Record<string, { value: string; json: any }>;
+}
+
+interface InternalReportProps {
+  data?: InternalReportData;
+  embedded?: boolean;
+  backTo?: string;
+  backLabel?: string;
+}
+
+export default function InternalReport({ data: dataProp, embedded = false, backTo, backLabel }: InternalReportProps = {}) {
+  const params = useParams<{ sessionId: string }>();
+  const sessionId = dataProp?.session?.id ?? params.sessionId;
   const { toast } = useToast();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!dataProp);
   const [rerunning, setRerunning] = useState(false);
-  const [report, setReport] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
-  const [assessment, setAssessment] = useState<any>(null);
-  const [intake, setIntake] = useState<any>(null);
-  const [sections, setSections] = useState<any[]>([]);
-  const [responses, setResponses] = useState<Record<string, { value: string; json: any }>>({});
+  const [report, setReport] = useState<any>(dataProp?.report ?? null);
+  const [session, setSession] = useState<any>(dataProp?.session ?? null);
+  const [assessment, setAssessment] = useState<any>(dataProp?.assessment ?? null);
+  const [intake, setIntake] = useState<any>(dataProp?.intake ?? null);
+  const [sections, setSections] = useState<any[]>(dataProp?.sections ?? []);
+  const [responses, setResponses] = useState<Record<string, { value: string; json: any }>>(dataProp?.responses ?? {});
 
   useEffect(() => {
+    if (dataProp) {
+      setReport(dataProp.report);
+      setSession(dataProp.session);
+      setAssessment(dataProp.assessment);
+      setIntake(dataProp.intake);
+      setSections(dataProp.sections);
+      setResponses(dataProp.responses);
+      setLoading(false);
+      return;
+    }
     if (sessionId) loadAll();
-  }, [sessionId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, dataProp]);
 
   const loadAll = async () => {
     setLoading(true);
@@ -229,47 +257,53 @@ export default function InternalReport() {
   if (!session || !report) {
     return (
       <div className="min-h-screen">
-        <Navbar />
-        <div className="pt-40 pb-20 text-center">
+        {!embedded && <Navbar />}
+        <div className={embedded ? "py-12 text-center" : "pt-40 pb-20 text-center"}>
           <p className="text-muted-foreground mb-8">
             {!session ? "Session not found." : "No analysis report found. Run analysis first."}
           </p>
           <Button variant="hero" asChild>
-            <Link to="/admin/submissions">Back to Submissions</Link>
+            <Link to={backTo ?? "/admin/submissions"}>{backLabel ?? "Back to Submissions"}</Link>
           </Button>
         </div>
-        <Footer />
+        {!embedded && <Footer />}
       </div>
     );
   }
 
   return (
     <div className="min-h-screen">
-      <div className="print:hidden">
-        <Navbar />
-      </div>
+      {!embedded && (
+        <div className="print:hidden">
+          <Navbar />
+        </div>
+      )}
 
       {/* Toolbar */}
-      <div className="print:hidden pt-24 lg:pt-28 pb-4 bg-gradient-hero">
+      <div className={`print:hidden pb-4 bg-gradient-hero ${embedded ? "pt-6" : "pt-24 lg:pt-28"}`}>
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/admin/submissions">
+              <Link to={backTo ?? "/admin/submissions"}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Submissions
+                {backLabel ?? "Back to Submissions"}
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link to={`/admin/submissions/${sessionId}/client-report`}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Client Report
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" onClick={rerunAnalysis} disabled={rerunning}>
-                {rerunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                Rerun Analysis
-              </Button>
+              {!embedded && (
+                <>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/admin/submissions/${sessionId}/client-report`}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      View Client Report
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={rerunAnalysis} disabled={rerunning}>
+                    {rerunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    Rerun Analysis
+                  </Button>
+                </>
+              )}
               <Button variant="outline" size="sm" onClick={() => window.print()}>
                 <Printer className="mr-2 h-4 w-4" />
                 Export
@@ -278,6 +312,7 @@ export default function InternalReport() {
           </div>
         </div>
       </div>
+
 
       {/* Header */}
       <section className="print:pt-8 pb-6 bg-gradient-hero print:bg-transparent">
@@ -556,9 +591,11 @@ export default function InternalReport() {
         </div>
       </div>
 
-      <div className="print:hidden">
-        <Footer />
-      </div>
+      {!embedded && (
+        <div className="print:hidden">
+          <Footer />
+        </div>
+      )}
     </div>
   );
 }

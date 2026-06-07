@@ -113,9 +113,10 @@ interface EditableBlockProps {
   edits: Record<string, string>;
   onSave: (key: string, index: number, original: string, edited: string) => void;
   as?: "p" | "li";
+  readOnly?: boolean;
 }
 
-function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p" }: EditableBlockProps) {
+function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p", readOnly = false }: EditableBlockProps) {
   const editKey = `${sectionKey}__${itemIndex}`;
   const displayText = edits[editKey] ?? text;
   const [editing, setEditing] = useState(false);
@@ -151,7 +152,7 @@ function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p
     setEditing(false);
   };
 
-  if (editing) {
+  if (editing && !readOnly) {
     return (
       <div className="no-print space-y-2">
         <Textarea
@@ -175,13 +176,15 @@ function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p
       <Tag className="text-sm text-foreground leading-relaxed whitespace-pre-wrap pr-8">
         {displayText}
       </Tag>
-      <button
-        onClick={() => setEditing(true)}
-        className="no-print absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-foreground"
-        aria-label="Edit"
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </button>
+      {!readOnly && (
+        <button
+          onClick={() => setEditing(true)}
+          className="no-print absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-foreground"
+          aria-label="Edit"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -229,16 +232,36 @@ function getCleanAssessmentName(slug?: string, title?: string): string {
   return "Your Strategic Assessment";
 }
 
-export default function ClientReport() {
-  const { sessionId } = useParams<{ sessionId: string }>();
+export interface ClientReportData {
+  session: any;
+  assessment: any;
+  intake: any;
+  report: any;
+  edits: Array<{ section_key: string; item_index: number; original_text: string; edited_text: string }>;
+}
+
+interface ClientReportProps {
+  data?: ClientReportData;
+  embedded?: boolean;
+  backTo?: string;
+  backLabel?: string;
+}
+
+export default function ClientReport({ data: dataProp, embedded = false, backTo, backLabel }: ClientReportProps = {}) {
+  const params = useParams<{ sessionId: string }>();
+  const sessionId = dataProp?.session?.id ?? params.sessionId;
   const { toast } = useToast();
 
-  const [loading, setLoading] = useState(true);
-  const [report, setReport] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
-  const [assessment, setAssessment] = useState<any>(null);
-  const [intake, setIntake] = useState<any>(null);
-  const [edits, setEdits] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(!dataProp);
+  const [report, setReport] = useState<any>(dataProp?.report ?? null);
+  const [session, setSession] = useState<any>(dataProp?.session ?? null);
+  const [assessment, setAssessment] = useState<any>(dataProp?.assessment ?? null);
+  const [intake, setIntake] = useState<any>(dataProp?.intake ?? null);
+  const [edits, setEdits] = useState<Record<string, string>>(() => {
+    const m: Record<string, string> = {};
+    for (const e of dataProp?.edits ?? []) m[`${e.section_key}__${e.item_index}`] = e.edited_text;
+    return m;
+  });
   const [originalEdits, setOriginalEdits] = useState<Record<string, { original: string; edited: string }>>({});
 
   // Send dialog state
@@ -256,8 +279,20 @@ export default function ClientReport() {
   const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (dataProp) {
+      setReport(dataProp.report);
+      setSession(dataProp.session);
+      setAssessment(dataProp.assessment);
+      setIntake(dataProp.intake);
+      const m: Record<string, string> = {};
+      for (const e of dataProp.edits ?? []) m[`${e.section_key}__${e.item_index}`] = e.edited_text;
+      setEdits(m);
+      setLoading(false);
+      return;
+    }
     if (sessionId) loadAll();
-  }, [sessionId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, dataProp]);
 
   const loadAll = async () => {
     setLoading(true);
@@ -629,37 +664,39 @@ export default function ClientReport() {
         <div className="no-print sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border/40">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-3 flex items-center justify-between flex-wrap gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <Link to={`/admin/submissions/${sessionId}`}>
+              <Link to={backTo ?? `/admin/submissions/${sessionId}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Internal Report
+                {backLabel ?? "Back to Internal Report"}
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <RotateCcw className="mr-2 h-4 w-4" />
-                    Reset to Generated
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Reset all edits?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure? All your edits will be lost. This will restore all sections to the AI-generated version.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResetAll}>Reset All</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              {!embedded && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Reset to Generated
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Reset all edits?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure? All your edits will be lost. This will restore all sections to the AI-generated version.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleResetAll}>Reset All</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
               <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
                 {isGeneratingPDF ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                 {isGeneratingPDF ? "Generating PDF..." : "Download PDF"}
               </Button>
-              {reportSent ? (
+              {!embedded && (reportSent ? (
                 <Button size="sm" disabled className="bg-accent/20 text-accent border border-accent/30">
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Report Sent ✓
@@ -669,13 +706,15 @@ export default function ClientReport() {
                   <Send className="mr-2 h-4 w-4" />
                   Send Report to Client
                 </Button>
-              )}
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Report Links — top of page */}
+        {/* Report Links — top of page (admin only) */}
+        {!embedded && (
         <div className="no-print container mx-auto px-4 lg:px-8 max-w-5xl pt-6">
+
           <div className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-border/40 bg-secondary/10">
               <LinkIcon className="h-5 w-5 text-accent" />
@@ -788,6 +827,8 @@ export default function ClientReport() {
             </div>
           </div>
         </div>
+        )}
+
 
         <div className="bg-card border-b border-border/40 print:border-b-2 print:border-accent">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-10 text-center">
@@ -824,7 +865,7 @@ export default function ClientReport() {
           {/* Executive Summary */}
           {executiveSummary && (
             <ClientReportCard title="Executive Summary" icon={<FileText className="h-5 w-5" />}>
-              <EditableBlock sectionKey="executive_summary" text={executiveSummary} edits={edits} onSave={handleSaveEdit} />
+              <EditableBlock sectionKey="executive_summary" text={executiveSummary} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
             </ClientReportCard>
           )}
 
@@ -836,7 +877,7 @@ export default function ClientReport() {
                   <div key={i} className="border border-border/40 rounded-xl p-5">
                     <h4 className="font-display text-base font-bold text-foreground mb-3">{sa.section_title}</h4>
                     {sa.summary && (
-                      <EditableBlock sectionKey={`section_summary_${i}`} text={sa.summary} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey={`section_summary_${i}`} text={sa.summary} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                     )}
                     {sa.operational_gaps.length > 0 && (
                       <div className="mt-3">
@@ -844,7 +885,7 @@ export default function ClientReport() {
                         <ul className="space-y-1.5">
                           {sa.operational_gaps.map((gap: string, gi: number) => (
                             <li key={gi}>
-                              <EditableBlock sectionKey={`section_gap_${i}`} itemIndex={gi} text={gap} edits={edits} onSave={handleSaveEdit} as="li" />
+                              <EditableBlock sectionKey={`section_gap_${i}`} itemIndex={gi} text={gap} edits={edits} onSave={handleSaveEdit} readOnly={embedded} as="li" />
                             </li>
                           ))}
                         </ul>
@@ -856,7 +897,7 @@ export default function ClientReport() {
                         <ul className="space-y-1.5">
                           {sa.improvement_opportunities.map((opp: string, oi: number) => (
                             <li key={oi}>
-                              <EditableBlock sectionKey={`section_opp_${i}`} itemIndex={oi} text={opp} edits={edits} onSave={handleSaveEdit} as="li" />
+                              <EditableBlock sectionKey={`section_opp_${i}`} itemIndex={oi} text={opp} edits={edits} onSave={handleSaveEdit} readOnly={embedded} as="li" />
                             </li>
                           ))}
                         </ul>
@@ -876,7 +917,7 @@ export default function ClientReport() {
                 {keyFindings.map((c: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
                     {c.type && <Badge variant="outline" className="text-[10px] mb-2">{c.type}</Badge>}
-                    <EditableBlock sectionKey="key_finding" itemIndex={i} text={c.description} edits={edits} onSave={handleSaveEdit} />
+                    <EditableBlock sectionKey="key_finding" itemIndex={i} text={c.description} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                   </div>
                 ))}
               </div>
@@ -901,7 +942,7 @@ export default function ClientReport() {
                       <span className="text-sm font-semibold text-foreground">{f.area}</span>
                       {f.priority && <Badge variant="outline" className="text-[10px]">{f.priority.replace(/_/g, " ")}</Badge>}
                     </div>
-                    <EditableBlock sectionKey="focus_area" itemIndex={i} text={f.rationale} edits={edits} onSave={handleSaveEdit} />
+                    <EditableBlock sectionKey="focus_area" itemIndex={i} text={f.rationale} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                   </div>
                 ))}
               </div>
@@ -916,7 +957,7 @@ export default function ClientReport() {
                   <div key={i} className="flex items-start gap-3 bg-secondary/20 rounded-xl p-4">
                     <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <EditableBlock sectionKey="opportunity" itemIndex={i} text={o.description} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey="opportunity" itemIndex={i} text={o.description} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                       {o.category && <p className="text-xs text-muted-foreground mt-1">{o.category.replace(/_/g, " ")}</p>}
                     </div>
                   </div>
@@ -935,7 +976,7 @@ export default function ClientReport() {
                       <span className="text-xs font-bold text-accent">{i + 1}</span>
                     </div>
                     <div className="flex-1">
-                      <EditableBlock sectionKey="next_step" itemIndex={i} text={n.recommendation} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey="next_step" itemIndex={i} text={n.recommendation} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                       {n.category && <Badge variant="outline" className="text-[10px] mt-1">{n.category}</Badge>}
                     </div>
                   </div>
@@ -946,32 +987,37 @@ export default function ClientReport() {
 
           {/* Link Activity removed from here — moved to top */}
 
-          <div className="no-print space-y-4">
-            <h3 className="font-display text-xl font-bold text-foreground text-center">
-              Ready to get started? Book a discovery call
-            </h3>
-            <BookingWidget sessionId={sessionId} bookedBy="admin" />
-          </div>
+          {!embedded && (
+            <div className="no-print space-y-4">
+              <h3 className="font-display text-xl font-bold text-foreground text-center">
+                Ready to get started? Book a discovery call
+              </h3>
+              <BookingWidget sessionId={sessionId} bookedBy="admin" />
+            </div>
+          )}
 
           {/* Bottom Send button */}
-          <div className="no-print flex justify-center pt-4 pb-8">
-            {reportSent ? (
-              <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Report Sent ✓
-              </Button>
-            ) : (
-              <Button size="lg" onClick={() => setSendOpen(true)}>
-                <Send className="mr-2 h-4 w-4" />
-                Send Report to Client
-              </Button>
-            )}
-          </div>
+          {!embedded && (
+            <div className="no-print flex justify-center pt-4 pb-8">
+              {reportSent ? (
+                <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Report Sent ✓
+                </Button>
+              ) : (
+                <Button size="lg" onClick={() => setSendOpen(true)}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Report to Client
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Print spacer */}
           <div className="print-footer-spacer" />
         </div>
       </div>
+
 
       {/* Send Dialog */}
       <Dialog open={sendOpen} onOpenChange={(open) => { if (!reportSent) setSendOpen(open); else setSendOpen(false); }}>

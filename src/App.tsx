@@ -81,6 +81,8 @@ const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSetti
 const AppSettings = lazy(() => import("./pages/app/Settings"));
 const AppTimeTracking = lazy(() => import("./pages/app/TimeTracking"));
 const AppInbox = lazy(() => import("./pages/app/Inbox"));
+const AppAssignmentInternalReport = lazy(() => import("./pages/app/AssignmentInternalReportPage"));
+const AppAssignmentClientReport = lazy(() => import("./pages/app/AssignmentClientReportPage"));
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -201,6 +203,8 @@ const App = () => (
                 <Route path="my-tasks" element={<AppMyTasks />} />
                 <Route path="clients" element={<AppClients />} />
                 <Route path="clients/:clientId" element={<AppClientDetail />} />
+                <Route path="clients/:clientId/assessments/:assignmentId/internal-report" element={<AppAssignmentInternalReport />} />
+                <Route path="clients/:clientId/assessments/:assignmentId/client-report" element={<AppAssignmentClientReport />} />
                 <Route path="clients/:clientId/projects/:projectId" element={<AppProjectDetail />} />
                 <Route path="projects" element={<AppProjects />} />
                 <Route path="tasks" element={<AppTasks />} />
