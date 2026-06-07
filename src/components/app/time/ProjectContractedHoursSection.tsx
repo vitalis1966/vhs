@@ -185,21 +185,26 @@ export function ProjectContractedHoursSection({ projectId, workspaceId }: Props)
             </label>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <Label className="text-xs">{draft.cadence === "monthly" ? "Hours per month" : "Total hours"}</Label>
-            <Input type="number" min={0} step={0.5} value={draft.total_hours}
-              onChange={(e) => setDraft({ ...draft, total_hours: parseFloat(e.target.value || "0") })} />
-          </div>
-          <div>
-            <Label className="text-xs">Start</Label>
-            <Input type="date" value={draft.period_start ?? ""} onChange={(e) => setDraft({ ...draft, period_start: e.target.value || null })} />
-          </div>
-          <div>
-            <Label className="text-xs">End</Label>
-            <Input type="date" value={draft.period_end ?? ""} onChange={(e) => setDraft({ ...draft, period_end: e.target.value || null })} />
-          </div>
-        </div>
+        {(() => {
+          const allocSum = draftAllocs.reduce((s, d) => s + (Number(d.allocated_hours) || 0), 0);
+          return (
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label className="text-xs">{draft.cadence === "monthly" ? "Hours per month (auto)" : "Total hours (auto)"}</Label>
+                <Input type="number" value={allocSum || ""} readOnly disabled />
+                <p className="text-[10px] text-muted-foreground mt-1">Sum of allocations below</p>
+              </div>
+              <div>
+                <Label className="text-xs">Start</Label>
+                <Input type="date" value={draft.period_start ?? ""} onChange={(e) => setDraft({ ...draft, period_start: e.target.value || null })} />
+              </div>
+              <div>
+                <Label className="text-xs">End</Label>
+                <Input type="date" value={draft.period_end ?? ""} onChange={(e) => setDraft({ ...draft, period_end: e.target.value || null })} />
+              </div>
+            </div>
+          );
+        })()}
         <div>
           <Label className="text-xs mb-2 block">
             Allocation by activity ({draft.cadence === "monthly" ? "hours / month" : "hours"})
@@ -207,16 +212,20 @@ export function ProjectContractedHoursSection({ projectId, workspaceId }: Props)
           <div className="space-y-1">
             {activities.map((a) => {
               const row = draftAllocs.find((d) => d.activity_type_id === a.id);
+              const display = row && row.allocated_hours ? row.allocated_hours : "";
               return (
                 <div key={a.id} className="flex items-center gap-3">
                   <div className="text-sm flex-1">{a.name}</div>
-                  <Input type="number" min={0} step={0.5} className="w-28 h-8"
-                    value={row?.allocated_hours ?? 0}
+                  <Input
+                    type="number" min={0} step={0.5} className="w-28 h-8" placeholder="0"
+                    value={display}
                     onChange={(e) => {
-                      const val = parseFloat(e.target.value || "0");
+                      const raw = e.target.value;
                       setDraftAllocs((prev) => {
                         const others = prev.filter((p) => p.activity_type_id !== a.id);
-                        return [...others, { activity_type_id: a.id, allocated_hours: val }];
+                        if (raw === "") return others;
+                        const val = parseFloat(raw);
+                        return [...others, { activity_type_id: a.id, allocated_hours: isNaN(val) ? 0 : val }];
                       });
                     }}
                   />
