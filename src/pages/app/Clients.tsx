@@ -215,44 +215,21 @@ export default function Clients() {
 
 
         <TabsContent value="table" className="mt-4">
-          <div className="rounded-lg border bg-card overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Company" columnKey="company" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.company} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter company…" />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.status} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
-                        options={distinctStatuses.map((s) => ({ value: s, label: s }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Specialty" columnKey="specialty" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.specialty} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter specialty…" />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Tags" columnKey="tags" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.tags} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
-                        options={allTags.map((t) => ({ value: t.id, label: t.name }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Account Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctOwners} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Open Tasks" columnKey="open" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.open} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} />} />
-                  </th>
-                </tr>
-              </thead>
+          <ClientsTable
+            loading={loading}
+            rows={filteredClients}
+            clients={clients}
+            tf={tf}
+            distinctStatuses={distinctStatuses}
+            distinctOwners={distinctOwners}
+            allTags={allTags}
+            tagMap={tagMap}
+            clientTagMap={clientTagMap}
+            owners={owners}
+            openCounts={openCounts}
+            statusColor={statusColor}
+          />
+        </TabsContent>
               <tbody>
                 {loading && (
                   <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
