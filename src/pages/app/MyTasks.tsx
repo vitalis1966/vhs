@@ -264,154 +264,159 @@ export default function MyTasks() {
       </div>
 
       <div className="border border-border rounded-lg overflow-hidden bg-card">
-        <div className="bg-muted/50 px-3 py-2 flex items-center gap-3 text-xs font-medium text-muted-foreground">
-          <div className="w-6"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></div>
-          <div className="flex-1">
-            <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.title} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter title…" />} />
-          </div>
-          <div className="w-32">
-            <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.client} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={Object.values(clients).map((c) => ({ value: c.id, label: c.name }))} />} />
-          </div>
-          <div className="w-28">
-            <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.project} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={distinctProjectIds.map((id) => ({ value: id, label: projectLabel(id) }))} />} />
-          </div>
-          <div className="w-28">
-            <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.status} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={Object.values(statuses).map((s) => ({ value: s.id, label: s.name }))} />} />
-          </div>
-          <div className="w-24">
-            <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
-          </div>
-          <div className="w-24">Source</div>
-          <div className="w-28">
-            <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.due} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
-          </div>
-          <div className="w-24">
-            <ColumnHeader label="Assignee" columnKey="assignee" sort={tf.sort} onToggleSort={tf.toggleSort}
-              filterValue={tf.filters.assignee} onFilterChange={tf.setFilter}
-              renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
-                options={userId ? [{ value: userId, label: "Me" }] : []} />} />
-          </div>
-          <div className="w-8" />
-          <div className="w-8" />
-        </div>
-
-        {loading ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">Loading…</div>
-        ) : filtered.length === 0 ? (
-          <div className="py-16 text-center">
-            <ListTodo className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">No tasks assigned to you yet</p>
-          </div>
-        ) : (
-          filtered.map((row) => {
-            const status = row.status_id ? statuses[row.status_id] : null;
-            const overdue = isOverdue(row.due_date, row.completed_at);
-            const approaching = !overdue && isApproachingDue(row.due_date, row.completed_at);
-            const client = clients[row.client_id];
-            const dueClass = overdue
-              ? "text-red-600 font-bold"
-              : approaching
-              ? "text-amber-500 font-semibold"
-              : "";
-            const target: TaskActionTarget = {
-              id: row.id,
-              workspaceId: workspaceId!,
-              meetingId: row.meeting_id,
-              assigneeIds: [userId!],
-              dueDate: row.due_date,
-            };
-            return (
-              <TaskActionsMenu
-                key={row.id}
-                task={target}
-                variant="context"
-                onEdit={(id) => setOpenTaskId(id)}
-                onDeleted={() => setRows((p) => p.filter((r) => r.id !== row.id))}
-              >
-                <div
-                  tabIndex={0}
-                  onKeyDown={(e) => handleRowKey(e, row)}
-                  onClick={() => setOpenTaskId(row.id)}
-                  className="border-t border-border hover:bg-muted/40 cursor-pointer px-3 py-2 flex items-center gap-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-muted/40"
-                >
-                  <div className="w-6" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
-                  </div>
-                  <div className="flex-1 font-medium truncate">
-                    {row.title}
-                    {!!row.comment_count && (
-                      <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
-                    )}
-                  </div>
-                  <div className="w-32 truncate">
-                    {client && (
-                      <Link to={`/app/clients/${client.id}`} onClick={(e) => e.stopPropagation()}>
-                        <Badge variant="outline" className={`${clientColor(client.id)} border-transparent`}>{client.name}</Badge>
-                      </Link>
-                    )}
-                  </div>
-                  <div className="w-28 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
-                    {row.project_id ? projectLabel(row.project_id) : "—"}
-                  </div>
-                  <div className="w-28">
-                    {status ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs">
-                        <span className="w-2 h-2 rounded-full" style={{ background: status.color ?? "#94a3b8" }} />
-                        {status.name}
-                      </span>
-                    ) : "—"}
-                  </div>
-                  <div className="w-24">
-                    <Badge variant="outline" className={PRIORITY_CLASS[row.priority] ?? ""}>{row.priority}</Badge>
-                  </div>
-                  <div className="w-24">
-                    {extractedTaskIds.has(row.id) ? (
-                      <Badge variant="outline" className="border-primary/30 text-primary">Extracted</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-muted-foreground">Manual</Badge>
-                    )}
-                  </div>
-                  <div className={`w-28 ${dueClass}`}>
-                    {row.due_date ? format(parseDateOnly(row.due_date)!, "MMM d, yyyy") : "—"}
-                  </div>
-                  <div className="w-24 text-xs text-muted-foreground">Me</div>
-                  <div className="w-8" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
-                      title="Start timer for this task"
-                      onClick={() => startTimerForTask(row)}
+        <table className="w-full text-sm" style={{ tableLayout: "fixed" }}>
+          <thead className="bg-muted/50">
+            <tr className="text-left text-xs text-muted-foreground">
+              <th className="px-3 py-2 w-8"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></th>
+              <ResizableTh columnKey="title" width={widths.title} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.title} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <TextFilter value={v} onChange={onChange} placeholder="Filter title…" />} />
+              </ResizableTh>
+              <ResizableTh columnKey="client" width={widths.client} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.client} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                    options={Object.values(clients).map((c) => ({ value: c.id, label: c.name }))} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="project" width={widths.project} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.project} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                    options={distinctProjectIds.map((id) => ({ value: id, label: projectLabel(id) }))} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="status" width={widths.status} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                    options={Object.values(statuses).map((s) => ({ value: s.id, label: s.name }))} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="priority" width={widths.priority} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                    options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="source" width={widths.source} onResize={setWidth} className="px-3 py-2 font-medium text-left">Source</ResizableTh>
+              <ResizableTh columnKey="due" width={widths.due} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.due} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <DateRangeFilter value={v} onChange={onChange} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="assignee" width={widths.assignee} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Assignee" columnKey="assignee" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.assignee} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
+                    options={userId ? [{ value: userId, label: "Me" }] : []} />} />
+              </ResizableTh>
+              <th className="px-3 py-2 w-8" />
+              <th className="px-3 py-2 w-8" />
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={11} className="px-3 py-12 text-center text-sm text-muted-foreground">Loading…</td></tr>
+            ) : filtered.length === 0 ? (
+              <tr><td colSpan={11} className="px-3 py-16 text-center">
+                <ListTodo className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">No tasks assigned to you yet</p>
+              </td></tr>
+            ) : (
+              filtered.map((row) => {
+                const status = row.status_id ? statuses[row.status_id] : null;
+                const overdue = isOverdue(row.due_date, row.completed_at);
+                const approaching = !overdue && isApproachingDue(row.due_date, row.completed_at);
+                const client = clients[row.client_id];
+                const dueClass = overdue
+                  ? "text-red-600 font-bold"
+                  : approaching
+                  ? "text-amber-500 font-semibold"
+                  : "";
+                const target: TaskActionTarget = {
+                  id: row.id,
+                  workspaceId: workspaceId!,
+                  meetingId: row.meeting_id,
+                  assigneeIds: [userId!],
+                  dueDate: row.due_date,
+                };
+                return (
+                  <TaskActionsMenu
+                    key={row.id}
+                    task={target}
+                    variant="context"
+                    onEdit={(id) => setOpenTaskId(id)}
+                    onDeleted={() => setRows((p) => p.filter((r) => r.id !== row.id))}
+                  >
+                    <tr
+                      tabIndex={0}
+                      onKeyDown={(e) => handleRowKey(e, row)}
+                      onClick={() => setOpenTaskId(row.id)}
+                      className="border-t border-border hover:bg-muted/40 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-muted/40"
                     >
-                      <Play className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                  <div className="w-8" onClick={(e) => e.stopPropagation()}>
-                    <TaskActionsMenu
-                      task={target}
-                      onEdit={(id) => setOpenTaskId(id)}
-                      onDeleted={() => setRows((p) => p.filter((r) => r.id !== row.id))}
-                    />
-                  </div>
-                </div>
-              </TaskActionsMenu>
-            );
-          })
-        )}
+                      <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
+                      </td>
+                      <td className="px-3 py-2 font-medium truncate">
+                        {row.title}
+                        {!!row.comment_count && (
+                          <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 truncate">
+                        {client && (
+                          <Link to={`/app/clients/${client.id}`} onClick={(e) => e.stopPropagation()}>
+                            <Badge variant="outline" className={`${clientColor(client.id)} border-transparent`}>{client.name}</Badge>
+                          </Link>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 truncate text-xs text-muted-foreground" title={row.project_id ?? ""}>
+                        {row.project_id ? projectLabel(row.project_id) : "—"}
+                      </td>
+                      <td className="px-3 py-2">
+                        {status ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs">
+                            <span className="w-2 h-2 rounded-full" style={{ background: status.color ?? "#94a3b8" }} />
+                            {status.name}
+                          </span>
+                        ) : "—"}
+                      </td>
+                      <td className="px-3 py-2">
+                        <Badge variant="outline" className={PRIORITY_CLASS[row.priority] ?? ""}>{row.priority}</Badge>
+                      </td>
+                      <td className="px-3 py-2">
+                        {extractedTaskIds.has(row.id) ? (
+                          <Badge variant="outline" className="border-primary/30 text-primary">Extracted</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">Manual</Badge>
+                        )}
+                      </td>
+                      <td className={`px-3 py-2 ${dueClass}`}>
+                        {row.due_date ? format(parseDateOnly(row.due_date)!, "MMM d, yyyy") : "—"}
+                      </td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground">Me</td>
+                      <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
+                          title="Start timer for this task"
+                          onClick={() => startTimerForTask(row)}
+                        >
+                          <Play className="h-3.5 w-3.5" />
+                        </Button>
+                      </td>
+                      <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                        <TaskActionsMenu
+                          task={target}
+                          onEdit={(id) => setOpenTaskId(id)}
+                          onDeleted={() => setRows((p) => p.filter((r) => r.id !== row.id))}
+                        />
+                      </td>
+                    </tr>
+                  </TaskActionsMenu>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       <BulkActionBar workspaceId={workspaceId!} selected={selected} onClear={() => setSelected([])} />
