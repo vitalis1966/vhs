@@ -987,32 +987,37 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
 
           {/* Link Activity removed from here — moved to top */}
 
-          <div className="no-print space-y-4">
-            <h3 className="font-display text-xl font-bold text-foreground text-center">
-              Ready to get started? Book a discovery call
-            </h3>
-            <BookingWidget sessionId={sessionId} bookedBy="admin" />
-          </div>
+          {!embedded && (
+            <div className="no-print space-y-4">
+              <h3 className="font-display text-xl font-bold text-foreground text-center">
+                Ready to get started? Book a discovery call
+              </h3>
+              <BookingWidget sessionId={sessionId} bookedBy="admin" />
+            </div>
+          )}
 
           {/* Bottom Send button */}
-          <div className="no-print flex justify-center pt-4 pb-8">
-            {reportSent ? (
-              <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Report Sent ✓
-              </Button>
-            ) : (
-              <Button size="lg" onClick={() => setSendOpen(true)}>
-                <Send className="mr-2 h-4 w-4" />
-                Send Report to Client
-              </Button>
-            )}
-          </div>
+          {!embedded && (
+            <div className="no-print flex justify-center pt-4 pb-8">
+              {reportSent ? (
+                <Button size="lg" disabled className="bg-accent/20 text-accent border border-accent/30">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Report Sent ✓
+                </Button>
+              ) : (
+                <Button size="lg" onClick={() => setSendOpen(true)}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Report to Client
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Print spacer */}
           <div className="print-footer-spacer" />
         </div>
       </div>
+
 
       {/* Send Dialog */}
       <Dialog open={sendOpen} onOpenChange={(open) => { if (!reportSent) setSendOpen(open); else setSendOpen(false); }}>
