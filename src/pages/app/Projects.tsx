@@ -10,7 +10,12 @@ import { Table as TableIcon, LayoutGrid } from "lucide-react";
 import { PROJECT_STATUSES, PROJECT_STATUS_COLOR } from "@/components/app/ProjectFormDialog";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
+
+const PROJ_COL_DEFAULTS = {
+  name: 260, client: 180, status: 130, target: 130, owner: 200, progress: 200,
+};
 
 interface ProjectRow {
   id: string; name: string; status: string | null; target_date: string | null;
