@@ -211,8 +211,7 @@ export function AssessmentsTab({ clientId }: Props) {
         </div>
       )}
 
-      <InternalReportViewer open={internalOpen} onOpenChange={setInternalOpen} assignmentId={activeAssignment} />
-      <ClientReportViewer open={clientOpen} onOpenChange={setClientOpen} assignmentId={activeAssignment} />
+
 
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
