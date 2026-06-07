@@ -113,9 +113,10 @@ interface EditableBlockProps {
   edits: Record<string, string>;
   onSave: (key: string, index: number, original: string, edited: string) => void;
   as?: "p" | "li";
+  readOnly?: boolean;
 }
 
-function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p" }: EditableBlockProps) {
+function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p", readOnly = false }: EditableBlockProps) {
   const editKey = `${sectionKey}__${itemIndex}`;
   const displayText = edits[editKey] ?? text;
   const [editing, setEditing] = useState(false);
@@ -151,7 +152,7 @@ function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p
     setEditing(false);
   };
 
-  if (editing) {
+  if (editing && !readOnly) {
     return (
       <div className="no-print space-y-2">
         <Textarea
@@ -175,13 +176,15 @@ function EditableBlock({ sectionKey, itemIndex = 0, text, edits, onSave, as = "p
       <Tag className="text-sm text-foreground leading-relaxed whitespace-pre-wrap pr-8">
         {displayText}
       </Tag>
-      <button
-        onClick={() => setEditing(true)}
-        className="no-print absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-foreground"
-        aria-label="Edit"
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </button>
+      {!readOnly && (
+        <button
+          onClick={() => setEditing(true)}
+          className="no-print absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-foreground"
+          aria-label="Edit"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
