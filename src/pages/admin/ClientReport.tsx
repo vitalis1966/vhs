@@ -232,16 +232,36 @@ function getCleanAssessmentName(slug?: string, title?: string): string {
   return "Your Strategic Assessment";
 }
 
-export default function ClientReport() {
-  const { sessionId } = useParams<{ sessionId: string }>();
+export interface ClientReportData {
+  session: any;
+  assessment: any;
+  intake: any;
+  report: any;
+  edits: Array<{ section_key: string; item_index: number; original_text: string; edited_text: string }>;
+}
+
+interface ClientReportProps {
+  data?: ClientReportData;
+  embedded?: boolean;
+  backTo?: string;
+  backLabel?: string;
+}
+
+export default function ClientReport({ data: dataProp, embedded = false, backTo, backLabel }: ClientReportProps = {}) {
+  const params = useParams<{ sessionId: string }>();
+  const sessionId = dataProp?.session?.id ?? params.sessionId;
   const { toast } = useToast();
 
-  const [loading, setLoading] = useState(true);
-  const [report, setReport] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
-  const [assessment, setAssessment] = useState<any>(null);
-  const [intake, setIntake] = useState<any>(null);
-  const [edits, setEdits] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(!dataProp);
+  const [report, setReport] = useState<any>(dataProp?.report ?? null);
+  const [session, setSession] = useState<any>(dataProp?.session ?? null);
+  const [assessment, setAssessment] = useState<any>(dataProp?.assessment ?? null);
+  const [intake, setIntake] = useState<any>(dataProp?.intake ?? null);
+  const [edits, setEdits] = useState<Record<string, string>>(() => {
+    const m: Record<string, string> = {};
+    for (const e of dataProp?.edits ?? []) m[`${e.section_key}__${e.item_index}`] = e.edited_text;
+    return m;
+  });
   const [originalEdits, setOriginalEdits] = useState<Record<string, { original: string; edited: string }>>({});
 
   // Send dialog state
@@ -259,8 +279,20 @@ export default function ClientReport() {
   const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (dataProp) {
+      setReport(dataProp.report);
+      setSession(dataProp.session);
+      setAssessment(dataProp.assessment);
+      setIntake(dataProp.intake);
+      const m: Record<string, string> = {};
+      for (const e of dataProp.edits ?? []) m[`${e.section_key}__${e.item_index}`] = e.edited_text;
+      setEdits(m);
+      setLoading(false);
+      return;
+    }
     if (sessionId) loadAll();
-  }, [sessionId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, dataProp]);
 
   const loadAll = async () => {
     setLoading(true);
