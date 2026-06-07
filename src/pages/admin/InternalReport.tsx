@@ -257,47 +257,53 @@ export default function InternalReport({ data: dataProp, embedded = false, backT
   if (!session || !report) {
     return (
       <div className="min-h-screen">
-        <Navbar />
-        <div className="pt-40 pb-20 text-center">
+        {!embedded && <Navbar />}
+        <div className={embedded ? "py-12 text-center" : "pt-40 pb-20 text-center"}>
           <p className="text-muted-foreground mb-8">
             {!session ? "Session not found." : "No analysis report found. Run analysis first."}
           </p>
           <Button variant="hero" asChild>
-            <Link to="/admin/submissions">Back to Submissions</Link>
+            <Link to={backTo ?? "/admin/submissions"}>{backLabel ?? "Back to Submissions"}</Link>
           </Button>
         </div>
-        <Footer />
+        {!embedded && <Footer />}
       </div>
     );
   }
 
   return (
     <div className="min-h-screen">
-      <div className="print:hidden">
-        <Navbar />
-      </div>
+      {!embedded && (
+        <div className="print:hidden">
+          <Navbar />
+        </div>
+      )}
 
       {/* Toolbar */}
-      <div className="print:hidden pt-24 lg:pt-28 pb-4 bg-gradient-hero">
+      <div className={`print:hidden pb-4 bg-gradient-hero ${embedded ? "pt-6" : "pt-24 lg:pt-28"}`}>
         <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/admin/submissions">
+              <Link to={backTo ?? "/admin/submissions"}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Submissions
+                {backLabel ?? "Back to Submissions"}
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link to={`/admin/submissions/${sessionId}/client-report`}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Client Report
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" onClick={rerunAnalysis} disabled={rerunning}>
-                {rerunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                Rerun Analysis
-              </Button>
+              {!embedded && (
+                <>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/admin/submissions/${sessionId}/client-report`}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      View Client Report
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={rerunAnalysis} disabled={rerunning}>
+                    {rerunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    Rerun Analysis
+                  </Button>
+                </>
+              )}
               <Button variant="outline" size="sm" onClick={() => window.print()}>
                 <Printer className="mr-2 h-4 w-4" />
                 Export
@@ -306,6 +312,7 @@ export default function InternalReport({ data: dataProp, embedded = false, backT
           </div>
         </div>
       </div>
+
 
       {/* Header */}
       <section className="print:pt-8 pb-6 bg-gradient-hero print:bg-transparent">
