@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +16,6 @@ import {
 import { FileSearch, Loader2, MoreVertical } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { useToast } from "@/hooks/use-toast";
-import { InternalReportViewer } from "./reports/InternalReportViewer";
-import { ClientReportViewer } from "./reports/ClientReportViewer";
 
 interface Props { clientId: string }
 
