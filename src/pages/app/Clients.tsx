@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, NumberRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
 
 type ClientRow = {
