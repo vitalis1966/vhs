@@ -13,7 +13,12 @@ import { onTasksChanged, setTaskStatus, softDeleteTasks } from "./tasks/taskMuta
 import { toast } from "sonner";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
+
+const TASK_COL_DEFAULTS = {
+  title: 280, client: 160, project: 160, status: 140, priority: 110, due: 130, assignees: 140,
+};
 
 interface Row {
   id: string; title: string; status_id: string | null; priority: string;
