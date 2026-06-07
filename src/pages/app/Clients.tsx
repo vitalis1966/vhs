@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, NumberRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
 
 type ClientRow = {
@@ -214,100 +215,20 @@ export default function Clients() {
 
 
         <TabsContent value="table" className="mt-4">
-          <div className="rounded-lg border bg-card overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Company" columnKey="company" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.company} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter company…" />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.status} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
-                        options={distinctStatuses.map((s) => ({ value: s, label: s }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Specialty" columnKey="specialty" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.specialty} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter specialty…" />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Tags" columnKey="tags" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.tags} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
-                        options={allTags.map((t) => ({ value: t.id, label: t.name }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Account Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctOwners} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
-                    <ColumnHeader label="Open Tasks" columnKey="open" sort={tf.sort} onToggleSort={tf.toggleSort}
-                      filterValue={tf.filters.open} onFilterChange={tf.setFilter}
-                      renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} />} />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                )}
-                {!loading && filteredClients.length === 0 && (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    {clients.length === 0 ? "No clients yet." : "No clients match the selected tags."}
-                  </td></tr>
-                )}
-                {filteredClients.map((c) => {
-                  const owner = c.account_owner_id ? owners[c.account_owner_id] : null;
-                  const tagIds = clientTagMap[c.id] ?? [];
-                  return (
-                    <tr key={c.id} className="border-t hover:bg-muted/30">
-                      <td className="px-4 py-3">
-                        <Link to={`/app/clients/${c.id}`} className="font-medium text-foreground hover:underline">
-                          {c.name}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className={statusColor[c.status ?? "Active"] ?? ""}>
-                          {c.status ?? "—"}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{c.industry ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {tagIds.map((id) => {
-                            const t = tagMap[id];
-                            if (!t) return null;
-                            return (
-                              <Badge key={id} variant="outline" className="border-transparent text-[10px]"
-                                style={{ background: `${t.color ?? "#94a3b8"}22`, color: t.color ?? "#475569" }}>
-                                {t.name}
-                              </Badge>
-                            );
-                          })}
-                          {tagIds.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {owner ? (
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
-                            <span>{owner.full_name ?? owner.email}</span>
-                          </div>
-                        ) : <span className="text-muted-foreground">Unassigned</span>}
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">{openCounts[c.id] ?? 0}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-
-            </table>
-          </div>
+          <ClientsTable
+            loading={loading}
+            rows={filteredClients}
+            clients={clients}
+            tf={tf}
+            distinctStatuses={distinctStatuses}
+            distinctOwners={distinctOwners}
+            allTags={allTags}
+            tagMap={tagMap}
+            clientTagMap={clientTagMap}
+            owners={owners}
+            openCounts={openCounts}
+            statusColor={statusColor}
+          />
         </TabsContent>
 
         <TabsContent value="board" className="mt-4">
@@ -355,6 +276,125 @@ export default function Clients() {
           void load();
         }}
       />
+    </div>
+  );
+}
+
+const DEFAULT_COL_WIDTHS = {
+  company: 240, status: 130, specialty: 180, tags: 220, owner: 200, open: 110,
+};
+
+function ClientsTable({
+  loading, rows, clients, tf, distinctStatuses, distinctOwners,
+  allTags, tagMap, clientTagMap, owners, openCounts, statusColor,
+}: {
+  loading: boolean;
+  rows: ClientRow[];
+  clients: ClientRow[];
+  tf: ReturnType<typeof useTableFilters<"company" | "status" | "specialty" | "tags" | "owner" | "open">>;
+  distinctStatuses: string[];
+  distinctOwners: { value: string; label: string }[];
+  allTags: TagRow[];
+  tagMap: Record<string, TagRow>;
+  clientTagMap: Record<string, string[]>;
+  owners: Record<string, { full_name: string | null; email: string | null }>;
+  openCounts: Record<string, number>;
+  statusColor: Record<string, string>;
+}) {
+  const { widths, setWidth } = useColumnWidths("vitalis.clients.colWidths.v1", DEFAULT_COL_WIDTHS);
+  return (
+    <div className="rounded-lg border bg-card overflow-x-auto">
+      <table className="text-sm" style={{ tableLayout: "fixed", width: "max-content", minWidth: "100%" }}>
+        <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+          <tr>
+            <ResizableTh columnKey="company" width={widths.company} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Company" columnKey="company" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.company} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter company…" />} />
+            </ResizableTh>
+            <ResizableTh columnKey="status" width={widths.status} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.status} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                  options={distinctStatuses.map((s) => ({ value: s, label: s }))} />} />
+            </ResizableTh>
+            <ResizableTh columnKey="specialty" width={widths.specialty} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Specialty" columnKey="specialty" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.specialty} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter specialty…" />} />
+            </ResizableTh>
+            <ResizableTh columnKey="tags" width={widths.tags} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Tags" columnKey="tags" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.tags} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
+                  options={allTags.map((t) => ({ value: t.id, label: t.name }))} />} />
+            </ResizableTh>
+            <ResizableTh columnKey="owner" width={widths.owner} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Account Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctOwners} />} />
+            </ResizableTh>
+            <ResizableTh columnKey="open" width={widths.open} onResize={setWidth} className="text-left px-4 py-3">
+              <ColumnHeader label="Open Tasks" columnKey="open" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.open} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} />} />
+            </ResizableTh>
+          </tr>
+        </thead>
+        <tbody>
+          {loading && (
+            <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+          )}
+          {!loading && rows.length === 0 && (
+            <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+              {clients.length === 0 ? "No clients yet." : "No clients match the selected tags."}
+            </td></tr>
+          )}
+          {rows.map((c) => {
+            const owner = c.account_owner_id ? owners[c.account_owner_id] : null;
+            const tagIds = clientTagMap[c.id] ?? [];
+            return (
+              <tr key={c.id} className="border-t hover:bg-muted/30">
+                <td className="px-4 py-3 truncate" style={{ width: widths.company, maxWidth: widths.company }}>
+                  <Link to={`/app/clients/${c.id}`} className="font-medium text-foreground hover:underline">
+                    {c.name}
+                  </Link>
+                </td>
+                <td className="px-4 py-3" style={{ width: widths.status, maxWidth: widths.status }}>
+                  <Badge variant="outline" className={statusColor[c.status ?? "Active"] ?? ""}>
+                    {c.status ?? "—"}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3 text-muted-foreground truncate" style={{ width: widths.specialty, maxWidth: widths.specialty }}>{c.industry ?? "—"}</td>
+                <td className="px-4 py-3" style={{ width: widths.tags, maxWidth: widths.tags }}>
+                  <div className="flex flex-wrap gap-1">
+                    {tagIds.map((id) => {
+                      const t = tagMap[id];
+                      if (!t) return null;
+                      return (
+                        <Badge key={id} variant="outline" className="border-transparent text-[10px]"
+                          style={{ background: `${t.color ?? "#94a3b8"}22`, color: t.color ?? "#475569" }}>
+                          {t.name}
+                        </Badge>
+                      );
+                    })}
+                    {tagIds.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
+                  </div>
+                </td>
+                <td className="px-4 py-3 truncate" style={{ width: widths.owner, maxWidth: widths.owner }}>
+                  {owner ? (
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Avatar className="h-6 w-6 shrink-0"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
+                      <span className="truncate">{owner.full_name ?? owner.email}</span>
+                    </div>
+                  ) : <span className="text-muted-foreground">Unassigned</span>}
+                </td>
+                <td className="px-4 py-3 tabular-nums" style={{ width: widths.open, maxWidth: widths.open }}>{openCounts[c.id] ?? 0}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
