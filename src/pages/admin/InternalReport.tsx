@@ -591,9 +591,11 @@ export default function InternalReport({ data: dataProp, embedded = false, backT
         </div>
       </div>
 
-      <div className="print:hidden">
-        <Footer />
-      </div>
+      {!embedded && (
+        <div className="print:hidden">
+          <Footer />
+        </div>
+      )}
     </div>
   );
 }
