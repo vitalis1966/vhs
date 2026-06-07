@@ -865,7 +865,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
           {/* Executive Summary */}
           {executiveSummary && (
             <ClientReportCard title="Executive Summary" icon={<FileText className="h-5 w-5" />}>
-              <EditableBlock sectionKey="executive_summary" text={executiveSummary} edits={edits} onSave={handleSaveEdit} />
+              <EditableBlock sectionKey="executive_summary" text={executiveSummary} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
             </ClientReportCard>
           )}
 
@@ -877,7 +877,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                   <div key={i} className="border border-border/40 rounded-xl p-5">
                     <h4 className="font-display text-base font-bold text-foreground mb-3">{sa.section_title}</h4>
                     {sa.summary && (
-                      <EditableBlock sectionKey={`section_summary_${i}`} text={sa.summary} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey={`section_summary_${i}`} text={sa.summary} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                     )}
                     {sa.operational_gaps.length > 0 && (
                       <div className="mt-3">
@@ -885,7 +885,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                         <ul className="space-y-1.5">
                           {sa.operational_gaps.map((gap: string, gi: number) => (
                             <li key={gi}>
-                              <EditableBlock sectionKey={`section_gap_${i}`} itemIndex={gi} text={gap} edits={edits} onSave={handleSaveEdit} as="li" />
+                              <EditableBlock sectionKey={`section_gap_${i}`} itemIndex={gi} text={gap} edits={edits} onSave={handleSaveEdit} readOnly={embedded} as="li" />
                             </li>
                           ))}
                         </ul>
@@ -897,7 +897,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                         <ul className="space-y-1.5">
                           {sa.improvement_opportunities.map((opp: string, oi: number) => (
                             <li key={oi}>
-                              <EditableBlock sectionKey={`section_opp_${i}`} itemIndex={oi} text={opp} edits={edits} onSave={handleSaveEdit} as="li" />
+                              <EditableBlock sectionKey={`section_opp_${i}`} itemIndex={oi} text={opp} edits={edits} onSave={handleSaveEdit} readOnly={embedded} as="li" />
                             </li>
                           ))}
                         </ul>
@@ -917,7 +917,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                 {keyFindings.map((c: any, i: number) => (
                   <div key={i} className="bg-secondary/20 rounded-xl p-4">
                     {c.type && <Badge variant="outline" className="text-[10px] mb-2">{c.type}</Badge>}
-                    <EditableBlock sectionKey="key_finding" itemIndex={i} text={c.description} edits={edits} onSave={handleSaveEdit} />
+                    <EditableBlock sectionKey="key_finding" itemIndex={i} text={c.description} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                   </div>
                 ))}
               </div>
@@ -942,7 +942,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                       <span className="text-sm font-semibold text-foreground">{f.area}</span>
                       {f.priority && <Badge variant="outline" className="text-[10px]">{f.priority.replace(/_/g, " ")}</Badge>}
                     </div>
-                    <EditableBlock sectionKey="focus_area" itemIndex={i} text={f.rationale} edits={edits} onSave={handleSaveEdit} />
+                    <EditableBlock sectionKey="focus_area" itemIndex={i} text={f.rationale} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                   </div>
                 ))}
               </div>
@@ -957,7 +957,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                   <div key={i} className="flex items-start gap-3 bg-secondary/20 rounded-xl p-4">
                     <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <EditableBlock sectionKey="opportunity" itemIndex={i} text={o.description} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey="opportunity" itemIndex={i} text={o.description} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                       {o.category && <p className="text-xs text-muted-foreground mt-1">{o.category.replace(/_/g, " ")}</p>}
                     </div>
                   </div>
@@ -976,7 +976,7 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                       <span className="text-xs font-bold text-accent">{i + 1}</span>
                     </div>
                     <div className="flex-1">
-                      <EditableBlock sectionKey="next_step" itemIndex={i} text={n.recommendation} edits={edits} onSave={handleSaveEdit} />
+                      <EditableBlock sectionKey="next_step" itemIndex={i} text={n.recommendation} edits={edits} onSave={handleSaveEdit} readOnly={embedded} />
                       {n.category && <Badge variant="outline" className="text-[10px] mt-1">{n.category}</Badge>}
                     </div>
                   </div>
