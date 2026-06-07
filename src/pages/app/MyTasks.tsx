@@ -54,6 +54,11 @@ export default function MyTasks() {
   const [loading, setLoading] = useState(true);
   const { running, startTimer, stopTimer } = useTimer();
 
+  const MY_TASKS_COL_DEFAULTS = {
+    title: 280, client: 128, project: 112, status: 112, priority: 96, source: 96, due: 112, assignee: 96,
+  };
+  const { widths, setWidth } = useColumnWidths("vitalis.mytasks.colWidths.v1", MY_TASKS_COL_DEFAULTS);
+
   useEffect(() => { markMyTasksVisited(userId); }, [userId]);
 
   const startTimerForTask = useCallback(async (row: Row) => {
