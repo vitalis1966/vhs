@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox, PanelLeftClose } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox, PanelLeftClose, Filter as FunnelIcon } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
@@ -16,6 +16,7 @@ const navItems = [
   { title: "Home", url: "/app/home", icon: Home },
   { title: "Inbox", url: "/app/inbox", icon: Inbox },
   { title: "My Tasks", url: "/app/my-tasks", icon: ListTodo },
+  { title: "Funnel", url: "/app/funnel", icon: FunnelIcon },
   { title: "Clients", url: "/app/clients", icon: Users },
   { title: "Projects", url: "/app/projects", icon: FolderKanban },
   { title: "Tasks", url: "/app/tasks", icon: CheckSquare },
