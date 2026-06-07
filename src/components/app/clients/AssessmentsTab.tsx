@@ -66,9 +66,6 @@ export function AssessmentsTab({ clientId }: Props) {
 
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
-  const [internalOpen, setInternalOpen] = useState(false);
-  const [clientOpen, setClientOpen] = useState(false);
-  const [activeAssignment, setActiveAssignment] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Row | null>(null);
   const [deleting, setDeleting] = useState(false);
 
