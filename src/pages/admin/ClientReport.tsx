@@ -664,37 +664,39 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
         <div className="no-print sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border/40">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-3 flex items-center justify-between flex-wrap gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <Link to={`/admin/submissions/${sessionId}`}>
+              <Link to={backTo ?? `/admin/submissions/${sessionId}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Internal Report
+                {backLabel ?? "Back to Internal Report"}
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <RotateCcw className="mr-2 h-4 w-4" />
-                    Reset to Generated
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Reset all edits?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure? All your edits will be lost. This will restore all sections to the AI-generated version.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResetAll}>Reset All</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              {!embedded && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Reset to Generated
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Reset all edits?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure? All your edits will be lost. This will restore all sections to the AI-generated version.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleResetAll}>Reset All</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
               <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
                 {isGeneratingPDF ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                 {isGeneratingPDF ? "Generating PDF..." : "Download PDF"}
               </Button>
-              {reportSent ? (
+              {!embedded && (reportSent ? (
                 <Button size="sm" disabled className="bg-accent/20 text-accent border border-accent/30">
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Report Sent ✓
@@ -704,13 +706,15 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
                   <Send className="mr-2 h-4 w-4" />
                   Send Report to Client
                 </Button>
-              )}
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Report Links — top of page */}
+        {/* Report Links — top of page (admin only) */}
+        {!embedded && (
         <div className="no-print container mx-auto px-4 lg:px-8 max-w-5xl pt-6">
+
           <div className="bg-card rounded-2xl shadow-soft border border-border/40 overflow-hidden">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-border/40 bg-secondary/10">
               <LinkIcon className="h-5 w-5 text-accent" />
