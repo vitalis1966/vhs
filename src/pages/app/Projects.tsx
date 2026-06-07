@@ -84,6 +84,7 @@ export default function Projects() {
   }, [workspaceId]);
 
   const tf = useTableFilters<"name" | "client" | "status" | "target" | "owner" | "progress">();
+  const { widths, setWidth } = useColumnWidths("vitalis.projects.colWidths.v1", PROJ_COL_DEFAULTS);
 
   const baseFiltered = useMemo(() => rows.filter((r) =>
     (filterClient === "all" || r.client_id === filterClient) &&
