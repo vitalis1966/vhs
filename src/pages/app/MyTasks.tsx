@@ -356,7 +356,7 @@ export default function MyTasks() {
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox checked={selected.includes(row.id)} onCheckedChange={() => toggleOne(row.id)} aria-label="Select task" />
                       </td>
-                      <td className="px-3 py-2 font-medium truncate">
+                      <td className="px-3 py-2 font-medium whitespace-normal break-words">
                         {row.title}
                         {!!row.comment_count && (
                           <span className="ml-2 text-[11px] text-muted-foreground">💬 {row.comment_count}</span>
