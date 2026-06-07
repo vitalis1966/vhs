@@ -81,6 +81,7 @@ const AppNotificationSettings = lazy(() => import("./pages/app/NotificationSetti
 const AppSettings = lazy(() => import("./pages/app/Settings"));
 const AppTimeTracking = lazy(() => import("./pages/app/TimeTracking"));
 const AppInbox = lazy(() => import("./pages/app/Inbox"));
+const AppFunnel = lazy(() => import("./pages/app/Funnel"));
 const AppAssignmentInternalReport = lazy(() => import("./pages/app/AssignmentInternalReportPage"));
 const AppAssignmentClientReport = lazy(() => import("./pages/app/AssignmentClientReportPage"));
 
@@ -201,6 +202,7 @@ const App = () => (
                 <Route path="home" element={<AppHome />} />
                 <Route path="inbox" element={<AppInbox />} />
                 <Route path="my-tasks" element={<AppMyTasks />} />
+                <Route path="funnel" element={<AppFunnel />} />
                 <Route path="clients" element={<AppClients />} />
                 <Route path="clients/:clientId" element={<AppClientDetail />} />
                 <Route path="clients/:clientId/assessments/:assignmentId/internal-report" element={<AppAssignmentInternalReport />} />
