@@ -230,63 +230,6 @@ export default function Clients() {
             statusColor={statusColor}
           />
         </TabsContent>
-              <tbody>
-                {loading && (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
-                )}
-                {!loading && filteredClients.length === 0 && (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    {clients.length === 0 ? "No clients yet." : "No clients match the selected tags."}
-                  </td></tr>
-                )}
-                {filteredClients.map((c) => {
-                  const owner = c.account_owner_id ? owners[c.account_owner_id] : null;
-                  const tagIds = clientTagMap[c.id] ?? [];
-                  return (
-                    <tr key={c.id} className="border-t hover:bg-muted/30">
-                      <td className="px-4 py-3">
-                        <Link to={`/app/clients/${c.id}`} className="font-medium text-foreground hover:underline">
-                          {c.name}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className={statusColor[c.status ?? "Active"] ?? ""}>
-                          {c.status ?? "—"}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{c.industry ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {tagIds.map((id) => {
-                            const t = tagMap[id];
-                            if (!t) return null;
-                            return (
-                              <Badge key={id} variant="outline" className="border-transparent text-[10px]"
-                                style={{ background: `${t.color ?? "#94a3b8"}22`, color: t.color ?? "#475569" }}>
-                                {t.name}
-                              </Badge>
-                            );
-                          })}
-                          {tagIds.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {owner ? (
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
-                            <span>{owner.full_name ?? owner.email}</span>
-                          </div>
-                        ) : <span className="text-muted-foreground">Unassigned</span>}
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">{openCounts[c.id] ?? 0}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-
-            </table>
-          </div>
-        </TabsContent>
 
         <TabsContent value="board" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
