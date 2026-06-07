@@ -827,6 +827,8 @@ export default function ClientReport({ data: dataProp, embedded = false, backTo,
             </div>
           </div>
         </div>
+        )}
+
 
         <div className="bg-card border-b border-border/40 print:border-b-2 print:border-accent">
           <div className="container mx-auto px-4 lg:px-8 max-w-5xl py-10 text-center">
