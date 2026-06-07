@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +16,6 @@ import {
 import { FileSearch, Loader2, MoreVertical } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { useToast } from "@/hooks/use-toast";
-import { InternalReportViewer } from "./reports/InternalReportViewer";
-import { ClientReportViewer } from "./reports/ClientReportViewer";
 
 interface Props { clientId: string }
 
@@ -67,9 +66,6 @@ export function AssessmentsTab({ clientId }: Props) {
 
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
-  const [internalOpen, setInternalOpen] = useState(false);
-  const [clientOpen, setClientOpen] = useState(false);
-  const [activeAssignment, setActiveAssignment] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Row | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -160,22 +156,26 @@ export function AssessmentsTab({ clientId }: Props) {
                     <TableCell className={cellClass}>
                       {canViewInternal && r.has_internal_report ? (
                         <Button
+                          asChild
                           size="sm"
                           className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2"
-                          onClick={() => { setActiveAssignment(r.assignment_id); setInternalOpen(true); }}
                         >
-                          Internal Report
+                          <Link to={`/app/clients/${clientId}/assessments/${r.assignment_id}/internal-report`}>
+                            Internal Report
+                          </Link>
                         </Button>
                       ) : <span className="text-muted-foreground">—</span>}
                     </TableCell>
                     <TableCell className={`${cellClass} pl-6`}>
                       {canViewClient && r.has_client_report ? (
                         <Button
+                          asChild
                           size="sm"
                           className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2"
-                          onClick={() => { setActiveAssignment(r.assignment_id); setClientOpen(true); }}
                         >
-                          Client Report
+                          <Link to={`/app/clients/${clientId}/assessments/${r.assignment_id}/client-report`}>
+                            Client Report
+                          </Link>
                         </Button>
                       ) : <span className="text-muted-foreground">—</span>}
                     </TableCell>
@@ -211,8 +211,7 @@ export function AssessmentsTab({ clientId }: Props) {
         </div>
       )}
 
-      <InternalReportViewer open={internalOpen} onOpenChange={setInternalOpen} assignmentId={activeAssignment} />
-      <ClientReportViewer open={clientOpen} onOpenChange={setClientOpen} assignmentId={activeAssignment} />
+
 
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox } from "lucide-react";
+import { Home, ListTodo, Users, FolderKanban, CheckSquare, LayoutDashboard, Pin, Settings as SettingsIcon, Clock, Inbox, PanelLeftClose } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarSeparator, useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { usePinnedClients } from "@/hooks/usePinnedClients";
 import { useInboxUnreadCount } from "@/hooks/useInboxUnreadCount";
@@ -41,7 +42,7 @@ function NavBadge({ newCount, totalCount }: { newCount: number; totalCount: numb
 }
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { workspaceName, userId, workspaceId, role } = useWorkspace();
@@ -65,13 +66,25 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         {!collapsed ? (
-          <div>
-            <div className="font-display text-base font-bold text-sidebar-primary leading-tight">
-              {workspaceName ?? "Workspace"}
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <div className="font-display text-base font-bold text-sidebar-primary leading-tight">
+                {workspaceName ?? "Workspace"}
+              </div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
+                Vitalis OS
+              </div>
             </div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
-              Vitalis OS
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 -mr-1 -mt-1 text-muted-foreground hover:text-foreground"
+              onClick={toggleSidebar}
+              aria-label="Collapse sidebar"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
           </div>
         ) : (
           <div className="h-6 w-6 rounded bg-sidebar-primary/10" />
