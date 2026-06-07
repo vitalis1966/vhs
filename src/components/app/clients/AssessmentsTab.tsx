@@ -156,22 +156,26 @@ export function AssessmentsTab({ clientId }: Props) {
                     <TableCell className={cellClass}>
                       {canViewInternal && r.has_internal_report ? (
                         <Button
+                          asChild
                           size="sm"
                           className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-2"
-                          onClick={() => { setActiveAssignment(r.assignment_id); setInternalOpen(true); }}
                         >
-                          Internal Report
+                          <Link to={`/app/clients/${clientId}/assessments/${r.assignment_id}/internal-report`}>
+                            Internal Report
+                          </Link>
                         </Button>
                       ) : <span className="text-muted-foreground">—</span>}
                     </TableCell>
                     <TableCell className={`${cellClass} pl-6`}>
                       {canViewClient && r.has_client_report ? (
                         <Button
+                          asChild
                           size="sm"
                           className="bg-teal-600 hover:bg-teal-700 text-white text-xs h-8 px-2"
-                          onClick={() => { setActiveAssignment(r.assignment_id); setClientOpen(true); }}
                         >
-                          Client Report
+                          <Link to={`/app/clients/${clientId}/assessments/${r.assignment_id}/client-report`}>
+                            Client Report
+                          </Link>
                         </Button>
                       ) : <span className="text-muted-foreground">—</span>}
                     </TableCell>
