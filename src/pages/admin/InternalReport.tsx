@@ -62,22 +62,50 @@ const severityIcons: Record<string, string> = {
   critical: "✕",
 };
 
-export default function InternalReport() {
-  const { sessionId } = useParams<{ sessionId: string }>();
+export interface InternalReportData {
+  session: any;
+  assessment: any;
+  intake: any;
+  report: any;
+  sections: any[];
+  responses: Record<string, { value: string; json: any }>;
+}
+
+interface InternalReportProps {
+  data?: InternalReportData;
+  embedded?: boolean;
+  backTo?: string;
+  backLabel?: string;
+}
+
+export default function InternalReport({ data: dataProp, embedded = false, backTo, backLabel }: InternalReportProps = {}) {
+  const params = useParams<{ sessionId: string }>();
+  const sessionId = dataProp?.session?.id ?? params.sessionId;
   const { toast } = useToast();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!dataProp);
   const [rerunning, setRerunning] = useState(false);
-  const [report, setReport] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
-  const [assessment, setAssessment] = useState<any>(null);
-  const [intake, setIntake] = useState<any>(null);
-  const [sections, setSections] = useState<any[]>([]);
-  const [responses, setResponses] = useState<Record<string, { value: string; json: any }>>({});
+  const [report, setReport] = useState<any>(dataProp?.report ?? null);
+  const [session, setSession] = useState<any>(dataProp?.session ?? null);
+  const [assessment, setAssessment] = useState<any>(dataProp?.assessment ?? null);
+  const [intake, setIntake] = useState<any>(dataProp?.intake ?? null);
+  const [sections, setSections] = useState<any[]>(dataProp?.sections ?? []);
+  const [responses, setResponses] = useState<Record<string, { value: string; json: any }>>(dataProp?.responses ?? {});
 
   useEffect(() => {
+    if (dataProp) {
+      setReport(dataProp.report);
+      setSession(dataProp.session);
+      setAssessment(dataProp.assessment);
+      setIntake(dataProp.intake);
+      setSections(dataProp.sections);
+      setResponses(dataProp.responses);
+      setLoading(false);
+      return;
+    }
     if (sessionId) loadAll();
-  }, [sessionId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, dataProp]);
 
   const loadAll = async () => {
     setLoading(true);
