@@ -71,9 +71,15 @@ Deno.serve(async (req) => {
         : { data: null } as any;
 
       let recipientEmail: string | null = null;
-      if (r.resource_id) {
+      const kind = (r as any).resource_kind ?? "member";
+      if (kind === "member" && r.resource_id) {
         const { data: prof } = await supabase.from("profiles").select("email").eq("id", r.resource_id).maybeSingle();
         recipientEmail = prof?.email ?? null;
+      } else if (kind === "contact" && (r as any).resource_contact_id) {
+        const { data: ct } = await supabase.from("contacts").select("email").eq("id", (r as any).resource_contact_id).maybeSingle();
+        recipientEmail = ct?.email ?? null;
+      } else if (kind === "external" && (r as any).resource_external_email) {
+        recipientEmail = (r as any).resource_external_email;
       }
       if (!recipientEmail) {
         const { data: ta } = await supabase.from("task_assignees").select("user_id").eq("task_id", r.task_id).limit(1).maybeSingle();
