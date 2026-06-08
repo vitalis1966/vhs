@@ -330,9 +330,9 @@ export default function MyTasks() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={11} className="px-3 py-12 text-center text-sm text-muted-foreground">Loading…</td></tr>
+              <tr><td colSpan={12} className="px-3 py-12 text-center text-sm text-muted-foreground">Loading…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={11} className="px-3 py-16 text-center">
+              <tr><td colSpan={12} className="px-3 py-16 text-center">
                 <ListTodo className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground">No tasks assigned to you yet</p>
               </td></tr>
@@ -409,6 +409,7 @@ export default function MyTasks() {
                         {row.due_date ? format(parseDateOnly(row.due_date)!, "MMM d, yyyy") : "—"}
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground">Me</td>
+                      <td className="px-3 py-2"><FollowUpBadge status={followUps[row.id] ?? "not_started"} /></td>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <Button
                           size="icon" variant="ghost" className="h-7 w-7 text-emerald-600 hover:bg-emerald-50"
