@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
   const now = new Date();
   const { data: rows, error } = await supabase
     .from("task_follow_ups")
-    .select("id, task_id, follow_up_date, follow_up_due_date, remind_before_value, remind_before_unit, is_recurring, recurrence_frequency, resource_id, last_reminder_sent_at, enabled, follow_up_status")
+    .select("id, task_id, follow_up_date, follow_up_due_date, remind_before_value, remind_before_unit, is_recurring, recurrence_frequency, resource_kind, resource_id, resource_contact_id, resource_external_email, last_reminder_sent_at, enabled, follow_up_status")
     .eq("enabled", true)
     .neq("follow_up_status", "completed");
 
