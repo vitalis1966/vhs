@@ -17,6 +17,7 @@ import { TaskRichText } from "./TaskRichText";
 import { TagPicker } from "./TagPicker";
 import { Attachments } from "./Attachments";
 import { TaskComments } from "./tasks/TaskComments";
+import { FollowUpSection } from "./tasks/FollowUpSection";
 import { sendNotification } from "@/lib/notify";
 
 interface Props {
@@ -329,6 +330,8 @@ export function TaskDetailPanel({ taskId, open, onOpenChange, onChanged }: Props
                 <Label className="text-xs mb-1.5 block">Comments</Label>
                 <TaskComments taskId={task.id} workspaceId={task.workspace_id} />
               </div>
+
+              <FollowUpSection taskId={task.id} workspaceId={task.workspace_id} />
             </div>
           </>
         )}

@@ -1,53 +1,93 @@
-# Internal Report Viewer, Client Report Viewer & Sidebar Collapse
+## VITALIS OS — Inbox, Timer, Tables & Follow-Ups
 
-## Findings from exploration
+Confirmed components to reuse (no rebuilds):
+- Task side panel: `src/components/app/TaskDetailPanel.tsx` — extended in place.
+- Notifications panel: `src/components/app/NotificationsBell.tsx` — tabs added inside the existing PopoverContent.
+- Start Timer UI: `src/components/app/time/TimerWidget.tsx` (`StartPanel`) — converted from Popover to Dialog, same fields/logic.
+- Column header filter/sort: `src/components/app/columns/ColumnHeader.tsx` + `useTableFilters` (reused for the new Follow Up column).
+- "Show completed" slider in `src/pages/app/MyTasks.tsx` — reused for Inbox.
 
-**VHS Admin report rendering**
-- Internal report: `src/pages/admin/InternalReport.tsx` (622 lines) — full page at route `/admin/submissions/:sessionId`, guarded by `AdminGuard`. Loads session, intake, internal report, sections via direct Supabase queries from `sessionId` URL param. Contains admin-only actions interleaved with rendering: "Regenerate analysis" (calls `analyze-assessment` edge function), navigation to client-report editor, etc.
-- Client report: `src/pages/admin/ClientReport.tsx` (1031 lines) — route `/admin/submissions/:sessionId/client-report`, guarded by `AdminGuard`. Loads internal report + `client_report_edits` + `client_report_tokens`, supports inline editing, token generation, sending client email, and embeds `BookingWidget`.
-- Both pages **open inline** (router navigation), not in new tabs. They are not referenced via `window.open` / `target=_blank`.
-- Both contain admin-only logic that must be stripped for OS reuse.
+---
 
-**OS sidebar**
-- `src/components/ui/sidebar.tsx` already exposes `useSidebar().toggleSidebar()` and a `SidebarTrigger`. The trigger is already mounted in `src/components/app/AppTopBar.tsx` (line 66), and collapsed state is persisted via the `sidebar:state` cookie.
-- The user's request is specifically for a toggle inside the **sidebar header** (under the "Vitalis OS" branding). No new state mechanism is needed — we surface `toggleSidebar()` there.
-- `sessionStorage` is not required because the existing cookie already persists state across the session.
+### 1. Inbox — "Show Completed" toggle
+- Add a `Switch` + label in the `Inbox.tsx` header, matching the My Tasks styling/position.
+- State persisted in `sessionStorage` under `inbox:show-completed`, default OFF.
+- Client-side filter only: when OFF, hide rows where `status = 'assigned' AND extraction_state = 'completed'`. Query unchanged.
 
-## Decisions
+### 2. Inbox — Bulk actions
+- When the existing select-all checkbox selects all currently-visible rows, render a bulk action bar above the table using the same pattern as other bulk-action bars in the app (sticky bar with count + actions).
+- Actions: Mark Assigned, Mark Waiting, Mark Not Assigned, Delete (existing `AlertDialog` confirm).
+- Operates on visible (filtered) rows; after success → clear selection + refetch.
+- Single-row actions untouched.
 
-1. **Extract read-only display components** under `src/components/shared/reports/`:
-   - `InternalReportDisplay.tsx` — takes `sessionId: string`, fetches its own data (session, intake, internal report, sections) and renders the exact JSX currently in `InternalReport.tsx`. No edit, regenerate, send-email, or navigation controls.
-   - `ClientReportDisplay.tsx` — takes `sessionId: string` and optional `readOnly` flag, fetches report + `client_report_edits`, renders the exact JSX currently in `ClientReport.tsx`. When `readOnly`, hides edit fields, token controls, email send, and `BookingWidget`.
-2. **Refactor VHS Admin pages** to delegate rendering to the new shared components. The admin pages keep all their admin-only actions in a toolbar/wrapper around the shared display — so VHS Admin behavior is unchanged but both surfaces render from one source of truth.
-3. **OS viewers open in a new tab**, since the request says "match exactly" and OS routes must not redirect to `/admin/*`. New OS-only routes will be added:
-   - `/app/clients/:clientId/assessments/:assignmentId/internal-report`
-   - `/app/clients/:clientId/assessments/:assignmentId/client-report`
-   These resolve `session_id` from the assignment via the existing `list_client_assessment_assignments` RPC (or a small lookup against `client_submission_assignments`), then render the shared display component. Permission-gated by the existing `view_internal_report` / `view_client_report` permission keys.
-   - Note: VHS Admin opens inline. The spec says "Opens in a new tab if VHS Admin opens it in a new tab; opens inline if VHS Admin renders it inline." Since VHS Admin is inline, the OS viewers will technically be **inline OS routes** rather than `window.open` new tabs — same model. The existing `Sheet`-based viewers (`InternalReportViewer.tsx`, `ClientReportViewer.tsx`) will be replaced by `Link`/`navigate` to these routes, then deleted.
-4. **Sidebar collapse button**: add an icon button (`PanelLeftClose` from lucide-react, already used in the design language) inside `SidebarHeader` in `src/components/app/AppSidebar.tsx`. Wires to `useSidebar().toggleSidebar()`. When collapsed, the existing `collapsible="icon"` behavior already shows icon-only mode; the existing topbar `SidebarTrigger` continues to act as the re-open control (and is the standard expand affordance).
+### 3. Inbox — Attachments from forwarded emails
+Migration `inbox_email_attachments`:
+- Cols: `id`, `email_id` (FK `inbound_emails` ON DELETE CASCADE), `file_name`, `storage_path`, `mime_type`, `file_size`, `created_at`.
+- `GRANT SELECT,INSERT,DELETE` to `authenticated`; `GRANT ALL` to `service_role`.
+- RLS: SELECT allowed if `EXISTS` matching `inbound_emails` accessible via existing `can_manage_inbound_email` / `is_workspace_member`; service_role bypasses.
+- Create private Storage bucket `email-attachments` via `storage_create_bucket` + RLS on `storage.objects` keyed off workspace membership.
 
-## Files
+Edge function `supabase/functions/email-inbound/index.ts`:
+- After inserting the email row, detect attachments across Resend/Mailgun/Postmark shapes (`data.attachments`, `data.email.attachments`, `attachment-N` + `attachment-count`, `data.Attachments`).
+- For each: fetch/decode content → upload to `email-attachments/{workspace_id}/{email_id}/{filename}` → insert row.
+- Wrap in try/catch; log + continue on failure (never block email insert).
 
-**New**
-- `src/components/shared/reports/InternalReportDisplay.tsx`
-- `src/components/shared/reports/ClientReportDisplay.tsx`
-- `src/pages/app/AssignmentInternalReportPage.tsx`
-- `src/pages/app/AssignmentClientReportPage.tsx`
+`EmailViewerSheet.tsx`:
+- Query `inbox_email_attachments` by `email_id` when sheet opens.
+- Render Attachments section under body with name, size (existing `formatBytes`), and Download via `supabase.storage.from('email-attachments').createSignedUrl()` (existing pattern in `clientDocuments.ts`).
 
-**Edited**
-- `src/pages/admin/InternalReport.tsx` — strip rendering JSX, wrap `<InternalReportDisplay sessionId={sessionId}/>` with admin toolbar.
-- `src/pages/admin/ClientReport.tsx` — strip rendering JSX, wrap `<ClientReportDisplay sessionId={sessionId} readOnly={false}/>` with admin toolbar (edit, tokens, email, BookingWidget).
-- `src/components/app/clients/AssessmentsTab.tsx` — replace Sheet opens with navigation to new OS report routes.
-- `src/App.tsx` — register the two new OS routes (lazy).
-- `src/components/app/AppSidebar.tsx` — add `PanelLeftClose` toggle button in `SidebarHeader` calling `toggleSidebar()`.
+### 4. Start Timer popup → Dialog
+- In `TimerWidget.tsx`, replace the `Popover`/`PopoverContent` wrapping `StartPanel` with `Dialog`/`DialogContent` (`sm:max-w-[480px]`, min-width 480px).
+- Keep trigger button, all fields, order, and `startTimer()` logic identical.
+- Move "Add hours manually" link inside the dialog footer area.
+- `RunningPanel` edit popover untouched (works fine).
 
-**Deleted**
-- `src/components/app/clients/reports/InternalReportViewer.tsx`
-- `src/components/app/clients/reports/ClientReportViewer.tsx`
+### 5. Full-width tables (My Tasks, Tasks table, Clients, Projects, Inbox, Time Tracking)
+- Root cause: pages wrap content in `space-y-4` inside `AppLayout`'s constrained container, and tables use `table-layout: fixed` with cumulative column widths smaller than viewport.
+- Fix: wrap each table in `<div class="w-full overflow-x-auto">` and set `<table className="w-full min-w-full">`; ensure last column (actions/3-dots) uses `w-12` fixed width and `sticky right-0 bg-background` so it stays visible on narrow viewports. Audit `AppLayout` main container to remove any max-width narrower than viewport.
+- Apply uniformly across: `MyTasks.tsx`, `TaskTable.tsx`, `Clients.tsx`, `Projects.tsx`, `Inbox.tsx`, `TimeTracking.tsx`.
+- Do not adjust relative column widths.
 
-## Constraints honored
-- No schema changes, no new dependencies.
-- VHS Admin actions and routes preserved; only the rendering JSX is hoisted into shared components used by both surfaces.
-- OS routes never redirect to `/admin/*`; data is fetched directly via existing RPCs/queries.
-- Existing `view_internal_report` / `view_client_report` permission gates from the prior build are reused.
-- Sidebar uses the existing `useSidebar` state and cookie persistence — no new state, no `sessionStorage` key.
+### 6. Task Follow-Up system
+
+#### 6a. Migration `task_follow_ups`
+Columns as specified plus `last_reminder_sent_at timestamptz`. FKs: `task_id` → `tasks(id)` cascade, `resource_id` → `profiles(id)` SET NULL. Unique `(task_id)`.
+GRANTs to `authenticated` (SELECT/INSERT/UPDATE/DELETE) + `service_role` ALL. RLS: allow when `task_workspace_id(task_id)` is a workspace the user is an active member of (reuse `is_workspace_member`). `updated_at` trigger via existing `touch_updated_at`.
+
+#### 6b. Side-panel Follow Up section (`TaskDetailPanel.tsx`)
+- New collapsible block under existing fields, gated by a `Switch` ("Follow Up").
+- Fields (only visible when ON): follow_up_date (date+time), follow_up_due_date (date+time), remind_before (number input + Select unit hours/days/months), `is_recurring` Switch → reveals recurrence Select, resource_id Select populated from workspace `profiles`.
+- On save, upsert into `task_follow_ups` keyed by `task_id`.
+- When task status changes to a `done`/`cancelled` category status → set `follow_up_status='completed'` and clear `last_reminder_sent_at` (no new reminders).
+
+#### 6c. Status computation
+Implemented as a Postgres function `compute_follow_up_status(row)` + trigger on insert/update of `task_follow_ups` and on `tasks.status_id` change (existing `notify_task_status_change` pattern). Logic exactly per spec.
+
+#### 6d. Follow Up column in My Tasks + Tasks table
+- Add column after Assignee using `ColumnHeader` with multi-select filter (Not Started / Recurring / Completed) and sort.
+- Badge variants: neutral / blue / green using existing badge classes.
+- Persist widths in existing `useColumnWidths` keys.
+
+#### 6e. Notifications panel — Follow Ups tab
+- Inside `NotificationsBell.tsx` PopoverContent (width unchanged), wrap content in `Tabs` with `TabsList` (Notifications | Follow Ups).
+- Follow Ups tab: query `task_follow_ups` joined to `tasks` + `clients` for current user where `follow_up_status != 'completed'` AND (`follow_up_date <= now() + 30 days` OR remind-before threshold reached) AND user is assignee or resource.
+- Each item: task title, client, follow-up date, due date, "View Task" link → `/app/tasks?task={id}` (existing deep-link pattern).
+
+#### 6f. Reminder edge function + cron
+- New function `send-follow-up-reminders` (verify_jwt=false). Query candidates (`enabled`, status != completed, `follow_up_date - remind_before <= now()`, `last_reminder_sent_at` null or older than current period).
+- Send via Resend using existing transactional template pattern. Recipient: resource email, else first task assignee email.
+- Update `last_reminder_sent_at = now()`. If `is_recurring`, advance `follow_up_date` by recurrence_frequency.
+- Schedule via `pg_cron` hourly using `net.http_post` (project already uses pg_cron for other jobs — confirmed compatible). Inserted via `supabase--insert` (project-specific URL/anon key).
+
+---
+
+### Design / constraints
+- Reuse design tokens, Switch, Dialog, Tabs, Badge, AlertDialog from existing components — no new deps.
+- No VHS Administration changes. No schema changes outside listed tables/columns.
+- All new public tables include explicit GRANTs in their migrations.
+
+### Order of execution (build mode)
+1. Migrations: `task_follow_ups` (+ trigger), `inbox_email_attachments`, storage bucket.
+2. Edge: `email-inbound` attachments, new `send-follow-up-reminders` + cron insert.
+3. Frontend: TimerWidget dialog → Inbox toggle/bulk/attachments → Table width audit → TaskDetailPanel follow-up → Follow Up column in MyTasks/TaskTable → NotificationsBell tabs.
+4. Verify: build passes; smoke-check Inbox toggle, bulk delete confirm, timer dialog width, follow-up save round-trip.
