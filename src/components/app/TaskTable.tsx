@@ -15,9 +15,10 @@ import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
   ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
+import { FollowUpBadge, FOLLOW_UP_STATUS_OPTIONS, type FollowUpStatus } from "@/components/app/tasks/FollowUpBadge";
 
 const TASK_COL_DEFAULTS = {
-  title: 280, client: 160, project: 160, status: 140, priority: 110, due: 130, assignees: 140,
+  title: 280, client: 160, project: 160, status: 140, priority: 110, due: 130, assignees: 140, followup: 130,
 };
 
 interface Row {
@@ -45,9 +46,10 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
   const [statuses, setStatuses] = useState<Record<string, { id: string; name: string; color: string | null; category: string }>>({});
   const [assigneesByTask, setAssigneesByTask] = useState<Record<string, string[]>>({});
   const [profiles, setProfiles] = useState<Record<string, any>>({});
+  const [followUps, setFollowUps] = useState<Record<string, FollowUpStatus>>({});
   const [selected, setSelected] = useState<string[]>([]);
   const [confirmRow, setConfirmRow] = useState<Row | null>(null);
-  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignees">({
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignees" | "followup">({
     defaultSort: { key: "due", dir: "asc" },
   });
 
@@ -121,7 +123,11 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
       sortValue: (t) => (t.due_date ? new Date(t.due_date).getTime() : null),
     },
     assignees: { filterValue: (t) => assigneesByTask[t.id] ?? [] },
-  }), [baseFiltered, tf.state, clients, projects, statuses, assigneesByTask]);
+    followup: {
+      filterValue: (t) => followUps[t.id] ?? "not_started",
+      sortValue: (t) => followUps[t.id] ?? "not_started",
+    },
+  }), [baseFiltered, tf.state, clients, projects, statuses, assigneesByTask, followUps]);
 
   const allSelected = filtered.length > 0 && filtered.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : filtered.map((r) => r.id));
@@ -193,12 +199,17 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                 filterValue={tf.filters.assignees} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctAssignees} />} />
             </ResizableTh>
+            <ResizableTh columnKey="followup" width={widths.followup} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+              <ColumnHeader label="Follow Up" columnKey="followup" sort={tf.sort} onToggleSort={tf.toggleSort}
+                filterValue={tf.filters.followup} onFilterChange={tf.setFilter}
+                renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={FOLLOW_UP_STATUS_OPTIONS} />} />
+            </ResizableTh>
             <th className="px-3 py-2 w-8" />
           </tr>
         </thead>
         <tbody>
           {filtered.length === 0 && (
-            <tr><td colSpan={9} className="px-3 py-6 text-center text-muted-foreground">No tasks.</td></tr>
+            <tr><td colSpan={10} className="px-3 py-6 text-center text-muted-foreground">No tasks.</td></tr>
           )}
           {filtered.map((t) => {
             const c = clients[t.client_id];
