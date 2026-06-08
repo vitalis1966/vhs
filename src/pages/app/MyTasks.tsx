@@ -17,6 +17,7 @@ import { PRIORITY_CLASS, clientColor, isOverdue, isApproachingDue, parseDateOnly
 import { softDeleteTasks, setTaskStatus, onTasksChanged } from "@/components/app/tasks/taskMutations";
 import { toast } from "sonner";
 import { markMyTasksVisited } from "@/hooks/useMyTasksBadge";
+import { FollowUpBadge, FOLLOW_UP_STATUS_OPTIONS, type FollowUpStatus } from "@/components/app/tasks/FollowUpBadge";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
   ResizableTh, useColumnWidths,
@@ -46,6 +47,7 @@ export default function MyTasks() {
   const [clients, setClients] = useState<Record<string, ClientLite>>({});
   const [projects, setProjects] = useState<Record<string, ProjectLite>>({});
   const [extractedTaskIds, setExtractedTaskIds] = useState<Set<string>>(new Set());
+  const [followUps, setFollowUps] = useState<Record<string, FollowUpStatus>>({});
   const [selected, setSelected] = useState<string[]>([]);
   const [showCompleted, setShowCompleted] = useState(false);
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -55,9 +57,9 @@ export default function MyTasks() {
   const { running, startTimer, stopTimer } = useTimer();
 
   const MY_TASKS_COL_DEFAULTS = {
-    title: 280, client: 128, project: 112, status: 112, priority: 96, source: 96, due: 112, assignee: 96,
+    title: 280, client: 128, project: 112, status: 112, priority: 96, source: 96, due: 112, assignee: 96, followup: 120,
   };
-  const { widths, setWidth } = useColumnWidths("vitalis.mytasks.colWidths.v1", MY_TASKS_COL_DEFAULTS);
+  const { widths, setWidth } = useColumnWidths("vitalis.mytasks.colWidths.v2", MY_TASKS_COL_DEFAULTS);
 
   useEffect(() => { markMyTasksVisited(userId); }, [userId]);
 
@@ -151,13 +153,17 @@ export default function MyTasks() {
 
     // Identify which of these tasks were created via email extraction
     if (all.length) {
-      const { data: ext } = await (supabase as any)
-        .from("email_task_extractions")
-        .select("task_id")
-        .in("task_id", all.map((t) => t.id));
+      const [{ data: ext }, { data: fu }] = await Promise.all([
+        (supabase as any).from("email_task_extractions").select("task_id").in("task_id", all.map((t) => t.id)),
+        (supabase as any).from("task_follow_ups").select("task_id, follow_up_status").in("task_id", all.map((t) => t.id)),
+      ]);
       setExtractedTaskIds(new Set((ext ?? []).map((r: any) => r.task_id)));
+      const fmap: Record<string, FollowUpStatus> = {};
+      (fu ?? []).forEach((r: any) => { fmap[r.task_id] = r.follow_up_status; });
+      setFollowUps(fmap);
     } else {
       setExtractedTaskIds(new Set());
+      setFollowUps({});
     }
 
     setLoading(false);
@@ -180,7 +186,7 @@ export default function MyTasks() {
   // Cross-component task mutations
   useEffect(() => onTasksChanged(() => load()), [load]);
 
-  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignee">({
+  const tf = useTableFilters<"title" | "client" | "project" | "status" | "priority" | "due" | "assignee" | "followup">({
     defaultSort: { key: "due", dir: "asc" },
   });
 
@@ -226,7 +232,11 @@ export default function MyTasks() {
       filterValue: () => (userId ? [userId] : []),
       sortValue: () => userId ?? "",
     },
-  }), [baseFiltered, tf.state, clients, statuses, userId]);
+    followup: {
+      filterValue: (r) => followUps[r.id] ?? "not_started",
+      sortValue: (r) => followUps[r.id] ?? "not_started",
+    },
+  }), [baseFiltered, tf.state, clients, statuses, userId, followUps]);
 
   const allSelected = filtered.length > 0 && filtered.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : filtered.map((r) => r.id));
@@ -308,6 +318,11 @@ export default function MyTasks() {
                   filterValue={tf.filters.assignee} onFilterChange={tf.setFilter}
                   renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange}
                     options={userId ? [{ value: userId, label: "Me" }] : []} />} />
+              </ResizableTh>
+              <ResizableTh columnKey="followup" width={widths.followup} onResize={setWidth} className="px-3 py-2 font-medium text-left">
+                <ColumnHeader label="Follow Up" columnKey="followup" sort={tf.sort} onToggleSort={tf.toggleSort}
+                  filterValue={tf.filters.followup} onFilterChange={tf.setFilter}
+                  renderFilter={(v, onChange) => <MultiSelectFilter value={v} onChange={onChange} options={FOLLOW_UP_STATUS_OPTIONS} />} />
               </ResizableTh>
               <th className="px-3 py-2 w-8" />
               <th className="px-3 py-2 w-8" />
