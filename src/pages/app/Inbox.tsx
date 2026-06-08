@@ -320,7 +320,12 @@ export default function Inbox() {
     defaultSort: { key: "received", dir: "desc" },
   });
 
-  const visibleEmails = useMemo(() => tf.apply(emails, {
+  const filteredByCompleted = useMemo(() => {
+    if (showCompleted || view === "trash") return emails;
+    return emails.filter((e) => !(e.status === "assigned" && e.extraction_state === "completed"));
+  }, [emails, showCompleted, view]);
+
+  const visibleEmails = useMemo(() => tf.apply(filteredByCompleted, {
     from: {
       filterValue: (e) => `${e.from_name ?? ""} ${e.from_email}`,
       sortValue: (e) => (e.from_name ?? e.from_email).toLowerCase(),
@@ -337,11 +342,21 @@ export default function Inbox() {
       filterValue: (e) => new Date(e.received_at),
       sortValue: (e) => new Date(e.received_at).getTime(),
     },
-  }), [emails, tf.state]);
+  }), [filteredByCompleted, tf.state]);
 
   const allSelected = visibleEmails.length > 0 && visibleEmails.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : visibleEmails.map((r) => r.id));
   const toggleOne = (id: string) => setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  const bulkSetStatus = async (status: InboxStatus) => {
+    if (!selected.length) return;
+    const ids = [...selected];
+    const { error } = await (supabase as any).from("inbound_emails").update({ status }).in("id", ids);
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.map((r) => ids.includes(r.id) ? { ...r, status } : r));
+    setSelected([]);
+    toast.success(`${ids.length} email${ids.length === 1 ? "" : "s"} updated`);
+  };
 
   return (
     <div className="space-y-4">
@@ -354,23 +369,29 @@ export default function Inbox() {
               : "Emails forwarded to Vitalis OS for task extraction."}
           </p>
         </div>
-        <div className="inline-flex rounded-md border border-border bg-card p-0.5">
-          <Button
-            size="sm"
-            variant={view === "inbox" ? "secondary" : "ghost"}
-            className="h-8"
-            onClick={() => setView("inbox")}
-          >
-            <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
-          </Button>
-          <Button
-            size="sm"
-            variant={view === "trash" ? "secondary" : "ghost"}
-            className="h-8"
-            onClick={() => setView("trash")}
-          >
-            <Trash2 className="h-4 w-4 mr-1.5" /> Trash
-          </Button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show completed</span>
+            <Switch checked={showCompleted} onCheckedChange={setShowCompleted} />
+          </div>
+          <div className="inline-flex rounded-md border border-border bg-card p-0.5">
+            <Button
+              size="sm"
+              variant={view === "inbox" ? "secondary" : "ghost"}
+              className="h-8"
+              onClick={() => setView("inbox")}
+            >
+              <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
+            </Button>
+            <Button
+              size="sm"
+              variant={view === "trash" ? "secondary" : "ghost"}
+              className="h-8"
+              onClick={() => setView("trash")}
+            >
+              <Trash2 className="h-4 w-4 mr-1.5" /> Trash
+            </Button>
+          </div>
         </div>
       </div>
 
