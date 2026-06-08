@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         type: "function",
         function: {
           name: "return_tasks",
-          description: "Return extracted tasks",
+          description: "Return extracted tasks with rich per-task detail",
           parameters: {
             type: "object",
             properties: {
@@ -116,10 +116,17 @@ Deno.serve(async (req) => {
                   type: "object",
                   properties: {
                     title: { type: "string" },
-                    description: { type: "string" },
                     priority: { type: "string", enum: ["high", "medium", "low"] },
+                    requester: { type: "string" },
+                    deadline_text: { type: "string" },
+                    what: { type: "string" },
+                    why: { type: "string" },
+                    acceptance_criteria: { type: "array", items: { type: "string" } },
+                    key_details: { type: "array", items: { type: "string" } },
+                    relevant_quote: { type: "string" },
+                    suggested_next_step: { type: "string" },
                   },
-                  required: ["title", "description", "priority"],
+                  required: ["title", "priority", "what"],
                   additionalProperties: false,
                 },
               },
