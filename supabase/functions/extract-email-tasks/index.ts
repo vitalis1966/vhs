@@ -57,10 +57,11 @@ Deno.serve(async (req) => {
 
   const { data: email, error: loadErr } = await admin
     .from("inbound_emails")
-    .select("id, subject, from_name, from_email, to_addresses, cc_addresses, sent_at, body_text, body_html")
+    .select("id, subject, from_name, from_email, received_at, body_text, body_html")
     .eq("id", body.email_id)
     .maybeSingle();
   if (loadErr || !email) {
+    console.error("extract-email-tasks: email load failed", { id: body.email_id, loadErr });
     return new Response(JSON.stringify({ error: "email not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
@@ -73,9 +74,7 @@ Deno.serve(async (req) => {
     subject: (email as any).subject ?? null,
     from_name: (email as any).from_name ?? null,
     from_email: (email as any).from_email ?? null,
-    to: (email as any).to_addresses ?? null,
-    cc: (email as any).cc_addresses ?? null,
-    sent_at: (email as any).sent_at ?? null,
+    sent_at: (email as any).received_at ?? null,
     body_text: (email as any).body_text ?? null,
     body_html: (email as any).body_html ?? null,
   });
