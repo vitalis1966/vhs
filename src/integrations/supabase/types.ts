@@ -2920,7 +2920,11 @@ export type Database = {
           recurrence_frequency: string | null
           remind_before_unit: string | null
           remind_before_value: number | null
+          resource_contact_id: string | null
+          resource_external_email: string | null
+          resource_external_name: string | null
           resource_id: string | null
+          resource_kind: string
           task_id: string
           updated_at: string
         }
@@ -2936,7 +2940,11 @@ export type Database = {
           recurrence_frequency?: string | null
           remind_before_unit?: string | null
           remind_before_value?: number | null
+          resource_contact_id?: string | null
+          resource_external_email?: string | null
+          resource_external_name?: string | null
           resource_id?: string | null
+          resource_kind?: string
           task_id: string
           updated_at?: string
         }
@@ -2952,11 +2960,22 @@ export type Database = {
           recurrence_frequency?: string | null
           remind_before_unit?: string | null
           remind_before_value?: number | null
+          resource_contact_id?: string | null
+          resource_external_email?: string | null
+          resource_external_name?: string | null
           resource_id?: string | null
+          resource_kind?: string
           task_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "task_follow_ups_resource_contact_id_fkey"
+            columns: ["resource_contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "task_follow_ups_resource_id_fkey"
             columns: ["resource_id"]
