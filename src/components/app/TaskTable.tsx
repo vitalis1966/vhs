@@ -13,7 +13,12 @@ import { onTasksChanged, setTaskStatus, softDeleteTasks } from "./tasks/taskMuta
 import { toast } from "sonner";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
+
+const TASK_COL_DEFAULTS = {
+  title: 280, client: 160, project: 160, status: 140, priority: 110, due: 130, assignees: 140,
+};
 
 interface Row {
   id: string; title: string; status_id: string | null; priority: string;
@@ -143,49 +148,51 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
     return Array.from(set).map((id) => ({ value: id, label: profiles[id]?.full_name ?? profiles[id]?.email ?? id }));
   }, [assigneesByTask, profiles]);
 
+  const { widths, setWidth } = useColumnWidths("vitalis.tasks.colWidths.v1", TASK_COL_DEFAULTS);
+
   return (
     <>
     <div className="border border-border rounded-lg overflow-hidden bg-card">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm" style={{ tableLayout: "fixed" }}>
         <thead className="bg-muted/50">
           <tr className="text-left">
             <th className="px-3 py-2 w-8"><Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" /></th>
-            <th className="px-3 py-2 font-medium">
+            <ResizableTh columnKey="title" width={widths.title} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Title" columnKey="title" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.title} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter title…" />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="client" width={widths.client} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.client} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctClients} />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="project" width={widths.project} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Project" columnKey="project" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.project} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctProjects} />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="status" width={widths.status} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.status} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctStatuses} />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="priority" width={widths.priority} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Priority" columnKey="priority" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.priority} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
                   options={["Urgent", "High", "Medium", "Low"].map((p) => ({ value: p, label: p }))} />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="due" width={widths.due} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Due" columnKey="due" sort={tf.sort} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.due} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
-            </th>
-            <th className="px-3 py-2 font-medium">
+            </ResizableTh>
+            <ResizableTh columnKey="assignees" width={widths.assignees} onResize={setWidth} className="px-3 py-2 font-medium text-left">
               <ColumnHeader label="Assignees" columnKey="assignees" sort={tf.sort} sortable={false} onToggleSort={tf.toggleSort}
                 filterValue={tf.filters.assignees} onFilterChange={tf.setFilter}
                 renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc} options={distinctAssignees} />} />
-            </th>
+            </ResizableTh>
             <th className="px-3 py-2 w-8" />
           </tr>
         </thead>
@@ -214,15 +221,15 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                 <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                   <Checkbox checked={selected.includes(t.id)} onCheckedChange={() => toggleOne(t.id)} aria-label="Select task" />
                 </td>
-                <td className="px-3 py-2 font-medium">
+                <td className="px-3 py-2 font-medium whitespace-normal break-words">
                   <span>{t.title}</span>
                   {!!t.comment_count && (
                     <span className="ml-2 text-[11px] text-muted-foreground">💬 {t.comment_count}</span>
                   )}
                 </td>
-                <td className="px-3 py-2">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
-                <td className="px-3 py-2 text-muted-foreground">{p?.name ?? "—"}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 whitespace-normal break-words">{c && <Badge variant="outline" className={`${clientColor(c.id)} border-transparent`}>{c.name}</Badge>}</td>
+                <td className="px-3 py-2 text-muted-foreground whitespace-normal break-words">{p?.name ?? "—"}</td>
+                <td className="px-3 py-2 whitespace-normal break-words">
                   {s ? (
                     <span className="inline-flex items-center gap-1.5 text-xs">
                       <span className="w-2 h-2 rounded-full" style={{ background: s.color ?? "#94a3b8" }} />
@@ -230,8 +237,8 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                     </span>
                   ) : "—"}
                 </td>
-                <td className="px-3 py-2"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
-                <td className={`px-3 py-2 ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d, yyyy") : "—"}</td>
+                <td className="px-3 py-2 whitespace-normal break-words"><Badge variant="outline" className={PRIORITY_CLASS[t.priority] ?? ""}>{t.priority}</Badge></td>
+                <td className={`px-3 py-2 whitespace-normal break-words ${overdue ? "text-red-600 font-medium" : ""}`}>{t.due_date ? format(parseDateOnly(t.due_date)!, "MMM d, yyyy") : "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex -space-x-1.5">
                     {aids.slice(0, 3).map((uid) => {

@@ -10,7 +10,12 @@ import { Table as TableIcon, LayoutGrid } from "lucide-react";
 import { PROJECT_STATUSES, PROJECT_STATUS_COLOR } from "@/components/app/ProjectFormDialog";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter, NumberRangeFilter,
+  ResizableTh, useColumnWidths,
 } from "@/components/app/columns";
+
+const PROJ_COL_DEFAULTS = {
+  name: 260, client: 180, status: 130, target: 130, owner: 200, progress: 200,
+};
 
 interface ProjectRow {
   id: string; name: string; status: string | null; target_date: string | null;
@@ -79,6 +84,7 @@ export default function Projects() {
   }, [workspaceId]);
 
   const tf = useTableFilters<"name" | "client" | "status" | "target" | "owner" | "progress">();
+  const { widths, setWidth } = useColumnWidths("vitalis.projects.colWidths.v1", PROJ_COL_DEFAULTS);
 
   const baseFiltered = useMemo(() => rows.filter((r) =>
     (filterClient === "all" || r.client_id === filterClient) &&
@@ -152,42 +158,42 @@ export default function Projects() {
 
         <TabsContent value="table" className="mt-4">
           <div className="rounded-lg border bg-card overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" style={{ tableLayout: "fixed" }}>
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="text-left px-4 py-3">
+                  <ResizableTh columnKey="name" width={widths.name} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Project" columnKey="name" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.name} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <TextFilter value={v} onChange={oc} placeholder="Filter name…" />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
+                  </ResizableTh>
+                  <ResizableTh columnKey="client" width={widths.client} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Client" columnKey="client" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.client} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
                         options={clientList.map((c: any) => ({ value: c.id, label: c.name }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
+                  </ResizableTh>
+                  <ResizableTh columnKey="status" width={widths.status} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Status" columnKey="status" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.status} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
                         options={PROJECT_STATUSES.map((s) => ({ value: s, label: s }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
+                  </ResizableTh>
+                  <ResizableTh columnKey="target" width={widths.target} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Target" columnKey="target" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.target} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <DateRangeFilter value={v} onChange={oc} />} />
-                  </th>
-                  <th className="text-left px-4 py-3">
+                  </ResizableTh>
+                  <ResizableTh columnKey="owner" width={widths.owner} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Owner" columnKey="owner" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.owner} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <MultiSelectFilter value={v} onChange={oc}
                         options={ownerList.map((o: any) => ({ value: o.id, label: o.full_name ?? o.email }))} />} />
-                  </th>
-                  <th className="text-left px-4 py-3 w-48">
+                  </ResizableTh>
+                  <ResizableTh columnKey="progress" width={widths.progress} onResize={setWidth} className="text-left px-4 py-3">
                     <ColumnHeader label="Progress" columnKey="progress" sort={tf.sort} onToggleSort={tf.toggleSort}
                       filterValue={tf.filters.progress} onFilterChange={tf.setFilter}
                       renderFilter={(v, oc) => <NumberRangeFilter value={v} onChange={oc} unit="%" />} />
-                  </th>
+                  </ResizableTh>
                 </tr>
               </thead>
               <tbody>
@@ -201,23 +207,23 @@ export default function Projects() {
                   const pct = progress[p.id] ?? 0;
                   return (
                     <tr key={p.id} className="border-t hover:bg-muted/30">
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         <Link to={`/app/clients/${p.client_id}/projects/${p.id}`} className="font-medium hover:underline">
                           {p.name}
                         </Link>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         {c && <Link to={`/app/clients/${c.id}`} className="text-muted-foreground hover:underline">{c.name}</Link>}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         <Badge variant="outline" className={PROJECT_STATUS_COLOR[p.status ?? "Active"] ?? ""}>{p.status ?? "—"}</Badge>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground tabular-nums">{p.target_date ?? "—"}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-normal break-words">
                         {owner ? (
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6"><AvatarFallback className="text-[10px]">{initials(owner.full_name ?? owner.email)}</AvatarFallback></Avatar>
-                            <span>{owner.full_name ?? owner.email}</span>
+                            <span className="whitespace-normal break-words">{owner.full_name ?? owner.email}</span>
                           </div>
                         ) : <span className="text-muted-foreground">Unassigned</span>}
                       </td>
