@@ -154,7 +154,19 @@ Deno.serve(async (req) => {
 
   const aiJson = await aiRes.json();
   const toolCall = aiJson?.choices?.[0]?.message?.tool_calls?.[0];
-  let aiTasks: Array<{ title: string; description: string; priority: string }> = [];
+  type RichTask = {
+    title: string;
+    priority?: string;
+    requester?: string;
+    deadline_text?: string;
+    what?: string;
+    why?: string;
+    acceptance_criteria?: string[];
+    key_details?: string[];
+    relevant_quote?: string;
+    suggested_next_step?: string;
+  };
+  let aiTasks: RichTask[] = [];
   if (toolCall?.function?.arguments) {
     try {
       const parsed = JSON.parse(toolCall.function.arguments);
@@ -162,6 +174,25 @@ Deno.serve(async (req) => {
     } catch (e) {
       console.error("parse error", e);
     }
+  }
+
+  function buildDescription(t: RichTask): string {
+    const lines: string[] = [];
+    if (t.what) lines.push(`**What to do**\n${t.what.trim()}`);
+    if (t.why) lines.push(`**Why it matters**\n${t.why.trim()}`);
+    const meta: string[] = [];
+    if (t.requester) meta.push(`- Requested by: ${t.requester.trim()}`);
+    if (t.deadline_text) meta.push(`- Deadline mentioned: ${t.deadline_text.trim()}`);
+    if (meta.length) lines.push(`**Context**\n${meta.join("\n")}`);
+    if (t.acceptance_criteria?.length) {
+      lines.push(`**Done when**\n${t.acceptance_criteria.map((c) => `- ${c.trim()}`).join("\n")}`);
+    }
+    if (t.key_details?.length) {
+      lines.push(`**Key details from email**\n${t.key_details.map((c) => `- ${c.trim()}`).join("\n")}`);
+    }
+    if (t.suggested_next_step) lines.push(`**Suggested next step**\n${t.suggested_next_step.trim()}`);
+    if (t.relevant_quote) lines.push(`**From the email**\n> ${t.relevant_quote.trim().replace(/\n+/g, " ")}`);
+    return lines.join("\n\n");
   }
 
   // Persist: replace any existing extracted tasks for this email
@@ -173,7 +204,7 @@ Deno.serve(async (req) => {
       email_id: body.email_id!,
       position: i,
       title: t.title,
-      description: t.description,
+      description: buildDescription(t),
       priority: (t.priority || "medium").toLowerCase(),
       status: "pending",
     }));
