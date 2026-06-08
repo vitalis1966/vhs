@@ -42,7 +42,19 @@ Deno.serve(async (req) => {
 Extract headers and structured details. Be conservative: never invent dates, names, amounts, or commitments.
 If a field is not present, omit it or return an empty array.
 Categories: "Action required", "FYI / document", "Meeting request", "Invoice / finance", "New enquiry", "Legal / contract", "Urgent".
-Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.`;
+Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.
+
+For action_items, populate every field you can from the email — do not be sparse:
+- title: short imperative action.
+- priority + due_date if present.
+- requester: who is asking (name + role/company if visible).
+- what: 1-2 sentences plainly describing the action.
+- why: 1-2 sentences with the business reason / context from the email.
+- acceptance_criteria: 1-4 concrete "done when" bullets.
+- key_details: supporting facts from the email — figures, names, dates, documents, links.
+- relevant_quote: ONE short verbatim quote (<=240 chars) from the email body, or empty.
+- suggested_next_step: one sentence on how to start.
+Never invent facts.`;
 
     const tool = {
       type: "function",
@@ -68,7 +80,13 @@ Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.`;
                   title: { type: "string" },
                   due_date: { type: "string", description: "ISO date if mentioned" },
                   priority: { type: "string", enum: ["High", "Medium", "Normal"] },
-                  context: { type: "string" },
+                  requester: { type: "string" },
+                  what: { type: "string" },
+                  why: { type: "string" },
+                  acceptance_criteria: { type: "array", items: { type: "string" } },
+                  key_details: { type: "array", items: { type: "string" } },
+                  relevant_quote: { type: "string" },
+                  suggested_next_step: { type: "string" },
                 },
                 required: ["title"],
               },
