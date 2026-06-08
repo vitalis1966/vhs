@@ -23,6 +23,7 @@ import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask, type PanelFinishSummary } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
+import { Switch } from "@/components/ui/switch";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
 } from "@/components/app/columns";
@@ -73,6 +74,12 @@ export default function Inbox() {
   const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
   const [view, setView] = useState<"inbox" | "trash">("inbox");
   const [deletedByNames, setDeletedByNames] = useState<Record<string, string>>({});
+  const [showCompleted, setShowCompleted] = useState<boolean>(() => {
+    try { return sessionStorage.getItem("inbox:show-completed") === "1"; } catch { return false; }
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem("inbox:show-completed", showCompleted ? "1" : "0"); } catch {}
+  }, [showCompleted]);
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
