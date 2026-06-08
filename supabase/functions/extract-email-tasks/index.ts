@@ -11,7 +11,18 @@ Rules:
 - Identify ONLY distinct, actionable tasks. Each task must have a clear action required.
 - Ignore background context, FYI content, greetings, sign-offs, and pleasantries.
 - Prefer fewer, meaningful tasks over many small ones. Maximum 5 tasks.
-- Each task needs a concise title, a fuller description, and a priority of "high", "medium", or "low".
+- For EACH task populate every field you can from the email — do not be sparse:
+  * title: short imperative action (~80 chars), e.g. "Send signed NDA to John".
+  * priority: "high" | "medium" | "low".
+  * requester: who is asking, with role/company if visible.
+  * deadline_text: any due date or timing phrase as written ("by Friday", "EOD Tuesday"), or empty.
+  * what: 1-2 sentences plainly describing what needs to be done.
+  * why: 1-2 sentences with the business reason or context drawn from the email.
+  * acceptance_criteria: 1-4 concrete bullet conditions for "done" (who to copy, format, attachments, approvals).
+  * key_details: supporting facts from the email — figures, names, dates, document/system names, links.
+  * relevant_quote: ONE short direct quote (<=240 chars) from the email, verbatim, or empty.
+  * suggested_next_step: a single sentence telling the assignee how to start.
+- Never invent facts. If a field is not in the email, leave it empty.
 - If there are no actionable tasks, return an empty array.`;
 
 Deno.serve(async (req) => {
@@ -95,7 +106,7 @@ Deno.serve(async (req) => {
         type: "function",
         function: {
           name: "return_tasks",
-          description: "Return extracted tasks",
+          description: "Return extracted tasks with rich per-task detail",
           parameters: {
             type: "object",
             properties: {
@@ -105,10 +116,17 @@ Deno.serve(async (req) => {
                   type: "object",
                   properties: {
                     title: { type: "string" },
-                    description: { type: "string" },
                     priority: { type: "string", enum: ["high", "medium", "low"] },
+                    requester: { type: "string" },
+                    deadline_text: { type: "string" },
+                    what: { type: "string" },
+                    why: { type: "string" },
+                    acceptance_criteria: { type: "array", items: { type: "string" } },
+                    key_details: { type: "array", items: { type: "string" } },
+                    relevant_quote: { type: "string" },
+                    suggested_next_step: { type: "string" },
                   },
-                  required: ["title", "description", "priority"],
+                  required: ["title", "priority", "what"],
                   additionalProperties: false,
                 },
               },
@@ -136,7 +154,19 @@ Deno.serve(async (req) => {
 
   const aiJson = await aiRes.json();
   const toolCall = aiJson?.choices?.[0]?.message?.tool_calls?.[0];
-  let aiTasks: Array<{ title: string; description: string; priority: string }> = [];
+  type RichTask = {
+    title: string;
+    priority?: string;
+    requester?: string;
+    deadline_text?: string;
+    what?: string;
+    why?: string;
+    acceptance_criteria?: string[];
+    key_details?: string[];
+    relevant_quote?: string;
+    suggested_next_step?: string;
+  };
+  let aiTasks: RichTask[] = [];
   if (toolCall?.function?.arguments) {
     try {
       const parsed = JSON.parse(toolCall.function.arguments);
@@ -144,6 +174,25 @@ Deno.serve(async (req) => {
     } catch (e) {
       console.error("parse error", e);
     }
+  }
+
+  function buildDescription(t: RichTask): string {
+    const lines: string[] = [];
+    if (t.what) lines.push(`**What to do**\n${t.what.trim()}`);
+    if (t.why) lines.push(`**Why it matters**\n${t.why.trim()}`);
+    const meta: string[] = [];
+    if (t.requester) meta.push(`- Requested by: ${t.requester.trim()}`);
+    if (t.deadline_text) meta.push(`- Deadline mentioned: ${t.deadline_text.trim()}`);
+    if (meta.length) lines.push(`**Context**\n${meta.join("\n")}`);
+    if (t.acceptance_criteria?.length) {
+      lines.push(`**Done when**\n${t.acceptance_criteria.map((c) => `- ${c.trim()}`).join("\n")}`);
+    }
+    if (t.key_details?.length) {
+      lines.push(`**Key details from email**\n${t.key_details.map((c) => `- ${c.trim()}`).join("\n")}`);
+    }
+    if (t.suggested_next_step) lines.push(`**Suggested next step**\n${t.suggested_next_step.trim()}`);
+    if (t.relevant_quote) lines.push(`**From the email**\n> ${t.relevant_quote.trim().replace(/\n+/g, " ")}`);
+    return lines.join("\n\n");
   }
 
   // Persist: replace any existing extracted tasks for this email
@@ -155,7 +204,7 @@ Deno.serve(async (req) => {
       email_id: body.email_id!,
       position: i,
       title: t.title,
-      description: t.description,
+      description: buildDescription(t),
       priority: (t.priority || "medium").toLowerCase(),
       status: "pending",
     }));

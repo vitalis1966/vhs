@@ -446,6 +446,15 @@ export function PasteEmailDialog({ open, onOpenChange, defaultClientId, defaultP
                         </Select>
                       </div>
                     </div>
+                    <div className="pl-6">
+                      <Label className="text-xs">Description / context</Label>
+                      <Textarea
+                        value={a.context ?? ""}
+                        onChange={(e) => { const copy = [...actions]; copy[i] = { ...copy[i], context: e.target.value }; setActions(copy); }}
+                        placeholder="Details pulled from the email — what, why, deadline, acceptance criteria, key facts."
+                        className="min-h-[120px] text-sm font-mono"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

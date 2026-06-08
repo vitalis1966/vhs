@@ -42,7 +42,19 @@ Deno.serve(async (req) => {
 Extract headers and structured details. Be conservative: never invent dates, names, amounts, or commitments.
 If a field is not present, omit it or return an empty array.
 Categories: "Action required", "FYI / document", "Meeting request", "Invoice / finance", "New enquiry", "Legal / contract", "Urgent".
-Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.`;
+Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.
+
+For action_items, populate every field you can from the email — do not be sparse:
+- title: short imperative action.
+- priority + due_date if present.
+- requester: who is asking (name + role/company if visible).
+- what: 1-2 sentences plainly describing the action.
+- why: 1-2 sentences with the business reason / context from the email.
+- acceptance_criteria: 1-4 concrete "done when" bullets.
+- key_details: supporting facts from the email — figures, names, dates, documents, links.
+- relevant_quote: ONE short verbatim quote (<=240 chars) from the email body, or empty.
+- suggested_next_step: one sentence on how to start.
+Never invent facts.`;
 
     const tool = {
       type: "function",
@@ -68,7 +80,13 @@ Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.`;
                   title: { type: "string" },
                   due_date: { type: "string", description: "ISO date if mentioned" },
                   priority: { type: "string", enum: ["High", "Medium", "Normal"] },
-                  context: { type: "string" },
+                  requester: { type: "string" },
+                  what: { type: "string" },
+                  why: { type: "string" },
+                  acceptance_criteria: { type: "array", items: { type: "string" } },
+                  key_details: { type: "array", items: { type: "string" } },
+                  relevant_quote: { type: "string" },
+                  suggested_next_step: { type: "string" },
                 },
                 required: ["title"],
               },
@@ -133,6 +151,33 @@ Priorities: "High", "Medium", "Normal". Use ISO 8601 for dates when possible.`;
     const aiJson = await aiRes.json();
     const toolCall = aiJson?.choices?.[0]?.message?.tool_calls?.[0];
     const parsed = tryParseJSON<any>(toolCall?.function?.arguments) ?? {};
+
+    // Synthesize a rich `context` string for each action item so downstream
+    // task creation gets a fully-populated description by default.
+    function buildContext(a: any): string {
+      const lines: string[] = [];
+      if (a?.what) lines.push(`**What to do**\n${String(a.what).trim()}`);
+      if (a?.why) lines.push(`**Why it matters**\n${String(a.why).trim()}`);
+      const meta: string[] = [];
+      if (a?.requester) meta.push(`- Requested by: ${String(a.requester).trim()}`);
+      if (a?.due_date) meta.push(`- Due: ${String(a.due_date).trim()}`);
+      if (meta.length) lines.push(`**Context**\n${meta.join("\n")}`);
+      if (Array.isArray(a?.acceptance_criteria) && a.acceptance_criteria.length) {
+        lines.push(`**Done when**\n${a.acceptance_criteria.map((c: string) => `- ${String(c).trim()}`).join("\n")}`);
+      }
+      if (Array.isArray(a?.key_details) && a.key_details.length) {
+        lines.push(`**Key details from email**\n${a.key_details.map((c: string) => `- ${String(c).trim()}`).join("\n")}`);
+      }
+      if (a?.suggested_next_step) lines.push(`**Suggested next step**\n${String(a.suggested_next_step).trim()}`);
+      if (a?.relevant_quote) lines.push(`**From the email**\n> ${String(a.relevant_quote).trim().replace(/\n+/g, " ")}`);
+      return lines.join("\n\n");
+    }
+    if (Array.isArray(parsed?.action_items)) {
+      parsed.action_items = parsed.action_items.map((a: any) => ({
+        ...a,
+        context: buildContext(a) || a?.context || "",
+      }));
+    }
 
     // Service-role client for matching across workspace data (RLS bypass for read)
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
