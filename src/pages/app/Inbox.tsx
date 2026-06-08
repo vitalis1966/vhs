@@ -558,8 +558,18 @@ export default function Inbox() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-full shadow-elevated px-3 py-2 flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2">
           <span className="text-sm font-medium px-2">{selected.length} selected</span>
           <div className="h-5 w-px bg-border mx-1" />
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("assigned")}>
+            Assigned
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("waiting")}>
+            Waiting
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("not_assigned")}>
+            Not Assigned
+          </Button>
+          <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive" onClick={() => setBulkDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4 mr-1" /> Move to Trash
+            <Trash2 className="h-4 w-4 mr-1" /> Delete
           </Button>
           <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected([])} aria-label="Clear selection">
