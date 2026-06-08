@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Play, Square, Pencil, Plus, Clock } from "lucide-react";
 import { useTimer } from "@/contexts/TimerContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -10,9 +11,9 @@ import { formatDuration } from "@/lib/timeFormat";
 import { ManualEntryDialog } from "./ManualEntryDialog";
 import { toast } from "sonner";
 
-interface StartPanelProps { defaultClientId?: string | null; onStarted?: () => void; }
+interface StartPanelProps { defaultClientId?: string | null; onStarted?: () => void; onAddManually?: () => void; }
 
-function StartPanel({ defaultClientId, onStarted }: StartPanelProps) {
+function StartPanel({ defaultClientId, onStarted, onAddManually }: StartPanelProps) {
   const { workspaceId, userId } = useWorkspace();
   const { startTimer } = useTimer();
   const [fields, setFields] = useState<TimeEntryFields>({
@@ -56,12 +57,18 @@ function StartPanel({ defaultClientId, onStarted }: StartPanelProps) {
   };
 
   return (
-    <div className="w-[340px] space-y-3">
-      <div className="font-medium text-sm">Start Timer</div>
+    <div className="space-y-4">
       <TimeEntryFormFields value={fields} onChange={setFields} />
-      <Button onClick={onStart} disabled={submitting} className="w-full">
-        <Play className="h-4 w-4 mr-2" /> Start Timer
-      </Button>
+      <DialogFooter className="sm:justify-between gap-2">
+        {onAddManually ? (
+          <Button variant="ghost" size="sm" onClick={onAddManually} type="button">
+            <Plus className="h-3.5 w-3.5 mr-1" /> Add hours manually
+          </Button>
+        ) : <span />}
+        <Button onClick={onStart} disabled={submitting}>
+          <Play className="h-4 w-4 mr-2" /> Start Timer
+        </Button>
+      </DialogFooter>
     </div>
   );
 }
@@ -113,22 +120,21 @@ export function TimerWidget() {
   if (!running) {
     return (
       <div className="flex items-center gap-1">
-        <Popover open={openStart} onOpenChange={setOpenStart}>
-          <PopoverTrigger asChild>
-            <Button size="sm" variant="outline" className="gap-1.5 h-9">
-              <Play className="h-4 w-4 text-emerald-600" />
-              <span className="hidden sm:inline text-xs">Start timer</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="p-3">
-            <StartPanel onStarted={() => setOpenStart(false)} />
-            <div className="pt-2 mt-2 border-t flex justify-end">
-              <Button variant="ghost" size="sm" onClick={() => { setOpenStart(false); setOpenManual(true); }}>
-                <Plus className="h-3.5 w-3.5 mr-1" /> Add hours manually
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <Button size="sm" variant="outline" className="gap-1.5 h-9" onClick={() => setOpenStart(true)}>
+          <Play className="h-4 w-4 text-emerald-600" />
+          <span className="hidden sm:inline text-xs">Start timer</span>
+        </Button>
+        <Dialog open={openStart} onOpenChange={setOpenStart}>
+          <DialogContent className="sm:max-w-[520px]">
+            <DialogHeader>
+              <DialogTitle>Start Timer</DialogTitle>
+            </DialogHeader>
+            <StartPanel
+              onStarted={() => setOpenStart(false)}
+              onAddManually={() => { setOpenStart(false); setOpenManual(true); }}
+            />
+          </DialogContent>
+        </Dialog>
         <ManualEntryDialog open={openManual} onOpenChange={setOpenManual} />
       </div>
     );

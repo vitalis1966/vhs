@@ -1400,6 +1400,44 @@ export type Database = {
           },
         ]
       }
+      inbox_email_attachments: {
+        Row: {
+          created_at: string
+          email_id: string
+          file_name: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          email_id: string
+          file_name: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          email_id?: string
+          file_name?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inbox_email_attachments_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "inbound_emails"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insights_articles: {
         Row: {
           body: string | null
@@ -2865,6 +2903,72 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_follow_ups: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          follow_up_date: string | null
+          follow_up_due_date: string | null
+          follow_up_status: string
+          id: string
+          is_recurring: boolean
+          last_reminder_sent_at: string | null
+          recurrence_frequency: string | null
+          remind_before_unit: string | null
+          remind_before_value: number | null
+          resource_id: string | null
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          follow_up_date?: string | null
+          follow_up_due_date?: string | null
+          follow_up_status?: string
+          id?: string
+          is_recurring?: boolean
+          last_reminder_sent_at?: string | null
+          recurrence_frequency?: string | null
+          remind_before_unit?: string | null
+          remind_before_value?: number | null
+          resource_id?: string | null
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          follow_up_date?: string | null
+          follow_up_due_date?: string | null
+          follow_up_status?: string
+          id?: string
+          is_recurring?: boolean
+          last_reminder_sent_at?: string | null
+          recurrence_frequency?: string | null
+          remind_before_unit?: string | null
+          remind_before_value?: number | null
+          resource_id?: string | null
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_follow_ups_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_follow_ups_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]

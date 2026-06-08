@@ -23,6 +23,7 @@ import { EmailViewerSheet } from "@/components/app/inbox/EmailViewerSheet";
 import { ExtractTasksPanel, type ExtractedTask, type PanelFinishSummary } from "@/components/app/inbox/ExtractTasksPanel";
 import { ExtractedTasksViewerSheet } from "@/components/app/inbox/ExtractedTasksViewerSheet";
 import { markInboxVisited } from "@/hooks/useInboxUnreadCount";
+import { Switch } from "@/components/ui/switch";
 import {
   ColumnHeader, useTableFilters, TextFilter, MultiSelectFilter, DateRangeFilter,
 } from "@/components/app/columns";
@@ -73,6 +74,12 @@ export default function Inbox() {
   const [tasksViewer, setTasksViewer] = useState<{ tasks: ExtractedTask[]; subject: string | null } | null>(null);
   const [view, setView] = useState<"inbox" | "trash">("inbox");
   const [deletedByNames, setDeletedByNames] = useState<Record<string, string>>({});
+  const [showCompleted, setShowCompleted] = useState<boolean>(() => {
+    try { return sessionStorage.getItem("inbox:show-completed") === "1"; } catch { return false; }
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem("inbox:show-completed", showCompleted ? "1" : "0"); } catch {}
+  }, [showCompleted]);
 
   // Mark page as visited for badge logic
   useEffect(() => { markInboxVisited(userId); }, [userId]);
@@ -313,7 +320,12 @@ export default function Inbox() {
     defaultSort: { key: "received", dir: "desc" },
   });
 
-  const visibleEmails = useMemo(() => tf.apply(emails, {
+  const filteredByCompleted = useMemo(() => {
+    if (showCompleted || view === "trash") return emails;
+    return emails.filter((e) => !(e.status === "assigned" && e.extraction_state === "completed"));
+  }, [emails, showCompleted, view]);
+
+  const visibleEmails = useMemo(() => tf.apply(filteredByCompleted, {
     from: {
       filterValue: (e) => `${e.from_name ?? ""} ${e.from_email}`,
       sortValue: (e) => (e.from_name ?? e.from_email).toLowerCase(),
@@ -330,11 +342,21 @@ export default function Inbox() {
       filterValue: (e) => new Date(e.received_at),
       sortValue: (e) => new Date(e.received_at).getTime(),
     },
-  }), [emails, tf.state]);
+  }), [filteredByCompleted, tf.state]);
 
   const allSelected = visibleEmails.length > 0 && visibleEmails.every((r) => selected.includes(r.id));
   const toggleAll = () => setSelected(allSelected ? [] : visibleEmails.map((r) => r.id));
   const toggleOne = (id: string) => setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  const bulkSetStatus = async (status: InboxStatus) => {
+    if (!selected.length) return;
+    const ids = [...selected];
+    const { error } = await (supabase as any).from("inbound_emails").update({ status }).in("id", ids);
+    if (error) { toast.error(error.message); return; }
+    setEmails((rows) => rows.map((r) => ids.includes(r.id) ? { ...r, status } : r));
+    setSelected([]);
+    toast.success(`${ids.length} email${ids.length === 1 ? "" : "s"} updated`);
+  };
 
   return (
     <div className="space-y-4">
@@ -347,23 +369,29 @@ export default function Inbox() {
               : "Emails forwarded to Vitalis OS for task extraction."}
           </p>
         </div>
-        <div className="inline-flex rounded-md border border-border bg-card p-0.5">
-          <Button
-            size="sm"
-            variant={view === "inbox" ? "secondary" : "ghost"}
-            className="h-8"
-            onClick={() => setView("inbox")}
-          >
-            <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
-          </Button>
-          <Button
-            size="sm"
-            variant={view === "trash" ? "secondary" : "ghost"}
-            className="h-8"
-            onClick={() => setView("trash")}
-          >
-            <Trash2 className="h-4 w-4 mr-1.5" /> Trash
-          </Button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show completed</span>
+            <Switch checked={showCompleted} onCheckedChange={setShowCompleted} />
+          </div>
+          <div className="inline-flex rounded-md border border-border bg-card p-0.5">
+            <Button
+              size="sm"
+              variant={view === "inbox" ? "secondary" : "ghost"}
+              className="h-8"
+              onClick={() => setView("inbox")}
+            >
+              <InboxIcon className="h-4 w-4 mr-1.5" /> Inbox
+            </Button>
+            <Button
+              size="sm"
+              variant={view === "trash" ? "secondary" : "ghost"}
+              className="h-8"
+              onClick={() => setView("trash")}
+            >
+              <Trash2 className="h-4 w-4 mr-1.5" /> Trash
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -530,8 +558,18 @@ export default function Inbox() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-full shadow-elevated px-3 py-2 flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2">
           <span className="text-sm font-medium px-2">{selected.length} selected</span>
           <div className="h-5 w-px bg-border mx-1" />
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("assigned")}>
+            Assigned
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("waiting")}>
+            Waiting
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8" onClick={() => bulkSetStatus("not_assigned")}>
+            Not Assigned
+          </Button>
+          <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive" onClick={() => setBulkDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4 mr-1" /> Move to Trash
+            <Trash2 className="h-4 w-4 mr-1" /> Delete
           </Button>
           <div className="h-5 w-px bg-border mx-1" />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected([])} aria-label="Clear selection">

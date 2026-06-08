@@ -364,6 +364,96 @@ Deno.serve(async (req) => {
     scheduleResendBodyBackfill(supabase, inserted.id, String(resend_email_id), resendKey);
   }
 
+  // Best-effort: store attachments from common inbound payload shapes
+  if (inserted?.id && workspace_id) {
+    try {
+      const attachments = extractAttachments(data);
+      for (const att of attachments) {
+        try {
+          const bytes = await fetchAttachmentBytes(att);
+          if (!bytes) continue;
+          const safeName = (att.name || "attachment").replace(/[^\w.\-]+/g, "_");
+          const path = `${workspace_id}/${inserted.id}/${safeName}`;
+          const { error: upErr } = await supabase.storage
+            .from("email-attachments")
+            .upload(path, bytes, { contentType: att.contentType ?? "application/octet-stream", upsert: true });
+          if (upErr) { console.error("[email-inbound] attachment upload error", upErr); continue; }
+          await supabase.from("inbox_email_attachments").insert({
+            email_id: inserted.id,
+            file_name: att.name || safeName,
+            storage_path: path,
+            mime_type: att.contentType ?? null,
+            file_size: bytes.byteLength,
+          });
+        } catch (e) {
+          console.error("[email-inbound] attachment error", e);
+        }
+      }
+      if (attachments.length) console.log("[email-inbound] stored attachments", attachments.length);
+    } catch (e) {
+      console.error("[email-inbound] extractAttachments error", e);
+    }
+  }
+
   console.log("[email-inbound] stored ok");
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
+
+interface RawAttachment {
+  name: string | null;
+  contentType: string | null;
+  content?: string | null; // base64
+  url?: string | null;
+}
+
+function extractAttachments(data: any): RawAttachment[] {
+  const out: RawAttachment[] = [];
+  const candidates: any[] = [];
+  if (Array.isArray(data?.attachments)) candidates.push(...data.attachments);
+  if (Array.isArray(data?.email?.attachments)) candidates.push(...data.email.attachments);
+  if (Array.isArray(data?.Attachments)) candidates.push(...data.Attachments);
+  // Mailgun-style attachment-1, attachment-2, ...
+  const ac = parseInt(data?.["attachment-count"] ?? "0", 10);
+  if (ac > 0) {
+    for (let i = 1; i <= ac; i++) {
+      const v = data[`attachment-${i}`];
+      if (v) candidates.push(v);
+    }
+  }
+  for (const c of candidates) {
+    if (!c) continue;
+    out.push({
+      name: c.filename ?? c.Name ?? c.name ?? null,
+      contentType: c.content_type ?? c.contentType ?? c.ContentType ?? c.type ?? null,
+      content: c.content ?? c.Content ?? c.data ?? null,
+      url: c.url ?? c.URL ?? c.path ?? null,
+    });
+  }
+  return out;
+}
+
+async function fetchAttachmentBytes(att: RawAttachment): Promise<Uint8Array | null> {
+  if (att.content && typeof att.content === "string") {
+    try {
+      // Strip data: URI prefix if present
+      const b64 = att.content.includes(",") ? att.content.split(",").pop()! : att.content;
+      const bin = atob(b64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return arr;
+    } catch (e) {
+      console.error("[email-inbound] base64 decode error", e);
+    }
+  }
+  if (att.url) {
+    try {
+      const r = await fetch(att.url);
+      if (!r.ok) return null;
+      const buf = await r.arrayBuffer();
+      return new Uint8Array(buf);
+    } catch (e) {
+      console.error("[email-inbound] attachment fetch error", e);
+    }
+  }
+  return null;
+}
