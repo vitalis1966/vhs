@@ -1,93 +1,90 @@
-## VITALIS OS — Inbox, Timer, Tables & Follow-Ups
+# Align Paste Email & Forwarded Inbox extraction
 
-Confirmed components to reuse (no rebuilds):
-- Task side panel: `src/components/app/TaskDetailPanel.tsx` — extended in place.
-- Notifications panel: `src/components/app/NotificationsBell.tsx` — tabs added inside the existing PopoverContent.
-- Start Timer UI: `src/components/app/time/TimerWidget.tsx` (`StartPanel`) — converted from Popover to Dialog, same fields/logic.
-- Column header filter/sort: `src/components/app/columns/ColumnHeader.tsx` + `useTableFilters` (reused for the new Follow Up column).
-- "Show completed" slider in `src/pages/app/MyTasks.tsx` — reused for Inbox.
+## Investigation — differences found
 
----
+Both paths run server-side in edge functions and call the Lovable AI Gateway, but every meaningful parameter differs.
 
-### 1. Inbox — "Show Completed" toggle
-- Add a `Switch` + label in the `Inbox.tsx` header, matching the My Tasks styling/position.
-- State persisted in `sessionStorage` under `inbox:show-completed`, default OFF.
-- Client-side filter only: when OFF, hide rows where `status = 'assigned' AND extraction_state = 'completed'`. Query unchanged.
+**Paste Email path** (preferred — better output)
+- UI: `src/components/app/email/PasteEmailDialog.tsx:140` → `supabase.functions.invoke("parse-pasted-email", { raw_email, workspace_id, client_id })`
+- Edge: `supabase/functions/parse-pasted-email/index.ts`
+  - Model: `google/gemini-3-flash-preview` (line 133)
+  - Input: full `raw_email` (headers + body, untouched), up to 200,000 chars; user message is `"Parse this email:\n\n${raw_email}"` (line 136)
+  - System prompt: rich Vitalis-OS framing (lines 41–57) — categories, priorities, ISO dates, conservative rules, and per-action fields `title / priority / due_date / requester / what / why / acceptance_criteria / key_details / relevant_quote / suggested_next_step`
+  - Tool schema: `extract_email` returning headers + `action_items[]` + meeting + people + financials + signature (lines 59–127)
+  - Post-processing: `buildContext()` synthesises a rich Markdown `context` per action (lines 157–180) used as the task description
+  - No body truncation; no HTML stripping (raw paste already plain text in practice)
 
-### 2. Inbox — Bulk actions
-- When the existing select-all checkbox selects all currently-visible rows, render a bulk action bar above the table using the same pattern as other bulk-action bars in the app (sticky bar with count + actions).
-- Actions: Mark Assigned, Mark Waiting, Mark Not Assigned, Delete (existing `AlertDialog` confirm).
-- Operates on visible (filtered) rows; after success → clear selection + refetch.
-- Single-row actions untouched.
+**Forwarded Inbox path** (currently weaker)
+- UI: `src/pages/app/Inbox.tsx:196` → `supabase.functions.invoke("extract-email-tasks", { email_id, reuse })`
+- Edge: `supabase/functions/extract-email-tasks/index.ts`
+  - Model: `google/gemini-2.5-pro` (line 109) — different family
+  - Input: only `subject + (body_text || body_html)` truncated to **16,000 chars** (lines 84–86). When the email arrives HTML-only, raw HTML markup is sent verbatim — no tag stripping, no quoted-reply trimming. Headers (From/To/Date/Cc) are not included.
+  - System prompt: different wording, hard cap of 5 tasks, different field names (`deadline_text` vs `due_date`), no category/meeting/financial extraction (lines 8–25)
+  - Tool schema: `return_tasks` with only the tasks array (lines 113–143)
+  - Post-processing: similar `buildDescription()` (lines 173–190) but driven by the leaner schema
 
-### 3. Inbox — Attachments from forwarded emails
-Migration `inbox_email_attachments`:
-- Cols: `id`, `email_id` (FK `inbound_emails` ON DELETE CASCADE), `file_name`, `storage_path`, `mime_type`, `file_size`, `created_at`.
-- `GRANT SELECT,INSERT,DELETE` to `authenticated`; `GRANT ALL` to `service_role`.
-- RLS: SELECT allowed if `EXISTS` matching `inbound_emails` accessible via existing `can_manage_inbound_email` / `is_workspace_member`; service_role bypasses.
-- Create private Storage bucket `email-attachments` via `storage_create_bucket` + RLS on `storage.objects` keyed off workspace membership.
+**Net effect:** the inbox path uses a different prompt, a different model, includes no headers, may send raw HTML, and truncates at 16k. The paste path sends the full raw email with headers through a richer prompt. This matches the user-reported quality gap.
 
-Edge function `supabase/functions/email-inbound/index.ts`:
-- After inserting the email row, detect attachments across Resend/Mailgun/Postmark shapes (`data.attachments`, `data.email.attachments`, `attachment-N` + `attachment-count`, `data.Attachments`).
-- For each: fetch/decode content → upload to `email-attachments/{workspace_id}/{email_id}/{filename}` → insert row.
-- Wrap in try/catch; log + continue on failure (never block email insert).
+## Source of truth
 
-`EmailViewerSheet.tsx`:
-- Query `inbox_email_attachments` by `email_id` when sheet opens.
-- Render Attachments section under body with name, size (existing `formatBytes`), and Download via `supabase.storage.from('email-attachments').createSignedUrl()` (existing pattern in `clientDocuments.ts`).
+The Paste Email prompt, tool schema, model, and `buildContext()` post-processing become the single source of truth. The forwarded-inbox path is realigned to call the exact same logic.
 
-### 4. Start Timer popup → Dialog
-- In `TimerWidget.tsx`, replace the `Popover`/`PopoverContent` wrapping `StartPanel` with `Dialog`/`DialogContent` (`sm:max-w-[480px]`, min-width 480px).
-- Keep trigger button, all fields, order, and `startTimer()` logic identical.
-- Move "Add hours manually" link inside the dialog footer area.
-- `RunningPanel` edit popover untouched (works fine).
+## Plan
 
-### 5. Full-width tables (My Tasks, Tasks table, Clients, Projects, Inbox, Time Tracking)
-- Root cause: pages wrap content in `space-y-4` inside `AppLayout`'s constrained container, and tables use `table-layout: fixed` with cumulative column widths smaller than viewport.
-- Fix: wrap each table in `<div class="w-full overflow-x-auto">` and set `<table className="w-full min-w-full">`; ensure last column (actions/3-dots) uses `w-12` fixed width and `sticky right-0 bg-background` so it stays visible on narrow viewports. Audit `AppLayout` main container to remove any max-width narrower than viewport.
-- Apply uniformly across: `MyTasks.tsx`, `TaskTable.tsx`, `Clients.tsx`, `Projects.tsx`, `Inbox.tsx`, `TimeTracking.tsx`.
-- Do not adjust relative column widths.
+### 1. Create shared extraction utility (new file)
+`supabase/functions/_shared/extract-email-tasks.ts`
 
-### 6. Task Follow-Up system
+Exports (Deno-compatible, no new deps):
+- `EXTRACTION_SYSTEM_PROMPT` — copied verbatim from `parse-pasted-email/index.ts` lines 41–57
+- `EXTRACTION_TOOL` — copied verbatim from lines 59–127 (`extract_email` tool schema, full set: headers, summary, category, action_items, meeting, mentioned_people, financials, signature)
+- `EXTRACTION_MODEL = "google/gemini-3-flash-preview"`
+- `buildActionContext(action)` — copied verbatim from `buildContext()` lines 157–174
+- `stripHtmlToText(html)` — minimal HTML→text (strip `<script>/<style>`, `<br>`→`\n`, `</p>`→`\n\n`, strip remaining tags, decode `&amp;/&lt;/&gt;/&nbsp;/&quot;/&#39;`, collapse whitespace). Used only when no `body_text` is available.
+- `composeEmailForExtraction({ subject, from_name, from_email, to, cc, sent_at, body_text, body_html })` — returns a single string mirroring the raw-paste shape so the same prompt works:
 
-#### 6a. Migration `task_follow_ups`
-Columns as specified plus `last_reminder_sent_at timestamptz`. FKs: `task_id` → `tasks(id)` cascade, `resource_id` → `profiles(id)` SET NULL. Unique `(task_id)`.
-GRANTs to `authenticated` (SELECT/INSERT/UPDATE/DELETE) + `service_role` ALL. RLS: allow when `task_workspace_id(task_id)` is a workspace the user is an active member of (reuse `is_workspace_member`). `updated_at` trigger via existing `touch_updated_at`.
+  ```text
+  From: <name> <email>
+  To: a@x, b@y
+  Cc: ...
+  Date: <sent_at>
+  Subject: <subject>
 
-#### 6b. Side-panel Follow Up section (`TaskDetailPanel.tsx`)
-- New collapsible block under existing fields, gated by a `Switch` ("Follow Up").
-- Fields (only visible when ON): follow_up_date (date+time), follow_up_due_date (date+time), remind_before (number input + Select unit hours/days/months), `is_recurring` Switch → reveals recurrence Select, resource_id Select populated from workspace `profiles`.
-- On save, upsert into `task_follow_ups` keyed by `task_id`.
-- When task status changes to a `done`/`cancelled` category status → set `follow_up_status='completed'` and clear `last_reminder_sent_at` (no new reminders).
+  <body_text ?? stripHtmlToText(body_html)>
+  ```
+  Returned string is capped to 200,000 chars to match the paste path.
+- `extractEmailViaGateway(apiKey, composedEmail)` — performs the gateway POST with `EXTRACTION_MODEL`, `EXTRACTION_SYSTEM_PROMPT`, tool=`EXTRACTION_TOOL`, `tool_choice` forcing the tool, parses the tool call (`tryParseJSON` mirrors paste path), and returns the parsed object. Surfaces 429/402 via thrown typed errors so callers can map to HTTP status.
 
-#### 6c. Status computation
-Implemented as a Postgres function `compute_follow_up_status(row)` + trigger on insert/update of `task_follow_ups` and on `tasks.status_id` change (existing `notify_task_status_change` pattern). Logic exactly per spec.
+No behaviour change for the paste path other than now importing these shared symbols.
 
-#### 6d. Follow Up column in My Tasks + Tasks table
-- Add column after Assignee using `ColumnHeader` with multi-select filter (Not Started / Recurring / Completed) and sort.
-- Badge variants: neutral / blue / green using existing badge classes.
-- Persist widths in existing `useColumnWidths` keys.
+### 2. Refactor `parse-pasted-email/index.ts`
+- Replace inline `systemPrompt`, `tool`, model literal, and `buildContext` with imports from the shared module.
+- Keep all current behaviour: contact/client matching, `action_items` post-processing now uses shared `buildActionContext`. No UI changes. Response shape unchanged.
 
-#### 6e. Notifications panel — Follow Ups tab
-- Inside `NotificationsBell.tsx` PopoverContent (width unchanged), wrap content in `Tabs` with `TabsList` (Notifications | Follow Ups).
-- Follow Ups tab: query `task_follow_ups` joined to `tasks` + `clients` for current user where `follow_up_status != 'completed'` AND (`follow_up_date <= now() + 30 days` OR remind-before threshold reached) AND user is assignee or resource.
-- Each item: task title, client, follow-up date, due date, "View Task" link → `/app/tasks?task={id}` (existing deep-link pattern).
+### 3. Realign `extract-email-tasks/index.ts`
+- Replace the existing prompt + tool + model with the shared `EXTRACTION_SYSTEM_PROMPT`, `EXTRACTION_TOOL`, `EXTRACTION_MODEL`.
+- Build the AI input by loading `subject, from_name, from_email, to_addresses, cc_addresses, sent_at, body_text, body_html` (extend the existing `inbound_emails` select) and passing them through `composeEmailForExtraction()` — so headers are included and HTML is stripped to text when `body_text` is null.
+- Drop the 16k truncation in favour of the shared 200k cap.
+- After the gateway call, take `parsed.action_items[]` (already enriched with `context` by shared `buildActionContext`) and persist into `email_extracted_tasks` with the same row shape used today:
+  - `title` ← `action_items[i].title`
+  - `description` ← `action_items[i].context`
+  - `priority` ← lowercase of `High|Medium|Normal` → `high|medium|low` (Normal→medium), default `medium`
+  - `position`, `status: "pending"`, `email_id`
+- Keep the existing "reuse already-extracted" short-circuit and the `inbound_emails.extraction_state = "extracted"` update.
+- Keep the existing cap behaviour: take up to the first 5 `action_items` to preserve current downstream UI assumptions (`ExtractTasksPanel`).
+- Return shape (`{ tasks, reused? }`) unchanged so `Inbox.tsx` and `ExtractTasksPanel` need no edits.
 
-#### 6f. Reminder edge function + cron
-- New function `send-follow-up-reminders` (verify_jwt=false). Query candidates (`enabled`, status != completed, `follow_up_date - remind_before <= now()`, `last_reminder_sent_at` null or older than current period).
-- Send via Resend using existing transactional template pattern. Recipient: resource email, else first task assignee email.
-- Update `last_reminder_sent_at = now()`. If `is_recurring`, advance `follow_up_date` by recurrence_frequency.
-- Schedule via `pg_cron` hourly using `net.http_post` (project already uses pg_cron for other jobs — confirmed compatible). Inserted via `supabase--insert` (project-specific URL/anon key).
+### 4. Verification
+- `parse-pasted-email`: re-run paste with a sample email; confirm parsed payload + matched contact unchanged.
+- `extract-email-tasks`: invoke from Inbox 3-dots on an HTML-only forwarded email and confirm tasks now carry `what / why / acceptance_criteria / key_details / suggested_next_step / relevant_quote` in the description, identical in richness to the paste flow.
+- Confirm no UI files are touched.
 
----
+## Out of scope
+- No changes to `PasteEmailDialog`, `ExtractTasksPanel`, `Inbox.tsx`, or any other UI.
+- No schema migrations.
+- No new npm/Deno deps.
+- No changes to VHS Administration, task side panel, status logic, navigation, or Skip/Save/Close flow.
+- `src/lib/extractTasks.ts` is **not** created — the extraction must run server-side (LOVABLE_API_KEY is server-only), so the shared utility lives at `supabase/functions/_shared/extract-email-tasks.ts` instead.
 
-### Design / constraints
-- Reuse design tokens, Switch, Dialog, Tabs, Badge, AlertDialog from existing components — no new deps.
-- No VHS Administration changes. No schema changes outside listed tables/columns.
-- All new public tables include explicit GRANTs in their migrations.
-
-### Order of execution (build mode)
-1. Migrations: `task_follow_ups` (+ trigger), `inbox_email_attachments`, storage bucket.
-2. Edge: `email-inbound` attachments, new `send-follow-up-reminders` + cron insert.
-3. Frontend: TimerWidget dialog → Inbox toggle/bulk/attachments → Table width audit → TaskDetailPanel follow-up → Follow Up column in MyTasks/TaskTable → NotificationsBell tabs.
-4. Verify: build passes; smoke-check Inbox toggle, bulk delete confirm, timer dialog width, follow-up save round-trip.
+## Technical notes
+- Both edge functions already use `https://esm.sh/@supabase/supabase-js@2.45.0` / `npm:@supabase/supabase-js@2`; the shared file uses no external imports beyond what Deno provides, so it works from either entry point.
+- Gateway error mapping (`429 → "rate limit"`, `402 → "credits exhausted"`) is centralised in the shared helper and re-mapped to HTTP status by each edge function so existing client toasts continue to work.
