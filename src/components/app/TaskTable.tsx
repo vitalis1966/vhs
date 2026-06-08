@@ -262,6 +262,7 @@ export function TaskTable({ clientId, projectId, filters, reloadKey, onOpenTask 
                     })}
                   </div>
                 </td>
+                <td className="px-3 py-2"><FollowUpBadge status={followUps[t.id] ?? "not_started"} /></td>
                 <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                   <TaskActionsMenu task={target} onEdit={onOpenTask} onDeleted={() => setRows((prev) => prev.filter((r) => r.id !== t.id))} />
                 </td>
