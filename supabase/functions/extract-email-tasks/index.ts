@@ -11,7 +11,18 @@ Rules:
 - Identify ONLY distinct, actionable tasks. Each task must have a clear action required.
 - Ignore background context, FYI content, greetings, sign-offs, and pleasantries.
 - Prefer fewer, meaningful tasks over many small ones. Maximum 5 tasks.
-- Each task needs a concise title, a fuller description, and a priority of "high", "medium", or "low".
+- For EACH task populate every field you can from the email — do not be sparse:
+  * title: short imperative action (~80 chars), e.g. "Send signed NDA to John".
+  * priority: "high" | "medium" | "low".
+  * requester: who is asking, with role/company if visible.
+  * deadline_text: any due date or timing phrase as written ("by Friday", "EOD Tuesday"), or empty.
+  * what: 1-2 sentences plainly describing what needs to be done.
+  * why: 1-2 sentences with the business reason or context drawn from the email.
+  * acceptance_criteria: 1-4 concrete bullet conditions for "done" (who to copy, format, attachments, approvals).
+  * key_details: supporting facts from the email — figures, names, dates, document/system names, links.
+  * relevant_quote: ONE short direct quote (<=240 chars) from the email, verbatim, or empty.
+  * suggested_next_step: a single sentence telling the assignee how to start.
+- Never invent facts. If a field is not in the email, leave it empty.
 - If there are no actionable tasks, return an empty array.`;
 
 Deno.serve(async (req) => {
