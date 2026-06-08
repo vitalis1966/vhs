@@ -152,6 +152,33 @@ Never invent facts.`;
     const toolCall = aiJson?.choices?.[0]?.message?.tool_calls?.[0];
     const parsed = tryParseJSON<any>(toolCall?.function?.arguments) ?? {};
 
+    // Synthesize a rich `context` string for each action item so downstream
+    // task creation gets a fully-populated description by default.
+    function buildContext(a: any): string {
+      const lines: string[] = [];
+      if (a?.what) lines.push(`**What to do**\n${String(a.what).trim()}`);
+      if (a?.why) lines.push(`**Why it matters**\n${String(a.why).trim()}`);
+      const meta: string[] = [];
+      if (a?.requester) meta.push(`- Requested by: ${String(a.requester).trim()}`);
+      if (a?.due_date) meta.push(`- Due: ${String(a.due_date).trim()}`);
+      if (meta.length) lines.push(`**Context**\n${meta.join("\n")}`);
+      if (Array.isArray(a?.acceptance_criteria) && a.acceptance_criteria.length) {
+        lines.push(`**Done when**\n${a.acceptance_criteria.map((c: string) => `- ${String(c).trim()}`).join("\n")}`);
+      }
+      if (Array.isArray(a?.key_details) && a.key_details.length) {
+        lines.push(`**Key details from email**\n${a.key_details.map((c: string) => `- ${String(c).trim()}`).join("\n")}`);
+      }
+      if (a?.suggested_next_step) lines.push(`**Suggested next step**\n${String(a.suggested_next_step).trim()}`);
+      if (a?.relevant_quote) lines.push(`**From the email**\n> ${String(a.relevant_quote).trim().replace(/\n+/g, " ")}`);
+      return lines.join("\n\n");
+    }
+    if (Array.isArray(parsed?.action_items)) {
+      parsed.action_items = parsed.action_items.map((a: any) => ({
+        ...a,
+        context: buildContext(a) || a?.context || "",
+      }));
+    }
+
     // Service-role client for matching across workspace data (RLS bypass for read)
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(supabaseUrl, serviceKey);
