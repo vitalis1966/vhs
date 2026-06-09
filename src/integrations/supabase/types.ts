@@ -4042,6 +4042,29 @@ export type Database = {
         Args: { p_assignment_id: string }
         Returns: Json
       }
+      get_portal_gantt_for_project: {
+        Args: { p_project_id: string }
+        Returns: {
+          end_date: string
+          id: string
+          is_complete: boolean
+          parent_id: string
+          position: number
+          progress: number
+          start_date: string
+          title: string
+          type: string
+        }[]
+      }
+      get_portal_projects_for_user: {
+        Args: never
+        Returns: {
+          client_id: string
+          client_name: string
+          project_id: string
+          project_name: string
+        }[]
+      }
       get_project_time_summary_window: {
         Args: { p_end: string; p_project_id: string; p_start: string }
         Returns: Json
