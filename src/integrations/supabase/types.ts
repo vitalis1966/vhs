@@ -1384,6 +1384,7 @@ export type Database = {
       gantt_items: {
         Row: {
           assignee_id: string | null
+          attachment_document_ids: string[]
           baseline_end: string | null
           baseline_set_at: string | null
           baseline_start: string | null
@@ -1393,13 +1394,21 @@ export type Database = {
           created_by: string | null
           dependencies: Json
           description: string | null
+          due_reminder_0d_sent_at: string | null
+          due_reminder_1d_sent_at: string | null
+          due_reminder_3d_sent_at: string | null
           duration_days: number | null
           end_date: string | null
+          estimated_hours: number | null
           id: string
           is_collapsed: boolean
           is_complete: boolean
           is_critical_path: boolean
+          is_internal: boolean
+          linked_meeting_id: string | null
+          linked_milestone_id: string | null
           linked_task_id: string | null
+          overdue_notified_at: string | null
           parent_id: string | null
           position: number
           progress: number
@@ -1413,6 +1422,7 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          attachment_document_ids?: string[]
           baseline_end?: string | null
           baseline_set_at?: string | null
           baseline_start?: string | null
@@ -1422,13 +1432,21 @@ export type Database = {
           created_by?: string | null
           dependencies?: Json
           description?: string | null
+          due_reminder_0d_sent_at?: string | null
+          due_reminder_1d_sent_at?: string | null
+          due_reminder_3d_sent_at?: string | null
           duration_days?: number | null
           end_date?: string | null
+          estimated_hours?: number | null
           id?: string
           is_collapsed?: boolean
           is_complete?: boolean
           is_critical_path?: boolean
+          is_internal?: boolean
+          linked_meeting_id?: string | null
+          linked_milestone_id?: string | null
           linked_task_id?: string | null
+          overdue_notified_at?: string | null
           parent_id?: string | null
           position?: number
           progress?: number
@@ -1442,6 +1460,7 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          attachment_document_ids?: string[]
           baseline_end?: string | null
           baseline_set_at?: string | null
           baseline_start?: string | null
@@ -1451,13 +1470,21 @@ export type Database = {
           created_by?: string | null
           dependencies?: Json
           description?: string | null
+          due_reminder_0d_sent_at?: string | null
+          due_reminder_1d_sent_at?: string | null
+          due_reminder_3d_sent_at?: string | null
           duration_days?: number | null
           end_date?: string | null
+          estimated_hours?: number | null
           id?: string
           is_collapsed?: boolean
           is_complete?: boolean
           is_critical_path?: boolean
+          is_internal?: boolean
+          linked_meeting_id?: string | null
+          linked_milestone_id?: string | null
           linked_task_id?: string | null
+          overdue_notified_at?: string | null
           parent_id?: string | null
           position?: number
           progress?: number
@@ -1475,6 +1502,20 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_linked_meeting_id_fkey"
+            columns: ["linked_meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_linked_milestone_id_fkey"
+            columns: ["linked_milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
             referencedColumns: ["id"]
           },
           {
@@ -1500,6 +1541,106 @@ export type Database = {
           },
           {
             foreignKeyName: "gantt_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gantt_template_items: {
+        Row: {
+          colour: string | null
+          created_at: string
+          dependencies_keys: string[]
+          description: string | null
+          duration_days: number
+          id: string
+          is_internal: boolean
+          item_key: string
+          parent_key: string | null
+          position: number
+          start_offset_days: number
+          template_id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          colour?: string | null
+          created_at?: string
+          dependencies_keys?: string[]
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_internal?: boolean
+          item_key: string
+          parent_key?: string | null
+          position?: number
+          start_offset_days?: number
+          template_id: string
+          title: string
+          type: string
+        }
+        Update: {
+          colour?: string | null
+          created_at?: string
+          dependencies_keys?: string[]
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_internal?: boolean
+          item_key?: string
+          parent_key?: string | null
+          position?: number
+          start_offset_days?: number
+          template_id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gantt_template_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "gantt_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gantt_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_builtin: boolean
+          name: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_builtin?: boolean
+          name: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_builtin?: boolean
+          name?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gantt_templates_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -3866,6 +4007,20 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_client_gantt_for_project: {
+        Args: { p_project_id: string }
+        Returns: {
+          end_date: string
+          id: string
+          is_complete: boolean
+          parent_id: string
+          position: number
+          progress: number
+          start_date: string
+          title: string
+          type: string
+        }[]
+      }
       get_client_report_for_assignment: {
         Args: { p_assignment_id: string }
         Returns: Json
@@ -3886,6 +4041,29 @@ export type Database = {
       get_internal_report_for_assignment: {
         Args: { p_assignment_id: string }
         Returns: Json
+      }
+      get_portal_gantt_for_project: {
+        Args: { p_project_id: string }
+        Returns: {
+          end_date: string
+          id: string
+          is_complete: boolean
+          parent_id: string
+          position: number
+          progress: number
+          start_date: string
+          title: string
+          type: string
+        }[]
+      }
+      get_portal_projects_for_user: {
+        Args: never
+        Returns: {
+          client_id: string
+          client_name: string
+          project_id: string
+          project_name: string
+        }[]
       }
       get_project_time_summary_window: {
         Args: { p_end: string; p_project_id: string; p_start: string }
