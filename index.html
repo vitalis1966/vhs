@@ -26,6 +26,9 @@
       @media(min-width:1024px){.container{max-width:1280px}}
       .animate-fade-in{animation:fadeInUp .6s ease-out both}
       @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      .app-boot{min-height:100vh;display:flex;align-items:center;justify-content:center;background:hsl(40 33% 97%)}
+      .app-boot-spin{width:32px;height:32px;border:3px solid hsl(148 12% 88%);border-top-color:hsl(155 25% 25%);border-radius:50%;animation:appSpin .7s linear infinite}
+      @keyframes appSpin{to{transform:rotate(360deg)}}
     </style>
     <title>Vitalis Health Strategies</title>
     <meta name="description" content="Physician-led healthcare consulting for medical, dental, and veterinary practices across Canada. Clinic builds, operations, M&A, and recruitment." />
