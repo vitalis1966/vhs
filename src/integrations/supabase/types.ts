@@ -1302,6 +1302,202 @@ export type Database = {
         }
         Relationships: []
       }
+      gantt_item_activity: {
+        Row: {
+          action: string
+          actor_id: string | null
+          changes: Json | null
+          created_at: string
+          gantt_item_id: string
+          id: string
+          workspace_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string
+          gantt_item_id: string
+          id?: string
+          workspace_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string
+          gantt_item_id?: string
+          id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gantt_item_activity_gantt_item_id_fkey"
+            columns: ["gantt_item_id"]
+            isOneToOne: false
+            referencedRelation: "gantt_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gantt_item_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          gantt_item_id: string
+          id: string
+          mentioned_user_ids: string[]
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          gantt_item_id: string
+          id?: string
+          mentioned_user_ids?: string[]
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          gantt_item_id?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gantt_item_comments_gantt_item_id_fkey"
+            columns: ["gantt_item_id"]
+            isOneToOne: false
+            referencedRelation: "gantt_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gantt_items: {
+        Row: {
+          assignee_id: string | null
+          client_id: string
+          colour: string | null
+          created_at: string
+          created_by: string | null
+          dependencies: Json
+          description: string | null
+          duration_days: number | null
+          end_date: string | null
+          id: string
+          is_collapsed: boolean
+          is_complete: boolean
+          is_critical_path: boolean
+          linked_task_id: string | null
+          parent_id: string | null
+          position: number
+          progress: number
+          project_id: string
+          start_date: string | null
+          status: Database["public"]["Enums"]["gantt_item_status"]
+          title: string
+          type: Database["public"]["Enums"]["gantt_item_type"]
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          client_id: string
+          colour?: string | null
+          created_at?: string
+          created_by?: string | null
+          dependencies?: Json
+          description?: string | null
+          duration_days?: number | null
+          end_date?: string | null
+          id?: string
+          is_collapsed?: boolean
+          is_complete?: boolean
+          is_critical_path?: boolean
+          linked_task_id?: string | null
+          parent_id?: string | null
+          position?: number
+          progress?: number
+          project_id: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["gantt_item_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["gantt_item_type"]
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          assignee_id?: string | null
+          client_id?: string
+          colour?: string | null
+          created_at?: string
+          created_by?: string | null
+          dependencies?: Json
+          description?: string | null
+          duration_days?: number | null
+          end_date?: string | null
+          id?: string
+          is_collapsed?: boolean
+          is_complete?: boolean
+          is_critical_path?: boolean
+          linked_task_id?: string | null
+          parent_id?: string | null
+          position?: number
+          progress?: number
+          project_id?: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["gantt_item_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["gantt_item_type"]
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gantt_items_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_linked_task_id_fkey"
+            columns: ["linked_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "gantt_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gantt_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inbound_email_deletions: {
         Row: {
           deleted_at: string
@@ -3882,6 +4078,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "client"
+      gantt_item_status:
+        | "not_started"
+        | "in_progress"
+        | "complete"
+        | "blocked"
+        | "on_hold"
+      gantt_item_type: "section" | "task" | "milestone" | "sub_item"
       platform_kind: "vhs" | "vitalis_os"
     }
     CompositeTypes: {
@@ -4011,6 +4214,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "client"],
+      gantt_item_status: [
+        "not_started",
+        "in_progress",
+        "complete",
+        "blocked",
+        "on_hold",
+      ],
+      gantt_item_type: ["section", "task", "milestone", "sub_item"],
       platform_kind: ["vhs", "vitalis_os"],
     },
   },
