@@ -279,6 +279,8 @@ export default function ProjectDetail() {
           projectId={project.id}
           clientId={project.client_id}
           workspaceId={project.workspace_id}
+          projectName={project.name}
+          clientName={client?.name ?? "Client"}
           projectStart={project.start_date}
           projectEnd={project.target_date}
         />
