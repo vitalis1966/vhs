@@ -27,8 +27,20 @@ export interface GanttTemplateItem {
 }
 
 // ---------- Built-in templates ----------
-function mk(items: Array<Omit<GanttTemplateItem, "is_internal"> & { is_internal?: boolean }>): GanttTemplateItem[] {
-  return items.map((i) => ({ ...i, is_internal: i.is_internal ?? false, description: i.description ?? null }));
+function mk(items: Array<Partial<GanttTemplateItem> & Pick<GanttTemplateItem, "item_key" | "type" | "title" | "start_offset_days" | "duration_days" | "position">>): GanttTemplateItem[] {
+  return items.map((i) => ({
+    item_key: i.item_key,
+    parent_key: i.parent_key ?? null,
+    type: i.type,
+    title: i.title,
+    description: i.description ?? null,
+    start_offset_days: i.start_offset_days,
+    duration_days: i.duration_days,
+    colour: i.colour ?? null,
+    position: i.position,
+    is_internal: i.is_internal ?? false,
+    dependencies_keys: i.dependencies_keys ?? [],
+  }));
 }
 
 export const BUILTIN_TEMPLATES: GanttTemplate[] = [
