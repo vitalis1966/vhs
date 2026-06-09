@@ -47,9 +47,6 @@
     <script>
       (function(){
         var p = window.location.pathname;
-        // Only show the marketing static shell for the public homepage.
-        // App routes (/app, /admin, /assessment, etc.) should boot to a blank background
-        // so React's actual page doesn't get covered by a flash of the homepage.
         if (p === '/' || p === '/index.html') {
           document.getElementById('root').innerHTML =
             '<nav style="height:80px;display:flex;align-items:center;padding:0 2rem;background:hsl(40 33% 97%)">' +
@@ -61,6 +58,10 @@
                 '<h1 style="font-family:\'Playfair Display\',Georgia,serif;font-size:clamp(2.25rem,5vw,4.5rem);font-weight:700;line-height:1.08;color:hsl(155 25% 12%)">Practice Strategy for Medical,<br/>Dental &amp; Veterinary</h1>' +
               '</div>' +
             '</section>';
+        } else {
+          // Instant spinner for app/admin/assessment routes so first paint isn't blank
+          document.getElementById('root').innerHTML =
+            '<div class="app-boot" id="app-boot"><div class="app-boot-spin"></div></div>';
         }
       })();
     </script>
