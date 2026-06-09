@@ -34,8 +34,8 @@ function assigneeColour(id: string | null): string {
 }
 
 export function GanttTimeline({
-  rows, zoom, showDeps, critical, showWeekends, colourBy,
-  rangeStart, rangeDays, rowHeight, headerHeight, onUpdate, onOpen, onCreateDep, selectedId, scrollRef,
+  rows, zoom, showDeps, critical, showWeekends, showBaseline, colourBy,
+  rangeStart, rangeDays, rowHeight, headerHeight, onUpdate, onOpen, onCreateDep, selectedId, scrollRef, criticalIds,
 }: Props) {
   const pxDay = ZOOM_PX_PER_DAY[zoom];
   const width = rangeDays * pxDay;
