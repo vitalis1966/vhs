@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Plus, Diamond, Download, Upload, Maximize2, Minimize2, EyeOff,
+  Plus, Diamond, Download, Upload, Maximize2, Minimize2,
   Zap, CheckCircle2, CloudSun, Crosshair, CalendarRange, CalendarPlus, GitBranch, Flag,
+  FileText, Save,
 } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import type { ColourBy, ZoomLevel } from "@/lib/gantt/types";
+import type { GanttPermissions } from "@/lib/gantt/permissions";
 
 interface Props {
   zoom: ZoomLevel; setZoom: (z: ZoomLevel) => void;
@@ -26,13 +28,14 @@ interface Props {
   onExportXlsx: () => void;
   onExportPdf: () => void;
   onSetBaseline: () => void;
+  onOpenTemplates: (mode: "apply" | "save") => void;
   hasBaseline: boolean;
   fullscreen: boolean;
   onToggleFullscreen: () => void;
-  // Top-of-chart stats
   overallProgress: number;
   projectEndDate: string | null;
   criticalCount: number;
+  perms: GanttPermissions;
 }
 
 export function GanttToolbar(p: Props) {
@@ -68,28 +71,49 @@ export function GanttToolbar(p: Props) {
           </SelectContent>
         </Select>
         <div className="flex-1" />
-        <Button size="sm" variant="outline" onClick={p.onSetBaseline} title={p.hasBaseline ? "Replace baseline with current dates" : "Snapshot current dates as baseline"}>
-          <Flag className="h-3.5 w-3.5 mr-1" />{p.hasBaseline ? "Update baseline" : "Set baseline"}
-        </Button>
-        <Button size="sm" variant="outline" onClick={p.onAddSection}><Plus className="h-3.5 w-3.5 mr-1" />Section</Button>
-        <Button size="sm" variant="outline" onClick={p.onAddMilestone}><Diamond className="h-3.5 w-3.5 mr-1" />Milestone</Button>
-        <Button size="sm" variant="outline" onClick={p.onImport}><Upload className="h-3.5 w-3.5 mr-1" />Import</Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="outline"><Download className="h-3.5 w-3.5 mr-1" />Export</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={p.onExportCsv}>CSV</DropdownMenuItem>
-            <DropdownMenuItem onClick={p.onExportXlsx}>Excel (.xlsx)</DropdownMenuItem>
-            <DropdownMenuItem onClick={p.onExportPdf}>PDF (timeline)</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {p.perms.canSetBaseline && (
+          <Button size="sm" variant="outline" onClick={p.onSetBaseline}>
+            <Flag className="h-3.5 w-3.5 mr-1" />{p.hasBaseline ? "Update baseline" : "Set baseline"}
+          </Button>
+        )}
+        {p.perms.canManageTemplates && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline"><FileText className="h-3.5 w-3.5 mr-1" />Templates</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => p.onOpenTemplates("apply")}><FileText className="h-3.5 w-3.5 mr-2" />Start from template</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => p.onOpenTemplates("save")}><Save className="h-3.5 w-3.5 mr-2" />Save current as template</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        {p.perms.canCreate && (
+          <>
+            <Button size="sm" variant="outline" onClick={p.onAddSection}><Plus className="h-3.5 w-3.5 mr-1" />Section</Button>
+            <Button size="sm" variant="outline" onClick={p.onAddMilestone}><Diamond className="h-3.5 w-3.5 mr-1" />Milestone</Button>
+          </>
+        )}
+        {p.perms.canImport && (
+          <Button size="sm" variant="outline" onClick={p.onImport}><Upload className="h-3.5 w-3.5 mr-1" />Import</Button>
+        )}
+        {p.perms.canExport && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline"><Download className="h-3.5 w-3.5 mr-1" />Export</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={p.onExportCsv}>CSV</DropdownMenuItem>
+              <DropdownMenuItem onClick={p.onExportXlsx}>Excel (.xlsx) — multi-sheet</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={p.onExportPdf}>PDF — branded report…</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <Button size="sm" variant="ghost" onClick={p.onToggleFullscreen} title="Fullscreen">
           {p.fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         </Button>
       </div>
 
-      {/* Project metrics row */}
       <div className="flex items-center gap-4 px-3 py-1.5 border-t bg-background/50 text-[11px]">
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">Overall progress</span>
@@ -113,6 +137,8 @@ export function GanttToolbar(p: Props) {
             </div>
           </>
         )}
+        <div className="flex-1" />
+        <span className="text-muted-foreground">Role: <span className="font-semibold">{p.perms.role}</span></span>
       </div>
     </div>
   );
