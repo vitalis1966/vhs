@@ -1384,6 +1384,9 @@ export type Database = {
       gantt_items: {
         Row: {
           assignee_id: string | null
+          baseline_end: string | null
+          baseline_set_at: string | null
+          baseline_start: string | null
           client_id: string
           colour: string | null
           created_at: string
@@ -1410,6 +1413,9 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          baseline_end?: string | null
+          baseline_set_at?: string | null
+          baseline_start?: string | null
           client_id: string
           colour?: string | null
           created_at?: string
@@ -1436,6 +1442,9 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          baseline_end?: string | null
+          baseline_set_at?: string | null
+          baseline_start?: string | null
           client_id?: string
           colour?: string | null
           created_at?: string
