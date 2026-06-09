@@ -37,6 +37,10 @@ export interface GanttItem {
   baseline_start: string | null;
   baseline_end: string | null;
   baseline_set_at: string | null;
+  due_reminder_3d_sent_at: string | null;
+  due_reminder_1d_sent_at: string | null;
+  due_reminder_0d_sent_at: string | null;
+  overdue_notified_at: string | null;
   created_at: string;
   updated_at: string;
 }
