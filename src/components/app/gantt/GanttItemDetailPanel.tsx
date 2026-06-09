@@ -14,7 +14,7 @@ import { addComment, deleteComment, listActivity, listComments, updateItem } fro
 import type { GanttItem, GanttItemStatus } from "@/lib/gantt/types";
 import { STATUS_LABEL } from "@/lib/gantt/types";
 import { toDate, addDays, toISO } from "@/lib/gantt/dates";
-import { Trash2 } from "lucide-react";
+import { Trash2, Paperclip, Clock, Lock, X } from "lucide-react";
 import { toast } from "sonner";
 
 const COLOURS = ["#3b82f6","#6366f1","#a855f7","#ec4899","#f43f5e","#f59e0b","#22c55e","#14b8a6","#06b6d4","#94a3b8"];
@@ -24,17 +24,21 @@ interface Props {
   members: Record<string, { full_name: string | null; email: string | null }>;
   allItems: GanttItem[];
   tasksOfProject: { id: string; title: string }[];
+  meetingsOfProject: { id: string; title: string; meeting_date: string | null }[];
   open: boolean;
   onOpenChange: (o: boolean) => void;
   onChanged: () => void;
   onDelete: (id: string) => void;
 }
 
-export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, open, onOpenChange, onChanged, onDelete }: Props) {
+export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, meetingsOfProject, open, onOpenChange, onChanged, onDelete }: Props) {
   const [local, setLocal] = useState<GanttItem | null>(item);
   const [comments, setComments] = useState<any[]>([]);
   const [activity, setActivity] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [timeLogged, setTimeLogged] = useState<number>(0); // hours
+  const [attachments, setAttachments] = useState<Array<{ id: string; file_name: string; storage_path: string }>>([]);
+  const [clientDocs, setClientDocs] = useState<Array<{ id: string; file_name: string }>>([]);
 
   useEffect(() => { setLocal(item); }, [item?.id]);
   useEffect(() => {
@@ -42,6 +46,32 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
     listComments(item.id).then(setComments);
     listActivity(item.id).then(setActivity);
   }, [item?.id]);
+
+  // Time logged on linked task
+  useEffect(() => {
+    if (!local?.linked_task_id) { setTimeLogged(0); return; }
+    (async () => {
+      const { data } = await (supabase as any).from("time_entries")
+        .select("duration_seconds").eq("task_id", local.linked_task_id);
+      const sec = (data ?? []).reduce((a: number, b: any) => a + (b.duration_seconds || 0), 0);
+      setTimeLogged(sec / 3600);
+    })();
+  }, [local?.linked_task_id]);
+
+  // Attachments + client docs for picker
+  useEffect(() => {
+    if (!local) return;
+    (async () => {
+      const ids = local.attachment_document_ids ?? [];
+      if (ids.length) {
+        const { data } = await (supabase as any).from("documents").select("id, file_name, storage_path").in("id", ids);
+        setAttachments(data ?? []);
+      } else setAttachments([]);
+      // Client docs available for attaching (best-effort: same client_id via assignments)
+      const { data: assigns } = await (supabase as any).rpc("list_client_submission_assignments", { p_client_id: local.client_id });
+      setClientDocs((assigns ?? []).map((a: any) => ({ id: a.document_id, file_name: a.file_name })));
+    })();
+  }, [local?.id, local?.attachment_document_ids?.length]);
 
   if (!local) return null;
   const isMilestone = local.type === "milestone";
@@ -77,6 +107,14 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
     save({ dependencies: deps });
   };
 
+  const attachDoc = (docId: string) => {
+    const ids = Array.from(new Set([...(local.attachment_document_ids ?? []), docId]));
+    save({ attachment_document_ids: ids });
+  };
+  const detachDoc = (docId: string) => {
+    save({ attachment_document_ids: (local.attachment_document_ids ?? []).filter((x) => x !== docId) });
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
@@ -84,6 +122,7 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="capitalize">{local.type.replace("_"," ")}</Badge>
             {local.is_critical_path && <Badge variant="destructive">Critical</Badge>}
+            {local.is_internal && <Badge variant="secondary"><Lock className="h-3 w-3 mr-1" />Internal</Badge>}
           </div>
           <SheetTitle>
             <Input value={local.title} onChange={(e) => setLocal({ ...local, title: e.target.value })}
@@ -135,6 +174,13 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
                 <Input type="number" min={1} value={local.duration_days ?? ""} onChange={(e) => onDurationChange(Number(e.target.value))} />
               </div>
             )}
+            {!isMilestone && (
+              <div>
+                <Label className="text-xs">Estimated hours</Label>
+                <Input type="number" min={0} step="0.5" value={local.estimated_hours ?? ""}
+                  onChange={(e) => save({ estimated_hours: e.target.value ? Number(e.target.value) : null })} />
+              </div>
+            )}
           </div>
 
           <div>
@@ -161,6 +207,11 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
             <Switch checked={local.is_critical_path} onCheckedChange={(v) => save({ is_critical_path: v })} />
           </div>
 
+          <div className="flex items-center justify-between">
+            <Label className="text-xs flex items-center gap-1"><Lock className="h-3 w-3" />Internal only (hidden from client portal)</Label>
+            <Switch checked={local.is_internal} onCheckedChange={(v) => save({ is_internal: v })} />
+          </div>
+
           {isMilestone && (
             <div className="flex items-center justify-between">
               <Label className="text-xs">Milestone complete</Label>
@@ -169,7 +220,7 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
           )}
 
           <div>
-            <Label className="text-xs">Linked project task</Label>
+            <Label className="text-xs">Linked project task (two-way sync)</Label>
             <Select value={local.linked_task_id ?? "none"} onValueChange={(v) => save({ linked_task_id: v === "none" ? null : v })}>
               <SelectTrigger className="h-9"><SelectValue placeholder="None" /></SelectTrigger>
               <SelectContent>
@@ -177,6 +228,50 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
                 {tasksOfProject.map((t) => <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>)}
               </SelectContent>
             </Select>
+            {local.linked_task_id && (
+              <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {timeLogged.toFixed(1)}h logged{local.estimated_hours ? ` / ${local.estimated_hours}h estimated` : ""}
+              </div>
+            )}
+          </div>
+
+          {isMilestone && (
+            <div>
+              <Label className="text-xs">Linked meeting (auto-complete when meeting summary sent)</Label>
+              <Select value={local.linked_meeting_id ?? "none"} onValueChange={(v) => save({ linked_meeting_id: v === "none" ? null : v })}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {meetingsOfProject.map((m) => <SelectItem key={m.id} value={m.id}>{m.title}{m.meeting_date ? ` — ${new Date(m.meeting_date).toLocaleDateString()}` : ""}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <Separator />
+
+          <div>
+            <Label className="text-xs flex items-center gap-1"><Paperclip className="h-3 w-3" />Attachments</Label>
+            <div className="space-y-1 mt-1">
+              {attachments.map((a) => (
+                <div key={a.id} className="flex items-center justify-between text-xs border rounded px-2 py-1">
+                  <span className="truncate">{a.file_name}</span>
+                  <button onClick={() => detachDoc(a.id)}><X className="h-3 w-3" /></button>
+                </div>
+              ))}
+              {!attachments.length && <div className="text-[11px] text-muted-foreground italic">No attachments.</div>}
+            </div>
+            {clientDocs.filter((d) => !(local.attachment_document_ids ?? []).includes(d.id)).length > 0 && (
+              <Select value="" onValueChange={(v) => v && attachDoc(v)}>
+                <SelectTrigger className="h-8 text-xs mt-2"><SelectValue placeholder="Attach from client files…" /></SelectTrigger>
+                <SelectContent>
+                  {clientDocs.filter((d) => !(local.attachment_document_ids ?? []).includes(d.id)).map((d) => (
+                    <SelectItem key={d.id} value={d.id}>{d.file_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <Separator />
@@ -214,7 +309,7 @@ export function GanttItemDetailPanel({ item, members, allItems, tasksOfProject, 
               {!comments.length && <div className="text-[11px] text-muted-foreground italic">No comments yet.</div>}
             </div>
             <div className="flex gap-2 mt-2">
-              <Textarea rows={2} value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment… use @ to mention" />
+              <Textarea rows={2} value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment…" />
               <Button size="sm" onClick={submitComment}>Post</Button>
             </div>
           </div>
