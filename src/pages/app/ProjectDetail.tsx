@@ -12,6 +12,7 @@ import { ProjectFormDialog, PROJECT_STATUS_COLOR } from "@/components/app/Projec
 import { Attachments } from "@/components/app/Attachments";
 import { ProjectContractedHoursSection } from "@/components/app/time/ProjectContractedHoursSection";
 import { toast } from "sonner";
+import { GanttView } from "@/components/app/gantt/GanttView";
 
 function initials(s?: string | null) {
   if (!s) return "?";
@@ -273,6 +274,16 @@ export default function ProjectDetail() {
           </ul>
         )}
       </Section>
+      <Section title="Gantt Chart">
+        <GanttView
+          projectId={project.id}
+          clientId={project.client_id}
+          workspaceId={project.workspace_id}
+          projectStart={project.start_date}
+          projectEnd={project.target_date}
+        />
+      </Section>
+
       <Section title="Contracted Hours">
         <ProjectContractedHoursSection projectId={project.id} workspaceId={project.workspace_id} />
       </Section>
