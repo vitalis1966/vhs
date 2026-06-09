@@ -12,6 +12,7 @@ interface Props {
   showDeps: boolean;
   critical: boolean;
   showWeekends: boolean;
+  showBaseline: boolean;
   colourBy: ColourBy;
   rangeStart: Date;
   rangeDays: number;
@@ -22,6 +23,7 @@ interface Props {
   onCreateDep: (fromId: string, toId: string) => void;
   selectedId: string | null;
   scrollRef?: React.RefObject<HTMLDivElement>;
+  criticalIds: Set<string>;
 }
 
 const ASSIGNEE_PALETTE = ["#6366f1", "#ec4899", "#14b8a6", "#f59e0b", "#84cc16", "#06b6d4", "#a855f7", "#f43f5e"];
