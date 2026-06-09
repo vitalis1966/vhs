@@ -197,6 +197,8 @@ const App = () => (
               <Route path="/admin/client-management/users" element={<AdminGuard><ClientUsersAdmin /></AdminGuard>} />
               <Route path="/admin/client-management/documents" element={<AdminGuard><ClientDocumentsAdmin /></AdminGuard>} />
               <Route path="/portal/documents" element={<ClientDocumentsPortal />} />
+              <Route path="/portal/projects" element={<ClientProjectGantt />} />
+              <Route path="/portal/projects/:projectId/gantt" element={<ClientProjectGantt />} />
               <Route path="/app/setup" element={<Navigate to="/app" replace />} />
               <Route path="/app" element={<AppGuard><AppLayout /></AppGuard>}>
                 <Route index element={<AppIndex />} />
