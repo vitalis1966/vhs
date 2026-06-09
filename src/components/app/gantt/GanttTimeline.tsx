@@ -188,7 +188,8 @@ export function GanttTimeline({
               ) : (
                 <Bar item={r.item} rangeStart={rangeStart} pxDay={pxDay} rowHeight={rowHeight}
                   colour={colourFor(r.item, r.depth)} sub={r.item.type === "sub_item"}
-                  critical={critical && r.item.is_critical_path}
+                  critical={critical && criticalIds.has(r.item.id)}
+                  showBaseline={showBaseline}
                   selected={selectedId === r.item.id}
                   onOpen={onOpen} onMove={(e) => startMove(e, r.item, "move")}
                   onResizeEnd={(e) => startMove(e, r.item, "resize-end")}
