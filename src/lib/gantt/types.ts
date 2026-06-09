@@ -29,6 +29,9 @@ export interface GanttItem {
   dependencies: GanttDependency[];
   linked_task_id: string | null;
   position: number;
+  baseline_start: string | null;
+  baseline_end: string | null;
+  baseline_set_at: string | null;
   created_at: string;
   updated_at: string;
 }

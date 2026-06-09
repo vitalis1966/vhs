@@ -12,6 +12,7 @@ interface Props {
   showDeps: boolean;
   critical: boolean;
   showWeekends: boolean;
+  showBaseline: boolean;
   colourBy: ColourBy;
   rangeStart: Date;
   rangeDays: number;
@@ -22,6 +23,7 @@ interface Props {
   onCreateDep: (fromId: string, toId: string) => void;
   selectedId: string | null;
   scrollRef?: React.RefObject<HTMLDivElement>;
+  criticalIds: Set<string>;
 }
 
 const ASSIGNEE_PALETTE = ["#6366f1", "#ec4899", "#14b8a6", "#f59e0b", "#84cc16", "#06b6d4", "#a855f7", "#f43f5e"];
@@ -32,8 +34,8 @@ function assigneeColour(id: string | null): string {
 }
 
 export function GanttTimeline({
-  rows, zoom, showDeps, critical, showWeekends, colourBy,
-  rangeStart, rangeDays, rowHeight, headerHeight, onUpdate, onOpen, onCreateDep, selectedId, scrollRef,
+  rows, zoom, showDeps, critical, showWeekends, showBaseline, colourBy,
+  rangeStart, rangeDays, rowHeight, headerHeight, onUpdate, onOpen, onCreateDep, selectedId, scrollRef, criticalIds,
 }: Props) {
   const pxDay = ZOOM_PX_PER_DAY[zoom];
   const width = rangeDays * pxDay;
@@ -186,7 +188,8 @@ export function GanttTimeline({
               ) : (
                 <Bar item={r.item} rangeStart={rangeStart} pxDay={pxDay} rowHeight={rowHeight}
                   colour={colourFor(r.item, r.depth)} sub={r.item.type === "sub_item"}
-                  critical={critical && r.item.is_critical_path}
+                  critical={critical && criticalIds.has(r.item.id)}
+                  showBaseline={showBaseline}
                   selected={selectedId === r.item.id}
                   onOpen={onOpen} onMove={(e) => startMove(e, r.item, "move")}
                   onResizeEnd={(e) => startMove(e, r.item, "resize-end")}
@@ -218,7 +221,7 @@ export function GanttTimeline({
   );
 }
 
-function Bar({ item, rangeStart, pxDay, rowHeight, colour, sub, critical, selected, onOpen, onMove, onResizeEnd, onStartDep }: any) {
+function Bar({ item, rangeStart, pxDay, rowHeight, colour, sub, critical, showBaseline, selected, onOpen, onMove, onResizeEnd, onStartDep }: any) {
   const s = toDate(item.start_date); const e = toDate(item.end_date);
   if (!s || !e) return null;
   const x = diffDays(rangeStart, s) * pxDay;
@@ -226,26 +229,46 @@ function Bar({ item, rangeStart, pxDay, rowHeight, colour, sub, critical, select
   const h = sub ? rowHeight - 14 : rowHeight - 10;
   const top = (rowHeight - h) / 2;
   const progressW = Math.max(0, Math.min(100, item.progress)) / 100 * w;
+  const overdue = (item.progress ?? 0) < 100 && e < today();
+
+  // Baseline ghost bar
+  const bs = toDate(item.baseline_start); const be = toDate(item.baseline_end);
+  const showGhost = showBaseline && bs && be;
+  const bx = showGhost ? diffDays(rangeStart, bs!) * pxDay : 0;
+  const bw = showGhost ? Math.max(pxDay, (diffDays(bs!, be!) + 1) * pxDay) : 0;
+
   return (
-    <div
-      data-gantt-bar data-id={item.id}
-      onClick={() => onOpen(item.id)}
-      onPointerDown={onMove}
-      title={`${item.title}\n${item.start_date} → ${item.end_date}\nProgress ${item.progress}%`}
-      className={`absolute rounded-md shadow-sm cursor-grab active:cursor-grabbing overflow-hidden group ${critical ? "ring-2 ring-red-500" : selected ? "ring-2 ring-primary" : ""}`}
-      style={{ left: x, top, width: w, height: h, background: `${colour}33`, border: `1px solid ${colour}` }}
-    >
-      <div className="absolute inset-y-0 left-0" style={{ width: progressW, background: colour, opacity: 0.85 }} />
-      <div className="relative px-2 h-full flex items-center text-[10px] font-medium text-foreground/90 truncate pointer-events-none">
-        {item.title}
+    <>
+      {showGhost && (
+        <div
+          className="absolute rounded-sm pointer-events-auto"
+          style={{ left: bx, top: top + h - 4, width: bw, height: 4, background: "hsl(var(--muted-foreground) / 0.35)", border: "1px dashed hsl(var(--muted-foreground) / 0.5)" }}
+          title={`Planned: ${item.baseline_start} → ${item.baseline_end}`}
+        />
+      )}
+      <div
+        data-gantt-bar data-id={item.id}
+        onClick={() => onOpen(item.id)}
+        onPointerDown={onMove}
+        title={`${item.title}\n${item.start_date} → ${item.end_date}\nProgress ${item.progress}%${overdue ? "\n⚠ Overdue" : ""}`}
+        className={`absolute rounded-md shadow-sm cursor-grab active:cursor-grabbing overflow-hidden group ${critical ? "ring-2 ring-red-500" : selected ? "ring-2 ring-primary" : ""}`}
+        style={{ left: x, top, width: w, height: h, background: `${colour}33`, border: `1px solid ${colour}` }}
+      >
+        <div className="absolute inset-y-0 left-0" style={{ width: progressW, background: colour, opacity: 0.85 }} />
+        <div className="relative px-2 h-full flex items-center text-[10px] font-medium text-foreground/90 truncate pointer-events-none">
+          {item.title}
+        </div>
+        {overdue && (
+          <div className="absolute top-0.5 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background pointer-events-none" />
+        )}
+        {/* resize handle */}
+        <div onPointerDown={onResizeEnd} className="absolute right-0 top-0 bottom-0 w-1.5 cursor-ew-resize bg-foreground/0 hover:bg-foreground/20" />
+        {/* dep handle */}
+        <div onPointerDown={onStartDep}
+          className="absolute -right-2 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-primary opacity-0 group-hover:opacity-100 cursor-crosshair"
+          title="Drag to another item to create dependency" />
       </div>
-      {/* resize handle */}
-      <div onPointerDown={onResizeEnd} className="absolute right-0 top-0 bottom-0 w-1.5 cursor-ew-resize bg-foreground/0 hover:bg-foreground/20" />
-      {/* dep handle */}
-      <div onPointerDown={onStartDep}
-        className="absolute -right-2 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-primary opacity-0 group-hover:opacity-100 cursor-crosshair"
-        title="Drag to another item to create dependency" />
-    </div>
+    </>
   );
 }
 

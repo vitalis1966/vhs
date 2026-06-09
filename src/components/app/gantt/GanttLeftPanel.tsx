@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
-import { ChevronRight, ChevronDown, Diamond, MoreHorizontal, Plus, GripVertical } from "lucide-react";
+import { useState } from "react";
+import { ChevronRight, ChevronDown, Diamond, MoreHorizontal, Plus, AlertCircle, GitBranch } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { initials } from "@/components/app/taskUtils";
 import type { GanttItem } from "@/lib/gantt/types";
+import { isOverdue, varianceDays } from "@/lib/gantt/critical";
 
 export interface FlatRow { item: GanttItem; depth: number; hasChildren: boolean; }
 
@@ -19,12 +20,21 @@ interface Props {
   onAddItemAtEnd: (parentId: string | null) => void;
   rowHeight: number;
   selectedId: string | null;
+  criticalIds: Set<string>;
+  sectionProgress: Map<string, number>;
+  showVariance: boolean;
+  critical: boolean;
 }
 
-export function GanttLeftPanel({ rows, members, onOpen, onUpdate, onToggleCollapse, onAction, onAddItemAtEnd, rowHeight, selectedId }: Props) {
+const GRID = "grid-cols-[24px_1fr_84px_88px_88px_56px_52px_56px_22px]";
+
+export function GanttLeftPanel({
+  rows, members, onOpen, onUpdate, onToggleCollapse, onAction, onAddItemAtEnd,
+  rowHeight, selectedId, criticalIds, sectionProgress, showVariance, critical,
+}: Props) {
   return (
     <div className="border-r bg-background flex flex-col min-w-0">
-      <div className="grid grid-cols-[28px_1fr_90px_92px_92px_70px_70px_28px] gap-0 px-2 py-2 border-b text-[10px] uppercase tracking-wider text-muted-foreground font-semibold bg-muted/30">
+      <div className={`grid ${GRID} gap-0 px-2 py-2 border-b text-[10px] uppercase tracking-wider text-muted-foreground font-semibold bg-muted/30`}>
         <div>#</div>
         <div>Item</div>
         <div>Assignee</div>
@@ -32,13 +42,18 @@ export function GanttLeftPanel({ rows, members, onOpen, onUpdate, onToggleCollap
         <div>End</div>
         <div>Prog.</div>
         <div>Days</div>
+        <div title="Variance vs baseline">{showVariance ? "Var." : "—"}</div>
         <div></div>
       </div>
       <div className="overflow-y-auto flex-1">
         {rows.map((r, idx) => (
           <Row key={r.item.id} row={r} idx={idx + 1} members={members}
             onOpen={onOpen} onUpdate={onUpdate} onToggleCollapse={onToggleCollapse} onAction={onAction}
-            rowHeight={rowHeight} selected={selectedId === r.item.id} />
+            rowHeight={rowHeight} selected={selectedId === r.item.id}
+            isCritical={critical && criticalIds.has(r.item.id)}
+            sectionProgress={sectionProgress}
+            showVariance={showVariance}
+          />
         ))}
         <div className="p-2 border-t">
           <Button size="sm" variant="ghost" className="text-xs" onClick={() => onAddItemAtEnd(null)}>
@@ -50,17 +65,20 @@ export function GanttLeftPanel({ rows, members, onOpen, onUpdate, onToggleCollap
   );
 }
 
-function Row({ row, idx, members, onOpen, onUpdate, onToggleCollapse, onAction, rowHeight, selected }:
-  { row: FlatRow; idx: number; members: Props["members"]; onOpen: Props["onOpen"]; onUpdate: Props["onUpdate"]; onToggleCollapse: Props["onToggleCollapse"]; onAction: Props["onAction"]; rowHeight: number; selected: boolean }) {
-  const { item, depth, hasChildren } = row;
+function Row({ row, idx, members, onOpen, onUpdate, onToggleCollapse, onAction, rowHeight, selected, isCritical, sectionProgress, showVariance }:
+  any) {
+  const { item, depth, hasChildren } = row as FlatRow;
   const isSection = item.type === "section";
   const isMilestone = item.type === "milestone";
   const a = item.assignee_id ? members[item.assignee_id] : null;
   const assigneeLabel = a?.full_name?.trim() || a?.email || "—";
+  const overdue = isOverdue(item);
+  const variance = showVariance ? varianceDays(item) : null;
+  const displayedProgress = isSection ? (sectionProgress.get(item.id) ?? 0) : item.progress;
 
   return (
     <div
-      className={`grid grid-cols-[28px_1fr_90px_92px_92px_70px_70px_28px] items-center gap-0 px-2 border-b text-xs hover:bg-muted/40 ${selected ? "bg-primary/5" : ""} ${isSection ? "bg-muted/20 font-semibold" : ""}`}
+      className={`grid ${GRID} items-center gap-0 px-2 border-b text-xs hover:bg-muted/40 ${selected ? "bg-primary/5" : ""} ${isSection ? "bg-muted/20 font-semibold" : ""} ${overdue ? "border-l-2 border-l-red-500" : ""}`}
       style={{ height: rowHeight }}
     >
       <div className="text-muted-foreground tabular-nums text-[10px]">{idx}</div>
@@ -73,6 +91,14 @@ function Row({ row, idx, members, onOpen, onUpdate, onToggleCollapse, onAction, 
         {isMilestone && <Diamond className={`h-3 w-3 ${item.is_complete ? "fill-current" : ""}`} style={{ color: item.colour ?? "#6366f1" }} />}
         <InlineText value={item.title} onCommit={(v) => onUpdate(item.id, { title: v })}
           className={isSection ? "font-semibold" : ""} onClickOpen={() => onOpen(item.id)} />
+        {isCritical && (
+          <span className="ml-1 inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wide text-red-600 bg-red-500/10 rounded px-1 py-0.5">
+            <GitBranch className="h-2.5 w-2.5" /> Critical
+          </span>
+        )}
+        {overdue && (
+          <AlertCircle className="h-3 w-3 text-red-500 shrink-0" aria-label="Overdue" />
+        )}
       </div>
       <div className="text-muted-foreground truncate flex items-center gap-1">
         {a && <Avatar className="h-4 w-4"><AvatarFallback className="text-[8px]">{initials(assigneeLabel)}</AvatarFallback></Avatar>}
@@ -81,9 +107,19 @@ function Row({ row, idx, members, onOpen, onUpdate, onToggleCollapse, onAction, 
       <InlineDate value={item.start_date} onCommit={(v) => onUpdate(item.id, { start_date: v })} />
       <InlineDate value={item.end_date} onCommit={(v) => onUpdate(item.id, { end_date: v })} disabled={isMilestone} />
       <div className="flex items-center gap-1">
-        <InlineNumber value={item.progress} onCommit={(v) => onUpdate(item.id, { progress: Math.max(0, Math.min(100, v)) })} suffix="%" max={100} />
+        {isSection ? (
+          <span className="text-[11px] tabular-nums text-muted-foreground">{displayedProgress}%</span>
+        ) : (
+          <InlineNumber value={item.progress} onCommit={(v) => onUpdate(item.id, { progress: Math.max(0, Math.min(100, v)) })} max={100} />
+        )}
       </div>
       <div className="text-muted-foreground tabular-nums text-[11px]">{item.duration_days ?? "—"}</div>
+      <div className="tabular-nums text-[11px]">
+        {variance == null ? <span className="text-muted-foreground">—</span> :
+          variance === 0 ? <span className="text-muted-foreground">0d</span> :
+          variance < 0 ? <span className="text-emerald-600">{variance}d</span> :
+          <span className="text-red-600">+{variance}d</span>}
+      </div>
       <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -131,11 +167,11 @@ function InlineDate({ value, onCommit, disabled }: { value: string | null; onCom
   return (
     <input type="date" value={value ?? ""}
       onChange={(e) => onCommit(e.target.value || null)}
-      className="bg-transparent text-[11px] outline-none hover:bg-muted/50 rounded px-1 py-0.5 w-[88px]" />
+      className="bg-transparent text-[11px] outline-none hover:bg-muted/50 rounded px-1 py-0.5 w-[84px]" />
   );
 }
 
-function InlineNumber({ value, onCommit, suffix, max }: { value: number; onCommit: (v: number) => void; suffix?: string; max?: number }) {
+function InlineNumber({ value, onCommit, max }: { value: number; onCommit: (v: number) => void; max?: number }) {
   const [v, setV] = useState(String(value));
   return (
     <input type="number" min={0} max={max} value={v}
