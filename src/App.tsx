@@ -64,6 +64,7 @@ const ClientManagement = lazy(() => import("./pages/admin/ClientManagement"));
 const ClientUsersAdmin = lazy(() => import("./pages/admin/ClientUsersAdmin"));
 const ClientDocumentsAdmin = lazy(() => import("./pages/admin/ClientDocumentsAdmin"));
 const ClientDocumentsPortal = lazy(() => import("./pages/portal/ClientDocuments"));
+const ClientProjectGantt = lazy(() => import("./pages/portal/ClientProjectGantt"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AppGuard = lazy(() => import("@/components/app/AppGuard").then(m => ({ default: m.AppGuard })));
 const AppLayout = lazy(() => import("@/components/app/AppLayout").then(m => ({ default: m.AppLayout })));
