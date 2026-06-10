@@ -1,0 +1,6 @@
+Read CLAUDE.md before making any changes.
+Always plan before coding — list every file you will touch and why.
+Never hard-delete data from VHS Administration.
+Use existing component patterns — no new UI libraries without approval.
+All new DB tables need RLS policies and explicit GRANTs.
+Use maybeSingle() not single() for nullable queries.
