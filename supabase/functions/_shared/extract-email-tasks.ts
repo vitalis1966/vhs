@@ -3,7 +3,10 @@
 //   - supabase/functions/extract-email-tasks (Forwarded Inbox flow)
 // Keep prompt, tool schema, model, and post-processing identical across both paths.
 
-export const EXTRACTION_MODEL = "google/gemini-3-flash-preview";
+// Lovable AI reference replaced with Claude
+// export const EXTRACTION_MODEL = "google/gemini-3-flash-preview";
+
+export const EXTRACTION_MODEL = "claude-sonnet-4-5";
 
 export const EXTRACTION_SYSTEM_PROMPT = `You parse pasted business emails for Vitalis OS, a healthcare advisory CRM.
 Extract headers and structured details. Be conservative: never invent dates, names, amounts, or commitments.
@@ -177,8 +180,8 @@ export class GatewayError extends Error {
     this.status = status;
   }
 }
-
-export async function extractEmailViaGateway(apiKey: string, composedEmail: string): Promise<any> {
+// Lovable AI parsing replaced below with Claude
+/* export async function extractEmailViaGateway(apiKey: string, composedEmail: string): Promise<any> {
   const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -213,4 +216,41 @@ export async function extractEmailViaGateway(apiKey: string, composedEmail: stri
   }
 
   return parsed;
+}*/
+
+export async function extractEmailViaGateway(apiKey: string, composedEmail: string): Promise<any> {
+  const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: EXTRACTION_MODEL,
+      max_tokens: 4096,
+      system: EXTRACTION_SYSTEM_PROMPT,
+      messages: [
+        { role: "user", content: `Parse this email:\n\n${composedEmail}` },
+      ],
+      tools: [EXTRACTION_TOOL],
+      tool_use: { type: "tool", name: "extract_email" },
+    }),
+  });
+
+  if (!aiRes.ok) {
+    const txt = await aiRes.text().catch(() => "");
+    if (aiRes.status === 429) throw new GatewayError(429, "AI rate limit exceeded, please retry shortly.");
+    if (aiRes.status === 402) throw new GatewayError(402, "AI credits exhausted.");
+    console.error("AI gateway error", aiRes.status, txt);
+    throw new GatewayError(500, "AI parsing failed");
+  }
+
+  const data = await aiRes.json();
+  
+  // Anthropic returns tool use in content blocks
+  const toolUseBlock = data.content?.find((block: any) => block.type === "tool_use");
+  if (!toolUseBlock) throw new GatewayError(500, "No tool use in response");
+  
+  return toolUseBlock.input;
 }
