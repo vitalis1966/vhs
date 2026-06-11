@@ -65,8 +65,10 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "email not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
+  /*const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) {*/
+  const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+  if (!ANTHROPIC_API_KEY) {
     return new Response(JSON.stringify({ error: "AI not configured" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
@@ -81,7 +83,8 @@ Deno.serve(async (req) => {
 
   let parsed: any;
   try {
-    parsed = await extractEmailViaGateway(LOVABLE_API_KEY, composed);
+    // parsed = await extractEmailViaGateway(LOVABLE_API_KEY, composed);
+    parsed = await extractEmailViaGateway(ANTHROPIC_API_KEY, composed);
   } catch (e) {
     if (e instanceof GatewayError) {
       return new Response(JSON.stringify({ error: e.message }), { status: e.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
