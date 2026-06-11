@@ -29,8 +29,12 @@ Deno.serve(async (req) => {
     if (!workspace_id) return json({ error: "workspace_id is required" }, 400);
     if (raw_email.length > 200000) return json({ error: "Email too large" }, 400);
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) return json({ error: "LOVABLE_API_KEY not configured" }, 500);
+    // LOVABLE_API_KEY
+    /*const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) return json({ error: "LOVABLE_API_KEY not configured" }, 500);*/
+
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) return json({ error: "ANTHROPIC_API_KEY not configured" }, 500);
 
     // Raw paste is already a full email blob (headers + body). Run through the
     // shared composer with body_text=raw_email so the composer doesn't double-wrap.
@@ -38,7 +42,8 @@ Deno.serve(async (req) => {
 
     let parsed: any;
     try {
-      parsed = await extractEmailViaGateway(LOVABLE_API_KEY, composed);
+      //parsed = await extractEmailViaGateway(LOVABLE_API_KEY, composed); 
+      parsed = await extractEmailViaGateway(ANTHROPIC_API_KEY, composed);
     } catch (e) {
       if (e instanceof GatewayError) return json({ error: e.message }, e.status);
       throw e;
